@@ -70,26 +70,26 @@ table.wikitable>*>tr>th {
     background-color: rgba(240, 248, 255, .6) !important;
 }
 
-/* 以下代码来自[[MediaWiki:Gadget-SideBarPic.css]]，用于解决更换背景图片后左侧工具栏显示的问题 */
-.sidebar-character {
+/* 以下代码改自[[MediaWiki:Gadget-SideBarPic.css]]，用于解决更换背景图片后左侧工具栏显示的问题 */
+.skin-vector .sidebar-character {
     position: fixed;
     left: -3px;
     z-index: -2;
 }
 
-.sidebar-character.top {
+.skin-vector .sidebar-character.top {
     top: 0;
 }
 
-.sidebar-character.bottom {
+.skin-vector .sidebar-character.bottom {
     bottom: 0;
 }
 
-#wglogo {
+.skin-vector #wglogo {
     display: none;
 }
 
-div#mw-panel div.portal {
+.skin-vector div#mw-panel div.portal {
     background-color: rgb(246 246 246 / 90%);
     margin-left: -0.75em;
     margin-right: 0;
@@ -97,25 +97,25 @@ div#mw-panel div.portal {
     padding-right: 0.95em;
 }
 
-div#mw-panel #p-logo+div.portal {
+.skin-vector div#mw-panel #p-logo+div.portal {
     padding-top: 1.1em;
     margin-top: 0;
 }
 
-#mw-panel #p-logo {
+.skin-vector #mw-panel #p-logo {
     height: 160px;
 }
 
-#mw-panel #p-logo .mw-wiki-logo {
+.skin-vector #mw-panel #p-logo .mw-wiki-logo {
     background-image: url("https://img.moegirl.org.cn/logo/zhMoegirl15.2.png");
     height: 160px;
 }
 
-#footer {
+.skin-vector #footer {
     background-color: rgb(255 255 255 / 70%);
 }
 
-#footer #footer-moegirl .copyright {
+.skin-vector #footer #footer-moegirl .copyright {
     color: #2F2F2F;
 }
 
