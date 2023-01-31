@@ -1,0 +1,87 @@
+/**
+ * 用于自定义moeskin背景图片，同时调整背景透明度以显示背景。
+ */
+
+body.skin-moeskin {
+    --theme-footer-top-color: rgba(238, 238, 238, .7);
+    --theme-footer-bottom-color: rgba(214, 214, 214, .6);
+    --theme-input-background-color: rgba(245, 245, 245, .6);
+    --theme-background-color: rgba(248, 248, 248, .6);
+    --theme-card-background-color: rgba(255, 255, 255, .8);
+}
+
+body.skin-moeskin #moe-global-background {
+    position: fixed !important;
+    background-image: url(https://s2.loli.net/2023/01/29/YfOPQRnEvTziBju.jpg);
+    background-size: cover;
+    background-attachment: local;
+    background-position: 25% 10%;
+}
+
+.skin-moeskin #moe-global-background::before,
+.skin-moeskin #moe-global-background::after {
+    content: none !important;
+}
+
+/* 窄屏
+---------------------------------------- */
+@media screen and (max-width: 768px) {
+    body.skin-moeskin #moe-global-background {
+        display: revert !important;
+    }
+}
+
+.skin-moeskin .sidenav-inner {
+    background: #f8f8f8 !important;
+}
+
+.skin-moeskin .moe-card,
+.skin-moeskin .CodeMirror {
+    background-color: rgba(255, 255, 255, .81) !important;
+}
+
+.skin-moeskin #moe-global-header {
+    background-color: rgba(255, 255, 255, .85) !important;
+    box-shadow: none !important;
+}
+
+.skin-moeskin .editOptions {
+    background-color: rgba(234, 236, 240, .7);
+}
+
+.skin-moeskin li.gallerybox div.thumb,
+.skin-moeskin div.thumbinner,
+.skin-moeskin .mw-warning {
+    background-color: rgba(248, 249, 250, 0.6);
+}
+
+.skin-moeskin li.L1,
+.skin-moeskin li.L3,
+.skin-moeskin li.L5,
+.skin-moeskin li.L7,
+.skin-moeskin li.L9 {
+    background: rgba(238, 238, 238, 0.55);
+}
+
+.skin-moeskin .infoBoxContent {
+    background-color: rgba(251, 251, 251, 0.6);
+}
+
+.skin-moeskin .template-documentation {
+    background-color: rgba(240, 248, 255, .6) !important;
+}
+
+.skin-moeskin .tracklist .tlheadline,
+.skin-moeskin .tracklist>table>tbody>tr:nth-child(2n+3),
+.skin-moeskin .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+4) {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.skin-moeskin .tracklist>table>tbody>tr:nth-child(2n+4),
+.skin-moeskin .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+3) {
+    background-color: rgba(243, 243, 243, 0.75) !important;
+}
+
+.skin-moeskin .discussionHead {
+    background: none !important;
+}
