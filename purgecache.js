@@ -1,6 +1,6 @@
 /**
- * @介绍 改自[[MediaWiki:Gadget-Purgecache.js]]，用于添加一个“清除缓存”按钮。相比原工具移除了时间显示等部分边缘功能，并对moeskin进行了样式和窄屏的适配。
- * @使用方式 在你的common.js中插入代码：mw.loader.load('/index.php?title=User:BearBin/js/purgecache.js&action=raw&ctype=text/javascript');
+ * 改自[[MediaWiki:Gadget-Purgecache.js]]，用于添加一个“清除缓存”按钮。相比原工具移除了时间显示等部分边缘功能，并对moeskin进行了样式和窄屏的适配。
+ * 使用：common.js中插入代码：mw.loader.load('/index.php?title=User:BearBin/js/purgecache.js&action=raw&ctype=text/javascript');
  */
 
 'use strict';
