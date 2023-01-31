@@ -1,0 +1,420 @@
+/**
+ * 写的什么狗屁不通的玩意（恼
+ * 本页面设计初衷是在vector皮肤下也能预览条目在moeskin下的效果，不过目前看来还差不少，比如下拉菜单还没修复，以及模板样式表对二级标题的部分属性调整（text-align等）会失效。
+ * 测试阶段，谨慎使用，有bug欢迎提交。
+ * 控制内容容器左右边距部分的源代码参考自User:あめろ。
+ * @author: BearBin
+ * @MediaWiki version: 1.38.2 / 1.31.7
+ * @version: 0.1.6
+ * @date: ~~~~~
+ */
+
+
+
+/* 图不错，不过得换成咱Galgame的
+------------------------------------------------ */
+body.skin-vector {
+    background-image: var(--background-image);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: 65% center;
+
+    padding-bottom: var(--panel-horizontal-margin);
+}
+
+/* iPad、手机上背景图的fixed不好使，改成重复背景
+------------------------------------------------ */
+@media only screen and (max-device-width: 1024px) {
+    body.skin-vector {
+        background-repeat: repeat;
+        background-size: contain;
+        background-position: top center;
+    }
+}
+
+/* 调整部分元素的透明度，提高背景可见度
+------------------------------------------------ */
+.skin-vector .infoBoxContent,
+.skin-vector table.wikitable {
+    background-color: rgba(251, 251, 251, 0.6);
+}
+
+.skin-vector table.wikitable>tr>th,
+table.wikitable>*>tr>th {
+    background-color: rgba(234, 236, 240, 0.6);
+    text-align: center;
+}
+
+.skin-vector li.gallerybox div.thumb,
+.skin-vector div.thumbinner,
+.skin-vector .toc,
+.skin-vector .mw-warning,
+.skin-vector .toccolours {
+    background-color: rgba(248, 249, 250, 0.6);
+}
+
+.skin-vector pre,
+.skin-vector .mw-code {
+    background-color: rgba(248, 249, 250, 0.7);
+}
+
+.skin-vector li.L1,
+.skin-vector li.L3,
+.skin-vector li.L5,
+.skin-vector li.L7,
+.skin-vector li.L9 {
+    background: rgba(238, 238, 238, 0.7);
+}
+
+.skin-vector .tracklist .tlheadline,
+.skin-vector .tracklist>table>tbody>tr:nth-child(2n+3),
+.skin-vector .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+4) {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.skin-vector .tracklist>table>tbody>tr:nth-child(2n+4),
+.skin-vector .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+3) {
+    background-color: rgba(243, 243, 243, 0.75) !important;
+}
+
+
+
+/* 整体元素位置调整
+ * 此部分内容主要影响content的位置
+------------------------------------------------ */
+.skin-vector #mw-page-base {
+    height: 0 !important;
+}
+
+.skin-vector #mw-head-base {
+    height: var(--head-base-height) !important;
+    margin-top: var(--topbar-height);
+}
+
+
+
+/* 页顶用户栏
+------------------------------------------------ */
+.skin-vector #p-personal {
+    position: fixed;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: var(--topbar-height);
+    padding: 0 !important;
+    background-color: #fff !important;
+    box-shadow: 0 1px #eeeff1 !important;
+}
+
+.skin-vector #p-personal ul {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: 0;
+    margin-right: 0.8em;
+}
+
+.skin-vector #p-personal ul>li {
+    padding: 0 !important;
+    margin: 0 0.45em !important;
+    height: 32px;
+    line-height: 32px;
+}
+
+.skin-vector #p-personal #pt-notifications-alert,
+.skin-vector #p-personal #pt-notifications-notice {
+    margin-top: 0;
+}
+
+.skin-vector #p-personal #pt-notifications-alert .mw-echo-notifications-badge,
+.skin-vector #p-personal #pt-notifications-notice .mw-echo-notifications-badge {
+    top: 0;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.skin-vector #p-personal #pt-notifications-alert .mw-echo-notifications-badge::before,
+.skin-vector #p-personal #pt-notifications-notice .mw-echo-notifications-badge::before {
+    top: 0;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.skin-vector div.vectorTabs,
+.skin-vector div.vectorMenu {
+    box-sizing: border-box !important;
+    height: 2.6em !important;
+}
+
+.skin-vector div#mw-head div.vectorMenu h3 {
+    height: 100%;
+}
+
+.skin-vector div#mw-head div.vectorMenu h3>span:after {
+    height: 1em;
+}
+
+
+/* 页面主体上方的导航栏
+------------------------------------------------ */
+.skin-vector #left-navigation,
+.skin-vector #right-navigation {
+    margin-top: var(--navigation-margin-top);
+    padding: 0.2em 0 !important;
+    background-image: none !important;
+    background-color: var(--wrapper-background-color) !important;
+    border: 1px solid #eeeff1;
+    border-radius: var(--wrapper-border-radius);
+    box-shadow: var(--wrapper-box-shadow);
+}
+
+.skin-vector #left-navigation .vector-menu-content,
+.skin-vector #right-navigation .vector-menu-content {
+    height: 100%;
+}
+
+.skin-vector .vectorTabs ul li.selected,
+.skin-vector .vector-menu-tabs ul li.selected {
+    background-image: none !important;
+}
+
+.skin-vector .vectorTabs li a,
+.skin-vector .vector-menu-tabs li a {
+    display: flex !important;
+    align-items: center;
+    height: 100% !important;
+    margin: 0 0.1em;
+    padding-top: 0 !important;
+    padding-bottom: 0;
+    background: none;
+    border-radius: var(--button-border-radius);
+    transition-duration: var(--button-transition-duration);
+}
+
+.skin-vector .vectorTabs .selected a,
+.skin-vector .vectorTabs .selected a:visited,
+.skin-vector .vector-menu-tabs .selected a,
+.skin-vector .vector-menu-tabs .selected a:visited {
+    color: var(--button-active-color);
+    background: var(--button-active-background);
+}
+
+.skin-vector .vectorTabs li a>span,
+.skin-vector .vector-menu-tabs li a>span {
+    display: block;
+}
+
+.skin-vector .vector-menu-tabs .mw-watchlink>a>span {
+    display: none !important;
+}
+
+.skin-vector .vectorTabs #ca-wikilove>span>a,
+.skin-vector .vectorTabs #ca-wikilove>span>a:hover,
+.skin-vector .vectorTabs #ca-wikilove>span>a:focus,
+.skin-vector .vectorTabs .mw-watchlink>span>a,
+.skin-vector .vectorTabs .mw-watchlink>span>a:hover,
+.skin-vector .vectorTabs .mw-watchlink>span>a:focus {
+    color: transparent !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.skin-vector #mw-head .vector-menu-dropdown,
+.skin-vector #mw-head .vectorMenu {
+    /* vectorMenu为MediaWiki 1.31 */
+    border-radius: var(--button-border-radius);
+    transition-duration: var(--button-transition-duration);
+}
+
+.skin-vector .vector-menu-dropdown>div {
+    height: auto !important;
+}
+
+.skin-vector #mw-head .vectorTabs li a:hover,
+.skin-vector #mw-head .vector-menu-tabs li a:hover,
+.skin-vector #mw-head .vector-menu-dropdown:hover,
+.skin-vector #mw-head #p-cactions:hover {
+    color: var(--button-hover-color);   
+    text-decoration: none;
+    background-color: var(--button-hover-background) !important;
+}
+
+.skin-vector #p-cactions {
+    border-radius: var(--button-border-radius);
+    transition-duration: var(--button-transition-duration);
+}
+
+.skin-vector #p-cactions #p-cactions-label {
+    display: flex;
+    color: inherit;
+}
+
+.skin-vector div#p-cactions h3 span {
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+    color: inherit;
+}
+
+
+/* 侧边栏
+------------------------------------------------ */
+.skin-vector #mw-panel {
+    margin-top: var(--navigation-margin-top);
+    margin-left: var(--panel-horizontal-margin);
+    padding-top: 0;
+    width: var(--panel-width) !important;
+    height: auto !important;
+    max-height: calc(100vh - var(--navigation-margin-top) - var(--panel-horizontal-margin));
+    overflow: hidden;
+    border-radius: var(--wrapper-border-radius);
+    box-shadow: var(--wrapper-box-shadow);
+    background-color: var(--wrapper-background-color);
+    overflow: auto;
+    position: fixed;
+}
+
+.skin-vector #mw-panel #p-logo {
+    margin-bottom: 0;
+    height: var(--panel-logo-height) !important;
+}
+
+.skin-vector #mw-panel #p-logo .mw-wiki-logo {
+    height: var(--panel-logo-height);
+    background-image: url(https://img.moegirl.org.cn/logo/zhMoegirl15.2.png);
+    background-size: contain;
+}
+
+.skin-vector #mw-panel div.portal, 
+.skin-vector .vector-menu-portal {
+    background: none !important;
+}
+
+.skin-vector #sidebarHidden-arrow {
+    top: calc(var(--topbar-height) + var(--head-base-height) - 0.8em) !important;
+    left: calc(var(--panel-horizontal-margin) + var(--panel-width) - 0.4em) !important;
+}
+
+
+
+/* 页面内容
+------------------------------------------------ */
+.skin-vector #content,
+.skin-vector #mw-head,
+.skin-vector #footer {
+    box-sizing: border-box;
+    width: auto;
+    max-width: var(--content-width);
+}
+
+.skin-vector #left-navigation {
+    margin-left: 0
+}
+
+.skin-vector #mw-head {
+    left: 0;
+}
+
+.skin-vector #content,
+.skin-vector #footer {
+    box-sizing: border-box;
+    border: 0;
+    border-radius: var(--wrapper-border-radius);
+    background-color: var(--wrapper-background-color) !important;
+    box-shadow: var(--wrapper-box-shadow);
+}
+
+@media screen and (min-width: 768px) {
+
+    .skin-vector #mw-head,
+    .skin-vector #content,
+    .skin-vector #footer {
+        margin-left: max(calc(var(--panel-horizontal-margin) * 2 + var(--panel-width)), 50vw - 32em);
+    }
+}
+
+.skin-vector .mw-parser-output h2:not(#mw-toc-heading) {
+    display: flex;
+    flex-flow: row nowrap;
+    margin: 1rem 0;
+    padding: .2rem .2rem .2rem 0;
+    border-bottom: 0;
+    color: rgb(44, 62, 80);
+    font-size: 1.6em;
+}
+
+.skin-vector .mw-parser-output h2:not(#mw-toc-heading)::before {
+    content: '\00A0';
+    display: block;
+    margin: 0.2em 0;
+    width: .25em;
+    background-color: #8ED495;
+    border-radius: 1em
+}
+
+.skin-vector .mw-parser-output h2:not(#mw-toc-heading) .mw-headline {
+    margin-left: .5rem;
+}
+
+.skin-vector .mw-parser-output h2:not(#mw-toc-heading) .mw-editsection {
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+
+.skin-vector #footer {
+    display: flow-root;
+    margin-top: var(--panel-horizontal-margin);
+}
+
+
+/* 隐藏侧边栏状态
+------------------------------------------------ */
+html.sidebarHiddenOn body.skin-vector.sidebarHidden #mw-head,
+html.sidebarHiddenOn body.skin-vector.sidebarHidden #content,
+html.sidebarHiddenOn body.skin-vector.sidebarHidden #footer {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+html.sidebarHiddenOn body.skin-vector.sidebarHidden #sidebarHidden-logo-link {
+    display: none;
+}
+
+
+/* 全局变量
+------------------------------------------------ */
+:root {
+    --background-image: url("https://moegirl.uk/images/a/af/%E5%AE%AB%E5%9B%BD%E6%9C%B1%E7%92%83-%E6%A1%83%E8%8A%B1%E6%9F%93.jpg");
+
+    --topbar-height: 2.8rem;
+    --head-base-height: 6.6rem;
+    --navigation-margin-top: 4.8rem;
+
+    --wrapper-border-radius: 0.6rem;
+    --wrapper-background-color: rgba(255, 255, 255, 0.8);
+    --wrapper-box-shadow: 0 0 .5rem rgba(0, 0, 0, .1);
+
+    --button-border-radius: 0.4rem;
+    --button-hover-background: #0c0;
+    --button-hover-color: #fff;
+    --button-active-background: #0c0;
+    --button-active-color: #fff;
+    --button-transition-duration: .25s;
+
+    --panel-width: 11.7rem;
+    --panel-horizontal-margin: 1.2rem;
+    --panel-logo-height: 160px;
+
+    --content-width: 1200px;
+}
