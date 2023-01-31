@@ -46,7 +46,6 @@ $(function () {
 				});
 			});
 		});
-		var containerNode2 = containerNode.clone();
 		var li;
 		if (mw.config.get("skin") === "vector") {
 			li = $('<li/>').appendTo("#p-personal>ul");
@@ -54,6 +53,7 @@ $(function () {
 		} else {
 			li = $('<div id="purge-cache-button"/>').prependTo("#moe-article-header-container #moe-article-header-top .right-block");
 			var li2 = $('<li id="purge-cache-button-mobile"/>').appendTo("div.mobile-edit-button");
+			var containerNode2 = containerNode.clone();
 			li.append(containerNode);
 			li2.append(containerNode2);
 			//添加对应的css样式
