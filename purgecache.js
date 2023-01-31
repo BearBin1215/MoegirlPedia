@@ -5,9 +5,8 @@
 
 'use strict';
 $(function () {
-	//仅在非特殊页面执行
+	// 仅在非特殊页面执行
 	if (mw.config.get('wgNamespaceNumber') != -1) {
-		//检测皮肤
 		var containerNode;
 		containerNode = $('<a/>');
 		var statusNode = $('<span/>').text('清除缓存'),
@@ -47,6 +46,7 @@ $(function () {
 			});
 		});
 		var li;
+		// 检测皮肤
 		if (mw.config.get("skin") === "vector") {
 			li = $('<li/>').appendTo("#p-personal>ul");
 			li.append(containerNode);
