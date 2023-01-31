@@ -12,7 +12,7 @@ body.skin-moeskin {
 
 body.skin-moeskin #moe-global-background {
     position: fixed !important;
-    background-image: url(https://s2.loli.net/2023/01/29/YfOPQRnEvTziBju.jpg);
+    background-image: var(--custom-bg);
     background-size: cover;
     background-attachment: local;
     background-position: 25% 10%;
@@ -85,3 +85,7 @@ body.skin-moeskin #moe-global-background {
 .skin-moeskin .discussionHead {
     background: none !important;
 }
+
+:root (
+    --custom-bg: url(https://s2.loli.net/2023/01/29/YfOPQRnEvTziBju.jpg)
+)
