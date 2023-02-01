@@ -1,4 +1,4 @@
-### 清除缓存小工具
+## 清除缓存小工具
 
 简化版的清除缓存小工具，去掉了时间显示和清除进程显示。同时对moeskin进行了样式适配，在窄屏和宽屏都会正常显示。
 
@@ -10,7 +10,7 @@
 mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/purgecache.js');
 ```
 
-### 更换背景图片
+## 更换背景图片
 
 #### 萌皮
 在[common.css](https://zh.moegirl.org.cn/Special:MyPage/common.css)中加入
@@ -40,7 +40,7 @@ $('body.skin-vector').append('<div class="vector-custom-bg"></div>')
 }
 ```
 
-### 其他
+## 其他
 
 * vector萌皮化：`https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/moevector.css`
 
