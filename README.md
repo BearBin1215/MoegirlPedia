@@ -36,7 +36,7 @@ $('body.skin-vector').append('<div class="vector-custom-bg"></div>')
 @import url('//cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/vector-bg.css');
 
 :root {
-    --vector-custom-bg: url(您的自定义背景图片链接)
+    --vector-custom-bg: url(您的自定义背景图片链接);
 }
 ```
 
