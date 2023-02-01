@@ -49,12 +49,13 @@ function purgeCache() {
 }
 
 $(function () {
+	var containerNodeDesktop
 	//判断是否特殊页面
 	if (mw.config.get("wgNamespaceNumber") === -1) {
-		containerNode = $('<span class="special-page"/>');
-		containerNode.append("特殊页面");
+		containerNodeDesktop = $('<span class="special-page"/>');
+		containerNodeDesktop.append("特殊页面");
 	} else {
-		var containerNodeDesktop = purgeCache();
+		containerNodeDesktop = purgeCache();
 		var containerNodeMobile = purgeCache();
 	}
 	var li;
