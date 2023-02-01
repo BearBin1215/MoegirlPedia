@@ -19,7 +19,7 @@ mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/purg
 @import url('//cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/moeskin-bg.css');
 
 :root {
-	--custom-bg: url(您的自定义背景图片链接);
+    --custom-bg: url(您的自定义背景图片链接);
 }
 ```
 
