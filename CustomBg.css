@@ -1,0 +1,232 @@
+/**
+ * 草稿性质文件，便于编写，压缩后直接用js加载。
+ */
+
+
+/* 基础变量
+------------------------------------------------ */
+:root {
+    --global-preference-bg: url(https://s2.loli.net/2023/01/30/HyXdc8zlqPuKD6Z.jpg);
+    --global-preference-bg-pos: center;
+}
+
+:root {
+    --vector-preference-bg: var(--global-preference-bg);
+    --vector-preference-bg-pos: var(--global-preference-bg-pos);
+}
+
+:root {
+    --moeskin-preference-bg: var(--global-preference-bg);
+    --moeskin-preference-bg-pos: var(--global-preference-bg-pos);
+}
+
+
+/* vector
+------------------------------------------------ */
+.special-preferences-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -99999;
+    background-image: var(--vector-preference-bg);
+    background-size: cover;
+    background-attachment: local;
+    background-position: var(--vector-preference-bg-pos);
+}
+
+/* 信息栏 */
+.skin-vector .infoBoxContent {
+    background-color: rgba(251, 251, 251, 0.6);
+}
+
+/* 缩略图和画廊 */
+.skin-vector li.gallerybox div.thumb,
+.skin-vector div.thumbinner,
+.skin-vector .toc,
+.skin-vector .mw-warning,
+.skin-vector .toccolours {
+    background-color: rgba(248, 249, 250, 0.6);
+}
+
+/* 表格 */
+.skin-vector .mw-parser-output table.wikitable {
+    background-color: rgba(251, 251, 251, 0.6);
+}
+
+.skin-vector table.wikitable>tr>th,
+.skin-vector table.wikitable>*>tr>th {
+    background-color: rgba(234, 236, 240, 0.6);
+    text-align: center;
+}
+
+/* 代码块 */
+.skin-vector pre,
+.skin-vector .mw-code {
+    background-color: rgba(248, 249, 250, 0.75);
+}
+
+.skin-vector li.L1,
+.skin-vector li.L3,
+.skin-vector li.L5,
+.skin-vector li.L7,
+.skin-vector li.L9 {
+    background: rgba(238, 238, 238, 0.75);
+}
+
+/* 专辑 */
+.skin-vector .tracklist .tlheadline,
+.skin-vector .tracklist>table>tbody>tr:nth-child(2n+3),
+.skin-vector .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+4) {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.skin-vector .tracklist>table>tbody>tr:nth-child(2n+4),
+.skin-vector .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+3) {
+    background-color: rgba(243, 243, 243, 0.75) !important;
+}
+
+.skin-vector .template-documentation {
+    background-color: rgba(240, 248, 255, .6) !important;
+}
+
+/* 以下代码来自[[MediaWiki:Gadget-SideBarPic.css]]，用于解决更换背景图片后左侧工具栏显示的问题 */
+.skin-vector .sidebar-character {
+    position: fixed;
+    left: -3px;
+    z-index: -2;
+}
+
+.skin-vector .sidebar-character.top {
+    top: 0;
+}
+
+.skin-vector .sidebar-character.bottom {
+    bottom: 0;
+}
+
+.skin-vector #wglogo {
+    display: none;
+}
+
+.skin-vector div#mw-panel div.portal {
+    background-color: rgb(246 246 246 / 90%);
+    margin-left: -0.75em;
+    margin-right: 0;
+    padding-left: 1.5em;
+    padding-right: 0.95em;
+}
+
+.skin-vector div#mw-panel #p-logo+div.portal {
+    padding-top: 1.1em;
+    margin-top: 0;
+}
+
+.skin-vector .sidebar-character.active {
+    display: block;
+}
+
+.skin-vector #mw-panel #p-logo {
+    height: 160px;
+}
+
+.skin-vector #mw-panel #p-logo .mw-wiki-logo {
+    background-image: url("https://img.moegirl.org.cn/logo/zhMoegirl15.2.png");
+    height: 160px;
+}
+
+.skin-vector #footer {
+    background-color: rgb(255 255 255 / 70%);
+}
+
+.skin-vector #footer #footer-moegirl .copyright {
+    color: #2F2F2F;
+}
+
+
+/* moeskin
+------------------------------------------------ */
+body.skin-moeskin {
+    --theme-footer-top-color: rgba(238, 238, 238, .7);
+    --theme-footer-bottom-color: rgba(214, 214, 214, .6);
+    --theme-input-background-color: rgba(245, 245, 245, .6);
+    --theme-background-color: rgba(248, 248, 248, .6);
+    --theme-card-background-color: rgba(255, 255, 255, .8);
+}
+
+body.skin-moeskin #moe-global-background {
+    position: fixed !important;
+    background-image: var(--moeskin-preference-bg);
+    background-size: cover;
+    background-attachment: local;
+    background-position: var(--moeskin-preference-bg-pos);
+}
+
+.skin-moeskin #moe-global-background::before,
+.skin-moeskin #moe-global-background::after {
+    content: none !important;
+}
+
+/* 窄屏
+---------------------------------------- */
+@media screen and (max-width: 768px) {
+    body.skin-moeskin #moe-global-background {
+        display: revert !important;
+    }
+}
+
+.skin-moeskin .sidenav-inner {
+    background: #f8f8f8 !important;
+}
+
+.skin-moeskin .moe-card,
+.skin-moeskin .CodeMirror {
+    background-color: rgba(255, 255, 255, .81) !important;
+}
+
+.skin-moeskin #moe-global-header {
+    background-color: rgba(255, 255, 255, .85) !important;
+    box-shadow: none !important;
+}
+
+.skin-moeskin .editOptions {
+    background-color: rgba(234, 236, 240, .7);
+}
+
+.skin-moeskin li.gallerybox div.thumb,
+.skin-moeskin div.thumbinner,
+.skin-moeskin .mw-warning {
+    background-color: rgba(248, 249, 250, 0.6);
+}
+
+.skin-moeskin li.L1,
+.skin-moeskin li.L3,
+.skin-moeskin li.L5,
+.skin-moeskin li.L7,
+.skin-moeskin li.L9 {
+    background: rgba(238, 238, 238, 0.55);
+}
+
+.skin-moeskin .infoBoxContent {
+    background-color: rgba(251, 251, 251, 0.6);
+}
+
+.skin-moeskin .template-documentation {
+    background-color: rgba(240, 248, 255, .6) !important;
+}
+
+.skin-moeskin .tracklist .tlheadline,
+.skin-moeskin .tracklist>table>tbody>tr:nth-child(2n+3),
+.skin-moeskin .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+4) {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.skin-moeskin .tracklist>table>tbody>tr:nth-child(2n+4),
+.skin-moeskin .tracklist.tracklist-switch>table>tbody>tr:nth-child(2n+3) {
+    background-color: rgba(243, 243, 243, 0.75) !important;
+}
+
+.skin-moeskin .discussionHead {
+    background: none !important;
+}
