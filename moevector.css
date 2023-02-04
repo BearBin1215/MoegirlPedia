@@ -36,7 +36,7 @@ body.skin-vector {
 }
 
 .skin-vector table.wikitable>tr>th,
-table.wikitable>*>tr>th {
+.skin-vector table.wikitable>*>tr>th {
     background-color: rgba(234, 236, 240, 0.6);
     text-align: center;
 }
@@ -104,6 +104,13 @@ table.wikitable>*>tr>th {
     padding: 0 !important;
     background-color: #fff !important;
     box-shadow: 0 1px #eeeff1 !important;
+}
+
+.skin-vector #p-personal::before {
+    content: "\00a0";
+    background: url(https://img.moegirl.org.cn/common/3/33/MoegirlPedia-Title.svg) center/contain no-repeat;
+    width: 7.2em;
+    height: 32px;
 }
 
 .skin-vector #p-personal ul {

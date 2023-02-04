@@ -10,7 +10,4 @@
 // @require      https://code.jquery.com/jquery-3.6.3.min.js
 // ==/UserScript==
 
-var vectorBody = document.getElementsByClassName('skin-vector')[0];
-var vectorBgDiv = document.createElement('div');
-vectorBgDiv.classList.add('special-preferences-bg');
-vectorBody.appendChild(vectorBgDiv);
+$('body.mw-special-Preferences.skin-vector').append('<div class="special-preferences-bg"></div>');
