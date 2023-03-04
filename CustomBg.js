@@ -2,6 +2,7 @@
  * 一站式自定义vector和moeskin的背景图片。
  * 添加到个人的common.js使用。
  */
+"use strict";
 
 // 在此处自定义两个皮肤共用的背景图片和背景位置（位置的数值可以参考[[Template:背景图片]]）
 var globalBgImage = 'https://s2.loli.net/2023/01/30/HyXdc8zlqPuKD6Z.jpg';
