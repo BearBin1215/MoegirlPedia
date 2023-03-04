@@ -5,7 +5,7 @@
  * 试了半天，还是得重复调用函数，如果有更好的解决方法请不吝赐教。
  */
 
-'use strict';
+"use strict";
 function purgeCache() {
     var containerNode;
     containerNode = $('<a class="purge-button"/>');
