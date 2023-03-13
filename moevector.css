@@ -330,10 +330,6 @@ body.skin-vector {
     left: calc(var(--panel-horizontal-margin) + var(--panel-width) - 0.4em) !important;
 }
 
-body.skin-vector.sidebarHidden #sidebarHidden-arrow {
-    left: var(--topbar-height) !important;
-}
-
 
 
 /* 页面内容
@@ -417,6 +413,10 @@ html.sidebarHiddenOn body.skin-vector.sidebarHidden #footer {
 
 html.sidebarHiddenOn body.skin-vector.sidebarHidden #sidebarHidden-logo-link {
     display: none;
+}
+
+html.sidebarHiddenOn body.skin-vector.sidebarHidden #sidebarHidden-arrow {
+    left: var(--topbar-height) !important;
 }
 
 
