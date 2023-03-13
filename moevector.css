@@ -127,6 +127,7 @@ body.skin-vector {
     margin: 0 0.45em !important;
     height: 32px;
     line-height: 32px;
+    font-size: 0.8125rem;
 }
 
 .skin-vector #p-personal #pt-notifications-alert,
@@ -267,6 +268,22 @@ body.skin-vector {
     align-items: center;
     padding-top: 0;
     color: inherit;
+}
+
+.skin-vector #p-variants-label,
+.skin-vector #p-variants-label>span{
+    display: flex;
+    align-items: center;
+}
+
+.skin-vector #p-variants-label>span {
+    height: 100%;
+    padding: 0 1em 0 0;
+    margin: 0
+}
+
+#p-variants .menu {
+    top: 2.8em;
 }
 
 
