@@ -114,6 +114,12 @@ body.skin-vector {
     left: 0.2em;
 }
 
+@media screen and (max-width: 660px) {
+    .skin-vector #p-personal::before {
+        display: none;
+    }
+}
+
 .skin-vector #p-personal ul {
     display: flex;
     justify-content: right;
