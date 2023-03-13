@@ -324,6 +324,10 @@ body.skin-vector {
     left: calc(var(--panel-horizontal-margin) + var(--panel-width) - 0.4em) !important;
 }
 
+body.skin-vector.sidebarHidden #sidebarHidden-arrow {
+    left: var(--topbar-height) !important;
+}
+
 
 
 /* 页面内容
