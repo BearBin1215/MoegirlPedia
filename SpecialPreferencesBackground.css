@@ -2,21 +2,20 @@
  * vector需要配合js使用，萌皮可以直接使用。
  */
 
-:root {
+ :root {
     --global-preference-bg: url(https://s2.loli.net/2023/01/30/HyXdc8zlqPuKD6Z.jpg);
-    --global-preference-bg-pos: center;
 }
 
 /* vector */
 :root {
     --vector-preference-bg: var(--global-preference-bg);
-    --vector-preference-bg-pos: var(--global-preference-bg-pos);
+    --vector-preference-bg-pos: 65% 30%;
 }
 
 /* moeskin */
 :root {
-    --moeskin-preference-bg: var(--global-preference-bg);
-    --moeskin-preference-bg-pos: var(--global-preference-bg-pos);
+    --moeskin-preference-bg: url(https://s2.loli.net/2023/01/29/YfOPQRnEvTziBju.jpg);
+    --moeskin-preference-bg-pos: 25% 10%;
 }
 
 .special-preferences-bg {
