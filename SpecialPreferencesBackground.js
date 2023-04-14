@@ -10,4 +10,6 @@
 // @require      https://code.jquery.com/jquery-3.6.3.min.js
 // ==/UserScript==
 
-$('body.mw-special-Preferences.skin-vector').append('<div class="special-preferences-bg"></div>');
+"use strict";
+$("body.mw-special-Preferences.skin-vector").append('<div class="special-preferences-bg"></div>');
+$("head").append('<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/SpecialPreferencesBackground.min.css"/>');
