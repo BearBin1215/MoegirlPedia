@@ -1,14 +1,15 @@
 /**
  * <pre>
  * @todo 排除已投票用户
+ * @todo 提供取消订阅功能
  * 
  * @rights edit
- * @dependencies ["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", "mediawiki.notify", "ext.gadget.site-lib"]
+ * @dependencies ["mediawiki.api", "mediawiki.util", "oojs-ui-core", "mediawiki.notify", "ext.gadget.site-lib"]
  */
 
 "use strict";
 $(() => (async () => {
-    await mw.loader.using(["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", "ext.gadget.site-lib"]);
+    await mw.loader.using(["mediawiki.api", "mediawiki.util", "oojs-ui-core", "ext.gadget.site-lib"]);
     if (document.getElementsByClassName("votebox")[0] && (mw.config.get("wgTitle").startsWith("提案/讨论中提案/") || mw.config.get("wgTitle") === "讨论版/权限变更")) {
         const api = new mw.Api;
         const $body = $("body");
@@ -128,7 +129,8 @@ $(() => (async () => {
             /* 获取已投票用户列表
             getUsersVoted() {
 
-            }*/
+            }
+            */
 
             // 生成链接
             getLink() {
@@ -152,7 +154,7 @@ $(() => (async () => {
                         bot: isBot ? true : false,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
-                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
+                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。如果您不希望接到此通知，请在[[User:BearBin/js/voteRemind.js/Noremind]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
                     })
                         .done(() => {
                             mw.notify(wgULS(`向用户${userName}发送投票提醒成功。`, `向使用者${userName}發送投票提醒成功。`));
