@@ -2,3 +2,5 @@ node_modules
 .eslintignore
 .eslintrc.json
 .stylelintrc.json
+package.json
+package-lock.json
