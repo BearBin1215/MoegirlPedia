@@ -114,6 +114,17 @@ $(() => (async () => {
                 this.$body.append(this.panelLayout.$element);
             }
 
+            getUsersToVote() {
+                switch(this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
+                    case "p":
+                        return [...userList.sysop, ...userList.patroller];
+                    case "s":
+                        return userList.sysop;
+                    case "i":
+                        return Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
+                }
+            }
+
             // 获取已投票用户列表
             getUsersVoted() {
 
@@ -131,7 +142,7 @@ $(() => (async () => {
             async remind() {
                 const errorList = [];
                 const link = this.getLink();
-                for (const userName of [...userList.sysop, ...userList.patroller]) {
+                for (const userName of this.getUsersToVote()) {
                     const d = await api.postWithToken("csrf", {
                         format: "json",
                         action: "edit",
