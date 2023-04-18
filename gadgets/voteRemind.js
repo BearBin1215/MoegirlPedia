@@ -1,15 +1,13 @@
 /**
- * <pre>
- * @todo 排除已投票用户
- * @todo 提供取消订阅功能
- * 
+ * <pre> 
  * @rights edit
  * @dependencies ["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]
  */
 
-"use strict";
-const _addText = '<p>本小工具用于在提案和权限变更版快速提醒用户参与投票。</p><p>使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码</p><pre class="prettyprint lang-javascript">mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");</pre><p>如果您不想收到提醒，请前往[[User:BearBin/js/voteRemind.js/Noremind]]取消订阅。</p>';
+// eslint-disable-next-line
+var _addText = '{{document|content=<p>本小工具用于在提案和权限变更版快速提醒用户参与投票。</p><p>使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码</p><pre class="prettyprint lang-javascript">mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");</pre><p>如果您不想收到提醒，请前往[[User:BearBin/js/voteRemind.js/Noremind]]取消订阅。</p>}}';
 
+"use strict";
 $(() => (async () => {
     await mw.loader.using(["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]);
     if (document.getElementsByClassName("votebox")[0] && (mw.config.get("wgTitle").startsWith("提案/讨论中提案/") || mw.config.get("wgTitle") === "讨论版/权限变更")) {
@@ -39,6 +37,16 @@ $(() => (async () => {
         });
         const userExcluded = Object.values(Noremind.query.pages)[0].revisions[0]["*"].split(/\n\* */);
 
+        // 已投票的用户列表
+        const hrefList = [];
+        $(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function(){
+            hrefList.push(this.href);
+        });
+        const userVoted = [];
+        for(const item of hrefList) {
+            userVoted.push(decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, "$2")));
+        }
+            
         // 获取{{投票}}模板所在讨论串二级标题内.mw-headline的id值
         const mwHeadlines = $(".votebox").parent(".discussionContainer").children("h2").children(".mw-headline");
         const headlines = [];
@@ -144,15 +152,9 @@ $(() => (async () => {
                             usersToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
                     }
                 }
-                const setExcluded = new Set(userExcluded);
+                const setExcluded = new Set([...userExcluded, ...userVoted]);
                 return usersToVote.filter((x) => !setExcluded.has(x));
             }
-
-            /* 获取已投票用户列表
-            getUsersVoted() {
-
-            }
-            */
 
             // 生成链接
             getLink() {
@@ -176,7 +178,7 @@ $(() => (async () => {
                         bot: isBot ? true : false,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
-                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。如果您不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
+                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。如果您不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票。您尚未投票，请及时参与喵～——~~~~`,
                     })
                         .done(() => {
                             mw.notify(wgULS(`向用户${userName}发送投票提醒成功。`, `向使用者${userName}發送投票提醒成功。`));
@@ -215,7 +217,6 @@ $(() => (async () => {
                 return super.getActionProcess(action);
             }
         }
-
 
         // 添加按钮和窗口
         const windowManager = new OO.ui.WindowManager();
