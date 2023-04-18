@@ -152,7 +152,7 @@ $(() => (async () => {
                         bot: isBot ? true : false,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
-                        text: `<i style="font-size:smaller">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
+                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
                     })
                         .done(() => {
                             mw.notify(wgULS(`向用户${userName}发送投票提醒成功。`, `向使用者${userName}發送投票提醒成功。`));
