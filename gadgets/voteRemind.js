@@ -8,6 +8,7 @@
 
 "use strict";
 $(() => (async () => {
+    await mw.loader.using(["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", "ext.gadget.site-lib"]);
     if (document.getElementsByClassName("votebox")[0] && (mw.config.get("wgTitle").startsWith("提案/讨论中提案/") || mw.config.get("wgTitle") === "讨论版/权限变更")) {
         const api = new mw.Api;
         const $body = $("body");
@@ -124,10 +125,10 @@ $(() => (async () => {
                 }
             }
 
-            // 获取已投票用户列表
+            /* 获取已投票用户列表
             getUsersVoted() {
 
-            }
+            }*/
 
             // 生成链接
             getLink() {
