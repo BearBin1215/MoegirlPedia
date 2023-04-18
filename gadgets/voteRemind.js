@@ -5,7 +5,7 @@
  */
 
 // eslint-disable-next-line
-var _addText = '{{document|content=<p>本小工具用于在提案和权限变更版快速提醒用户参与投票。</p><p>使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码</p><pre class="prettyprint lang-javascript">mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");</pre><p>如果您不想收到提醒，请前往[[User:BearBin/js/voteRemind.js/Noremind]]取消订阅。</p>}}';
+var _addText = '{{Documentation|content=<p>本小工具用于在提案和权限变更版快速提醒用户参与投票。</p><p>使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码</p><pre class="prettyprint lang-javascript">mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");</pre><p>如果您不想收到提醒，请前往[[User:BearBin/js/voteRemind.js/Noremind]]取消订阅。</p>}}';
 
 "use strict";
 $(() => (async () => {
