@@ -1,7 +1,6 @@
 /**
  * <pre>
- * @todo 支持人事案
- * @todo 排除已投票
+ * @todo 排除已投票用户
  * 
  * @rights edit
  * @dependencies ["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", "mediawiki.notify", "ext.gadget.site-lib"]
