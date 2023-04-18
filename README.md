@@ -7,8 +7,18 @@
 在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/purgecache.js');
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.js');
 ```
+
+## 一键提醒投票
+
+用于提醒维护人员参与提案投票。
+
+在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+```JavaScript
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.js');
+```
+
 
 ## 更换背景图片
 
