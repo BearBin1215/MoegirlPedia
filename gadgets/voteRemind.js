@@ -115,7 +115,7 @@ $(() => (async () => {
             }
 
             getUsersToVote() {
-                switch(this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
+                switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
                     case "p":
                         return [...userList.sysop, ...userList.patroller];
                     case "s":
