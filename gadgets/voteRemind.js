@@ -4,12 +4,12 @@
  * @todo 提供取消订阅功能
  * 
  * @rights edit
- * @dependencies ["mediawiki.api", "mediawiki.util", "oojs-ui-core", "mediawiki.notify", "ext.gadget.site-lib"]
+ * @dependencies ["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]
  */
 
 "use strict";
 $(() => (async () => {
-    await mw.loader.using(["mediawiki.api", "mediawiki.util", "oojs-ui-core", "ext.gadget.site-lib"]);
+    await mw.loader.using(["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]);
     if (document.getElementsByClassName("votebox")[0] && (mw.config.get("wgTitle").startsWith("提案/讨论中提案/") || mw.config.get("wgTitle") === "讨论版/权限变更")) {
         const api = new mw.Api;
         const $body = $("body");
