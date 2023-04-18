@@ -6,15 +6,15 @@
  * @rights edit
  * @dependencies mediawiki.api, mediawiki.util, ext.gadget.libOOUIDialog, mediawiki.notify, ext.gadget.site-lib
  */
+
 "use strict";
 mw.loader.using(["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", "mediawiki.notify", "ext.gadget.site-lib"], function () {
     $(() => (async () => {
         if (document.getElementsByClassName("votebox")[0] && mw.config.get("wgTitle").startsWith("提案/讨论中提案/")) {
             const api = new mw.Api;
             const $body = $("body");
-            // const isProposal = mw.config.get("wgTitle") === "讨论版/权限变更" ? false : true; // 判断是提案还是人事案
             const PAGENAME = mw.config.get("wgPageName");
-            const isBot = mw.config.get("wgUserGroups").includes("flood"); // 判断用户是否拥有机器用户权限
+            const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
         
             // 从[[Module:UserGroup/data]]中获取当前各用户组人员列表
             const userGroup = await api.post({
@@ -25,15 +25,6 @@ mw.loader.using(["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", 
                 rvlimit: 1,
             });
             const userList = JSON.parse(Object.values(userGroup.query.pages)[0].revisions[0]["*"]);
-        
-            // 获取{{投票}}模板所在讨论串的二级标题的mw-headline的id值用于选取标题
-            // 非常笨的实现方法，欢迎改进（）
-            const mwHeadlines = $(".votebox").parent(".discussionContainer").children("h2").children(".mw-headline");
-            const headlines = [];
-            for (const item of mwHeadlines) {
-                headlines.push(item.id);
-            }
-        
             class ReminderWindow extends OO.ui.ProcessDialog {
                 static static = {
                     ...super.static,
@@ -144,7 +135,7 @@ mw.loader.using(["mediawiki.api", "mediawiki.util", "ext.gadget.libOOUIDialog", 
             });
             windowManager.addWindows([reminderDialog]);
         
-            $(mw.util.addPortletLink("p-cactions", "#", "提醒", "vote-remind", wgULS("一键提醒", "一鍵提醒"), "r")).on("click", (e) => {
+            $(mw.util.addPortletLink("p-cactions", "#", "投票提醒", "vote-remind", wgULS("一键发送投票提醒", "一鍵發送投票提醒"), "r")).on("click", (e) => {
                 e.preventDefault();
                 windowManager.openWindow(reminderDialog);
                 $body.css("overflow", "auto");
