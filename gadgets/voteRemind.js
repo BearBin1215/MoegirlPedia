@@ -17,7 +17,7 @@ $(() => (async () => {
         const isProposal = mw.config.get("wgTitle") === "讨论版/权限变更" ? false : true; // 提案还是人事案
         const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
 
-        // 从[[Module:UserGroup/data]]中获取当前各用户组人员列表
+        // 从[[Module:UserGroup/data]]获取当前各用户组人员列表
         const userGroup = await api.post({
             action: "query",
             titles: "Module:UserGroup/data",
@@ -26,6 +26,16 @@ $(() => (async () => {
             rvlimit: 1,
         });
         const userList = JSON.parse(Object.values(userGroup.query.pages)[0].revisions[0]["*"]);
+
+        // 从[[User:BearBin/js/voteRemind.js/Noremind]]获取不愿意收到投票提醒的用户
+        const Noremind = await api.post({
+            action: "query",
+            titles: "User:BearBin/js/voteRemind.js/Noremind",
+            prop: "revisions",
+            rvprop: "content",
+            rvlimit: 1,
+        });
+        const userExcluded = Object.values(Noremind.query.pages)[0].revisions[0]["*"].split(/\n\* */);
 
         // 获取{{投票}}模板所在讨论串二级标题内.mw-headline的id值
         const mwHeadlines = $(".votebox").parent(".discussionContainer").children("h2").children(".mw-headline");
@@ -90,9 +100,9 @@ $(() => (async () => {
 
                 this.groupsRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "p", label: "管理员、巡查姬" }), // 用于管、监、查、行
-                        new OO.ui.RadioOptionWidget({ data: "s", label: "管理员" }), // 用于脚
-                        new OO.ui.RadioOptionWidget({ data: "i", label: "管理员、界面管理员" }), // 用于界
+                        new OO.ui.RadioOptionWidget({ data: "p", label: "管理员、巡查姬" }), // 管、监、查、行
+                        new OO.ui.RadioOptionWidget({ data: "s", label: "管理员" }), // 脚
+                        new OO.ui.RadioOptionWidget({ data: "i", label: "管理员、界面管理员" }), // 界
                     ],
                 });
                 const groupsFiled = new OO.ui.FieldLayout(this.groupsRadioSelect, {
@@ -115,15 +125,25 @@ $(() => (async () => {
                 this.$body.append(this.panelLayout.$element);
             }
 
+            // 生成提醒用户列表
             getUsersToVote() {
-                switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
-                    case "p":
-                        return [...userList.sysop, ...userList.patroller];
-                    case "s":
-                        return userList.sysop;
-                    case "i":
-                        return Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
+                let usersToVote;
+                if(isProposal) {
+                    usersToVote = [...userList.sysop, ...userList.patroller];
+                } else {
+                    switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
+                        case "p":
+                            usersToVote = [...userList.sysop, ...userList.patroller];
+                            break;
+                        case "s":
+                            usersToVote = userList.sysop;
+                            break;
+                        case "i":
+                            usersToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
+                    }
                 }
+                const setExcluded = new Set(userExcluded);
+                return usersToVote.filter((x) => !setExcluded.has(x));
             }
 
             /* 获取已投票用户列表
@@ -154,7 +174,7 @@ $(() => (async () => {
                         bot: isBot ? true : false,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
-                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。如果您不希望接到此通知，请在[[User:BearBin/js/voteRemind.js/Noremind]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
+                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。如果您不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票，请您及时投票喵～——~~~~`,
                     })
                         .done(() => {
                             mw.notify(wgULS(`向用户${userName}发送投票提醒成功。`, `向使用者${userName}發送投票提醒成功。`));
