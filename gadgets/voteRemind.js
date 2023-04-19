@@ -16,6 +16,7 @@ $(() => (async () => {
         const PAGENAME = mw.config.get("wgPageName");
         const isProposal = mw.config.get("wgTitle") === "讨论版/权限变更" ? false : true; // 提案还是人事案
         const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
+        const GadgetTitle = wgULS("一键发送投票提醒", "一鍵發送投票提醒");
 
         // 从[[Module:UserGroup/data]]获取当前各用户组人员列表
         const userGroup = await api.post({
@@ -39,14 +40,14 @@ $(() => (async () => {
 
         // 已投票的用户列表
         const hrefList = [];
-        $(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function(){
+        $(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
             hrefList.push(this.href);
         });
         const userVoted = [];
-        for(const item of hrefList) {
+        for (const item of hrefList) {
             userVoted.push(decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, "$2")));
         }
-            
+
         // 获取{{投票}}模板所在讨论串二级标题内.mw-headline的id值
         const mwHeadlines = $(".votebox").parent(".discussionContainer").children("h2").children(".mw-headline");
         const headlines = [];
@@ -59,7 +60,7 @@ $(() => (async () => {
                 ...super.static,
                 tagName: "div",
                 name: "lr-reminder",
-                title: wgULS("一键发送投票提醒", "一鍵發送投票提醒"),
+                title: GadgetTitle,
                 actions: [
                     {
                         action: "cancel",
@@ -108,6 +109,7 @@ $(() => (async () => {
                     align: top,
                 });
 
+                // 人事案，选择要提醒的用户组
                 this.groupsRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
                         new OO.ui.RadioOptionWidget({ data: "p", label: "管理员、巡查姬" }), // 管、监、查、行
@@ -120,7 +122,7 @@ $(() => (async () => {
                     align: top,
                 });
 
-                // 提案仅需输入标题，人事案选择标题和要通知的用户组。
+                // 提案需标题，人事案需选择标题和要通知的用户组。
                 if (isProposal) {
                     this.panelLayout.$element.append(
                         proposalTitleField.$element,
@@ -137,23 +139,23 @@ $(() => (async () => {
 
             // 生成提醒用户列表
             getUsersToVote() {
-                let usersToVote;
-                if(isProposal) {
-                    usersToVote = [...userList.sysop, ...userList.patroller];
+                let groupsToVote;
+                if (isProposal) {
+                    groupsToVote = [...userList.sysop, ...userList.patroller];
                 } else {
                     switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
                         case "p":
-                            usersToVote = [...userList.sysop, ...userList.patroller];
+                            groupsToVote = [...userList.sysop, ...userList.patroller];
                             break;
                         case "s":
-                            usersToVote = userList.sysop;
+                            groupsToVote = userList.sysop;
                             break;
                         case "i":
-                            usersToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
+                            groupsToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
                     }
                 }
                 const setExcluded = new Set([...userExcluded, ...userVoted]);
-                return usersToVote.filter((x) => !setExcluded.has(x));
+                return groupsToVote.filter((x) => !setExcluded.has(x));
             }
 
             // 生成链接
@@ -226,7 +228,7 @@ $(() => (async () => {
         });
         windowManager.addWindows([reminderDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "投票提醒", "vote-remind", wgULS("一键发送投票提醒", "一鍵發送投票提醒"), "r")).on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", "投票提醒", "vote-remind", GadgetTitle, "r")).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(reminderDialog);
             $body.css("overflow", "auto");
