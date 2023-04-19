@@ -17,3 +17,13 @@ mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 ```JavaScript
 mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.js');
 ```
+
+## 批量发送讨论页提醒
+
+可用于发星章等用途。
+
+- 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.js');
+```
