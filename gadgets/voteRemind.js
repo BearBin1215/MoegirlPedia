@@ -38,16 +38,6 @@ $(() => (async () => {
         });
         const userExcluded = Object.values(Noremind.query.pages)[0].revisions[0]["*"].split(/\n\* */);
 
-        // 已投票的用户列表
-        const hrefList = [];
-        $(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
-            hrefList.push(this.href);
-        });
-        const userVoted = [];
-        for (const item of hrefList) {
-            userVoted.push(decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, "$2")));
-        }
-
         // 获取{{投票}}模板所在讨论串二级标题内.mw-headline的id值
         const mwHeadlines = $(".votebox").parent(".discussionContainer").children("h2").children(".mw-headline");
         const headlines = [];
@@ -139,9 +129,16 @@ $(() => (async () => {
 
             // 生成提醒用户列表
             getUsersToVote() {
+                const hrefList = [];
+                const userVoted = [];
+                
                 let groupsToVote;
                 if (isProposal) {
                     groupsToVote = [...userList.sysop, ...userList.patroller];
+                    // 提案检测.votebox后面的<ol>内的用户链接
+                    $(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
+                        hrefList.push(this.href);
+                    });
                 } else {
                     switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
                         case "p":
@@ -153,7 +150,15 @@ $(() => (async () => {
                         case "i":
                             groupsToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
                     }
+                    // 人事案检测当前选择标题所在.discussionContainer内.votebox后面的ol
+                    $(`#${this.sectionTitleDropdown.getValue()}`).parents(".discussionContainer").find(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
+                        hrefList.push(this.href);
+                    });
                 }
+                for (const item of hrefList) {
+                    userVoted.push(decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, "$2")));
+                }
+
                 const setExcluded = new Set([...userExcluded, ...userVoted]);
                 return groupsToVote.filter((x) => !setExcluded.has(x));
             }
