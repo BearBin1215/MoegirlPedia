@@ -4,7 +4,6 @@
  */
 
 "use strict";
-
 $(() => (async () => {
     await mw.loader.using(["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]);
     const api = new mw.Api;
@@ -92,34 +91,31 @@ $(() => (async () => {
             const list = this.userListBox.getValue().split("\n");
             return Array.from(new Set(list)); // 去重
         }
-
-        get userReg() {
+        get checkReg() {
             return this.checkRegBox.isSelected();
         }
-
         get sectionTitle() {
             return this.sectionTitleBox.getValue();
         }
-
         get messageContent() {
             return this.messageContentBox.getValue();
         }
 
         // 检查用户是否注册
-        async checkReg(user) {
+        async userReg(user) {
             const d = await api.post({
                 action: "query",
                 list: "users",
                 ususers: user.replaceAll(/\/.*/g, ""), // 去除子页面后缀
                 usprop: "registration",
             });
-            
-            if(d.query.users[0].userid) {
+            if (d.query.users[0].userid) {
                 return true;
-            } 
+            }
             return false;
         }
 
+        // 执行发送
         async send(user, title, message) {
             const d = await api.postWithToken("csrf", {
                 format: "json",
@@ -134,12 +130,12 @@ $(() => (async () => {
             })
                 .done(() => {
                     mw.notify(wgULS(`向用户${user}发送成功。`, `向使用者${user}發送成功。`));
-                    return true;
                 });
             if (d.error) {
                 mw.notify(wgULS(`向${user}发送失败：${d.error.code}。`, `向${user}發送失敗：${d.error.code}。`));
                 return false;
             }
+            return true;
         }
 
         getActionProcess(action) {
@@ -148,30 +144,28 @@ $(() => (async () => {
                     this.close({ action });
                 }, this);
             } else if (action === "submit") {
-                const title = this.sectionTitle;
-                const text = this.messageContent;
                 return new OO.ui.Process($.when((async () => {
                     try {
-                        // 写的什么寄吧，检查用户创建写的乱七八糟，async和await一层套一层乱用，写到最后还tm能运行
+                        const title = this.sectionTitle;
+                        const text = this.messageContent;
                         const errorList = [];
                         for (const user of this.userList) {
-                            if(this.userReg) {
-                                this.checkReg(user).then(async (result) => {
-                                    if(result) {
-                                        const d = await this.send(user, title, text);
-                                        if (d) {
-                                            errorList.push(user); // 记录发送失败
-                                        }
+                            // 检测用户是否勾选检查用户注册情况
+                            if (this.checkReg) {
+                                await this.userReg(user).then(async (result) => {
+                                    if (result) {
+                                        // 存在，发送
+                                        await this.send(user, title, text)
+                                            .then((result) => {
+                                                if (!result) {
+                                                    errorList.push(user); // 记录发送失败
+                                                }
+                                            });
                                     } else {
                                         mw.notify(wgULS(`用户${user.replaceAll(/\/.*/g, "")}未创建。`, `使用者${user.replaceAll(/\/.*/g, "")}未創建。`));
                                         errorList.push(user); // 记录发送失败
                                     }
                                 });
-                            } else {
-                                const d = await this.send(user, title, text);
-                                if (d) {
-                                    errorList.push(user); // 记录发送失败
-                                }
                             }
                         }
                         if (errorList.length > 0) {
@@ -181,11 +175,10 @@ $(() => (async () => {
                             });
                         }
                         this.close({ action });
-                    } catch (e) {
-                        console.error("OOUI error:", e);
-                        throw new OO.ui.Error(e);
+                    } catch (err) {
+                        console.error("OOUI error:", err);
+                        throw new OO.ui.Error(err);
                     }
-
                 })()).promise(), this);
             }
             return super.getActionProcess(action);
@@ -195,13 +188,14 @@ $(() => (async () => {
     const windowManager = new OO.ui.WindowManager();
     $body.append(windowManager.$element);
     const MassSendDialog = new MassSendWindow({
-        size: "larger",
+        size: "large",
     });
     windowManager.addWindows([MassSendDialog]);
 
-    $(mw.util.addPortletLink("p-cactions", "#", "批发提醒", "mass-send", GadgetTitle, "r")).on("click", (e) => {
+    $(mw.util.addPortletLink("p-cactions", "#", "群发提醒", "mass-send", GadgetTitle, "r")).on("click", (e) => {
         e.preventDefault();
         windowManager.openWindow(MassSendDialog);
         $body.css("overflow", "auto");
     });
+
 })());
