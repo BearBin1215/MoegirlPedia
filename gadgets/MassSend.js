@@ -166,6 +166,13 @@ $(() => (async () => {
                                         errorList.push(user); // 记录发送失败
                                     }
                                 });
+                            } else {
+                                await this.send(user, title, text)
+                                    .then((result) => {
+                                        if (!result) {
+                                            errorList.push(user); // 记录发送失败
+                                        }
+                                    });
                             }
                         }
                         if (errorList.length > 0) {
