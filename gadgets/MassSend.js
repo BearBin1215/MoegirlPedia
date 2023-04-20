@@ -1,6 +1,10 @@
 /**
+ * @description 批量发送讨论页消息
+ * @author BearBin
+ * @todo 可能有一些多余的异步代码
+ * @todo 检查用户是否签名
+ * 
  * <pre> 
- * 批量发送讨论页消息
  */
 
 "use strict";
@@ -70,7 +74,7 @@ $(() => (async () => {
 
             this.messageContentBox = new OO.ui.MultilineTextInputWidget({
                 validate: "non-empty",
-                placeholder: wgULS("（不会自动签名）", "（不會自動簽名）"),
+                placeholder: wgULS("（不会自动签名！）", "（不會自動簽名！）"),
                 autosize: true,
             });
             const messageContentField = new OO.ui.FieldLayout(this.messageContentBox, {
@@ -145,9 +149,14 @@ $(() => (async () => {
                 }, this);
             } else if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
+                    const title = this.sectionTitle;
+                    const text = this.messageContent;
+                    if (!title) {
+                        throw new OO.ui.Error(wgULS("请输入提醒标题", "請輸入提醒標題"));
+                    } else if(!text) {
+                        throw new OO.ui.Error(wgULS("请输入要发送的文本", "請輸入要發送的文本"));
+                    }
                     try {
-                        const title = this.sectionTitle;
-                        const text = this.messageContent;
                         const errorList = [];
                         for (const user of this.userList) {
                             // 检测用户是否勾选检查用户注册情况
