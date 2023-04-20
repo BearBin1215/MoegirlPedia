@@ -52,6 +52,14 @@ $(() => (async () => {
                 align: "top",
             });
 
+            this.checkRegBox = new OO.ui.CheckboxInputWidget({
+                selected: true,
+            });
+            const checkRegField = new OO.ui.FieldLayout(this.checkRegBox, {
+                label: wgULS("检查用户是否注册", "檢查使用者是否註冊"),
+                align: "inline",
+            });
+
             this.sectionTitleBox = new OO.ui.TextInputWidget({
                 validate: "non-empty",
                 autosize: true,
@@ -73,6 +81,7 @@ $(() => (async () => {
 
             this.panelLayout.$element.append(
                 userListField.$element,
+                checkRegField.$element,
                 sectionTitleField.$element,
                 messageContentField.$element,
             );
@@ -84,12 +93,31 @@ $(() => (async () => {
             return Array.from(new Set(list)); // 去重
         }
 
+        get userReg() {
+            return this.checkRegBox.isSelected();
+        }
+
         get sectionTitle() {
             return this.sectionTitleBox.getValue();
         }
 
         get messageContent() {
             return this.messageContentBox.getValue();
+        }
+
+        // 检查用户是否注册
+        async checkReg(user) {
+            const d = await api.post({
+                action: "query",
+                list: "users",
+                ususers: user.replaceAll(/\/.*/g, ""), // 去除子页面后缀
+                usprop: "registration",
+            });
+            
+            if(d.query.users[0].userid) {
+                return true;
+            } 
+            return false;
         }
 
         async send(user, title, message) {
@@ -124,11 +152,26 @@ $(() => (async () => {
                 const text = this.messageContent;
                 return new OO.ui.Process($.when((async () => {
                     try {
+                        // 写的什么寄吧，检查用户创建写的乱七八糟，async和await一层套一层乱用，写到最后还tm能运行
                         const errorList = [];
                         for (const user of this.userList) {
-                            const d = await this.send(user, title, text);
-                            if (d) {
-                                errorList.push(user); // 记录发送失败
+                            if(this.userReg) {
+                                this.checkReg(user).then(async (result) => {
+                                    if(result) {
+                                        const d = await this.send(user, title, text);
+                                        if (d) {
+                                            errorList.push(user); // 记录发送失败
+                                        }
+                                    } else {
+                                        mw.notify(wgULS(`用户${user.replaceAll(/\/.*/g, "")}未创建。`, `使用者${user.replaceAll(/\/.*/g, "")}未創建。`));
+                                        errorList.push(user); // 记录发送失败
+                                    }
+                                });
+                            } else {
+                                const d = await this.send(user, title, text);
+                                if (d) {
+                                    errorList.push(user); // 记录发送失败
+                                }
                             }
                         }
                         if (errorList.length > 0) {
