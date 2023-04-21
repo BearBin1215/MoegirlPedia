@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * @description 反一方通行
  * @todo 支持非特殊页面
@@ -18,9 +19,18 @@ $(() => (async () => {
             }
         });
     } else {
-
+        if ($("#mw-content-text").text().includes("\u266f")) {
+            const api = new mw.Api();
+            const Source = await api.post({
+                action: "query",
+                titles: mw.config.get("wgPageName"),
+                prop: "revisions",
+                rvprop: "content",
+                rvlimit: 1,
+            });
+            const wikitext = Object.values(Source.query.pages)[0].revisions[0]["*"];
+        }
     }
-
 })());
 /**
  * </pre>
