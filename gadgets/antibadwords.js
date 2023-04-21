@@ -16,6 +16,8 @@ if (mw.config.get("wgNamespaceNumber") === -1) {
             $(this).html(hrefText);
         }
     });
+} else {
+    
 }
 
 /**
