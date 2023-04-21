@@ -102,7 +102,7 @@ $(() => (async () => {
                 // 人事案，选择要提醒的用户组
                 this.groupsRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "p", label: "管理员、巡查姬" }), // 管、监、查、行
+                        new OO.ui.RadioOptionWidget({ data: "p", label: "管理员、巡查姬", selected: true }), // 管、监、查、行
                         new OO.ui.RadioOptionWidget({ data: "s", label: "管理员" }), // 脚
                         new OO.ui.RadioOptionWidget({ data: "i", label: "管理员、界面管理员" }), // 界
                     ],
@@ -123,12 +123,22 @@ $(() => (async () => {
                         groupsFiled.$element,
                     );
                 }
-
                 this.$body.append(this.panelLayout.$element);
             }
 
+            get proposalTitle () {
+                return this.proposalTitleBox.getValue();
+            }
+            get sectionTitle () {
+                return this.sectionTitleDropdown.getValue();
+            }
+
+            get groupSelected () {
+                return this.groupsRadioSelect.findSelectedItem()?.getData?.();
+            }
+
             // 生成提醒用户列表
-            getUsersToVote() {
+            get usersToVote() {
                 const hrefList = [];
                 const userVoted = [];
                 
@@ -140,7 +150,7 @@ $(() => (async () => {
                         hrefList.push(this.href);
                     });
                 } else {
-                    switch (this.groupsRadioSelect.findSelectedItem()?.getData?.()) {
+                    switch (this.groupSelected) {
                         case "p":
                             groupsToVote = [...userList.sysop, ...userList.patroller];
                             break;
@@ -151,7 +161,7 @@ $(() => (async () => {
                             groupsToVote = Array.from(new Set([...userList.sysop, ...userList["interface-admin"]]));
                     }
                     // 人事案检测当前选择标题所在.discussionContainer内.votebox后面的ol
-                    $(`#${this.sectionTitleDropdown.getValue()}`).parents(".discussionContainer").find(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
+                    $(`#${this.sectionTitle}`).parents(".discussionContainer").find(".votebox ~ ol a[href^='/User'], .votebox ~ ol a[href^='/index.php?title=User']").each(function () {
                         hrefList.push(this.href);
                     });
                 }
@@ -166,16 +176,16 @@ $(() => (async () => {
             // 生成链接
             getLink() {
                 if (isProposal) {
-                    return `[[萌娘百科_talk:提案/讨论中提案/${this.proposalTitleBox.getValue()}|${this.proposalTitleBox.getValue().replaceAll("_", " ")}]]`;
+                    return `[[萌娘百科_talk:提案/讨论中提案/${this.proposalTitle}|${this.proposalTitle.replaceAll("_", " ")}]]`;
                 }
-                return `[[萌娘百科_talk:讨论版/权限变更#${this.sectionTitleDropdown.getValue()}|${this.sectionTitleDropdown.getValue().replaceAll("_", " ")}]]`;
+                return `[[萌娘百科_talk:讨论版/权限变更#${this.sectionTitle}|${this.sectionTitle.replaceAll("_", " ")}]]`;
             }
 
             // 发送提醒
             async remind() {
                 const errorList = [];
                 const link = this.getLink();
-                for (const userName of this.getUsersToVote()) {
+                for (const userName of this.usersToVote) {
                     const d = await api.postWithToken("csrf", {
                         format: "json",
                         action: "edit",
@@ -185,7 +195,7 @@ $(() => (async () => {
                         bot: isBot ? true : false,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
-                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。若不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}${link}已经开始投票。您尚未投票，请及时参与喵～——~~~~`,
+                        text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。若不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}【${link}】已经开始投票。您尚未投票，请及时参与喵～——~~~~`,
                     })
                         .done(() => {
                             mw.notify(wgULS(`向用户${userName}发送投票提醒成功。`, `向使用者${userName}發送投票提醒成功。`));
@@ -218,7 +228,6 @@ $(() => (async () => {
                             console.error("OOUI error:", e);
                             throw new OO.ui.Error(e);
                         }
-
                     })()).promise(), this);
                 }
                 return super.getActionProcess(action);
