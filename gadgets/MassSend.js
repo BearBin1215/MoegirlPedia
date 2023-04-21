@@ -213,5 +213,4 @@ $(() => (async () => {
         windowManager.openWindow(MassSendDialog);
         $body.css("overflow", "auto");
     });
-
 })());
