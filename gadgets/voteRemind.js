@@ -126,14 +126,14 @@ $(() => (async () => {
                 this.$body.append(this.panelLayout.$element);
             }
 
-            get proposalTitle () {
+            get proposalTitle() {
                 return this.proposalTitleBox.getValue();
             }
-            get sectionTitle () {
+            get sectionTitle() {
                 return this.sectionTitleDropdown.getValue();
             }
 
-            get groupSelected () {
+            get groupSelected() {
                 return this.groupsRadioSelect.findSelectedItem()?.getData?.();
             }
 
@@ -141,7 +141,7 @@ $(() => (async () => {
             get usersToVote() {
                 const hrefList = [];
                 const userVoted = [];
-                
+
                 let groupsToVote;
                 if (isProposal) {
                     groupsToVote = [...userList.sysop, ...userList.patroller];
@@ -216,14 +216,16 @@ $(() => (async () => {
                 } else if (action === "submit") {
                     return new OO.ui.Process($.when((async () => {
                         try {
-                            const errorList = await this.remind();
+                            await this.remind().then((result) => {
+                                if (result.length > 0) {
+                                    oouiDialog.alert(result.join("、"), {
+                                        title: wgULS("向以下用户发送提醒失败", "向以下使用者發送提醒失敗"),
+                                        size: "small",
+                                    });
+                                }
+                            });
                             this.close({ action });
-                            if (errorList.length > 0) {
-                                oouiDialog.alert(errorList.join("、"), {
-                                    title: wgULS("向以下用户发送提醒失败", "向以下使用者發送提醒失敗"),
-                                    size: "small",
-                                });
-                            }
+
                         } catch (e) {
                             console.error("OOUI error:", e);
                             throw new OO.ui.Error(e);
