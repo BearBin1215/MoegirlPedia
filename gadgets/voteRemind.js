@@ -230,6 +230,7 @@ $(() => (async () => {
         $body.append(windowManager.$element);
         const reminderDialog = new ReminderWindow({
             size: "medium",
+            id: "bearbin-vote-remind",
         });
         windowManager.addWindows([reminderDialog]);
 
