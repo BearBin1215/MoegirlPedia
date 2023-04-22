@@ -44,13 +44,7 @@ $(() => (async () => {
                     padded: true,
                 });
 
-                this.noteField = new OO.ui.PanelLayout({
-                    padded: true,
-                    expanded: false,
-                });
-                this.noteField.$element.append("<p>确认要编辑吗？</p>");
-
-                this.panelLayout.$element.append(this.noteField.$element);
+                this.panelLayout.$element.append($('<p style="text-align:center;font-size:1.2em">确认要狂暴鸿儒萌百娘吗？</p>'));
                 this.$body.append(this.panelLayout.$element);
             }
 

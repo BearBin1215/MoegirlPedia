@@ -2,3 +2,4 @@ node_modules
 .eslintignore
 .eslintrc.json
 .stylelintrc.json
+OneKeyPurge.js
