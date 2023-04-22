@@ -1,5 +1,6 @@
 /**
  * @rights edit
+ * @todo 输入检测
  * @dependencies ["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]
  */
 
@@ -225,7 +226,6 @@ $(() => (async () => {
                                 }
                             });
                             this.close({ action });
-
                         } catch (e) {
                             console.error("OOUI error:", e);
                             throw new OO.ui.Error(e);
