@@ -131,7 +131,7 @@ $(() => (async () => {
                 });
             }
             $("#okp-all").text(PageList.length);
-            return Array.from(new Set(PageList)); // 去重
+            return [...new Set(PageList)]; // 去重
         }
 
         // 零编辑操作

@@ -1,4 +1,4 @@
-#BearBin的萌娘百科工具代码
+# BearBin的萌娘百科工具代码
 
 本GitHub库主要存放[BearBin](https://zh.moegirl.org.cn/User:BearBin)所写的一些小工具。
 
