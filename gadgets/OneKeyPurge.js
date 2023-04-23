@@ -1,8 +1,9 @@
 /**
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
- * @todo 根据返回的nochange检测产生了意外源代码变动的页面
  * @todo 提供purge选项
+ * @author BearBin
+ * @contributor 鬼影233
  */
 "use strict";
 $(() => (async () => {
@@ -13,6 +14,7 @@ $(() => (async () => {
 
     class DEWindow extends OO.ui.ProcessDialog {
         failList = [];
+        changeList = [];
         state = 0;
         static static = {
             ...super.static,
@@ -56,7 +58,7 @@ $(() => (async () => {
             this.panelLayout.$element.append(
                 $('<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3"><b style="color:red;">警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量的请求</b>，请慎重使用！</div>'),
                 this.multiselectInput.$element,
-                $('<div style="margin-top:.8em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
+                $('<div style="margin-top:.8em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div><div id="okp-progress" style="display:flex;flex-wrap:wrap;max-height:10.5em;overflow-y:auto;"></div>'),
             );
             this.$body.append(this.panelLayout.$element);
         }
@@ -66,12 +68,12 @@ $(() => (async () => {
             let ticontinue = 1;
             const pageList = [];
             while (ticontinue) {
-                const includeList = await api.post({
+                const includeList = await api.get({
                     action: "query",
                     prop: "transcludedin",
                     titles: PAGENAME,
-                    tilimit: 500,
-                    ticontinue: ticontinue,
+                    tilimit: "max",
+                    ticontinue,
                 });
                 if (Object.values(includeList.query.pages)[0].transcludedin) {
                     for (const item of Object.values(includeList.query.pages)[0].transcludedin) {
@@ -94,12 +96,12 @@ $(() => (async () => {
             let lhcontinue = 1;
             const pageList = [];
             while (lhcontinue) {
-                const linkList = await api.post({
+                const linkList = await api.get({
                     action: "query",
                     prop: "linkshere",
                     titles: PAGENAME,
-                    lhlimit: 500,
-                    lhcontinue: lhcontinue,
+                    lhlimit: "max",
+                    lhcontinue,
                 });
                 if (Object.values(linkList.query.pages)[0].linkshere) {
                     for (const item of Object.values(linkList.query.pages)[0].linkshere) {
@@ -143,15 +145,33 @@ $(() => (async () => {
                     appendtext: "",
                     watchlist: "nochange",
                     nocreate: true,
-                    title: title,
-                }).done(() => {
-                    mw.notify(`页面【${title}】零编辑成功。`);
-                    this.state++;
-                    $("#okp-done").text(this.state);
+                    title,
+                }).done((data) => {
+                    document.getElementById(`okp-progress-${title}`).scrollIntoView();
+                    if (data.edit.result === "Success") {
+                        this.state++;
+                        $("#okp-done").text(this.state);
+                        if (data.edit.nochange === "") {
+                            mw.notify(`页面【${title}】零编辑成功。`, { type: "success" });
+                            document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
+                            document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
+                        } else {
+                            this.changeList.push(title);s
+                            document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
+                            document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
+                        }
+                    } else {
+                        mw.notify(`页面【${title}】零编辑失败。`, { type: "warn" });
+                        this.failList.push(title);
+                        document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
+                        document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
+                    }
                 });
             } catch (e) {
-                mw.notify(`页面【${title}】零编辑失败：${e}。`);
+                mw.notify(`页面【${title}】零编辑失败：${e}。`, { type: "warn" });
                 this.failList.push(title);
+                document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
+                document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
             }
         }
 
@@ -163,6 +183,7 @@ $(() => (async () => {
             } else if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     this.failList = [];
+                    this.changeList = []
                     this.state = 0;
                     $("#okp-all").text(0);
                     $("#okp-done").text(0);
@@ -171,6 +192,21 @@ $(() => (async () => {
                         if (result.length > 0) {
                             mw.notify(`共${result.length}个页面，开始执行零编辑……`);
                         }
+                        document.getElementById("okp-progress").innerHTML = "";
+                        const progressInner = document.createElement("div");
+                        progressInner.style.width = "1em";
+                        progressInner.style.aspectRatio = 1;
+                        progressInner.style.backgroundColor = "#EAECF0";
+                        progressInner.style.border = "1px solid";
+                        progressInner.style.borderColor = "#A2A9B1";
+                        progressInner.style.margin = ".2em";
+                        for (const item of result) {
+                            const _progressInner = progressInner.cloneNode();
+                            _progressInner.id = `okp-progress-${item}`;
+                            _progressInner.title = item;
+                            document.getElementById("okp-progress").appendChild(_progressInner);
+                        }
+                        this.updateSize();
                         for (const item of result) {
                             await this.nullEdit(item);
                         }
@@ -179,6 +215,12 @@ $(() => (async () => {
                         if (this.failList.length > 0) {
                             oouiDialog.alert(`${this.failList.join("、")}。<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。`, {
                                 title: "以下页面零编辑失败",
+                                size: "medium",
+                            });
+                        }
+                        if (this.changeList.length > 0) {
+                            oouiDialog.alert(`${this.changeList.join("、")}。<br>被意外更改，请手动撤回或回退`, {
+                                title: "被意外更改",
                                 size: "medium",
                             });
                         }
@@ -194,7 +236,7 @@ $(() => (async () => {
     });
     $body.append(windowManager.$element);
     const DEDialog = new DEWindow({
-        size: "medium",
+        size: "large",
     });
     windowManager.addWindows([DEDialog]);
 
