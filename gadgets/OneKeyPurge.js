@@ -2,6 +2,7 @@
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 根据返回的nochange检测产生了意外源代码变动的页面
+ * @todo 提供purge选项
  */
 "use strict";
 $(() => (async () => {
@@ -17,7 +18,7 @@ $(() => (async () => {
             ...super.static,
             tagName: "div",
             name: "lr-reminder",
-            title: "批量空编辑",
+            title: "批量零编辑",
             actions: [
                 {
                     action: "cancel",
@@ -116,6 +117,7 @@ $(() => (async () => {
             return pageList;
         }
 
+        // 根据用户选项获取页面列表
         async getList() {
             const PageList = [];
             if (this.multiselectInput.getValue().includes("link")) {
@@ -129,10 +131,10 @@ $(() => (async () => {
                 });
             }
             $("#okp-all").text(PageList.length);
-            return PageList;
+            return Array.from(new Set(PageList)); // 去重
         }
 
-        // 空编辑操作
+        // 零编辑操作
         async nullEdit(title) {
             try {
                 await api.postWithToken("csrf", {
@@ -143,12 +145,12 @@ $(() => (async () => {
                     nocreate: true,
                     title: title,
                 }).done(() => {
-                    mw.notify(`页面【${title}】空编辑成功。`);
+                    mw.notify(`页面【${title}】零编辑成功。`);
                     this.state++;
                     $("#okp-done").text(this.state);
                 });
             } catch (e) {
-                mw.notify(`页面【${title}】空编辑失败：${e}。`);
+                mw.notify(`页面【${title}】零编辑失败：${e}。`);
                 this.failList.push(title);
             }
         }
@@ -164,7 +166,7 @@ $(() => (async () => {
                     await this.getList().then(async (result) => {
                         console.log(result);
                         if (result.length > 0) {
-                            mw.notify(`共${result.length}个页面，开始执行空编辑……`);
+                            mw.notify(`共${result.length}个页面，开始执行零编辑……`);
                         }
                         for (const item of result) {
                             await this.nullEdit(item);
@@ -173,8 +175,8 @@ $(() => (async () => {
                         this.close({ action });
                         if (this.failList.length > 0) {
                             oouiDialog.alert(`${this.failList.join("、")}。<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。`, {
-                                title: "以下页面空编辑失败",
-                                size: "small",
+                                title: "以下页面零编辑失败",
+                                size: "medium",
                             });
                         }
                     });
@@ -193,7 +195,7 @@ $(() => (async () => {
     });
     windowManager.addWindows([DEDialog]);
 
-    $(mw.util.addPortletLink("p-cactions", "#", "批量空编辑", "dummy-edit")).on("click", () => {
+    $(mw.util.addPortletLink("p-cactions", "#", "批量零编辑", "mass-null-edit")).on("click", () => {
         windowManager.openWindow(DEDialog);
         $body.css("overflow", "auto");
     });
