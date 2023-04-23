@@ -19,6 +19,8 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 - **在高链入/嵌入量页面使用将会向服务器发送大量请求，请慎重使用！**
 - ~~被源初提着服务器账单找上门概不负责。~~
 
+- 贡献者：鬼影233
+
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
