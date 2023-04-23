@@ -20,7 +20,7 @@ $(() => (async () => {
             uiprop: "ratelimits",
         });
         const Noratelimit = rights.query.userinfo.ratelimits.edit ? false : true;
-    
+
         class DEWindow extends OO.ui.ProcessDialog {
             failList = [];
             changeList = [];
@@ -54,7 +54,7 @@ $(() => (async () => {
                     padded: true,
                     id: "one-key-purge",
                 });
-    
+
                 this.multiselectInput = new OO.ui.CheckboxMultiselectInputWidget({
                     options: [
                         { data: "link", label: "链接" },
@@ -63,19 +63,20 @@ $(() => (async () => {
                 });
                 this.multiselectInput.$element.find(".oo-ui-multiselectWidget-group").css("display", "flex").css("font-size", "1.2em");
                 this.multiselectInput.$element.find("label").css("padding", "0").css("flex", "1 0");
-    
+
                 const noteText = Noratelimit ?
-                    "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量的请求</b>，请慎重使用！"
+                    "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
                     "<b>提醒</b>：您未持有<code>noratelimit</code>权限，空编辑速率将被限制为<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
                 this.panelLayout.$element.append(
                     this.panelLayout.$element.prepend($(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`)),
                     this.multiselectInput.$element,
-                    $('<div style="margin-top:.8em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div><div id="okp-progress" style="display:flex;flex-wrap:wrap;max-height:10.5em;overflow-y:auto;"></div>'),
+                    $('<div style="margin:.8em 0 .5em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
+                    $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;max-height:10.5em;overflow-y:auto;"></div>'),
                 );
                 this.$body.append(this.panelLayout.$element);
             }
-    
+
             // 获取嵌入页面
             async getIncludeList() {
                 let ticontinue = 1;
@@ -103,7 +104,7 @@ $(() => (async () => {
                 }
                 return pageList;
             }
-    
+
             // 获取链入页面
             async getLinkList() {
                 let lhcontinue = 1;
@@ -131,7 +132,7 @@ $(() => (async () => {
                 }
                 return pageList;
             }
-    
+
             // 根据用户选项获取页面列表
             async getList() {
                 const PageList = [];
@@ -148,7 +149,29 @@ $(() => (async () => {
                 $("#okp-all").text(PageList.length);
                 return [...new Set(PageList)]; // 去重
             }
-    
+
+            /**
+             * 根据输入的标题和操作情况，更改显示进度的状态
+             * @param title 页面标题
+             * @param type 操作类型（nullEdit/purge）
+             * @param result 操作结果（Success/Warn/Fail，大小写不敏感）
+             */
+            progressChange(title, type, result) {
+                switch (result.toLowerCase()) {
+                    case "success":
+                        this.state++;
+                        $("#okp-done").text(this.state);
+                        break;
+                    case "warn":
+                        this.state++;
+                        $("#okp-done").text(this.state);
+                        break;
+                    case "fail":
+                        this.failList.push(title);
+                        break;
+                }
+            }
+
             // 零编辑
             async nullEdit(title) {
                 try {
@@ -205,7 +228,7 @@ $(() => (async () => {
                     this.failList.push(title);
                 }
             }
-    
+
             getActionProcess(action) {
                 if (action === "cancel") {
                     return new OO.ui.Process(() => {
@@ -216,8 +239,8 @@ $(() => (async () => {
                         this.failList = [];
                         this.changeList = [];
                         this.state = 0;
-                        $("#okp-all").text(0);
                         $("#okp-done").text(0);
+                        // 获取页面列表
                         await this.getList().then(async (result) => {
                             console.log(result);
                             if (result.length > 0) {
@@ -261,7 +284,7 @@ $(() => (async () => {
                 return super.getActionProcess(action);
             }
         }
-    
+
         const windowManager = new OO.ui.WindowManager({
             id: "one-key-purge",
         });
@@ -270,7 +293,7 @@ $(() => (async () => {
             size: "large",
         });
         windowManager.addWindows([DEDialog]);
-    
+
         $(mw.util.addPortletLink("p-cactions", "#", "批量零编辑", "mass-null-edit")).on("click", () => {
             windowManager.openWindow(DEDialog);
             $body.css("overflow", "auto");
