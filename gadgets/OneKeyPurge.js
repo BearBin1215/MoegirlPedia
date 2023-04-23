@@ -1,6 +1,7 @@
 /**
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
+ * @todo 根据返回的nochange检测产生了意外源代码变动的页面
  */
 "use strict";
 $(() => (async () => {
@@ -82,7 +83,7 @@ $(() => (async () => {
             if (pageList.length > 0) {
                 mw.notify(`获取嵌入【${PAGENAME}】的页面列表成功。`);
             } else {
-                mw.notify(`【${PAGENAME}】没有被任何页面嵌入。`);
+                mw.notify(`没有页面嵌入了【${PAGENAME}】。`);
             }
             return pageList;
         }
@@ -146,7 +147,7 @@ $(() => (async () => {
                     this.state++;
                     $("#okp-done").text(this.state);
                 });
-            } catch(e) {
+            } catch (e) {
                 mw.notify(`页面【${title}】空编辑失败：${e}。`);
                 this.failList.push(title);
             }
@@ -162,7 +163,7 @@ $(() => (async () => {
                     this.failList = [];
                     await this.getList().then(async (result) => {
                         console.log(result);
-                        if(result.length > 0) {
+                        if (result.length > 0) {
                             mw.notify(`共${result.length}个页面，开始执行空编辑……`);
                         }
                         for (const item of result) {
@@ -170,7 +171,7 @@ $(() => (async () => {
                         }
                     }).then(() => {
                         this.close({ action });
-                        if(this.failList.length > 0) {
+                        if (this.failList.length > 0) {
                             oouiDialog.alert(`${this.failList.join("、")}。<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。`, {
                                 title: "以下页面空编辑失败",
                                 size: "small",
