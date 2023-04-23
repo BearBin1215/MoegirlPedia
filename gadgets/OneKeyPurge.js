@@ -2,6 +2,8 @@
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 提供purge选项
+ * @author BearBin
+ * @contributor 鬼影233
  */
 "use strict";
 $(() => (async () => {
