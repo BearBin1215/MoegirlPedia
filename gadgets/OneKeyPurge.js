@@ -156,7 +156,7 @@ $(() => (async () => {
                             document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
                             document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
                         } else {
-                            this.changeList.push(title);s
+                            this.changeList.push(title);
                             document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
                             document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
                         }
@@ -183,7 +183,7 @@ $(() => (async () => {
             } else if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     this.failList = [];
-                    this.changeList = []
+                    this.changeList = [];
                     this.state = 0;
                     $("#okp-all").text(0);
                     $("#okp-done").text(0);
