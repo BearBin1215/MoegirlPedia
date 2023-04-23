@@ -154,20 +154,30 @@ $(() => (async () => {
              * 根据输入的标题和操作情况，更改显示进度的状态
              * @param title 页面标题
              * @param type 操作类型（nullEdit/purge）
-             * @param result 操作结果（Success/Warn/Fail，大小写不敏感）
+             * @param result 操作结果（success/warn/fail，大小写不敏感）
+             * @param err 错误/警告消息
              */
-            progressChange(title, type, result) {
+            progressChange(title, type, result, err = "") {
                 switch (result.toLowerCase()) {
                     case "success":
                         this.state++;
+                        mw.notify(`页面【${title}】${type === "purge" ? "清除缓存" : "空编辑"}成功。`, { type: "success" });
                         $("#okp-done").text(this.state);
+                        document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
+                        document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
                         break;
                     case "warn":
                         this.state++;
+                        this.changeList.push(title);
                         $("#okp-done").text(this.state);
+                        document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
+                        document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
                         break;
                     case "fail":
                         this.failList.push(title);
+                        mw.notify(`页面【${title}】清除缓存失败${err ? `：${err}` : ""}。`, { type: "warn" });
+                        document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
+                        document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
                         break;
                 }
             }
