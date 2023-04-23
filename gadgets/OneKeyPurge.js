@@ -11,6 +11,7 @@ $(() => (async () => {
     const $body = $("body");
 
     class DEWindow extends OO.ui.ProcessDialog {
+        state = 0;
         static static = {
             ...super.static,
             tagName: "div",
@@ -38,6 +39,7 @@ $(() => (async () => {
                 scrollable: false,
                 expanded: false,
                 padded: true,
+                id: "one-key-purge",
             });
 
             this.multiselectInput = new OO.ui.CheckboxMultiselectInputWidget({
@@ -45,15 +47,14 @@ $(() => (async () => {
                     { data: "link", label: "链接" },
                     { data: "include", label: "嵌入" },
                 ],
-                classes: ["one-key-purge-select"],
             });
             this.multiselectInput.$element.find(".oo-ui-multiselectWidget-group").css("display", "flex").css("font-size", "1.2em");
             this.multiselectInput.$element.find("label").css("padding", "0").css("flex", "1 0");
-            // $("head").append("<style>.one-key-purge-select .oo-ui-multiselectWidget-group{display:flex;font-size:1.2em;}.one-key-purge-select label{padding:0;flex:1 0;}</style>");
 
             this.panelLayout.$element.append(
-                $('<div style="margin-bottom:.8em;font-size:1.143em;"><b style="color:red;">警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量的请求</b>，请慎重使用！</div>'),
+                $('<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3"><b style="color:red;">警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量的请求</b>，请慎重使用！</div>'),
                 this.multiselectInput.$element,
+                $('<div style="margin-top:.8em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
             );
             this.$body.append(this.panelLayout.$element);
         }
@@ -126,6 +127,7 @@ $(() => (async () => {
                     PageList.push(...result);
                 });
             }
+            $("#okp-all").text(PageList.length);
             return PageList;
         }
 
@@ -140,6 +142,8 @@ $(() => (async () => {
                 title: title,
             }).done(() => {
                 mw.notify(`页面【${title}】空编辑成功。`);
+                this.state++;
+                $("#okp-done").text(this.state);
             }).fail((err) => {
                 mw.notify(`页面【${title}】空编辑失败：${err}。`);
             });
@@ -169,7 +173,9 @@ $(() => (async () => {
         }
     }
 
-    const windowManager = new OO.ui.WindowManager();
+    const windowManager = new OO.ui.WindowManager({
+        id: "one-key-purge",
+    });
     $body.append(windowManager.$element);
     const DEDialog = new DEWindow({
         size: "medium",
