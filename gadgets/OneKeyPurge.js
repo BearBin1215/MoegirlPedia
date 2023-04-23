@@ -190,6 +190,7 @@ $(() => (async () => {
                         if (result.length > 0) {
                             mw.notify(`共${result.length}个页面，开始执行零编辑……`);
                         }
+                        document.getElementById("okp-progress").innerHTML = "";
                         const progressInner = document.createElement("div");
                         progressInner.style.width = "1em";
                         progressInner.style.aspectRatio = 1;
