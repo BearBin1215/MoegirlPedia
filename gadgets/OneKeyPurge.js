@@ -265,7 +265,7 @@ $(() => (async () => {
                                 await this.nullEdit(item);
                             }
                         }).then(() => {
-                            this.close({ action });
+                            // this.close({ action });
                             if (this.failList.length > 0) {
                                 oouiDialog.alert(`${this.failList.join("、")}。<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。`, {
                                     title: "以下页面零编辑失败",
@@ -274,7 +274,7 @@ $(() => (async () => {
                             }
                             if (this.changeList.length > 0) {
                                 oouiDialog.alert(`${this.changeList.join("、")}。<br>被意外更改，请手动撤回或回退`, {
-                                    title: "被意外更改",
+                                    title: "以下页面被意外更改",
                                     size: "medium",
                                 });
                             }
