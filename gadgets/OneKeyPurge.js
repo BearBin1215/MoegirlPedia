@@ -164,6 +164,8 @@ $(() => (async () => {
                 return new OO.ui.Process($.when((async () => {
                     this.failList = [];
                     this.state = 0;
+                    $("#okp-all").text(0);
+                    $("#okp-done").text(0);
                     await this.getList().then(async (result) => {
                         console.log(result);
                         if (result.length > 0) {
