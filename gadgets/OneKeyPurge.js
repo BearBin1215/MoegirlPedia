@@ -2,7 +2,8 @@
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 提供purge选项
- * @todo 检测用户是否拥有noratelimit权限
+ * @todo 根据noratelimit权限调整
+ * 
  * @author BearBin
  * @contributor 鬼影233
  */
@@ -12,6 +13,19 @@ $(() => (async () => {
     const api = new mw.Api();
     const PAGENAME = mw.config.get("wgPageName");
     const $body = $("body");
+
+    // 查询是否有编辑速率限制
+    async function noratelimit() {
+        const rights = await api.get({
+            action: "query",
+            meta: "userinfo",
+            uiprop: "ratelimits",
+        });
+        if (rights.query.userinfo.ratelimits.edit) {
+            return false;
+        }
+        return true;
+    }
 
     class DEWindow extends OO.ui.ProcessDialog {
         failList = [];
