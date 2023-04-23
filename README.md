@@ -10,18 +10,19 @@
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.min.js');
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.min.js");
 ```
 
 ## 一键更新页面缓存
 
 - 用于快速刷新链接至/嵌入了某个页面的所有页面。
 - **在高链入/嵌入量页面使用将会向服务器发送大量请求，请慎重使用！**
+- ~~被源初提着服务器账单找上门概不负责。~~
 
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/OneKeyPurge.min.js');
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/OneKeyPurge.min.js");
 ```
 
 ## 清除缓存小工具
@@ -33,7 +34,7 @@ mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.min.js');
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.min.js");
 ```
 
 ## 批量发送讨论页提醒
@@ -44,5 +45,5 @@ mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.min.js');
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.min.js");
 ```
