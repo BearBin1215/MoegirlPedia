@@ -1,7 +1,7 @@
 /**
  * @description 批量发送讨论页消息
  * @author BearBin
- * @todo 可能有一些多余的异步代码
+ * @todo 清理多余的异步代码
  * @todo 检查用户是否签名
  * 
  * <pre> 
@@ -94,7 +94,7 @@ $(() => (async () => {
                 sectionTitleField.$element,
                 messageContentField.$element,
             );
-            if(!Noratelimit) {
+            if (!Noratelimit) {
                 this.panelLayout.$element.prepend('<p style="font-size:1.143em"><b>提醒</b>：您未持有noratelimit权限，每分钟最多进行<u>10次</u>编辑，请分批发送并控制好速率。</p>');
             }
             this.$body.append(this.panelLayout.$element);
@@ -162,7 +162,7 @@ $(() => (async () => {
                     const text = this.messageContent;
                     if (!title) {
                         throw new OO.ui.Error(wgULS("请输入提醒标题", "請輸入提醒標題"));
-                    } else if(!text) {
+                    } else if (!text) {
                         throw new OO.ui.Error(wgULS("请输入要发送的文本", "請輸入要發送的文本"));
                     }
                     try {
