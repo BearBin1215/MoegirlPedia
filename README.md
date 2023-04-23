@@ -2,6 +2,28 @@
 
 本GitHub库主要存放[BearBin](https://zh.moegirl.org.cn/User:BearBin)所写的一些小工具。
 
+## 一键提醒投票
+
+- 用于提醒相关用户组内的用户参与提案和人事案投票。
+- 若用户拥有[机器用户](https://zh.moegirl.org.cn/萌娘百科:机器用户)，使用此工具发送的消息都会被标记为机器人编辑，不会在最近更改出现。
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.min.js');
+```
+
+## 一键更新页面缓存
+
+- 用于快速刷新链接至/嵌入了某个页面的所有页面。
+- **在高链入/嵌入量页面使用将会向服务器发送大量请求，请慎重使用！**
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/OneKeyPurge.min.js');
+```
+
 ## 清除缓存小工具
 
 改自[MedaiWiki:Gadget-purgecahce.js](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/src/gadgets/Purgecache/MediaWiki%3AGadget-Purgecache.js)。
@@ -11,18 +33,7 @@
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.js');
-```
-
-## 一键提醒投票
-
-- 用于提醒相关用户组内的用户参与提案和人事案投票。
-- 若用户拥有[机器用户](https://zh.moegirl.org.cn/萌娘百科:机器用户)，使用此工具发送的消息都会被标记为机器人编辑，不会在最近更改出现。
-
-使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
-
-```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.js');
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.min.js');
 ```
 
 ## 批量发送讨论页提醒
@@ -33,5 +44,5 @@ mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.js');
+mw.loader.load('https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.min.js');
 ```
