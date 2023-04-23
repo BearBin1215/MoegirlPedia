@@ -135,7 +135,7 @@ $(() => (async () => {
 
             // 根据用户选项获取页面列表
             async getList() {
-                const PageList = [];
+                let PageList = [];
                 if (this.multiselectInput.getValue().includes("link")) {
                     await this.getLinkList().then((result) => {
                         PageList.push(...result);
@@ -146,8 +146,9 @@ $(() => (async () => {
                         PageList.push(...result);
                     });
                 }
+                PageList = [...new Set(PageList)]
                 $("#okp-all").text(PageList.length);
-                return [...new Set(PageList)]; // 去重
+                return PageList;
             }
 
             /**
