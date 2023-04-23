@@ -2,7 +2,7 @@
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 提供purge选项
- * @todo 根据noratelimit权限控制发送间隔
+ * @todo 根据noratelimit权限控制操作间隔（edit为10次/60s，purge为30次/60s）
  * 
  * @author BearBin
  * @contributor 鬼影233
@@ -149,7 +149,7 @@ $(() => (async () => {
                 return [...new Set(PageList)]; // 去重
             }
     
-            // 零编辑操作
+            // 零编辑
             async nullEdit(title) {
                 try {
                     await api.postWithToken("csrf", {
@@ -185,6 +185,24 @@ $(() => (async () => {
                     this.failList.push(title);
                     document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
                     document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
+                }
+            }
+
+            // 清除缓存
+            async purge(title) {
+                try {
+                    await api.post({
+                        format: "json",
+                        action: "purge",
+                        titles: title,
+                        forcelinkupdate: true,
+                    }).done(() => {
+                        this.state++;
+                        mw.notify(`清除页面【${title}】缓存成功。`, { type: "success" });
+                    });
+                } catch (e) {
+                    mw.notify(`清除页面【${title}】缓存失败：${e}。`, { type: "warn" });
+                    this.failList.push(title);
                 }
             }
     
