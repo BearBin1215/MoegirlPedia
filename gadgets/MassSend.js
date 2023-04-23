@@ -14,6 +14,12 @@ $(() => (async () => {
     const $body = $("body");
     const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
     const GadgetTitle = wgULS("批量发送讨论页消息", "批量發送討論頁消息");
+    const rights = await api.get({
+        action: "query",
+        meta: "userinfo",
+        uiprop: "ratelimits",
+    });
+    const Noratelimit = rights.query.userinfo.ratelimits.edit ? false : true;
 
     class MassSendWindow extends OO.ui.ProcessDialog {
         static static = {
@@ -88,6 +94,9 @@ $(() => (async () => {
                 sectionTitleField.$element,
                 messageContentField.$element,
             );
+            if(!Noratelimit) {
+                this.panelLayout.$element.prepend('<p style="font-size:1.143em"><b>提醒</b>：您未持有noratelimit权限，每分钟最多进行<u>10次</u>编辑，请分批发送并控制好速率。</p>');
+            }
             this.$body.append(this.panelLayout.$element);
         }
 
