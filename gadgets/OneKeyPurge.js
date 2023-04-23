@@ -72,7 +72,7 @@ $(() => (async () => {
                     this.panelLayout.$element.prepend($(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`)),
                     this.multiselectInput.$element,
                     $('<div style="margin:.8em 0 .5em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
-                    $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;max-height:10.5em;overflow-y:auto;"></div>'),
+                    $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;justify-content:center;max-height:10.5em;overflow-y:auto;"></div>'),
                 );
                 this.$body.append(this.panelLayout.$element);
             }
