@@ -1,7 +1,7 @@
 /**
  * @todo 输入检查
  * @todo 人事案根据标题自动检测申请用户组来选取通知的用户组
- * @rights edit
+ * @rights edit、noratelimit
  * @dependencies ["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]
  */
 
