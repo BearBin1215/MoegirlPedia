@@ -163,6 +163,10 @@ $(() => (async () => {
                 return PageList;
             }
 
+            get optionType() {
+                return this.optionRadioSelect.findSelectedItem()?.getData();
+            }
+
             /**
              * 根据输入的标题和操作情况，更改进度条样式来显示进度
              * @param title 页面标题
@@ -258,6 +262,9 @@ $(() => (async () => {
                     }, this);
                 } else if (action === "submit") {
                     return new OO.ui.Process($.when((async () => {
+                        if(!this.optionType) {
+                            mw.notify("请选择一种操作类型");
+                        }
                         this.failList = [];
                         this.changeList = [];
                         this.state = 0;
