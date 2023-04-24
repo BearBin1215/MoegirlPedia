@@ -26,7 +26,7 @@ $(() => (async () => {
             static static = {
                 ...super.static,
                 tagName: "div",
-                name: "lr-reminder",
+                name: "one-key-purge",
                 title: "批量清除页面缓存",
                 actions: [
                     {
