@@ -64,16 +64,13 @@ $(() => (async () => {
 
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）（开发中，暂无法使用）", selected: true }),
+                        new OO.ui.RadioOptionWidget({ data: "purge", label: "开发中，暂无法使用", selected: true }),
                         new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" }),
                     ],
                 });
                 const optionFiled = new OO.ui.FieldLayout(this.optionRadioSelect, {
                     label: "操作类型",
                 });
-
-                //this.typeFiled.$element.find(".oo-ui-multiselectWidget-group").css("display", "flex").css("font-size", "1.2em");
-                //this.optionFiled.$element.find("label").css("padding", "0").css("flex", "1 0");
 
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
@@ -87,6 +84,8 @@ $(() => (async () => {
                     $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;justify-content:center;max-height:10.5em;overflow-y:auto;"></div>'),
                 );
                 this.$body.append(this.panelLayout.$element);
+                $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");
+                $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css("display", "flex");
             }
 
             // 获取嵌入页面
