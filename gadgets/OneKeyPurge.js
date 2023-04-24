@@ -171,7 +171,7 @@ $(() => (async () => {
              * 根据输入的标题和操作情况，更改进度条样式来显示进度
              * @param title 页面标题
              * @param result 操作结果（success/warn/fail，大小写不敏感）
-             * @param err 错误/警告消息
+             * @param err （可选）错误/警告消息
              */
             progressChange(title, result, err = "") {
                 const optionText = this.optionType === "nulledit" ? "空编辑" : "清除缓存";
@@ -236,12 +236,10 @@ $(() => (async () => {
                         titles: title,
                         forcelinkupdate: true,
                     }).done(() => {
-                        this.state++;
-                        mw.notify(`清除页面【${title}】缓存成功。`, { type: "success" });
+                        this.progressChange(title, "success");
                     });
                 } catch (e) {
-                    mw.notify(`清除页面【${title}】缓存失败：${e}。`, { type: "warn" });
-                    this.failList.push(title);
+                    this.progressChange(title, "fail", e);
                 }
             }
 
