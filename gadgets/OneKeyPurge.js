@@ -26,7 +26,7 @@ $(() => (async () => {
                 ...super.static,
                 tagName: "div",
                 name: "lr-reminder",
-                title: "批量零编辑",
+                title: "批量清除页面缓存",
                 actions: [
                     {
                         action: "cancel",
@@ -64,8 +64,8 @@ $(() => (async () => {
 
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）", selected: true }),
-                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "空编辑（Null Edit）" }),
+                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）（开发中，暂无法使用）", selected: true }),
+                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" }),
                     ],
                 });
                 const optionFiled = new OO.ui.FieldLayout(this.optionRadioSelect, {
@@ -78,7 +78,7 @@ $(() => (async () => {
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
-                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，空编辑和清除缓存的速率将被限制为<u>8次/min</u>和<u>24次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
+                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>24次/min</u>和<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
                 this.panelLayout.$element.append(
                     $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                     typeFiled.$element,
@@ -175,7 +175,7 @@ $(() => (async () => {
              * @param err （可选）错误/警告消息
              */
             progressChange(title, result, err = "") {
-                const optionText = this.optionType === "nulledit" ? "空编辑" : "清除缓存";
+                const optionText = this.optionType === "nulledit" ? "零编辑" : "清除缓存";
                 switch (result.toLowerCase()) {
                     case "success": // 成功且无意外
                         this.state++;
@@ -313,7 +313,7 @@ $(() => (async () => {
         });
         windowManager.addWindows([DEDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "批量零编辑", "mass-null-edit")).on("click", () => {
+        $(mw.util.addPortletLink("p-cactions", "#", "批量清除缓存", "mass-null-edit")).on("click", () => {
             windowManager.openWindow(DEDialog);
             $body.css("overflow", "auto");
         });
