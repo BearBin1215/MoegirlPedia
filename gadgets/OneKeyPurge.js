@@ -148,12 +148,12 @@ $(() => (async () => {
             // 根据用户选项获取页面列表
             async getList() {
                 let PageList = [];
-                if (this.multiselectInput.getValue().includes("link")) {
+                if (this.typeSelectInput.getValue().includes("link")) {
                     await this.getLinkList().then((result) => {
                         PageList.push(...result);
                     });
                 }
-                if (this.multiselectInput.getValue().includes("include")) {
+                if (this.typeSelectInput.getValue().includes("include")) {
                     await this.getIncludeList().then((result) => {
                         PageList.push(...result);
                     });
