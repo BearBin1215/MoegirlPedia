@@ -63,12 +63,15 @@ $(() => (async () => {
                     label: "页面类型",
                 });
 
+                const purgeOption = new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）" });
+                const nullEditOption = new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" });
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）", selected: true }),
-                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）", selected: false }),
+                        purgeOption,
+                        nullEditOption,
                     ],
                 });
+                this.optionRadioSelect.selectItem(purgeOption);
                 const optionFiled = new OO.ui.FieldLayout(this.optionRadioSelect, {
                     label: "操作类型",
                 });
@@ -300,7 +303,6 @@ $(() => (async () => {
                                     }
                                 }
                             }
-
                         }).then(() => {
                             // this.close({ action });
                             if (this.failList.length > 0) {
