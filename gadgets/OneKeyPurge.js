@@ -174,10 +174,11 @@ $(() => (async () => {
              * @param err 错误/警告消息
              */
             progressChange(title, result, err = "") {
+                const optionText = this.optionType === "nulledit" ? "空编辑" : "清除缓存";
                 switch (result.toLowerCase()) {
                     case "success":
                         this.state++;
-                        mw.notify(`页面【${title}】空编辑成功。`, { type: "success" });
+                        mw.notify(`页面【${title}】${optionText}成功。`, { type: "success" });
                         $("#okp-done").text(this.state);
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
@@ -191,7 +192,7 @@ $(() => (async () => {
                         break;
                     case "fail":
                         this.failList.push(title);
-                        mw.notify(`页面【${title}】空编辑失败${err ? `：${err}` : ""}。`, { type: "warn" });
+                        mw.notify(`页面【${title}】${optionText}失败${err ? `：${err}` : ""}。`, { type: "warn" });
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
                         break;
@@ -262,7 +263,7 @@ $(() => (async () => {
                     }, this);
                 } else if (action === "submit") {
                     return new OO.ui.Process($.when((async () => {
-                        if(!this.optionType) {
+                        if (!this.optionType) {
                             mw.notify("请选择一种操作类型");
                         }
                         this.failList = [];
