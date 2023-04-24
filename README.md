@@ -2,6 +2,8 @@
 
 本GitHub库主要存放[BearBin](https://zh.moegirl.org.cn/User:BearBin)所写的一些小工具。
 
+如果在大陆地区无法正常加载，请将链接内的`cdn`更换为`fastly`，或直接引用萌百站内的用户页js。
+
 ## 一键提醒投票
 
 - 用于提醒相关用户组内的用户参与提案和人事案投票。
@@ -11,6 +13,7 @@
 
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/voteRemind.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");
 ```
 
 ## 一键更新页面缓存
@@ -24,6 +27,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/OneKeyPurge.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/OneKeyPurge.js&action=raw&ctype=text/javascript");
 ```
 
 ## 清除缓存小工具
@@ -36,6 +40,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/purgecache.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/purgecache.js&action=raw&ctype=text/javascript");
 ```
 
 ## 批量发送讨论页提醒
@@ -47,4 +52,5 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/MassSend.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/MassSend.js&action=raw&ctype=text/javascript");
 ```
