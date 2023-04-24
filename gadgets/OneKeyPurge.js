@@ -288,19 +288,19 @@ $(() => (async () => {
                             if (this.optionType === "nulledit") {
                                 for (const item of result) {
                                     await this.nullEdit(item);
-                                    if(!Noratelimit) {
+                                    if (!Noratelimit) {
                                         await this.waitInterval(6000);
                                     }
                                 }
                             } else {
                                 for (const item of result) {
                                     await this.purge(item);
-                                    if(!Noratelimit) {
+                                    if (!Noratelimit) {
                                         await this.waitInterval(2000);
                                     }
                                 }
                             }
-                            
+
                         }).then(() => {
                             // this.close({ action });
                             if (this.failList.length > 0) {
@@ -331,7 +331,7 @@ $(() => (async () => {
         });
         windowManager.addWindows([DEDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "批量清除缓存", "mass-null-edit")).on("click", () => {
+        $(mw.util.addPortletLink("p-cactions", "#", "批量清除缓存", "ca-purge")).on("click", () => {
             windowManager.openWindow(DEDialog);
             $body.css("overflow", "auto");
         });
