@@ -66,7 +66,7 @@ $(() => (async () => {
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
                         new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）", selected: true }),
-                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" }),
+                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）", selected: false }),
                     ],
                 });
                 const optionFiled = new OO.ui.FieldLayout(this.optionRadioSelect, {
@@ -87,7 +87,7 @@ $(() => (async () => {
                 this.$body.append(this.panelLayout.$element);
                 $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");
                 $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css("display", "flex").css("flex-wrap", "wrap");
-                $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css("flex", "1 0 11em");
+                $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css("flex", "1 0 11em").css("padding", "4px 0");
             }
 
             waitInterval(time) {
