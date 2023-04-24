@@ -3,6 +3,7 @@
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 提供purge选项
  * @todo 根据noratelimit权限控制操作间隔（edit为10次/60s，purge为30次/60s）
+ * @todo 指定从第几个页面开始/继续
  * 
  * @author BearBin
  * @contributor 鬼影233
@@ -10,16 +11,12 @@
 "use strict";
 $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") !== -1) {
-        await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui"]);
+        await mw.loader.using(["mediawiki.api", "mediawiki.user", "mediawiki.notification", "oojs-ui"]);
         const api = new mw.Api();
         const PAGENAME = mw.config.get("wgPageName");
         const $body = $("body");
-        const rights = await api.get({
-            action: "query",
-            meta: "userinfo",
-            uiprop: "ratelimits",
-        });
-        const Noratelimit = rights.query.userinfo.ratelimits.edit ? false : true;
+        const UserRights = await mw.user.getRights();
+        const Noratelimit = UserRights.includes("noratelimit");
 
         class DEWindow extends OO.ui.ProcessDialog {
             failList = [];
@@ -146,7 +143,7 @@ $(() => (async () => {
                         PageList.push(...result);
                     });
                 }
-                PageList = [...new Set(PageList)]
+                PageList = [...new Set(PageList)];
                 $("#okp-all").text(PageList.length);
                 return PageList;
             }
@@ -154,15 +151,14 @@ $(() => (async () => {
             /**
              * 根据输入的标题和操作情况，更改显示进度的状态
              * @param title 页面标题
-             * @param type 操作类型（nullEdit/purge）
              * @param result 操作结果（success/warn/fail，大小写不敏感）
              * @param err 错误/警告消息
              */
-            progressChange(title, type, result, err = "") {
+            progressChange(title, result, err = "") {
                 switch (result.toLowerCase()) {
                     case "success":
                         this.state++;
-                        mw.notify(`页面【${title}】${type === "purge" ? "清除缓存" : "空编辑"}成功。`, { type: "success" });
+                        mw.notify(`页面【${title}】空编辑成功。`, { type: "success" });
                         $("#okp-done").text(this.state);
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
@@ -176,7 +172,7 @@ $(() => (async () => {
                         break;
                     case "fail":
                         this.failList.push(title);
-                        mw.notify(`页面【${title}】清除缓存失败${err ? `：${err}` : ""}。`, { type: "warn" });
+                        mw.notify(`页面【${title}】空编辑失败${err ? `：${err}` : ""}。`, { type: "warn" });
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
                         break;
