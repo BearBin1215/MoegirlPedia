@@ -9,17 +9,13 @@
 
 "use strict";
 $(() => (async () => {
-    await mw.loader.using(["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]);
+    await mw.loader.using(["mediawiki.api", "mediawiki.user", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]);
     const api = new mw.Api;
     const $body = $("body");
     const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
     const GadgetTitle = wgULS("批量发送讨论页消息", "批量發送討論頁消息");
-    const rights = await api.get({
-        action: "query",
-        meta: "userinfo",
-        uiprop: "ratelimits",
-    });
-    const Noratelimit = rights.query.userinfo.ratelimits.edit ? false : true;
+    const UserRights = await mw.user.getRights();
+    const Noratelimit = UserRights.includes("noratelimit");
 
     class MassSendWindow extends OO.ui.ProcessDialog {
         static static = {
@@ -95,7 +91,7 @@ $(() => (async () => {
                 messageContentField.$element,
             );
             if (!Noratelimit) {
-                this.panelLayout.$element.prepend('<p style="font-size:1.143em"><b>提醒</b>：您未持有noratelimit权限，每分钟最多进行<u>10次</u>编辑，请分批发送并控制好速率。</p>');
+                this.panelLayout.$element.prepend('<p style="font-size:1.143em"><b>提醒</b>：您未持有noratelimit权限，发送速率将受到限制，请耐心等待。</p>');
             }
             this.$body.append(this.panelLayout.$element);
         }
@@ -151,6 +147,10 @@ $(() => (async () => {
             return true;
         }
 
+        waitInterval(time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+        }
+
         getActionProcess(action) {
             if (action === "cancel") {
                 return new OO.ui.Process(() => {
@@ -179,6 +179,9 @@ $(() => (async () => {
                                                     errorList.push(user); // 记录发送失败
                                                 }
                                             });
+                                        if (!Noratelimit) {
+                                            await this.waitInterval(6000);
+                                        }
                                     } else {
                                         mw.notify(wgULS(`用户${user.replaceAll(/\/.*/g, "")}未创建。`, `使用者${user.replaceAll(/\/.*/g, "")}未創建。`));
                                         errorList.push(user); // 记录发送失败
