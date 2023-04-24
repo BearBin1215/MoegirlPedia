@@ -176,21 +176,21 @@ $(() => (async () => {
             progressChange(title, result, err = "") {
                 const optionText = this.optionType === "nulledit" ? "空编辑" : "清除缓存";
                 switch (result.toLowerCase()) {
-                    case "success":
+                    case "success": // 成功且无意外
                         this.state++;
                         mw.notify(`页面【${title}】${optionText}成功。`, { type: "success" });
                         $("#okp-done").text(this.state);
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
                         break;
-                    case "warn":
+                    case "warn": // 成功但出现意外，目前仅用于编辑产生意外的源代码变动
                         this.state++;
                         this.changeList.push(title);
                         $("#okp-done").text(this.state);
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
                         document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
                         break;
-                    case "fail":
+                    case "fail": // 失败
                         this.failList.push(title);
                         mw.notify(`页面【${title}】${optionText}失败${err ? `：${err}` : ""}。`, { type: "warn" });
                         document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
@@ -212,29 +212,18 @@ $(() => (async () => {
                     }).done((data) => {
                         document.getElementById(`okp-progress-${title}`).scrollIntoView();
                         if (data.edit.result === "Success") {
-                            this.state++;
                             $("#okp-done").text(this.state);
                             if (data.edit.nochange === "") {
-                                mw.notify(`页面【${title}】零编辑成功。`, { type: "success" });
-                                document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
-                                document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
+                                this.progressChange(title, "success");
                             } else {
-                                this.changeList.push(title);
-                                document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
-                                document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
+                                this.progressChange(title, "warn");
                             }
                         } else {
-                            mw.notify(`页面【${title}】零编辑失败。`, { type: "warn" });
-                            this.failList.push(title);
-                            document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
-                            document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
+                            this.progressChange(title, "fail");
                         }
                     });
                 } catch (e) {
-                    mw.notify(`页面【${title}】零编辑失败：${e}。`, { type: "warn" });
-                    this.failList.push(title);
-                    document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
-                    document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
+                    this.progressChange(title, "fail", e);
                 }
             }
 
