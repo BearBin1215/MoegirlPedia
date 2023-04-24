@@ -73,7 +73,7 @@ $(() => (async () => {
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
-                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。<br>（其实这个功能压根还没做，建议不要使用此工具刷新被大量嵌入或链入的页面）";
+                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。";
                 this.panelLayout.$element.append(
                     $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                     typeFiled.$element,
