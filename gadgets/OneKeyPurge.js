@@ -78,7 +78,7 @@ $(() => (async () => {
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
-                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，空编辑速率将被限制为<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
+                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，空编辑和清除缓存的速率将被限制为<u>8次/min</u>和<u>24次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
                 this.panelLayout.$element.append(
                     $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                     typeFiled.$element,
@@ -163,6 +163,7 @@ $(() => (async () => {
                 return PageList;
             }
 
+            // 返回用户所选择的操作
             get optionType() {
                 return this.optionRadioSelect.findSelectedItem()?.getData();
             }
