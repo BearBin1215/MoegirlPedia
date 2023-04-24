@@ -1,11 +1,14 @@
 /**
  * @description 批量零编辑
- * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
  * @todo 指定从第几个页面开始/继续
  * 
  * @author BearBin
  * @contributor 鬼影233
  */
+
+// eslint-disable-next-line
+var _addText = '{{Documentation|content=本小工具用于快速清理嵌入/链入到某个页面的所有页面。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码\n<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/OneKeyPurge.js&action=raw&ctype=text/javascript");</pre>\n如果您有好的建议，欢迎前往[[User_talk:BearBin|我的讨论页]]，或在GitHub上[https://github.com/BearBin1215/MoegirlPedia/issues 提交issue]。\n*作者：[[User:BearBin|BearBin]]、[[User:鬼影233|鬼影233]]}}';
+
 "use strict";
 $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") !== -1) {
