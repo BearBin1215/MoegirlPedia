@@ -52,22 +52,37 @@ $(() => (async () => {
                     id: "one-key-purge",
                 });
 
-                this.multiselectInput = new OO.ui.CheckboxMultiselectInputWidget({
+                this.typeSelectInput = new OO.ui.CheckboxMultiselectInputWidget({
                     options: [
                         { data: "link", label: "链接" },
                         { data: "include", label: "嵌入" },
                     ],
                 });
-                this.multiselectInput.$element.find(".oo-ui-multiselectWidget-group").css("display", "flex").css("font-size", "1.2em");
-                this.multiselectInput.$element.find("label").css("padding", "0").css("flex", "1 0");
+                const typeFiled = new OO.ui.FieldLayout(this.typeSelectInput, {
+                    label: "页面类型",
+                });
+
+                this.optionRadioSelect = new OO.ui.RadioSelectWidget({
+                    items: [
+                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）", selected: true }),
+                        new OO.ui.RadioOptionWidget({ data: "nulledit", label: "空编辑（Null Edit）" }),
+                    ],
+                });
+                const optionFiled = new OO.ui.FieldLayout(this.optionRadioSelect, {
+                    label: "操作类型",
+                });
+
+                //this.typeFiled.$element.find(".oo-ui-multiselectWidget-group").css("display", "flex").css("font-size", "1.2em");
+                //this.optionFiled.$element.find("label").css("padding", "0").css("flex", "1 0");
 
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
                     "<b>提醒</b>：您未持有<code>noratelimit</code>权限，空编辑速率将被限制为<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
                 this.panelLayout.$element.append(
-                    this.panelLayout.$element.prepend($(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`)),
-                    this.multiselectInput.$element,
+                    $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
+                    typeFiled.$element,
+                    optionFiled.$element,
                     $('<div style="margin:.8em 0 .5em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
                     $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;justify-content:center;max-height:10.5em;overflow-y:auto;"></div>'),
                 );
@@ -149,7 +164,7 @@ $(() => (async () => {
             }
 
             /**
-             * 根据输入的标题和操作情况，更改显示进度的状态
+             * 根据输入的标题和操作情况，更改进度条样式来显示进度
              * @param title 页面标题
              * @param result 操作结果（success/warn/fail，大小写不敏感）
              * @param err 错误/警告消息
@@ -253,6 +268,7 @@ $(() => (async () => {
                             if (result.length > 0) {
                                 mw.notify(`共${result.length}个页面，开始执行零编辑……`);
                             }
+                            // 进度条初始化
                             document.getElementById("okp-progress").innerHTML = "";
                             const progressInner = document.createElement("div");
                             progressInner.style.width = "1em";
