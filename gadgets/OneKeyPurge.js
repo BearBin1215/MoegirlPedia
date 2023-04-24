@@ -1,5 +1,5 @@
 /**
- * @description 批量零编辑
+ * @description 批量刷新缓存
  * @todo 指定从第几个页面开始/继续
  * 
  * @author BearBin
