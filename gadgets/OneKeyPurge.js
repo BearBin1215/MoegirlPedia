@@ -259,8 +259,8 @@ $(() => (async () => {
                     }, this);
                 } else if (action === "submit") {
                     return new OO.ui.Process($.when((async () => {
-                        if (!this.optionType) {
-                            mw.notify("请选择一种操作类型");
+                        if (this.typeSelectInput.getValue().length === 0) {
+                            mw.notify("请选择页面类型。");
                         }
                         this.failList = [];
                         this.changeList = [];
