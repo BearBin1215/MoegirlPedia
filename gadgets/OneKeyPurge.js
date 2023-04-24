@@ -1,7 +1,6 @@
 /**
  * @description 批量零编辑
  * @warning 对大量被链入或嵌入的页面使用此工具将会向服务器发送相当大量的请求，慎用！
- * @todo 提供purge选项
  * @todo 根据noratelimit权限控制操作间隔（edit为10次/60s，purge为30次/60s）
  * @todo 指定从第几个页面开始/继续
  * 
@@ -64,7 +63,7 @@ $(() => (async () => {
 
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "purge", label: "（开发中）", selected: true }),
+                        new OO.ui.RadioOptionWidget({ data: "purge", label: "清除缓存（Purge）", selected: true }),
                         new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" }),
                     ],
                 });
@@ -75,7 +74,7 @@ $(() => (async () => {
                 const noteText = Noratelimit ?
                     "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                     :
-                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>24次/min</u>和<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根没有做好，建议不要使用此工具刷新被大量嵌入或链入的页面）";
+                    "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>24次/min</u>和<u>8次/min</u>，请耐心等待。<br>（其实这个功能压根还没做，建议不要使用此工具刷新被大量嵌入或链入的页面）";
                 this.panelLayout.$element.append(
                     $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                     typeFiled.$element,
@@ -262,7 +261,7 @@ $(() => (async () => {
                         await this.getList().then(async (result) => {
                             console.log(result);
                             if (result.length > 0) {
-                                mw.notify(`共${result.length}个页面，开始执行零编辑……`);
+                                mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
                             }
                             // 进度条初始化
                             document.getElementById("okp-progress").innerHTML = "";
@@ -280,9 +279,16 @@ $(() => (async () => {
                                 document.getElementById("okp-progress").appendChild(_progressInner);
                             }
                             this.updateSize();
-                            for (const item of result) {
-                                await this.nullEdit(item);
+                            if (this.optionType === "nulledit") {
+                                for (const item of result) {
+                                    await this.nullEdit(item);
+                                }
+                            } else {
+                                for (const item of result) {
+                                    await this.purge(item);
+                                }
                             }
+                            
                         }).then(() => {
                             // this.close({ action });
                             if (this.failList.length > 0) {
