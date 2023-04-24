@@ -64,7 +64,7 @@ $(() => (async () => {
 
                 this.optionRadioSelect = new OO.ui.RadioSelectWidget({
                     items: [
-                        new OO.ui.RadioOptionWidget({ data: "purge", label: "开发中，暂无法使用", selected: true }),
+                        new OO.ui.RadioOptionWidget({ data: "purge", label: "（开发中）", selected: true }),
                         new OO.ui.RadioOptionWidget({ data: "nulledit", label: "零编辑（Null Edit）" }),
                     ],
                 });
@@ -85,7 +85,8 @@ $(() => (async () => {
                 );
                 this.$body.append(this.panelLayout.$element);
                 $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");
-                $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css("display", "flex");
+                $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css("display", "flex").css("flex-wrap", "wrap");
+                $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css("flex", "1 0 11em");
             }
 
             // 获取嵌入页面
