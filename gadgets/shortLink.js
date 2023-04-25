@@ -1,5 +1,10 @@
-"use strict";
+/**
+ * 重构自MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/src/gadgets/shortlink/MediaWiki:Gadget-shortlink.js
+ * 原作者：AnnAngela、星海子
+ */
+
 // <pre>
+"use strict";
 $(() => {
     const wgArticleId = mw.config.get("wgArticleId") || -1;
     if (wgArticleId <= 0) {
