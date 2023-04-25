@@ -150,5 +150,10 @@ $(() => {
             markStatus(this, false);
         }, 3000);
     });
+    $(window).on("resize", () => {
+        if(vector) {
+            $("#mw-panel").height($("body").height());
+        }
+    });
 });
 // </pre>
