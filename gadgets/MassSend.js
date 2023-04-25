@@ -132,7 +132,7 @@ $(() => (async () => {
                 section: "new",
                 watchlist: "nochange",
                 tags: "Automation tool",
-                bot: isBot ? true : false,
+                bot: isBot,
                 title: `User_talk:${user}`,
                 sectiontitle: title,
                 text: message,

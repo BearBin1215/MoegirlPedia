@@ -16,7 +16,7 @@ $(() => (async () => {
         const api = new mw.Api;
         const $body = $("body");
         const PAGENAME = mw.config.get("wgPageName");
-        const isProposal = mw.config.get("wgTitle") === "讨论版/权限变更" ? false : true; // 提案还是人事案
+        const isProposal = mw.config.get("wgTitle").startsWith("提案/讨论中提案/"); // 提案还是人事案
         const isBot = mw.config.get("wgUserGroups").includes("flood"); // 用户是否拥有机器用户权限
         const GadgetTitle = wgULS("一键发送投票提醒", "一鍵發送投票提醒");
 
@@ -194,7 +194,7 @@ $(() => (async () => {
                         section: "new",
                         watchlist: "nochange",
                         tags: "Automation tool",
-                        bot: isBot ? true : false,
+                        bot: isBot,
                         title: `User_talk:${userName}`,
                         sectiontitle: "投票提醒",
                         text: `<i style="font-size:small">本通知使用一键提醒小工具发出，如出现错误，请联系[[User_talk:BearBin|BearBin]]。若不希望接到此提醒，请在[[User:BearBin/js/voteRemind.js/Noremind|这个页面]]记录您的用户名。</i><br/>您好，${isProposal ? "提案" : "人事案"}【${link}】已经开始投票。您尚未投票，请及时参与喵～——~~~~`,
