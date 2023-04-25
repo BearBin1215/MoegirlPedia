@@ -26,7 +26,7 @@ $(() => {
         } else {
             $("#moe-siderail-sitenotice").after($slCard);
         }
-        $("#p-sl h3").after('<ul id="p-sl-list" style="list-style: none;"></ul>');
+        $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
     }
     const $list = $("#p-sl-list");
 
@@ -88,9 +88,13 @@ $(() => {
     // 在短链栏添加复制项
     const addItem = (link) => {
         const $item = $(`<li id="sl-${link.id}"></li>`);
-        $item.append(`<div><a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a></div>`);
-        $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
-        $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        $item.append(`<a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a>`);
+        if(vector) {
+            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
+            $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        } else {
+            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        }
         $list.append($item);
     };
 
