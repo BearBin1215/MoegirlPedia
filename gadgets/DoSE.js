@@ -63,9 +63,9 @@ $(() => (async () => {
                                 format: "json",
                                 action: "edit",
                                 minor: true,
-                                summary: summary,
-                                title: title,
-                                text: text,
+                                summary,
+                                title,
+                                text,
                             })
                                 .done(() => {
                                     oouiDialog.alert(`发送成功！合计尝试${attempts}次。`);
