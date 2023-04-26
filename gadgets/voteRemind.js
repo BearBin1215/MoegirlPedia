@@ -1,5 +1,7 @@
 /**
  * @todo 输入检查
+ * @todo 发送前确认用户列表
+ * @todo 排除投票开始后上任的巡查/管理（考虑通过读取Module:UserGroup/data的历史版本）
  * @todo 人事案根据标题自动检测申请用户组来选取通知的用户组
  * @rights edit、noratelimit
  * @dependencies ["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui-core", "ext.gadget.site-lib"]
