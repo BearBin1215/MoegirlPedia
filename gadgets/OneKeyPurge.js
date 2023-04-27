@@ -211,6 +211,8 @@ $(() => (async () => {
             // 零编辑
             async nullEdit(title) {
                 try {
+                    document.getElementById(`okp-progress-${title}`).scrollIntoView();
+                    document.getElementById(`okp-progress-${title}`).classList.add("oo-ui-pendingElement-pending");
                     await api.postWithToken("csrf", {
                         format: "json",
                         action: "edit",
@@ -219,7 +221,7 @@ $(() => (async () => {
                         nocreate: true,
                         title,
                     }).done((data) => {
-                        document.getElementById(`okp-progress-${title}`).scrollIntoView();
+                        document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
                         if (data.edit.result === "Success") {
                             $("#okp-done").text(this.state);
                             if (data.edit.nochange === "") {
@@ -239,12 +241,15 @@ $(() => (async () => {
             // 清除缓存
             async purge(title) {
                 try {
+                    document.getElementById(`okp-progress-${title}`).scrollIntoView();
+                    document.getElementById(`okp-progress-${title}`).classList.add("oo-ui-pendingElement-pending");
                     await api.post({
                         format: "json",
                         action: "purge",
                         titles: title,
                         forcelinkupdate: true,
                     }).done(() => {
+                        document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
                         this.progressChange(title, "success");
                     });
                 } catch (e) {
