@@ -234,6 +234,7 @@ $(() => (async () => {
                         }
                     });
                 } catch (e) {
+                    document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
                     this.progressChange(title, "fail", e);
                 }
             }
@@ -253,6 +254,7 @@ $(() => (async () => {
                         this.progressChange(title, "success");
                     });
                 } catch (e) {
+                    document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
                     this.progressChange(title, "fail", e);
                 }
             }
