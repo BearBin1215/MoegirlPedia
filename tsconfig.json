@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "removeComments": true,
+        "target": "ES3",
+        "outDir": "gadgets/build",
+        "alwaysStrict": true,
+        "strict": true,
+        "downlevelIteration": true,
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "ignoreDeprecations": "5.0"
+    },
+    "include": [
+        "gadgets",
+    ],
+    "exclude": [
+        "gadgets/build",
+    ],
+}
