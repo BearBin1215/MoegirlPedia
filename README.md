@@ -7,6 +7,8 @@
 - [gadgets](/gadgets/)目录内放置一些较长的工具，一般建议通过`mw.loader.load()`引入，因此也不需要编译。
 - [oddment](/oddment/)目录内主要是一些简单短小的小工具，一般直接编译后放入个人js使用，编译后的文件在[oddment/build](/oddment/build/)内。
 
+目前，[gadgets](/gadgets/)内的脚本大多数使用[GitHub Actions](/.github/workflows/GadgetSynchronize.yml)在提交编辑时自动同步至萌百。
+
 ## 一键提醒投票
 
 - 用于提醒相关用户组内的用户参与提案和人事案投票。
