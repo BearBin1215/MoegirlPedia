@@ -1,0 +1,24 @@
+name: 同步用户工具
+on:
+  push:
+    branches: 
+      - main
+    paths:
+      - gadgets/**/*.js
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+      - name: 安装依赖
+        run: npm ci
+      - name: 同步页面
+        env:
+          MW_USERNAME: BearBin
+          MW_PASSWORD: ${{ secrets.MGP_PASSWORD }}
+        run: node script/Synchronize.js
