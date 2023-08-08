@@ -20,6 +20,7 @@ const config = {
             "BatchSend.js",
             "OneKeyPurge.js",
             "QuickThank.js",
+            "SectionPermanentLink.js",
             "FileUsedNotLinked.js",
             "LyricStyleToggle.js",
             "NewpagesCat.js",
