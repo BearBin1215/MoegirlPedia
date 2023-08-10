@@ -27,6 +27,7 @@ const config = {
             "BulkMove.js",
             "Excel2Wiki.js",
             "WikiplusSummary.js",
+            "ShowContributor.js",
         ],
     },
 };
