@@ -1,141 +1,188 @@
-// eslint-disable-next-line
-var _addText = '{{Documentation|content=本小工具用于在主、模板、分类、帮助、模块名字空间快速列出本页贡献者。\n\n根据二饼所提的想法随手写的，不保修、不保好看、不保加功能。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/ShowContributors.js&action=raw&ctype=text/javascript");</pre>}}';
-
 "use strict";
 $(() => (async () => {
-    if([0, 10, 12, 14, 828].includes(mw.config.get("wgNamespaceNumber"))) {
-        await mw.loader.using(["mediawiki.api", "oojs-ui-core"]);
-        const api = new mw.Api();
+    if (
+        mw.config.get("wgNamespaceNumber") < 0 ||
+        mw.config.get("wgNamespaceNumber") % 2 === 1 ||
+        mw.config.get("wgArticleId") === 0 ||
+        mw.config.get("wgAction") !== "view"
+    ) { return; }
+    await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui", "jquery.tablesorter"]);
+    mw.loader.addStyleTag(`
+    #show-contributor-block {
+        text-align: right;
+    }
+    #firstHeading {
+        margin-bottom: 0;
+    }
+    #show-contributor-header {
+        position: sticky;
+        top: 0;
+        background: #FFF;
+        padding: .3em;
+        text-align: center;
+        border-bottom: 1px solid #aaa;
+        font-weight: 600;
+    }
+    #show-contributor-headline {
+        font-size: 1.3em;
+    }
+    #show-contributor-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1em;
+        height: 1em;
+        line-height: 1;
+        cursor: pointer;
+        padding: .3em;
+        font-size: 1.2em;
+        border-radius: 50%;
+    }
+    #show-contributor-close:hover {
+        background-color: #eee;
+    }
+    #show-contributor-table {
+        width: 100%;
+        margin: 0;
+    }
+    #show-contributor-table .user-avatar {
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+    }`);
+    class ContributorDialog extends OO.ui.Dialog {
+        static static = {
+            ...super.static,
+            name: "ShowContributor",
+            size: "large",
+        };
+        initialize() {
+            super.initialize();
 
-        const ShowContributors = $('<div id="contributors"></div>');
-        const contriButton = new OO.ui.ButtonWidget({
-            label: "本页贡献者",
-            icon: "search",
-            flags: "progressive",
-            id: "contributor-button",
-        });
-        const contributorList = $('<ul id="contributor-list"></ul>').hide();
-        ShowContributors
-            .append(contriButton.$element)
-            .append(contributorList);
-        mw.loader.addStyleTag(`
-            #firstHeading {
-                margin-bottom: 0;
-            }
-            #mw-body-container #moe-article-header-container {
-                padding-bottom: 0;
-            }
-            #contributors {
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-            }
-            body.skin-vector #contributors {
-                border-bottom: 1px solid rgba(0, 0, 0, .2);
-            }
-            body.skin-moeskin #contributors {
-                border-top: 1px solid rgba(0, 0, 0, .1);
-            }
-            #contributor-button {
-                margin: 0;
-            }
-            #contributors>div {
-                font-weight: 700;
-                padding: 0 .4em;
-                white-space: nowrap;
-            }
-            #contributor-list {
-                display: flex;
-                max-width: 100%;
-                overflow-x: auto;
-                margin: 0;
-                position: relative;
-            }
-            #contributor-list::-webkit-scrollbar {
-                height: 10px;
-            }
-            #contributor-list::-webkit-scrollbar-button {
-                display: none;
-            }
-            #contributor-list::-webkit-scrollbar-thumb {
-                border: 2px solid transparent;
-                border-radius: 15px;
-                background-clip: content-box;
-                box-shadow: inset 0 0 0 20px rgba(127, 127, 127, .7);
-            }
-            #contributor-list li,
-            #contributor-list a {
-                display: flex;
-                align-items: center;
-            }
-            #contributor-list img {
-                max-width: initial;
-                width: 32px;
-                border-radius: 50%;
-            }
-            #contributor-list::before,
-            #contributor-list::after {
-                content: "\\00a0";
-                flex: 0 0 20px;
-                background-repeat: no-repeat;
-                background-position: center;
-                position: sticky;
-                background-color: #FFF;
-            }
-            #contributor-list::before {
-                background-image: linear-gradient(transparent,transparent),url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E%3Ctitle%3Eprevious%3C/title%3E%3Cpath d=%22M4.8 10l9 9 1.4-1.5L7.8 10l7.4-7.5L13.8 1z%22/%3E%3C/svg%3E");
-                left: 0;
-            }
-            #contributor-list::after {
-                background-image: linear-gradient(transparent,transparent),url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E%3Ctitle%3Enext%3C/title%3E%3Cpath d=%22M6.2 1L4.8 2.5l7.4 7.5-7.4 7.5L6.2 19l9-9z%22/%3E%3C/svg%3E");
-                right: 0;
-            }
-            #contributors,
-            #contributors .oo-ui-labelElement-label {
-                font-size: 1rem;
-            }
-        `);
+            // 标题和关闭按钮
+            this.$headline = $('<div id="show-contributor-headline">本页贡献统计</div>');
+            this.$closeButton = $('<div id="show-contributor-close">×</div>');
+            this.$header = $('<div id="show-contributor-header"></div>').append(
+                this.$headline,
+                this.$closeButton,
+            );
+            // 点击关闭
+            this.$closeButton.on("click", () => this.close());
 
-        switch(mw.config.get("skin")) {
-            case "moeskin":
-                $("#moe-article-header-title").after(ShowContributors);
-                break;
-            case "vector":
-                $("#firstHeading").after(ShowContributors);
-                break;
+            // 统计表
+            this.$thead = $("<thead><th>用户</th><th>编辑数</th><th>增加字节数</th><th>删减字节数</th></thead>");
+            this.$tbody = $("<tbody></tbody>");
+            this.$table = $('<table id="show-contributor-table" class="wikitable"></div>').append(
+                this.$thead,
+                this.$tbody,
+            );
+
+            this.$body.append(
+                this.$header,
+                this.$table,
+            );
         }
 
-        // 考虑弄一个长按滚动
-        const nextPress = setInterval(() => {
-
-        }, 100);
-
-
-        contriButton.on("click", async () => {
-            $("#contributor-button a").addClass("oo-ui-pendingElement-pending");
-            // 应该没有页面超过500个编辑者吧，暂时不管这个问题
-            const contriData = await api.get({
+        /**
+         * 获取贡献者
+         * @returns 贡献者及其编辑情况
+         */
+        getContributors = async () => {
+            const api = new mw.Api();
+            const contributors = {};
+            let rvcontinue = undefined;
+            let prevSize = 0; // 用于记录上次编辑的字节数
+            const config = {
                 action: "query",
-                prop: "contributors",
+                format: "json",
+                prop: "revisions",
                 titles: mw.config.get("wgPageName"),
-                pcexcludegroup: "bot",
-                pclimit: "max",
-            });
-            for (const item of Object.values(contriData.query.pages)[0].contributors) {
-                const listItem = $("<li></li>");
-                listItem.html(`<a href="/User:${item.name}" title="${item.name}"><img src="//commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${item.name}&res=128" /></a>`);
-                contributorList.append(listItem);
-            }
-            contributorList.show();
-            ShowContributors.prepend("<div>本页贡献者</div>");
-            contriButton.$element.remove();
-        });
+                rvprop: "user|size",
+                rvlimit: "max",
+                rvdir: "newer",
+            };
 
-        $("#contributor-list::before").on("mousedown", (e) => {
-            e.preventDefault();
-        });
-        $("#contributor-list::after").on("mousedown", (e) => {
-            e.preventDefault();
-        });
+            // 循环获取所有编辑记录的用户和字节
+            while (rvcontinue !== false) {
+                if (typeof rvcontinue !== "undefined") {
+                    config[rvcontinue] = rvcontinue;
+                }
+                try {
+                    const res = await api.get(config);
+                    rvcontinue = res.continue?.rvcontinue || false;
+                    for (const item of Object.values(res.query.pages)[0].revisions) {
+                        contributors[item.user] ||= [];
+                        contributors[item.user].push(item.size - prevSize);
+                        prevSize = item.size;
+                    }
+                } catch (error) {
+                    mw.notify(`获取编辑记录失败：${error}`, { type: "error" });
+                }
+            }
+            return contributors;
+        };
+
+        // 向表格添加一行
+        addRow = ($tbody, data) => {
+            $tbody.append($("<tr></tr>").append(
+                `<td><a href="/User:${data.user}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
+                `<td>${data.count}</td>`,
+                `<td>${data.add}</td>`,
+                `<td>${data.remove}</td>`,
+            ));
+        };
+
+        // 分析数据，展示结果
+        showContributors = (contributors) => {
+            for (const key in contributors) {
+                let add = 0,
+                    remove = 0;
+                for (const item of contributors[key]) {
+                    if (item > 0) {
+                        add += item;
+                    } else {
+                        remove += item;
+                    }
+                }
+                this.addRow(this.$tbody, {
+                    user: key,
+                    count: contributors[key].length,
+                    add,
+                    remove,
+                });
+            }
+        };
     }
+
+    const windowManager = new OO.ui.WindowManager({
+        id: "show-contributor",
+    });
+    $("body").append(windowManager.$element);
+    const SCDialog = new ContributorDialog();
+    windowManager.addWindows([SCDialog]);
+
+    const contributorButton = new OO.ui.ButtonWidget({
+        label: "本页贡献者",
+        icon: "search",
+        flags: "progressive",
+        id: "show-contributor-button",
+    });
+    const $contributorBlock = $('<div id="show-contributor-block"></div>').append(contributorButton.$element);
+    switch (mw.config.get("skin")) {
+        case "moeskin":
+            $("#moe-article-header-title").after($contributorBlock);
+            break;
+        case "vector":
+        default:
+            $("#firstHeading").after($contributorBlock);
+            break;
+    }
+
+    contributorButton.on("click", async () => {
+        mw.notify("正在加载本页贡献者，请稍等……");
+        const contributors = await SCDialog.getContributors();
+        SCDialog.showContributors(contributors);
+        SCDialog.$table.tablesorter();
+        windowManager.openWindow(SCDialog);
+    });
 })());
