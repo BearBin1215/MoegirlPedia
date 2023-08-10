@@ -1,8 +1,10 @@
+// eslint-disable-next-line
+var _addText = '{{Documentation|content=本小工具用于在主、模板、分类、帮助、模块名字空间列出本页贡献者，统计贡献者的编辑次数和增删字节数。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/ShowContributors.js&action=raw&ctype=text/javascript");</pre>}}';
+
 "use strict";
 $(() => (async () => {
     if (
-        mw.config.get("wgNamespaceNumber") < 0 ||
-        mw.config.get("wgNamespaceNumber") % 2 === 1 ||
+        ![0, 10, 12, 14, 828].includes(mw.config.get("wgNamespaceNumber")) ||
         mw.config.get("wgArticleId") === 0 ||
         mw.config.get("wgAction") !== "view"
     ) { return; }
