@@ -137,20 +137,11 @@ $(() => (async () => {
         // 分析数据，展示结果
         showContributors = (contributors) => {
             for (const key in contributors) {
-                let add = 0,
-                    remove = 0;
-                for (const item of contributors[key]) {
-                    if (item > 0) {
-                        add += item;
-                    } else {
-                        remove += item;
-                    }
-                }
                 this.addRow(this.$tbody, {
                     user: key,
                     count: contributors[key].length,
-                    add,
-                    remove,
+                    add: contributors[key].reduce((acc, cur) => cur > 0 ? acc + cur : acc, 0),
+                    remove: contributors[key].reduce((acc, cur) => cur < 0 ? acc + cur : acc, 0),
                 });
             }
         };
