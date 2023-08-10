@@ -10,11 +10,11 @@ $(() => (async () => {
     ) { return; }
     await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui", "jquery.tablesorter"]);
     mw.loader.addStyleTag(`
-    #show-contributor-block {
-        text-align: right;
-    }
-    #firstHeading {
-        margin-bottom: 0;
+    #show-contributor-button {
+        float: right;
+        font-size:. 8em;
+        margin-right: 0;
+        margin-left: .5em;
     }
     #show-contributor-header {
         position: sticky;
@@ -160,14 +160,13 @@ $(() => (async () => {
         flags: "progressive",
         id: "show-contributor-button",
     });
-    const $contributorBlock = $('<div id="show-contributor-block"></div>').append(contributorButton.$element);
     switch (mw.config.get("skin")) {
         case "moeskin":
-            $("#moe-article-header-title").after($contributorBlock);
+            $("#tagline").prepend(contributorButton.$element);
             break;
         case "vector":
         default:
-            $("#firstHeading").after($contributorBlock);
+            $("#bodyContent").prepend(contributorButton.$element);
             break;
     }
 
