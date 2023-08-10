@@ -127,7 +127,7 @@ $(() => (async () => {
         // 向表格添加一行
         addRow = ($tbody, data) => {
             $tbody.append($("<tr></tr>").append(
-                `<td><a href="/User:${data.user}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
+                `<td><a href="${mw.config.get("wgArticlePath").replace("$1", `User:${data.user}`)}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
                 `<td>${data.count}</td>`,
                 `<td>${data.add}</td>`,
                 `<td>${data.remove}</td>`,
