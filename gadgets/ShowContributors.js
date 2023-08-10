@@ -58,6 +58,7 @@ $(() => (async () => {
             name: "ShowContributor",
             size: "large",
         };
+        got = false;
         initialize() {
             super.initialize();
 
@@ -136,6 +137,7 @@ $(() => (async () => {
 
         // 分析数据，展示结果
         showContributors = (contributors) => {
+            this.$tbody.empty();
             for (const key in contributors) {
                 this.addRow(this.$tbody, {
                     user: key,
@@ -144,6 +146,7 @@ $(() => (async () => {
                     remove: contributors[key].reduce((acc, cur) => cur < 0 ? acc + cur : acc, 0),
                 });
             }
+            this.got = true;
         };
     }
 
@@ -171,10 +174,12 @@ $(() => (async () => {
     }
 
     contributorButton.on("click", async () => {
-        mw.notify("正在加载本页贡献者，请稍等……");
-        const contributors = await SCDialog.getContributors();
-        SCDialog.showContributors(contributors);
-        SCDialog.$table.tablesorter();
+        if(!SCDialog.got) {
+            mw.notify("正在加载本页贡献者，请稍等……");
+            const contributors = await SCDialog.getContributors();
+            SCDialog.showContributors(contributors);
+            SCDialog.$table.tablesorter();
+        }
         windowManager.openWindow(SCDialog);
     });
 })());
