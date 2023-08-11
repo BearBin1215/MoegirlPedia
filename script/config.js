@@ -28,6 +28,7 @@ const config = {
             "Excel2Wiki.js",
             "WikiplusSummary.js",
             "ShowContributors.js",
+            "MassEdit.js",
         ],
     },
 };
