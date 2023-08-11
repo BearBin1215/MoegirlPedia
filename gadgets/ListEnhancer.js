@@ -60,7 +60,7 @@ if (mw.config.get("wgNamespaceNumber") === -1) {
 
         // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
         $(".mw-search-result-heading>a").each((_, ele) => {
-            linkList.push(decodeURIComponent($(ele).attr("href")).replace("/", "").replace("_", " "));
+            linkList.push(decodeURIComponent($(ele).attr("href")).replace("/", "").replaceAll("_", " "));
             $(ele).before(`<a class="searchplus-edit" href="${ele.href}?action=edit">[编辑]</a>`);
         });
 

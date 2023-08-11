@@ -10,11 +10,11 @@ $(() => (async () => {
     ) { return; }
     await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui", "jquery.tablesorter"]);
     mw.loader.addStyleTag(`
-    #show-contributor-block {
-        text-align: right;
-    }
-    #firstHeading {
-        margin-bottom: 0;
+    #show-contributor-button {
+        float: right;
+        font-size:. 8em;
+        margin-right: 0;
+        margin-left: .5em;
     }
     #show-contributor-header {
         position: sticky;
@@ -58,6 +58,7 @@ $(() => (async () => {
             name: "ShowContributor",
             size: "large",
         };
+        got = false;
         initialize() {
             super.initialize();
 
@@ -127,7 +128,7 @@ $(() => (async () => {
         // 向表格添加一行
         addRow = ($tbody, data) => {
             $tbody.append($("<tr></tr>").append(
-                `<td><a href="/User:${data.user}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
+                `<td><a href="${mw.config.get("wgArticlePath").replace("$1", `User:${data.user}`)}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
                 `<td>${data.count}</td>`,
                 `<td>${data.add}</td>`,
                 `<td>${data.remove}</td>`,
@@ -136,6 +137,7 @@ $(() => (async () => {
 
         // 分析数据，展示结果
         showContributors = (contributors) => {
+            this.$tbody.empty();
             for (const key in contributors) {
                 this.addRow(this.$tbody, {
                     user: key,
@@ -144,6 +146,7 @@ $(() => (async () => {
                     remove: contributors[key].reduce((acc, cur) => cur < 0 ? acc + cur : acc, 0),
                 });
             }
+            this.got = true;
         };
     }
 
@@ -160,22 +163,23 @@ $(() => (async () => {
         flags: "progressive",
         id: "show-contributor-button",
     });
-    const $contributorBlock = $('<div id="show-contributor-block"></div>').append(contributorButton.$element);
     switch (mw.config.get("skin")) {
         case "moeskin":
-            $("#moe-article-header-title").after($contributorBlock);
+            $("#tagline").prepend(contributorButton.$element);
             break;
         case "vector":
         default:
-            $("#firstHeading").after($contributorBlock);
+            $("#bodyContent").prepend(contributorButton.$element);
             break;
     }
 
     contributorButton.on("click", async () => {
-        mw.notify("正在加载本页贡献者，请稍等……");
-        const contributors = await SCDialog.getContributors();
-        SCDialog.showContributors(contributors);
-        SCDialog.$table.tablesorter();
+        if(!SCDialog.got) {
+            mw.notify("正在加载本页贡献者，请稍等……");
+            const contributors = await SCDialog.getContributors();
+            SCDialog.showContributors(contributors);
+            SCDialog.$table.tablesorter();
+        }
         windowManager.openWindow(SCDialog);
     });
 })());
