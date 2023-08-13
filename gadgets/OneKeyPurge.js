@@ -523,16 +523,6 @@ $(() => (async () => {
                         if (result.length > 0) {
                             mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
                         }
-                        // // 进度条初始化
-                        // document.getElementById("okp-progress").innerHTML = "";
-                        // const progressInner = document.createElement("a");
-                        // progressInner.target = "_blank";
-                        // progressInner.style.width = "1em";
-                        // progressInner.style.aspectRatio = 1;
-                        // progressInner.style.backgroundColor = "#EAECF0";
-                        // progressInner.style.border = "1px solid";
-                        // progressInner.style.borderColor = "#A2A9B1";
-                        // progressInner.style.margin = ".2em";
                         for (const item of result) {
                             this.progressBar.addScale(item);
                         }
