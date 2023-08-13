@@ -267,9 +267,9 @@ $(() => (async () => {
          * @param {string[]} pageList 页面列表
          */
         async purge(pageList) {
-            // 分割为50个一批，执行purge
-            for (let i = 0; i < pageList.length; i += 50) {
-                const pages = pageList.slice(i, i + 50);
+            // 分割为5个一批，执行purge
+            for (let i = 0; i < pageList.length; i += 5) {
+                const pages = pageList.slice(i, i + 5);
                 // 将准备发送请求的页面标记为进行
                 for (const title of pages) {
                     document.getElementById(`okp-progress-${title}`).classList.add("oo-ui-pendingElement-pending");
