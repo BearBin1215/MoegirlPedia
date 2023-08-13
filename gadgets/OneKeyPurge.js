@@ -15,6 +15,207 @@ $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") === -1) {
         return;
     }
+    mw.loader.addStyleTag(`
+    .snake-head {
+        margin: .8em 0 .5em;
+        font-size: 1.3em;
+        text-align: center;
+        text-decoration: underline;
+    }
+    
+    .snake-body {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .2em;
+        max-height: 10.5em;
+        overflow-y: auto;
+    }
+    
+    .snake-scale {
+        width: 1em;
+        height: 1em;
+        border: 1px solid;
+    }
+    
+    [data-scale-state="ready"], [data-scale-state="ongoing"] {
+        background-color: #EAECF0;
+        border-color: #A2A9B1;
+    }
+    
+    [data-scale-state="success"] {
+        background-color: #EAECF0;
+        border-color: #16876E;
+    }
+    
+    [data-scale-state="warn"] {
+        background-color: #FEE7E6;
+        border-color: #D33;
+    }
+    
+    [data-scale-state="fail"] {
+        background-color: #FEF6E7;
+        border-color: #EDAB00;
+    }
+    `);
+
+    /**
+     * 进度条类
+     * @link https://github.com/BearBin1215/WikiWidgets#snake
+     */
+    class Snake {
+        _length = 0; // 项目数
+        _complete = 0; // 已完成项目数
+        blocks = {}; // 项目集合
+
+        /**
+         * 创建一个Snake对象
+         * @param {object} token 输入参数组成的对象。token.hasHead决定对象是否有head，token.hasHref决定对象的项目是否有链接，其他对象则成为Snake对象标签的属性值。
+         */
+        constructor(token = {}) {
+            // 给类的属性赋值
+            this.hasHead = token.hasHead !== false;
+            this.hasHref = token.hasHref !== false;
+            Reflect.deleteProperty(token, "hasHead");
+            Reflect.deleteProperty(token, "hasHref");
+
+            // 创建element，并加上.snake
+            this.element = document.createElement("div");
+            for (const key in token) {
+                this.element.setAttribute(key, token[key]);
+            }
+            this.element.classList.add("snake");
+
+            // 根据hasHead判断是否创建head
+            if (this.hasHead) {
+                this.head = document.createElement("div");
+                this.head.classList.add("snake-head");
+
+                // head中的状态显示
+                this.head.complete = document.createElement("span");
+                this.head.complete.classList.add("snake-head-complete");
+                this.head.complete.innerHTML = 0;
+                this.head.length = document.createElement("span");
+                this.head.length.classList.add("snake-head-all");
+                this.head.length.innerHTML = 0;
+                this.head.append("已完成：", this.head.complete, "/", this.head.length);
+
+                // 添加到element
+                this.element.append(this.head);
+            }
+
+            // 创建body
+            this.body = document.createElement("div");
+            this.body.classList.add("snake-body");
+            this.element.append(this.body);
+        }
+
+        /**
+         * 对象的HTML元素
+         */
+        get $element() {
+            return $(this.element);
+        }
+        get $head() {
+            return $(this.head);
+        }
+        get $body() {
+            return $(this.body);
+        }
+
+        /**
+         * 设置length和complete时同步更改head元素
+         */
+        set length(val) {
+            this._length = val;
+            if (this.hasHead) {
+                this.head.length.innerHTML = val;
+            }
+        }
+        get length() {
+            return this._length;
+        }
+
+        set complete(val) {
+            this._complete = val;
+            if (this.hasHead) {
+                this.head.complete.innerHTML = val;
+            }
+        }
+        get complete() {
+            return this._complete;
+        }
+
+        /**
+         * 添加一个项目
+         * @param {string} name 项目的名称，在本对象中应当独一无二
+         * @param {string} title 项目元素的title属性；若留空，hasHref为true时会从name继承，为false时不会继承
+         * @param {string} href 项目元素的href属性，仅在hasHref为true时有效；若留空则会从name继承
+         */
+        addScale = (name, title, href) => {
+            if (this.blocks[name]) {
+                throw new Error(`Snake: 项目${name}已存在。`);
+            }
+            let scaleNode;
+
+            // 根据hasHref判断创建<a>或<div>
+            if (this.hasHref) {
+                scaleNode = document.createElement("a");
+                scaleNode.title = title || name;
+                scaleNode.href = href || `/${name}`;
+                scaleNode.target = "_blank";
+            } else {
+                scaleNode = document.createElement("div");
+                if (title) {
+                    scaleNode.title = title;
+                }
+            }
+            scaleNode.classList.add("snake-scale", "scale-state-ready");
+            scaleNode.dataset.scaleState = "ready"; // 记录项目状态
+
+            // 加入blocks列表，并添加到body中显示
+            this.length++;
+            this.blocks[name] = scaleNode;
+            this.body.append(scaleNode);
+        };
+
+        /**
+         * 更改项目状态
+         * @param {string} name 项目的名称
+         * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为complete
+         */
+        crawl = (name, state = "success") => {
+            if (!this.blocks[name]) {
+                throw new Error(`Snake: 不存在名为${name}的项目。`);
+            }
+
+            // 根据当前状态和目标状态调整complete并设置data-scale-state值
+            if (this.blocks[name].dataset.scaleState === "success") {
+                this.complete--;
+            }
+            if (state === "success") {
+                this.complete++;
+            }
+            if (this.blocks[name].dataset.scaleState === "ongoing") {
+                this.blocks[name].classList.remove("oo-ui-pendingElement-pending");
+            }
+            if (state === "ongoing") {
+                this.blocks[name].classList.add("oo-ui-pendingElement-pending");
+            }
+            this.blocks[name].dataset.scaleState = state;
+            this.blocks[name].scrollIntoView();
+        };
+
+        /**
+         * 清空项目
+         */
+        clear = () => {
+            this.complete = 0;
+            this.length = 0;
+            this.blocks = {};
+            this.body.innerHTML = "";
+        };
+    }
     await mw.loader.using(["mediawiki.api", "mediawiki.user", "mediawiki.notification", "oojs-ui"]);
     const api = new mw.Api();
     const PAGENAME = mw.config.get("wgPageName");
@@ -95,12 +296,13 @@ $(() => (async () => {
                 "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                 :
                 "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。";
+
+            this.progressBar = new Snake();
             this.panelLayout.$element.append(
                 $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                 typeFiled.$element,
                 optionFiled.$element,
-                $('<div style="margin:.8em 0 .5em;font-size:1.3em;text-align:center;text-decoration:underline">已完成<span id="okp-done">0</span>/<span id="okp-all">0</span>个页面</div>'),
-                $('<div id="okp-progress" style="display:flex;flex-wrap:wrap;justify-content:center;max-height:10.5em;overflow-y:auto;"></div>'),
+                this.progressBar.$element,
             );
             this.$body.append(this.panelLayout.$element);
             $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");
@@ -185,7 +387,6 @@ $(() => (async () => {
                 });
             }
             PageList = [...new Set(PageList)];
-            $("#okp-all").text(PageList.length);
             return PageList;
         }
 
@@ -202,26 +403,19 @@ $(() => (async () => {
          */
         progressChange(title, result, err = "") {
             const optionText = this.optionType === "nulledit" ? "零编辑" : "清除缓存";
+            this.progressBar.crawl(title, result);
             switch (result.toLowerCase()) {
                 case "success": // 成功且无意外
                     this.state++;
                     mw.notify(`页面【${title}】${optionText}成功。`, { type: "success" });
-                    $("#okp-done").text(this.state);
-                    document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#D5FDF4";
-                    document.getElementById(`okp-progress-${title}`).style.borderColor = "#14866D";
                     break;
                 case "warn": // 成功但出现意外，目前仅用于编辑产生意外的源代码变动
                     this.state++;
                     this.changeList.push(title);
-                    $("#okp-done").text(this.state);
-                    document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEE7E6";
-                    document.getElementById(`okp-progress-${title}`).style.borderColor = "#D33";
                     break;
                 case "fail": // 失败
                     this.failList.push(title);
                     mw.notify(`页面【${title}】${optionText}失败${err ? `：${err}` : ""}。`, { type: "warn" });
-                    document.getElementById(`okp-progress-${title}`).style.backgroundColor = "#FEF6E7";
-                    document.getElementById(`okp-progress-${title}`).style.borderColor = "#EDAB00";
                     break;
             }
         }
@@ -229,8 +423,7 @@ $(() => (async () => {
         // 零编辑
         async nullEdit(titles) {
             for (const title of titles) {
-                document.getElementById(`okp-progress-${title}`).scrollIntoView();
-                document.getElementById(`okp-progress-${title}`).classList.add("oo-ui-pendingElement-pending");
+                this.progressBar.crawl(title, "ongoing");
                 api.postWithToken("csrf", {
                     format: "json",
                     action: "edit",
@@ -239,9 +432,8 @@ $(() => (async () => {
                     nocreate: true,
                     title,
                 }).done((data) => {
-                    document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
+                    this.progressBar.crawl(title, "ongoing");
                     if (data.edit.result === "Success") {
-                        $("#okp-done").text(this.state);
                         if (data.edit.nochange !== undefined) {
                             this.progressChange(title, "success");
                         } else {
@@ -252,7 +444,6 @@ $(() => (async () => {
                     }
                 }).catch((error) => {
                     this.progressChange(title, "fail", error);
-                    document.getElementById(`okp-progress-${title}`).classList.remove("oo-ui-pendingElement-pending");
                 });
                 if (!Noratelimit) {
                     await this.waitInterval(6000);
@@ -272,9 +463,9 @@ $(() => (async () => {
                 const pages = pageList.slice(i, i + 5);
                 // 将准备发送请求的页面标记为进行
                 for (const title of pages) {
-                    document.getElementById(`okp-progress-${title}`).classList.add("oo-ui-pendingElement-pending");
+                    this.progressBar.crawl(title, "ongoing");
                 }
-                document.getElementById(`okp-progress-${pages[pages.length - 1]}`).scrollIntoView();
+                // document.getElementById(`okp-progress-${pages[pages.length - 1]}`).scrollIntoView();
                 api.post({
                     format: "json",
                     action: "purge",
@@ -283,7 +474,6 @@ $(() => (async () => {
                 }).done((response) => {
                     // 将成功purge的页面标记为完成。其余标记为失败？
                     for (const page of response.purge) {
-                        document.getElementById(`okp-progress-${page.title}`).classList.remove("oo-ui-pendingElement-pending");
                         this.progressChange(page.title, "success");
                     }
                 }).catch((error) => {
@@ -319,6 +509,7 @@ $(() => (async () => {
                 });
             } else if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
+                    this.progressBar.clear();
                     if (this.typeSelectInput.getValue().length === 0) {
                         mw.notify("请选择页面类型。");
                     }
@@ -332,22 +523,18 @@ $(() => (async () => {
                         if (result.length > 0) {
                             mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
                         }
-                        // 进度条初始化
-                        document.getElementById("okp-progress").innerHTML = "";
-                        const progressInner = document.createElement("a");
-                        progressInner.target = "_blank";
-                        progressInner.style.width = "1em";
-                        progressInner.style.aspectRatio = 1;
-                        progressInner.style.backgroundColor = "#EAECF0";
-                        progressInner.style.border = "1px solid";
-                        progressInner.style.borderColor = "#A2A9B1";
-                        progressInner.style.margin = ".2em";
+                        // // 进度条初始化
+                        // document.getElementById("okp-progress").innerHTML = "";
+                        // const progressInner = document.createElement("a");
+                        // progressInner.target = "_blank";
+                        // progressInner.style.width = "1em";
+                        // progressInner.style.aspectRatio = 1;
+                        // progressInner.style.backgroundColor = "#EAECF0";
+                        // progressInner.style.border = "1px solid";
+                        // progressInner.style.borderColor = "#A2A9B1";
+                        // progressInner.style.margin = ".2em";
                         for (const item of result) {
-                            const _progressInner = progressInner.cloneNode();
-                            _progressInner.href = `/${item}`;
-                            _progressInner.id = `okp-progress-${item}`;
-                            _progressInner.title = item;
-                            document.getElementById("okp-progress").appendChild(_progressInner);
+                            this.progressBar.addScale(item);
                         }
                         this.updateSize();
                         if (this.optionType === "nulledit") {
