@@ -44,7 +44,7 @@ $(() => (async () => {
     }
     
     [data-scale-state="success"] {
-        background-color: #EAECF0;
+        background-color: #D5FDF4;
         border-color: #16876E;
     }
     
