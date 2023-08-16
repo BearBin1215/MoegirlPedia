@@ -8,7 +8,7 @@ $(() => (async () => {
         mw.config.get("wgArticleId") === 0 ||
         mw.config.get("wgAction") !== "view"
     ) { return; }
-    await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui", "jquery.tablesorter"]);
+    await mw.loader.using(["mediawiki.api", "oojs-ui", "jquery.tablesorter"]);
     mw.loader.addStyleTag(`
     #show-contributor-button {
         float: right;
