@@ -175,10 +175,11 @@ $(() => (async () => {
 
     contributorButton.on("click", async () => {
         if(!SCDialog.got) {
-            mw.notify("正在加载本页贡献者，请稍等……");
+            contributorButton.setLabel("正在查询");
             const contributors = await SCDialog.getContributors();
             SCDialog.showContributors(contributors);
             SCDialog.$table.tablesorter();
+            contributorButton.setLabel("本页贡献者");
         }
         windowManager.openWindow(SCDialog);
     });
