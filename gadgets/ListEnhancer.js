@@ -63,7 +63,7 @@ $(() => {
         let showDetail = true;
         const linkList = [];
 
-        // 复制一个按钮插入到多媒体搜索后面，用于搜索要用语替换的页面
+        // 复制一个按钮插入到多媒体搜索后面，用于搜索要用于替换的页面
         const $searchMedia = $(".search-types li").eq(1);
         const $nsToReplace = $searchMedia.clone(false);
         $nsToReplace.children("a")
