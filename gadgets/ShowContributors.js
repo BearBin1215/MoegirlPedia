@@ -8,7 +8,13 @@ $(() => (async () => {
         mw.config.get("wgArticleId") === 0 ||
         mw.config.get("wgAction") !== "view"
     ) { return; }
-    await mw.loader.using(["mediawiki.api", "mediawiki.notification", "oojs-ui", "jquery.tablesorter"]);
+    await mw.loader.using([
+        "mediawiki.api",
+        "mediawiki.notification",
+        "oojs-ui",
+        "oojs-ui.styles.icons-interactions", // 提供关闭窗口按钮
+        "jquery.tablesorter", // 提供表格排序功能
+    ]);
     mw.loader.addStyleTag(`
     #show-contributor-button {
         float: right;
@@ -30,14 +36,9 @@ $(() => (async () => {
     }
     #show-contributor-close {
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 1em;
-        height: 1em;
-        line-height: 1;
+        top: 5px;
+        right: 5px;
         cursor: pointer;
-        padding: .3em;
-        font-size: 1.2em;
         border-radius: 50%;
     }
     #show-contributor-close:hover {
@@ -64,13 +65,16 @@ $(() => (async () => {
 
             // 标题和关闭按钮
             this.$headline = $('<div id="show-contributor-headline">本页贡献统计</div>');
-            this.$closeButton = $('<div id="show-contributor-close">×</div>');
+            this.closeButton = new OO.ui.IconWidget({
+                icon: "close",
+                id: "show-contributor-close",
+            });
             this.$header = $('<div id="show-contributor-header"></div>').append(
                 this.$headline,
-                this.$closeButton,
+                this.closeButton.$element,
             );
             // 点击关闭
-            this.$closeButton.on("click", () => this.close());
+            this.closeButton.$element.on("click", () => this.close());
 
             // 统计表
             this.$thead = $("<thead><th>用户</th><th>编辑数</th><th>增加字节数</th><th>删减字节数</th></thead>");
