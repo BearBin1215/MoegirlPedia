@@ -82,18 +82,6 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/BulkMove.js&action=raw&ctype=text/javascript");
 ```
 
-## 新条目分类统计
-
-- 在[Special:最新页面](https://zh.moegirl.org.cn/Special:最新页面)中添加面板，查询过去的新条目中属于某分类或其子分类的数量。
-- 受服务器设置所限，最多统计过去90天的新条目。
-
-使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
-
-```JavaScript
-mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/NewpagesCat.min.js");
-// 或 mw.loader.load("/index.php?title=User:BearBin/js/NewpagesCat.js&action=raw&ctype=text/javascript");
-```
-
 ## Excel表格生成wikitext
 
 - 可以直接从excel复制表格，生成对应的wikitable，并可以直接复制到剪贴板。
@@ -107,6 +95,30 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadg
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/Excel2Wiki.min.js");
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/Excel2Wiki.js&action=raw&ctype=text/javascript");
+```
+
+## Wikiplus快速摘要
+
+- 为[Wikiplus小工具](https://github.com/Wikiplus/Wikiplus)提供快速填充摘要的按钮。
+- 编辑章节时支持在章节锚点后添加。
+
+![Wikiplus快速摘要演示](/img/WikiplusSummary.gif)
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/WikiplusSummary.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/WikiplusSummary.js&action=raw&ctype=text/javascript");
+```
+
+## 新条目分类统计
+
+- 在[Special:最新页面](https://zh.moegirl.org.cn/Special:最新页面)中添加面板，查询过去的新条目中属于某分类或其子分类的数量。
+- 受服务器设置所限，最多统计过去90天的新条目。
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/gadgets/NewpagesCat.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/NewpagesCat.js&action=raw&ctype=text/javascript");
 ```
 
 ## 递归查询子分类
