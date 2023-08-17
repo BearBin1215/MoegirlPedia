@@ -15,7 +15,7 @@ $(() => {
     ];
 
     // 点击快速编辑按钮，往编辑框添加按钮列
-    $("body").on("click", "#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn", () => {
+    $("body").on("click", "#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, .Wikiplus-Edit-EveryWhereBtn", () => {
         const itv = setInterval(() => {
             if (!document.getElementById("Wikiplus-Quickedit-Summary-Input")) {
                 return;
