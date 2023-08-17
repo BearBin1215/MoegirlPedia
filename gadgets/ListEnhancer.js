@@ -28,7 +28,7 @@ $(() => {
     };
 
     // Special:链入页面
-    if (mw.config.get("wgCanonicalSpecialPageName") === "Whatlinkshere") {
+    const linkshereEnhance = () => {
         $("#mw-content-text>p>strong").after($("<a>[复制列表]</a>").on("click", (e) => {
             const linkList = [];
             $("#mw-whatlinkshere-list>li>a").each((_, ele) => {
@@ -36,11 +36,10 @@ $(() => {
             });
             copyAction(linkList.join("\n"), $(e.target), "[复制成功]", "[复制失败]");
         }).css("padding-left", ".6em"));
-        return;
-    }
+    };
 
     // Special:搜索
-    if (mw.config.get("wgCanonicalSpecialPageName") === "Search") {
+    const searchEnhance = () => {
         mw.loader.addStyleTag(`
         .search-types {
             display: flex;
@@ -106,6 +105,15 @@ $(() => {
             $copyList,
             '<span class="mw-editsection-bracket">]</span>',
         ));
-        return;
+    };
+
+    // 根据特殊页面进行显示
+    switch(mw.config.get("wgCanonicalSpecialPageName")) {
+        case "Whatlinkshere":
+            linkshereEnhance();
+            break;
+        case "Search":
+            searchEnhance();
+            break;
     }
 });
