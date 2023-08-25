@@ -105,6 +105,9 @@ $(() => {
             $copyList,
             '<span class="mw-editsection-bracket">]</span>',
         ));
+
+        // 把下方翻页条复制一份到上面
+        $(".mw-search-pager-bottom").clone().prependTo($(".searchresults"));
     };
 
     // 根据特殊页面进行显示
