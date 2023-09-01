@@ -79,6 +79,8 @@ rules:
     - 1
   no-inner-declarations:
     - 0
+  no-unneeded-ternary:
+    - 2
   comma-dangle:
     - 1
     - always-multiline
