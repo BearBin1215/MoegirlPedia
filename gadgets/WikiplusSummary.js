@@ -23,11 +23,19 @@ $(() => {
             clearInterval(itv);
             const $WSList = $("<div></div>", { id: "ws-buttons" }).css("margin-top", "0.2em");
             const $WSButtons = WPSummary.reduce((acc, val, index, arr) => {
-                const $button = $(`<a>${val}</a>`);
+                let $button,
+                    summaryDetail;
+                if(typeof val === "string") {
+                    $button = $(`<a>${val}</a>`);
+                    summaryDetail = val;
+                } else if (typeof val === "object") {
+                    $button = $(`<a>${val.name}</a>`);
+                    summaryDetail = val.detail;
+                }
                 $button.on("click", () => {
                     const $summary = $("#Wikiplus-Quickedit-Summary-Input");
                     const summary = $summary.val();
-                    $summary.val(summary.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${val} $2`))
+                    $summary.val(summary.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${summaryDetail} $2`))
                         .trigger("focus");
                 });
                 acc.push($button); // 逐一插入按钮
@@ -43,6 +51,7 @@ $(() => {
                 "<br/>",
             );
             $("#Wikiplus-Quickedit-Summary-Input+br").replaceWith($WSList);
+            $(".Wikiplus-InterBox").css("top", +$(".Wikiplus-InterBox").css("top").replace("px", "") - 50); // 将w+窗口上移以免挡住快速摘要和提交编辑按钮
         }, 500);
     });
 });
