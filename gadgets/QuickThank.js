@@ -12,7 +12,7 @@ $(() => {
         $(".mw-changeslist-line-inner, .mw-enhanced-rc-nested").each((_, ele) => {
             const $ele = $(ele);
             const rev = $ele.closest("[data-mw-revid]").attr("data-mw-revid");
-            if (rev && $ele.find("bdi").text() === mw.config.get("wgUserName")) {
+            if (!rev || $ele.find("bdi").text() === mw.config.get("wgUserName")) {
                 return;
             }
             const thankButton = $('<a class="quick-thank">[感谢]</a>');
