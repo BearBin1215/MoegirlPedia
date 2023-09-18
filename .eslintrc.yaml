@@ -34,6 +34,8 @@ globals:
   ace: readonly
   libCachedCode: readonly
   CodeMirror: readonly
+  html2canvas: readonly
+  saveAs: readonly
 
 plugins:
   - "@annangela/prefer-reflect"

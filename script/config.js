@@ -29,6 +29,7 @@ const config = {
             "WikiplusSummary.js",
             "ShowContributors.js",
             "MassEdit.js",
+            "TextDiff.js",
         ],
     },
 };
