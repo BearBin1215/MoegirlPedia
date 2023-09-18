@@ -1,6 +1,13 @@
+// eslint-disable-next-line
+var _addText = '{{Documentation|content=本小工具用于通过输入前后版本源代码输出差异，支持保存为图片或复制到剪贴板。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/TextDiff.js&action=raw&ctype=text/javascript");</pre>\n添加后，前往[[Special:差异比较]]进行比较。}}';
+
 "use strict";
 $(() => (async () => {
     if (!["special:textdiff", "special:差异比较"].includes(mw.config.get("wgPageName").toLowerCase())) {
+        if (window.TextDiff) {
+            await mw.loader.using("mediawiki.util");
+            mw.util.addPortletLink("p-tb", "/Special:TextDiff", "文本差异比较", "t-textdiff");
+        }
         return;
     }
     await mw.loader.using(["mediawiki.api", "oojs-ui", "mediawiki.notification"]);
