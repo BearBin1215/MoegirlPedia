@@ -30,6 +30,7 @@ const config = {
             "ShowContributors.js",
             "MassEdit.js",
             "TextDiff.js",
+            "ListEnhancer.js",
         ],
     },
 };
