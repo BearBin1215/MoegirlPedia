@@ -43,6 +43,7 @@ $(() => (async () => {
         } catch(error) {
             mw.notify(`获取源代码失败：${error}`, { type: "warn" });
         }
+        mw.notify("获取源代码完毕");
     };
 
     $("#mw-notification-area").appendTo("body"); // 使提醒在窗口上层
@@ -74,7 +75,7 @@ $(() => (async () => {
             max-width: 25em;
         }
         #submit-button {
-            margin-top: .1em;
+            margin-top: 1em;
         }
         #diff-result {
             padding: .2em;
@@ -202,17 +203,13 @@ $(() => (async () => {
 
     // 通过页面获取源代码按钮
     fromPageButton.on("click", async () => {
-        const title = fromPageBox.getValue();
-        const source = await getSource(title);
+        const source = await getSource(fromPageBox.getValue());
         fromTextBox.setValue(source);
-        mw.notify("获取源代码完毕");
     });
 
     toPageButton.on("click", async () => {
-        const title = toPageBox.getValue();
-        const source = await getSource(title);
+        const source = await getSource(toPageBox.getValue());
         toTextBox.setValue(source);
-        mw.notify("获取源代码完毕");
     });
 
     submitButton.on("click", async () => {

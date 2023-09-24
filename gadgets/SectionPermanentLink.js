@@ -6,7 +6,7 @@ $(() => {
     if (mw.config.get("wgNamespaceNumber") % 2 === 1) {
         const inHistory = !document.getElementsByClassName("mw-editsection")[0];
         $("h2").each((_, ele) => {
-            const permanentLink = $(`<a data-thread-id="${$(ele).find(".mw-headline").attr("id")}">固定连接</a>`);
+            const permanentLink = $(`<a data-thread-id="${$(ele).find(".mw-headline").attr("id")}">固定链接</a>`);
             if(!inHistory) {
                 const permanentLinkButton = $('<span><span class="mw-editsection-divider"> | </span></span>');
                 permanentLinkButton.append(permanentLink);
@@ -24,7 +24,7 @@ $(() => {
                 navigator.clipboard.writeText(`[[Special:PermanentLink/${mw.config.get("wgRevisionId")}#${permanentLink.data("thread-id")}]]`);
                 permanentLink.text("复制成功");
                 setTimeout(() => {
-                    permanentLink.text("固定连接");
+                    permanentLink.text("固定链接");
                 }, 2000);
             });
         });
