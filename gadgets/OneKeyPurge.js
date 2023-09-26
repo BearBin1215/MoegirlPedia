@@ -407,7 +407,6 @@ $(() => (async () => {
             switch (result.toLowerCase()) {
                 case "success": // 成功且无意外
                     this.state++;
-                    mw.notify(`页面【${title}】${optionText}成功。`, { type: "success" });
                     break;
                 case "warn": // 成功但出现意外，目前仅用于编辑产生意外的源代码变动
                     this.state++;
