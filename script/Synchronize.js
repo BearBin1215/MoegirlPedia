@@ -2,6 +2,8 @@ import fs from "fs";
 import MWBot from "mwbot";
 import config from "./config.js";
 
+const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
+
 const bot = new MWBot({
     apiUrl: config.API_PATH,
 }, {
@@ -35,6 +37,7 @@ bot.loginGetEditToken({
             }).catch((err) => {
                 throw new Error(`${item}保存失败：${err}`);
             });
+            await waitInterval(6000);
         } catch (err) {
             console.error(err);
         }
