@@ -31,6 +31,7 @@ const config = {
             "MassEdit.js",
             "TextDiff.js",
             "ListEnhancer.js",
+            "MoeStretch.js",
         ],
     },
 };
