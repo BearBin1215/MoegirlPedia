@@ -1,17 +1,20 @@
 "use strict";
 if (mw.config.get("skin") === "moeskin") {
     $("main.moe-flexible-container").css("transition", "width .24s ease");
-    const $style = $("<style>@media screen and (min-width:768px){#moe-main-container .moe-flexible-container{width:calc(100% - 2rem);margin:1rem 1rem 0}}</style>");
-    if (localStorage.getItem("moeStretch") === null) {
-        localStorage.setItem("moeStretch", "1");
-    }
+    const $stretchStyle = $("<style>@media screen and (min-width:768px){#moe-main-container .moe-flexible-container{width:calc(100% - 2rem);margin:1rem 1rem 0}}</style>");
     const $stretchButton = $("#moe-sidenav-toggle-btn").clone().attr("id", "bearbin-moe-stretch").removeAttr("href");
+    if (localStorage.getItem("moeStretch") === null) {
+        localStorage.setItem("moeStretch", "0");
+    }
+    if (localStorage.getItem("moeStretch") === "1") {
+        $("head").append($stretchStyle);
+    }
     $stretchButton.on("click", () => {
         if (localStorage.getItem("moeStretch") === "0") {
-            $("head").append($style);
+            $("head").append($stretchStyle);
             localStorage.setItem("moeStretch", "1");
         } else {
-            $style.remove();
+            $stretchStyle.remove();
             localStorage.setItem("moeStretch", "0");
         }
     });
