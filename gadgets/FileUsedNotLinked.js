@@ -90,7 +90,7 @@ $(() => (async () => {
                 list: "search",
                 srnamespace: "0|4|10|12|14|274|828",
                 srwhat: "text",
-                srsearch: `insource:"${encodeURI(FILENAME.replaceAll('"', " "))}"`,
+                srsearch: `insource:"${encodeURI(FILENAME).replaceAll('"', " ").replaceAll("%20", " ")}"`,
             });
 
             const notLinkedList = [];
@@ -98,7 +98,11 @@ $(() => (async () => {
                 // 通过搜索结果的快照，检查搜索文本内是否有此文件名，用于解决大小写敏感问题
                 // 但文件名中的符号可能会影响<span class="searchmatch">的位置插到文件名中间，因此要去掉这对标签
                 const snippetTemp = item.snippet.replaceAll("_", " ").replaceAll("<span class=\"searchmatch\">", "").replaceAll("</span>", "");
-                if(snippetTemp.indexOf(FILENAME.replaceAll("_", " ")) + snippetTemp.indexOf(encodeURI(FILENAME.replaceAll("_", " "))) > -2) {
+                if(
+                    snippetTemp.includes(FILENAME.replaceAll("_", " ")) ||
+                    snippetTemp.includes(encodeURI(FILENAME.replaceAll("_", " "))) ||
+                    snippetTemp.includes(encodeURI(FILENAME.replaceAll("_", " ")).replaceAll("%20", " "))
+                ) {
                     notLinkedList.push(item.title); // 合并两个搜索结果并得到页面列表
                 }
             });
