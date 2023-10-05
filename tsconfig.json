@@ -4,8 +4,8 @@
         "removeComments": true,
         "target": "ES3",
         "outDir": "oddment/build",
-        "alwaysStrict": true,
-        "strict": true,
+        "alwaysStrict": false,
+        "strict": false,
         "downlevelIteration": true,
         "lib": [
             "ESNext",
