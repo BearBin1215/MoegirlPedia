@@ -183,7 +183,7 @@ $(() => (async () => {
         '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。</div>',
         '<div id="me-edit-panel"></div>',
         '<ul id="me-submit-note">',
-        '<li>编辑间隔单位为毫秒（ms），不填默认为0。不包含本身编辑页面所用的时间。</li>',
+        '<li>编辑间隔单位为秒（s），不填默认为0。不包含本身编辑页面所用的时间。</li>',
         '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
         '</ul>',
         '<h5 id="bearbintools-log-title">日志<a id="bearbintools-log-clear">[清空]</a></h5>',
@@ -326,7 +326,7 @@ $(() => (async () => {
     };
 
     // 获取间隔
-    const getInterval = () => Number(intervalBox.getValue());
+    const getInterval = () => Number(intervalBox.getValue()) * 1000;
 
     // 获取附加摘要
     const getAdditionalSummary = () => summaryBox.getValue();

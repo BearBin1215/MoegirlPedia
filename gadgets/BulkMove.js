@@ -224,7 +224,7 @@ $(() => (async () => {
         <div id="bm-option"></div>
         <div id="bm-submit-panel"></div>
         <ul class="bearbintools-notelist">
-            <li>操作间隔单位为毫秒（ms），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>
+            <li>操作间隔单位为秒（s），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>
             <li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定的速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>
         </ul>
         <h3 id="bearbintools-log-title">日志<a id="bearbintools-log-clear">[清空]</a></h3>
@@ -380,7 +380,7 @@ $(() => (async () => {
             const noredirect = !$("#bm-redirect-box input").prop("checked");
             const watchlist = $("#bm-watchlist-box input").prop("checked") ? "watch" : "unwatch";
             const reason = reasonBox.getValue().length > 0 ? `[[User:BearBin/js#批量移动页面|BulkMove]]：${reasonBox.getValue()}` : "[[User:BearBin/js#批量移动页面|BulkMove]]";
-            const interval = Number(intervalBox.getValue());
+            const interval = Number(intervalBox.getValue()) * 1000;
             const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
             const pageList = [];
 

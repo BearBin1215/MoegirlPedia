@@ -196,7 +196,7 @@ $(() => (async () => {
         <h3 id="bs-content-headline">正文</h3>
         <div id="bs-submit-panel"></div>
         <ul class="bearbintools-notelist">
-            <li>发送间隔单位为毫秒（ms），不包含本身编辑所用的服务器响应时间。</li>
+            <li>发送间隔单位为秒（s），不包含本身编辑所用的服务器响应时间。</li>
             <li>非维护人员请注意<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>和<a href="/萌娘百科:机器用户#其他规范">机器用户方针规定的速率</a>，自行设置间隔或申请机器用户以免撞墙或超速。</li>
             <li>摘要留空则会由系统自动生成。</li>
         </ul>
@@ -325,7 +325,7 @@ $(() => (async () => {
             const pageList = [...new Set(pagelistBox.getValue().split("\n").filter((s) => s && s.trim()))]; // 页面列表，分割、删空、去重
             const sectiontitle = headlineBox.getValue().trim(); // 章节标题
             const text = contentBox.getValue().trim(); // 文本内容
-            const interval = Number(intervalBox.getValue()); // 发送间隔
+            const interval = Number(intervalBox.getValue()) * 1000; // 发送间隔
             const summary = summaryBox.getValue(); // 编辑摘要
 
             // 输入检查
