@@ -133,3 +133,8 @@ overrides:
     parserOptions:
       ecmaVersion: latest
       sourceType: module
+  - files: [oddment/**/*.js]
+    rules:
+      strict: 0
+      prefer-arrow-callback: 0
+      prefer-arrow-functions/prefer-arrow-functions: 0

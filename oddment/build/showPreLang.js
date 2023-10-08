@@ -1,4 +1,3 @@
-"use strict";
 $(function () {
     $("pre").each(function () {
         var _a;

@@ -1,4 +1,3 @@
-"use strict";
 if (mw.config.get("wgCanonicalSpecialPageName") === "Whatlinkshere") {
     $("#mw-content-text>p>strong").after($("<a>[复制列表]</a>").on("click", function (e) {
         var linkList = [];

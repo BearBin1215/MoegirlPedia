@@ -1,4 +1,3 @@
-"use strict";
 $(function () {
     setTimeout(function () {
         $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));

@@ -1,4 +1,3 @@
-"use strict";
 mw.loader.using(["mediawiki.notification", "oojs-ui"]).then(() => {
     $(mw.util.addPortletLink("p-cactions", "javascript:void(0)", "复制截图", "ca-pagecatch")).on("click", () => {
         mw.notify("正在复制……");

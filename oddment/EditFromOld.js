@@ -1,4 +1,3 @@
-"use strict";
 if (mw.config.get("wgAction") === "history" && document.getElementById("ca-edit")) {
     $("#pagehistory>li:not(:first-child)").each((num, ele) => {
         const oldid = $(ele).attr("data-mw-revid");

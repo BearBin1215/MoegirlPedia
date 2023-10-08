@@ -2,7 +2,7 @@
     "compilerOptions": {
         "allowJs": true,
         "removeComments": true,
-        "target": "ES3",
+        "target": "ES5",
         "outDir": "oddment/build",
         "alwaysStrict": false,
         "strict": false,
