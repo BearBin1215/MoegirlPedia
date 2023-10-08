@@ -344,7 +344,7 @@ $(() => (async () => {
             }
 
             for (const item of pageList) {
-                const title = item.replace(/^ *(?:User[_ ]talk:|用[户戶][讨討][论論]:|使用者[讨討][论論]:)?(.*)$/i, "User_talk:$1");
+                const title = item.replace(/^ *(?:User[_ ]talk:|用[户戶][讨討][论論]:|使用者[讨討][论論]:|U:|User:|用[户戶]:)?(.*)$/i, "User_talk:$1");
                 let sendResult;
                 try {
                     sendResult = await send(title, sectiontitle, text, summary);
