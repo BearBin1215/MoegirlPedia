@@ -34,6 +34,9 @@ $(() => (async () => {
         #firstHeading>div {
             font-size: .6em;
         }
+        #firstHeading>div>a {
+            text-decoration: underline;
+        }
         #bodyContent {
             padding-right: 0;
         }
@@ -157,7 +160,7 @@ $(() => (async () => {
         }
     </style>`);
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
-    $("#firstHeading").html("批量编辑页面<div>By BearBin</div>");
+    $("#firstHeading").html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
     $("#contentSub").remove();
     $("#mw-content-text").html([
         /* eslint-disable quotes */
