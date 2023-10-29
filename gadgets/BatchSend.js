@@ -13,7 +13,7 @@ $(() => (async () => {
         await mw.loader.using(["mediawiki.util"]);
         mw.util.addPortletLink("p-tb", "/Special:BatchSend", "群发提醒", "t-batchsend");
         return;
-    } 
+    }
     await mw.loader.using(["mediawiki.api", "oojs-ui", "mediawiki.user"]);
     const api = new mw.Api();
     let successCount = 0;
@@ -54,7 +54,7 @@ $(() => (async () => {
             sectiontitle,
             text,
         });
-        return parseResult.parse.text["*"];
+        return parseResult.parse;
     };
 
     /**
@@ -125,6 +125,9 @@ $(() => (async () => {
         #mw-content-text .oo-ui-textInputWidget,
         #bs-summary {
             max-width: unset;
+        }
+        #bs-previewsummary {
+            margin-top: .4em;
         }
         #mw-content-text ul.bearbintools-notelist {
             margin: .4em 0 0 1.6em;
@@ -202,6 +205,7 @@ $(() => (async () => {
         </ul>
         <h3 id="bs-preview-headline">预览</h3>
         <div id="bs-previewzone"></div>
+        <div id="bs-previewsummary">编辑摘要：<span class="comment"></span></div>
         <h3 id="bearbintools-log-title">日志<a id="bearbintools-log-clear">[清空]</a></h3>
         <div id="bearbintools-log">
             <div id="bearbintools-log-state">
@@ -253,7 +257,7 @@ $(() => (async () => {
         placeholder: "编辑摘要",
         id: "bs-summary",
     });
-    $("#bs-preview-headline, #bs-previewzone").hide();
+    $("#bs-preview-headline, #bs-previewzone, #bs-previewsummary").hide();
     $("#bs-pagelist-headline").after(pagelistBox.$element);
     $("#bs-headline-headline").after(headlineBox.$element);
     $("#bs-content-headline").after(contentBox.$element);
@@ -302,10 +306,11 @@ $(() => (async () => {
     previewButton.on("click", async () => {
         previewButton.setDisabled(true); // 禁用预览按钮
 
-        $("#bs-preview-headline, #bs-previewzone").show();
+        $("#bs-preview-headline, #bs-previewzone, #bs-previewsummary").show();
         $("#bs-previewzone").html('<div class="oo-ui-pendingElement-pending">正在加载预览……</div>');
-        const previewResult = await preview(headlineBox.getValue(), contentBox.getValue());
-        $("#bs-previewzone").html(previewResult);
+        const { text, parsedsummary } = await preview(headlineBox.getValue(), contentBox.getValue());
+        $("#bs-previewzone").html(text["*"]);
+        $("#bs-previewsummary .comment").html(`（${parsedsummary["*"]}）`);
 
         previewButton.setDisabled(false); // 恢复预览按钮使用
     });
