@@ -349,11 +349,11 @@ $(() => (async () => {
                 try {
                     sendResult = await send(title, sectiontitle, text, summary);
                     if (sendResult.edit?.result === "Success") {
-                        record(`向【<a href="/${title}">${title}</a>】发送成功。`);
+                        record(`向【<a href="/${title}">${title}</a>】发送成功。`, "success");
                         $("#state-success").text(++successCount);
                         await waitInterval(interval);
                     } else if (sendResult.edit?.result === "Failure") {
-                        record(`向【<a href="/${title}">${title}</a>】发送失败：${Object.keys(sendResult.edit)[0]}：${sendResult.edit[Object.keys(sendResult.edit)[0]]}。`, "error");
+                        record(`向【<a href="/${title}" target="_blank">${title}</a>】发送失败：${Object.keys(sendResult.edit)[0]}：${sendResult.edit[Object.keys(sendResult.edit)[0]]}。`, "error");
                         $("#state-error").text(++errorCount);
                     }
                 } catch (err) {
