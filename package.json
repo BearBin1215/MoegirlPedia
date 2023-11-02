@@ -12,6 +12,7 @@
     "@annangela/eslint-plugin-prefer-reflect": "^2.0.1",
     "eslint": "^8.45.0",
     "eslint-plugin-prefer-arrow-functions": "^3.1.4",
+    "jquery": "^3.7.1",
     "stylelint": "^15.10.2",
     "stylelint-config-standard": "^34.0.0",
     "typescript": "^5.1.6",
