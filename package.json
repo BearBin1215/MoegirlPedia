@@ -10,10 +10,13 @@
   "license": "ISC",
   "devDependencies": {
     "@annangela/eslint-plugin-prefer-reflect": "^2.0.1",
+    "@types/oojs": "^7.0.5",
+    "@types/oojs-ui": "^0.47.5",
     "eslint": "^8.45.0",
     "eslint-plugin-prefer-arrow-functions": "^3.1.4",
     "stylelint": "^15.10.2",
     "stylelint-config-standard": "^34.0.0",
+    "types-mediawiki": "^1.4.0",
     "typescript": "^5.1.6",
     "yaml": "^2.3.1"
   },
