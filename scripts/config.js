@@ -16,7 +16,21 @@ const config = {
 
         // 同步列表
         list: [
-            "BulkMove.js",
+            "BatchSend",
+            "BulkMove",
+            "Excel2Wiki",
+            "FileUsedNotLinked",
+            "ListEnhancer",
+            "LyricStyleToggle",
+            "MassEdit",
+            "MoeStretch",
+            "NewpagesCat",
+            "purgecache",
+            "QuickThank",
+            "SectionPermanentLink",
+            "ShowContributors",
+            "TextDiff",
+            "userStatus",
         ],
     },
 };
