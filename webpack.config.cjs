@@ -13,7 +13,7 @@ module.exports = {
             return entries;
         }, {}),
     output: {
-        filename: '[name].js',
+        filename: '[name].min.js',
         path: path.resolve(__dirname, 'dist/gadgets'),
     },
     module: {

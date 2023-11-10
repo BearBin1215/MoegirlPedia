@@ -20,7 +20,7 @@ bot.loginGetEditToken({
             const source = await fs.promises.readFile(config.sync.localPath + item, "utf-8").catch((err) => {
                 throw new Error(`读取${item}失败：${err}`);
             });
-            const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item.replace(".js", "")}]]。\\n*源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/main/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
+            const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item.replace(".js", "")}]]。\\n*源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/main/src/gadgets/${item.replace(".js", "")} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
             await bot.request({
                 action: "edit",
                 title,
@@ -38,7 +38,7 @@ bot.loginGetEditToken({
             }).catch((err) => {
                 throw new Error(`${item}保存失败：${err}`);
             });
-            await waitInterval(6000);
+            await waitInterval(20000);
         } catch (err) {
             console.error(err);
         }
