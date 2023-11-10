@@ -4,8 +4,8 @@
 
 如果在大陆地区无法正常加载，请将链接内的`cdn`更换为`fastly`，或直接引用萌百站内的用户页js（下方使用方式中的注释行）。
 
-- [gadgets](/gadgets/)目录内放置一些较长的工具，一般建议通过`mw.loader.load()`引入，因此也不需要编译。
-- [oddment](/oddment/)目录内主要是一些简单短小的小工具，一般直接编译后放入个人js使用，编译后的文件在[oddment/build](/oddment/build/)内。
+- [gadgets](/src/gadgets/)目录内放置一些较长的工具，一般建议通过`mw.loader.load()`引入，因此也不需要编译。
+- [oddment](/src/oddment/)目录内主要是一些简单短小的小工具，一般直接编译后放入个人js使用，编译后的文件在内。
 
 目前，[gadgets](/gadgets/)内的脚本大多数使用[GitHub Actions](/.github/workflows/GadgetSynchronize.yml)在提交编辑时自动同步至萌百。
 

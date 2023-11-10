@@ -1,19 +1,15 @@
 env:
+  node: true
   browser: true
   jquery: true
   es6: true
   es2020: true
   es2021: true
   es2022: true
-  es2023: true
 
-parserOptions:
-  ecmaVersion: latest
-
-extends: eslint:recommended
-
-ignorePatterns:
-  - dist/
+extends:
+  - eslint:recommended
+  - plugin:react/recommended
 
 globals:
   mw: readonly
@@ -33,16 +29,17 @@ globals:
   Cron: readonly
   ace: readonly
   libCachedCode: readonly
-  CodeMirror: readonly
   html2canvas: readonly
-  saveAs: readonly
+
+parserOptions:
+  ecmaVersion: latest
+  sourceType: module
 
 plugins:
-  - "@annangela/prefer-reflect"
+  - react
   - prefer-arrow-functions
 
 rules:
-  "@annangela/prefer-reflect/prefer-reflect": error
   prefer-arrow-functions/prefer-arrow-functions:
     - error
     - classPropertiesAllowed: true
@@ -97,9 +94,6 @@ rules:
   no-magic-numbers: off
   no-multi-spaces: error
   no-param-reassign: error
-  strict:
-    - error
-    - global
   quotes:
     - 1
     - double
@@ -133,8 +127,7 @@ overrides:
     parserOptions:
       ecmaVersion: latest
       sourceType: module
-  - files: [oddment/**/*.js]
+  - files: [src/oddment/**/*.js]
     rules:
-      strict: 0
       prefer-arrow-callback: 0
       prefer-arrow-functions/prefer-arrow-functions: 0

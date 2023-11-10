@@ -9,7 +9,7 @@ const config = {
     // 自动同步脚本
     sync: {
         // 本地脚本目录
-        localPath: "gadgets/",
+        localPath: "dist/gadgets/",
 
         // 萌百页面路径
         pagePath: "User:BearBin/js/",

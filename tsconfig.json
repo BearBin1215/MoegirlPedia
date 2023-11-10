@@ -3,7 +3,7 @@
         "allowJs": true,
         "removeComments": true,
         "target": "ES5",
-        "outDir": "oddment/build",
+        "outDir": "dist/oddments",
         "alwaysStrict": false,
         "strict": false,
         "downlevelIteration": true,
@@ -14,9 +14,6 @@
         "ignoreDeprecations": "5.0"
     },
     "include": [
-        "oddment",
-    ],
-    "exclude": [
-        "oddment/build",
-    ],
+        "src/oddments"
+    ]
 }
