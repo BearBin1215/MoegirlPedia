@@ -182,7 +182,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 非常欢迎各路萌百人参与本项目的完善。如果您不懂代码，可以[提出建议](https://github.com/BearBin1215/MoegirlPedia/issues)。如果您希望亲自参与完善，可以提出[Pull request](https://github.com/BearBin1215/MoegirlPedia/pulls)。
 
-项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此在安装（node < 18）或启用（node >= 18）yarn后通过`yarn`指令安装依赖。
+项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`yarn`指令安装依赖。
 
 小工具源代码位于[/src/gadgets/](/src/gadgets/)目录，使用webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js文件中调用。打包指令：
 
