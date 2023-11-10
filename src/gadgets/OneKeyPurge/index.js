@@ -1,4 +1,4 @@
-import Snake from '../../components/jQuery/Snake/index.js';
+import Snake from '../../components/Snake/jQuery/index.js';
 
 $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") === -1) {
