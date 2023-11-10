@@ -4,7 +4,7 @@ on:
     branches: 
       - main
     paths:
-      - gadgets/**/*.js
+      - dist/gadgets/**/*.js
   workflow_dispatch:
 
 jobs:
@@ -16,9 +16,9 @@ jobs:
         with:
           node-version: "18.x"
       - name: 安装依赖
-        run: npm ci
+        run: npm i
       - name: 同步页面
         env:
           MW_USERNAME: BearBin
           MW_PASSWORD: ${{ secrets.MGP_PASSWORD }}
-        run: node script/Synchronize.js
+        run: node scripts/Synchronize.js
