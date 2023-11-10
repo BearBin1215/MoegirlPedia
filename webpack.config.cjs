@@ -3,12 +3,12 @@ const glob = require('glob');
 const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
-    entry: glob.sync('./src/gadgets/*.js')
+    entry: glob.sync('./src/gadgets/**/index.js')
         .map((filename) => filename
-            .replace(/\\/g, '/') // 将\替换为/
-            .replace(/^(?:.\/)?(.*)$/, './$1')) // 好像需要补上相对路径根
+            .replace(/\\/g, '/')
+            .replace(/^(?:.\/)?(.*)$/, './$1'))
         .reduce((entries, path) => {
-            const entry = path.replace('./src/gadgets', '').replace('.js', '');
+            const entry = path.replace('./src/gadgets/', '').replace('/index.js', '');
             entries[entry] = path;
             return entries;
         }, {}),

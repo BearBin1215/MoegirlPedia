@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "webpack && tsc --build",
     "build:gadgets": "webpack",
     "build:oddments": "tsc --build",
     "sync": "node scripts/Synchronize.js"

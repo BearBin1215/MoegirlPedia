@@ -1,0 +1,96 @@
+/**
+ * 配合purgecache.js使用
+ */
+
+/* moeskin宽屏
+---------------------------------------- */
+.skin-moeskin {
+    #purge-cache-button {
+        display: flex;
+        align-items: center;
+        height: 22px;
+        font-size: 12px;
+        line-height: 1;
+        transition: .3s all;
+
+        >.special-page {
+            cursor: default;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        >.special-page,
+        >a {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding: 0 10px;
+            color: #000;
+            transition: .3s all;
+            border-radius: 22px;
+            border: 1px solid rgb(224 224 230);
+        }
+
+        >a:hover,
+        >a:focus {
+            text-decoration: none;
+        }
+
+        >.special-page:hover,
+        >a:hover {
+            border-color: #36ad6a;
+        }
+
+        >a:hover {
+            color: #36ad6a;
+        }
+    }
+
+    /* moeskin窄屏
+    ---------------------------------------- */
+    .mobile-edit-button {
+        display: flex;
+        gap: .3em;
+
+        li {
+            list-style: none;
+            display: inline-flex;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            height: 28px;
+            background-color: rgb(24 160 88 / 16%);
+            border-radius: 3px;
+            transition: color .3s cubic-bezier(0.4, 0, 0.2, 1), background-color .3s cubic-bezier(0.4, 0, 0.2, 1), opacity .3s cubic-bezier(0.4, 0, 0.2, 1), border-color .3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            &:hover {
+                background: rgb(24 160 88 / 22%);
+            }
+
+            a {
+                color: #18a058;
+                white-space: nowrap;
+                font-size: 14px;
+                line-height: 1;
+                padding: 0 5px;
+
+                &:hover,
+                &:focus {
+                    text-decoration: none;
+
+                }
+            }
+
+            a,
+            span {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+            }
+        }
+    }
+}
