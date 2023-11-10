@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build:gadgets": "webpack",
-    "build:oddments": "tsc --build"
+    "build:oddments": "tsc --build",
+    "sync": "node scripts/Synchronize.js"
   },
   "repository": {
     "type": "git",

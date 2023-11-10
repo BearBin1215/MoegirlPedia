@@ -121,13 +121,13 @@ rules:
   no-use-before-define: error
 
 overrides:
-  - files: [script/**/*.js]
+  - files: [scripts/**/*.js]
     env:
       node: true
     parserOptions:
       ecmaVersion: latest
       sourceType: module
-  - files: [src/oddment/**/*.js]
+  - files: [src/oddments/**/*.js]
     rules:
       prefer-arrow-callback: 0
       prefer-arrow-functions/prefer-arrow-functions: 0
