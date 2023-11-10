@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: "18.x"
       - name: 安装依赖
-        run: npm i
+        run: corepack enable && yarn
       - name: 同步页面
         env:
           MW_USERNAME: BearBin
