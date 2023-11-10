@@ -92,7 +92,7 @@ export default class Snake {
      * @param {string} title 项目元素的title属性；若留空，hasHref为true时会从name继承，为false时不会继承
      * @param {string} href 项目元素的href属性，仅在hasHref为true时有效；若留空则会从name继承
      */
-    addScale = (name, title, href) => {
+    addScale(name, title, href) {
         if (this.blocks[name]) {
             throw new Error(`Snake: 项目${name}已存在。`);
         }
@@ -117,14 +117,30 @@ export default class Snake {
         this.length++;
         this.blocks[name] = scaleNode;
         this.body.append(scaleNode);
-    };
+    }
+
+    /**
+     * 移除一个项目
+     * @param {string[]} ...name 要移除项目的名称
+     */
+    removeScale(...name) {
+        // 根据name的类型判断是一个或多个
+        for (const item of name) {
+            if (!this.blocks[item]) {
+                throw new Error(`Snake: 不存在名为${name}的项目。`);
+            }
+            this.blocks[item].remove();
+            this.length--;
+            Reflect.deleteProperty(this.blocks, item);
+        }
+    }
 
     /**
      * 更改项目状态
      * @param {string} name 项目的名称
-     * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为complete
+     * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为success
      */
-    crawl = (name, state = "success") => {
+    crawl(name, state = "success") {
         if (!this.blocks[name]) {
             throw new Error(`Snake: 不存在名为${name}的项目。`);
         }
@@ -144,15 +160,15 @@ export default class Snake {
         }
         this.blocks[name].dataset.scaleState = state;
         this.blocks[name].scrollIntoView();
-    };
+    }
 
     /**
      * 清空项目
      */
-    clear = () => {
+    clear() {
         this.complete = 0;
         this.length = 0;
         this.blocks = {};
         this.body.innerHTML = "";
-    };
+    }
 }
