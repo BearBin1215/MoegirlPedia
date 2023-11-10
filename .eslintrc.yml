@@ -44,7 +44,6 @@ rules:
     - error
     - classPropertiesAllowed: true
       disallowPrototype: true
-      returnStyle: implicit
       singleReturnOnly: false
   logical-assignment-operators: error
   no-new-func: error
@@ -94,10 +93,6 @@ rules:
   no-magic-numbers: off
   no-multi-spaces: error
   no-param-reassign: error
-  quotes:
-    - 1
-    - double
-    - avoidEscape: true
   quote-props:
     - 1
     - as-needed
@@ -119,6 +114,8 @@ rules:
   require-await: error
   arrow-parens: error
   no-use-before-define: error
+  react/self-closing-comp: error
+
 
 overrides:
   - files: [scripts/**/*.js]
