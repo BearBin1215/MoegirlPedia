@@ -1,0 +1,128 @@
+.rootpage-Special_BatchSend {
+    #firstHeading {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        >div {
+            font-size: .6em;
+        }
+    }
+
+    #bodyContent {
+        padding-right: 0 !important;
+    }
+
+    #mw-content-text h3 {
+        margin-bottom: 0;
+    }
+
+    #bs-previewzone {
+        border: 1px solid #ccc;
+        background: rgb(255 255 255 / 70%);
+
+        .mw-parser-output {
+            padding: 0 1em 1em;
+        }
+
+        .oo-ui-pendingElement-pending {
+            padding: 1em 0;
+            text-align: center;
+            font-size: 1.2em;
+        }
+    }
+
+    #bs-submit-panel {
+        display: flex;
+        gap: .1rem;
+        margin-top: .8em;
+    }
+
+    #bs-interval {
+        flex: 0 0 5.5em;
+    }
+
+    #mw-content-text .oo-ui-textInputWidget,
+    #bs-summary {
+        max-width: unset;
+    }
+
+    #bs-previewsummary {
+        margin-top: .4em;
+    }
+
+    #mw-content-text ul.bearbintools-notelist {
+        margin: .4em 0 0 1.6em;
+    }
+
+    .state {
+        display: inline-block;
+        width: 1.2em;
+        height: 1em;
+        line-height: 1em;
+        text-align: center;
+    }
+
+    #bearbintools-log {
+        display: flow-root;
+        padding: .3em;
+        border: 1px solid #ccc;
+        background: rgb(255 255 255 / 70%);
+    }
+
+    #bearbintools-log-clear {
+        padding-left: .5em;
+        font-size: 1rem;
+        font-weight: 400;
+        user-select: none;
+    }
+
+    #bearbintools-log-state {
+        float: right;
+        padding: .4em;
+    }
+
+    #bearbintools-log-state>div {
+        border-radius: 0.3em;
+        margin-bottom: 0.2em;
+        padding-right: 0.2em;
+        cursor: pointer;
+    }
+
+    #bearbintools-log-state>div.log-selected {
+        background-color: rgb(127 127 127 / 7%);
+    }
+
+    #bearbintools-log-lines.log-success-hide .log-success,
+    #bearbintools-log-lines.log-nochange-hide .log-nochange,
+    #bearbintools-log-lines.log-error-hide .log-error,
+    #bearbintools-log-lines.log-warn-hide .log-warn {
+        display: none;
+    }
+
+    .log-success {
+        color: #333;
+    }
+
+    .log-nochange {
+        color: #888;
+    }
+
+    .log-warn {
+        color: #f28500;
+    }
+
+    .log-error {
+        color: #eb3941;
+    }
+
+    #bearbintools-log-lines {
+        font-family: monospace;
+
+        a {
+            color: inherit;
+            text-decoration: underline dotted;
+        }
+    }
+}
