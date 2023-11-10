@@ -25,6 +25,7 @@ const config = {
             "MassEdit",
             "MoeStretch",
             "NewpagesCat",
+            "OneKeyPurge",
             "purgecache",
             "QuickThank",
             "SectionPermanentLink",
