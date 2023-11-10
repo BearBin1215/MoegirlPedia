@@ -20,7 +20,7 @@ bot.loginGetEditToken({
             const source = await fs.promises.readFile(config.sync.localPath + item, "utf-8").catch((err) => {
                 throw new Error(`读取${item}失败：${err}`);
             });
-            const text = `var _addText = '{{Documentation|content=工具介绍见[[User:BearBin/js#${title.replace(".js", "")}]]。}}';\n\n${source}`;
+            const text = `var _addText = '{{Documentation|content=工具介绍见[[User:BearBin/js#${item.replace(".js", "")}]]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
             await bot.request({
                 action: "edit",
                 title,

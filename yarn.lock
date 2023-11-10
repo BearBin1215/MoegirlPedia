@@ -1174,6 +1174,13 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
   integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
+"@types/jquery@*", "@types/jquery@^3.5.5":
+  version "3.5.27"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.27.tgz#d9d67a003d0292a36fe35868a618c82f8fd12b19"
+  integrity sha512-TR28Y8ezIGgfyA02UOh9x+Fy16/1qWYAnvtRd2gTBJuccX/vmddyti0MezLkTv7f+OLofVc2T961VPyKv1tXJQ==
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/json-schema@*", "@types/json-schema@^7.0.8", "@types/json-schema@^7.0.9":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
@@ -1195,6 +1202,24 @@
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
+
+"@types/oojs-ui@^0.47.5":
+  version "0.47.5"
+  resolved "https://registry.yarnpkg.com/@types/oojs-ui/-/oojs-ui-0.47.5.tgz#0b962e818730c913eee90de4962d892da607205e"
+  integrity sha512-naxHtrHsbv7EA1laQJunpFH2wJl3MooEhBybdGpH4V9Nww83oHDCnXR2nmcancGaCt5DgbGu3KLPc70bnYOy7A==
+  dependencies:
+    "@types/jquery" "*"
+    "@types/oojs" "*"
+
+"@types/oojs@*", "@types/oojs@^7.0.5":
+  version "7.0.5"
+  resolved "https://registry.yarnpkg.com/@types/oojs/-/oojs-7.0.5.tgz#590b5982c494f4ce0e1b1d787c61ff8ff60c9e54"
+  integrity sha512-2nDsqXOiMg8NYIrbWDjejXcnqAXKUkY0LamB54+3O2bHTw/cuk0CihfRWyQw4wB7fpDNHmol5YDwi2i41RYVWg==
+
+"@types/sizzle@*":
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.6.tgz#e39b7123dac4631001939bd4c2a26d46010f2275"
+  integrity sha512-m04Om5Gz6kbjUwAQ7XJJQ30OdEFsSmAVsvn4NYwcTRyMVpKKa1aPuESw1n2CxS5fYkOQv3nHgDKeNa8e76fUkw==
 
 "@ungap/structured-clone@^1.2.0":
   version "1.2.0"
@@ -4513,6 +4538,13 @@ typed-array-length@^1.0.4:
     call-bind "^1.0.2"
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
+
+types-mediawiki@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/types-mediawiki/-/types-mediawiki-1.4.0.tgz#0ffb44cf9d940d7991d5719def17ba301965f91e"
+  integrity sha512-lyVkP0BsUbGNL24p2fCbdQ+24qK3jQyrbWDyRT28hL1aZFw249gNYCgUD41i6fMyu5c6JNxcHBwOHJhWxtWhFw==
+  dependencies:
+    "@types/jquery" "^3.5.5"
 
 typescript@^5.2.2:
   version "5.2.2"

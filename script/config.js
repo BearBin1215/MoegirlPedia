@@ -16,22 +16,7 @@ const config = {
 
         // 同步列表
         list: [
-            "voteRemind.js",
-            "BatchSend.js",
-            "OneKeyPurge.js",
-            "QuickThank.js",
-            "SectionPermanentLink.js",
-            "FileUsedNotLinked.js",
-            "LyricStyleToggle.js",
-            "NewpagesCat.js",
-            "BulkMove.js",
-            "Excel2Wiki.js",
-            "WikiplusSummary.js",
-            "ShowContributors.js",
-            "MassEdit.js",
-            "TextDiff.js",
             "ListEnhancer.js",
-            "MoeStretch.js",
         ],
     },
 };
