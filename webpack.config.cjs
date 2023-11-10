@@ -28,6 +28,12 @@ module.exports = {
                 },
             },
             {
+                test: /\.m?js$/,
+                resolve: {
+                  fullySpecified: false,
+                },
+            },
+            {
                 test: /\.less$/,
                 use: [
                     'style-loader',
@@ -44,7 +50,6 @@ module.exports = {
             },
         ],
     },
-    mode: 'production',
     optimization: {
         minimize: true,
         minimizer: [
@@ -52,5 +57,6 @@ module.exports = {
                 extractComments: false,
             })
         ]
-    }
+    },
+    mode: 'production',
 };
