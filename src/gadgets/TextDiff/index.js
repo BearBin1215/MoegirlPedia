@@ -1,7 +1,5 @@
-// eslint-disable-next-line
-var _addText = '{{Documentation|content=本小工具用于通过输入前后版本源代码输出差异，支持保存为图片或复制到剪贴板。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/TextDiff.js&action=raw&ctype=text/javascript");</pre>\n添加后，前往[[Special:差异比较]]进行比较。}}';
+import "./index.less";
 
-"use strict";
 $(() => (async () => {
     if (!["special:textdiff", "special:差异比较"].includes(mw.config.get("wgPageName").toLowerCase())) {
         if (window.TextDiff) {
@@ -50,40 +48,6 @@ $(() => (async () => {
     mw.config.set("wgCanonicalSpecialPageName", "TextDiff");
     $("title").text("差异比较 - 萌娘百科_万物皆可萌的百科全书");
     $("head").append(
-        `<style>
-        #firstHeading {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-        #firstHeading>div {
-            font-size: .6em;
-        }
-        #bodyContent {
-            padding-right: 0 !important;
-        }
-        #mw-content-text .oo-ui-textInputWidget {
-            max-width: unset;
-        }
-        .get-source-from-page {
-            margin-top: .4em;
-            display: flex;
-        }
-        #mw-content-text .get-source-from-page>.oo-ui-textInputWidget {
-            margin-right: 0;
-            max-width: 25em;
-        }
-        #submit-button {
-            margin-top: 1em;
-        }
-        #diff-result {
-            padding: .2em;
-        }
-        #result-action {
-            margin-top: 1em;
-        }
-        </style>`,
         `<link rel="stylesheet" href="${mw.config.get("wgLoadScript")}?debug=false&modules=mediawiki.diff.styles&only=styles" />`,
         '<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>',
         '<script src="https://npm.elemecdn.com/file-saver/dist/FileSaver.min.js"></script>',

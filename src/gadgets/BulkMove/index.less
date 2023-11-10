@@ -1,0 +1,185 @@
+.rootpage-Special_BulkMove {
+    #firstHeading {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        >div {
+            font-size: .6em;
+        }
+    }
+
+    #bodyContent {
+        padding-right: 0 !important;
+
+        #mw-content-text {
+            h3 {
+                margin-bottom: 0;
+            }
+
+            ul.bearbintools-notelist {
+                margin: .4em 0 0 1.6em;
+            }
+        }
+    }
+
+    #bm-page-list-table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 900px;
+
+        tbody {
+            counter-reset: row-counter;
+
+            tr {
+                counter-increment: row-counter;
+
+                &::before {
+                    content: counter(row-counter);
+                    display: table-cell;
+                    width: 0;
+                    padding-right: .3em;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+
+                td {
+                    padding: 0;
+                    border: 1px solid #aaa;
+                    background-color: rgb(255 255 255 / 70%);
+                }
+
+                th,
+                td {
+                    &:last-child {
+                        border: none;
+                        width: 20px;
+                        background-position: center;
+                        background-color: transparent;
+                    }
+                }
+            }
+        }
+
+        input[type="text"] {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            padding: .4em;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+
+            &:focus {
+                outline: none;
+                background-color: rgb(127 127 127 / 2%);
+            }
+        }
+
+        #bm-add-row,
+        .remove-row {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: .2s ease background;
+
+            &:hover {
+                background-color: rgb(127 127 127 / 20%);
+            }
+        }
+    }
+
+    #bm-option {
+        margin-top: .8em;
+
+        >div {
+            margin-top: .3em;
+        }
+    }
+
+    #bm-submit-panel {
+        display: flex;
+        gap: .1rem;
+        margin-top: .8em;
+
+        #bm-interval {
+            flex: 0 0 5.5em;
+        }
+
+        #bm-summary {
+            max-width: initial;
+        }
+    }
+
+    #bearbintools-log {
+        display: flow-root;
+        padding: .3em;
+        border: 1px solid #ccc;
+        background: rgb(255 255 255 / 70%);
+    }
+
+    #bearbintools-log-clear {
+        padding-left: .5em;
+        font-size: 1rem;
+        font-weight: 400;
+        user-select: none;
+    }
+
+    #bearbintools-log-state {
+        float: right;
+        padding: .4em;
+
+        .state {
+            display: inline-block;
+            width: 1.2em;
+            height: 1em;
+            line-height: 1em;
+            text-align: center;
+        }
+
+        >div {
+            border-radius: 0.3em;
+            margin-bottom: 0.2em;
+            padding-right: 0.2em;
+            cursor: pointer;
+
+            &.log-selected {
+                background-color: rgb(127 127 127 / 7%);
+            }
+        }
+
+        #bearbintools-log-lines {
+            font-family: monospace;
+
+            &.log-success-hide .log-success,
+            &.log-nochange-hide .log-nochange,
+            &.log-error-hide .log-error,
+            &.log-warn-hide .log-warn {
+                display: none;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: underline dotted;
+            }
+        }
+
+        .log-success {
+            color: #333;
+        }
+
+        .log-nochange {
+            color: #888;
+        }
+
+        .log-warn {
+            color: #f28500;
+        }
+
+        .log-error {
+            color: #eb3941;
+        }
+    }
+}

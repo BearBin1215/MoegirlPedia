@@ -30,6 +30,7 @@ globals:
   ace: readonly
   libCachedCode: readonly
   html2canvas: readonly
+  saveAs: readonly
 
 parserOptions:
   ecmaVersion: latest

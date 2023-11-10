@@ -16,7 +16,7 @@ const config = {
 
         // 同步列表
         list: [
-            "ListEnhancer.js",
+            "BulkMove.js",
         ],
     },
 };

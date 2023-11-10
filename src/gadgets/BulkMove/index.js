@@ -1,8 +1,5 @@
-// eslint-disable-next-line
-var _addText = '{{Documentation|content=本小工具用于批量移动页面。\n\n使用方式：在[[Special:MyPage/common.js|个人js页]]添加如下代码：\n<pre class="prettyprint lang-javascript" style="margin-top:0">mw.loader.load("/index.php?title=User:BearBin/js/BulkMove.js&action=raw&ctype=text/javascript");</pre>\n加入后，可以在[[Special:BulkMove]]、[[Special:批量移动]]等页面进行批量移动操作。}}';
+import "./index.less";
 
-"use strict";
-// <pre>
 $(() => (async () => {
     if (!["special:bulkmove", "special:批量移动", "special:批量移動", "特殊:bulkmove"].includes(mw.config.get("wgPageName").toLowerCase())) {
         await mw.loader.using(["mediawiki.util"]);
@@ -52,154 +49,6 @@ $(() => (async () => {
      */
     mw.config.set("wgCanonicalSpecialPageName", "BulkMove");
     $("title").text("批量移动 - 萌娘百科_万物皆可萌的百科全书");
-    $("head").append(`<style>
-        #firstHeading {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-        #firstHeading>div {
-            font-size: .6em;
-        }
-        #bodyContent {
-            padding-right: 0 !important;
-        }
-        #mw-content-text h3 {
-            margin-bottom: 0;
-        }
-        #bm-page-list-table {
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 900px;
-        }
-        #bm-page-list-table tbody {
-            counter-reset: row-counter;
-        }
-        #bm-page-list-table tbody tr {
-            counter-increment: row-counter;
-        }
-        #bm-page-list-table tbody tr:before {
-            content: counter(row-counter);
-            display: table-cell;
-            width: 0;
-            padding-right: .3em;
-            text-align: center;
-            vertical-align: middle;
-        }
-        #bm-page-list-table td {
-            padding: 0;
-            border: 1px solid #aaa;
-            background-color: rgba(255, 255, 255, .7);
-        }
-        #bm-page-list-table th:last-child,
-        #bm-page-list-table td:last-child {
-            border: none;
-            width: 20px;
-            background-position: center;
-            background-color: transparent;
-        }
-        #bm-add-row, .remove-row {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            border-radius: 50%;
-            transition: .2s ease background;
-        }
-        #bm-add-row:hover, .remove-row:hover {
-            background-color: rgba(127, 127, 127, .2)
-        }
-        /* 傻逼萌皮 */
-        #mw-content-text #bm-page-list-table input[type="text"] {
-            box-sizing: border-box;
-            width: 100%;
-            height: 100%;
-            padding: .4em;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-        }
-        #mw-content-text #bm-page-list-table input[type="text"]:focus {
-            outline: none;
-            background-color: rgba(127, 127, 127, .02);
-        }
-        #mw-content-text ul.bearbintools-notelist {
-            margin: .4em 0 0 1.6em;
-        }
-        #bm-submit-panel, #bm-option {
-            margin-top: .8em;
-        }
-        #bm-submit-panel {
-            display: flex;
-            gap: .1rem;
-        }
-        #bm-interval {
-            flex: 0 0 5.5em;
-        }
-        #bm-summary {
-            max-width: initial;
-        }
-        #bm-option>div {
-            margin-top: .3em;
-        }
-        .state {
-            display: inline-block;
-            width: 1.2em;
-            height: 1em;
-            line-height: 1em;
-            text-align: center;
-        }
-        #bearbintools-log {
-            display: flow-root;
-            padding: .3em;
-            border: 1px solid #ccc;
-            background: rgba(255, 255, 255, .7);
-        }
-        #bearbintools-log-clear {
-            padding-left: .5em;
-            font-size: 1rem;
-            font-weight: 400;
-            user-select: none;
-        }
-        #bearbintools-log-state {
-            float: right;
-            padding: .4em;
-        }
-        #bearbintools-log-state>div {
-            border-radius: 0.3em;
-            margin-bottom: 0.2em;
-            padding-right: 0.2em;
-            cursor: pointer;
-        }
-        #bearbintools-log-state>div.log-selected {
-            background-color: rgba(127, 127, 127, .07);
-        }
-        #bearbintools-log-lines.log-success-hide .log-success,
-        #bearbintools-log-lines.log-nochange-hide .log-nochange,
-        #bearbintools-log-lines.log-error-hide .log-error,
-        #bearbintools-log-lines.log-warn-hide .log-warn {
-            display: none;
-        }
-        .log-success {
-            color: #333;
-        }
-        .log-nochange {
-            color: #888;
-        }
-        .log-warn {
-            color: #f28500;
-        }
-        .log-error {
-            color: #eb3941;
-        }
-        #bearbintools-log-lines {
-            font-family: monospace;
-        }
-        #bearbintools-log-lines a {
-            color: inherit;
-            text-decoration: underline dotted;
-        }
-    </style>`);
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
     $("#firstHeading").html("批量移动页面<div>By BearBin</div>");
     $("#contentSub").remove();
@@ -443,4 +292,3 @@ $(() => (async () => {
         }
     });
 })());
-// </pre>
