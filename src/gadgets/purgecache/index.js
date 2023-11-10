@@ -40,25 +40,23 @@ const purgeCache = () => {
     return containerNode;
 };
 
-$(() => {
-    let containerNodeDesktop, containerNodeMobile;
-    //判断是否特殊页面
-    if (mw.config.get("wgNamespaceNumber") === -1) {
-        containerNodeDesktop = $('<span class="special-page"/>');
-        containerNodeDesktop.append("特殊页面");
-    } else {
-        containerNodeDesktop = purgeCache();
-        containerNodeMobile = purgeCache();
-    }
-    let li;
-    // 检测皮肤
-    if (mw.config.get("skin") === "vector") {
-        li = $('<li id="pt-purge"/>').appendTo("#p-personal>ul");
-        li.append(containerNodeDesktop);
-    } else {
-        li = $('<div id="purge-cache-button"/>').prependTo("#moe-article-header-container #moe-article-header-top .right-block");
-        const li2 = $('<li id="purge-cache-button-mobile"/>').appendTo("div.mobile-edit-button");
-        li.append(containerNodeDesktop);
-        li2.append(containerNodeMobile);
-    }
-});
+let containerNodeDesktop, containerNodeMobile;
+//判断是否特殊页面
+if (mw.config.get("wgNamespaceNumber") === -1) {
+    containerNodeDesktop = $('<span class="special-page"/>');
+    containerNodeDesktop.append("特殊页面");
+} else {
+    containerNodeDesktop = purgeCache();
+    containerNodeMobile = purgeCache();
+}
+let li;
+// 检测皮肤
+if (mw.config.get("skin") === "vector") {
+    li = $('<li id="pt-purge"/>').appendTo("#p-personal>ul");
+    li.append(containerNodeDesktop);
+} else {
+    li = $('<div id="purge-cache-button"/>').prependTo("#moe-article-header-container #moe-article-header-top .right-block");
+    const li2 = $('<li id="purge-cache-button-mobile"/>').appendTo("div.mobile-edit-button");
+    li.append(containerNodeDesktop);
+    li2.append(containerNodeMobile);
+}

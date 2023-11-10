@@ -51,7 +51,6 @@ rules:
   no-new-wrappers: error
   no-var: error
   prefer-const: error
-  no-extra-parens: error
   no-misleading-character-class: error
   no-template-curly-in-string: error
   require-atomic-updates: error

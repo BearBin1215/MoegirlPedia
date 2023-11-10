@@ -1,0 +1,60 @@
+#excel-to-wiki {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    width: 20em;
+    max-width: 84vw;
+    max-height: 50em;
+    padding: .8em;
+    z-index: 200;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 6px #ccc;
+    background: rgb(255 255 255 / 87%);
+
+    #e2w-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1em;
+        height: 1em;
+        padding: 0;
+        font-size: 1.5em;
+        font-weight: bold;
+        border: 0;
+        background: 0;
+        cursor: pointer;
+    }
+
+    #e2w-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        #e2w-input,
+        #e2w-output {
+            border: 1px solid #aaa;
+            flex: 1 0;
+            padding: .2em;
+            min-height: 5em;
+            max-height: 15em;
+            overflow: auto;
+        }
+
+        #e2w-input {
+            table {
+                border-collapse: collapse;
+            }
+
+            td {
+                border: 1px solid #bbb;
+                text-align: left;
+            }
+        }
+
+        #e2w-copy {
+            font-size: .8em;
+            font-weight: normal;
+            margin-left: 0.3em;
+        }
+    }
+}
