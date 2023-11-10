@@ -120,37 +120,27 @@ export default class Snake {
     };
 
     /**
-     * 移除一个项目
-     * @param {string[]} ...name 要移除项目的名称
-     */
-    removeScale = (...name) => {
-        // 根据name的类型判断是一个或多个
-        for (const item of name) {
-            if (!this.blocks[item]) {
-                throw new Error(`Snake: 不存在名为${name}的项目。`);
-            }
-            this.blocks[item].remove();
-            this.length--;
-            Reflect.deleteProperty(this.blocks, item);
-        }
-    };
-
-    /**
      * 更改项目状态
      * @param {string} name 项目的名称
      * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为complete
      */
-    crawl = (name, state = "complete") => {
+    crawl = (name, state = "success") => {
         if (!this.blocks[name]) {
             throw new Error(`Snake: 不存在名为${name}的项目。`);
         }
 
         // 根据当前状态和目标状态调整complete并设置data-scale-state值
-        if (this.blocks[name].dataset.scaleState === "complete") {
+        if (this.blocks[name].dataset.scaleState === "success") {
             this.complete--;
         }
-        if (state === "complete") {
+        if (state === "success") {
             this.complete++;
+        }
+        if (this.blocks[name].dataset.scaleState === "ongoing") {
+            this.blocks[name].classList.remove("oo-ui-pendingElement-pending");
+        }
+        if (state === "ongoing") {
+            this.blocks[name].classList.add("oo-ui-pendingElement-pending");
         }
         this.blocks[name].dataset.scaleState = state;
         this.blocks[name].scrollIntoView();
