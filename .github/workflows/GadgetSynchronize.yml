@@ -21,4 +21,4 @@ jobs:
         env:
           MW_USERNAME: BearBin
           MW_PASSWORD: ${{ secrets.MGP_PASSWORD }}
-        run: node scripts/Synchronize.js
+        run: node scripts/src/Synchronize.js
