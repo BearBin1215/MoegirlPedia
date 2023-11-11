@@ -1,7 +1,16 @@
-extends: stylelint-config-standard
+extends: 
+  - stylelint-config-standard
+  - stylelint-less
 
 ignoreFiles:
   - dist/**/*.css
+
+overrides:
+  - files:
+    - src/**/*.less
+    customSyntax: postcss-less
+    extends:
+      - stylelint-less
 
 rules:
   selector-id-pattern: null
@@ -17,11 +26,11 @@ rules:
   function-no-unknown:
     - true
     - ignoreFunctions:
-        - alpha
+      - alpha
   comment-empty-line-before: null
   selector-type-no-unknown:
     - true
     - ignoreTypes:
-        - ogvjs
+      - ogvjs
   no-duplicate-selectors: null
   declaration-property-value-no-unknown: true

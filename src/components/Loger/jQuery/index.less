@@ -1,0 +1,55 @@
+.bearbintools-loger {
+    .loger-headline {
+        font-size: 1.1em;
+        font-weight: bold;
+
+        .loger-clear {
+            margin-left: .3em;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+    }
+
+    .loger-body {
+        display: flow-root;
+        padding: .3em;
+        border: 1px solid #ccc;
+        background: rgb(255 255 255 / 70%);
+    }
+
+    .loger-filter {
+        float: right;
+        padding: .4em;
+
+        >div {
+            border-radius: 0.3em;
+            margin-bottom: 0.2em;
+            padding-right: 0.2em;
+            cursor: pointer;
+
+            &.loger-filter-selected {
+                background-color: rgb(127 127 127 / 7%);
+            }
+        }
+
+        .loger-filter-icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1em;
+            line-height: 1em;
+            text-align: center;
+        }
+    }
+
+    .loger-lines {
+        max-height: 20em;
+        overflow-y: auto;
+        list-style: inside;
+        font-family: monospace;
+
+        >li a {
+            color: inherit;
+            text-decoration: underline dotted;
+        }
+    }
+}
