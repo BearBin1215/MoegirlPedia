@@ -1,6 +1,5 @@
 extends: 
   - stylelint-config-standard
-  - stylelint-less
 
 ignoreFiles:
   - dist/**/*.css
@@ -9,8 +8,6 @@ overrides:
   - files:
     - src/**/*.less
     customSyntax: postcss-less
-    extends:
-      - stylelint-less
 
 rules:
   selector-id-pattern: null
