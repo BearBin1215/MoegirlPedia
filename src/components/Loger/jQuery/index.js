@@ -47,12 +47,13 @@ export default class Loger {
     constructor(logTypes = [], id) {
         if (logTypes.length > 0) {
             // 根据输入生成需要的类型
-            this._logTypes = logTypes.reduce(({ name, icon, color, text }, cur) => {
-                cur[name] = {
+            this._logTypes = logTypes.reduce((pre, { name, icon, color, text }) => {
+                pre[name] = {
                     icon,
                     color,
                     text,
                 };
+                return pre;
             }, {});
         }
         for (const key in this._logTypes) {
@@ -160,19 +161,22 @@ export default class Loger {
         const record = document.createElement('li');
         record.classList.add('loger-record', `loger-${type}`);
         record.innerHTML = `${time} - ${text}`;
-        record.style.color = this._logTypes[type].color || '#222';
+        record.style.color = this._logTypes[type]?.color || '#222';
 
         // 根据选择状态决定是否显示
-        if(this._logTypes[type]?.show === false) {
+        if (this._logTypes[type]?.show === false) {
             record.style.display = 'none';
         }
 
         this.logerLines.appendChild(record);
+        this.logerLines.scrollTop = this.logerLines.scrollHeight; // 日志滚动至底部
         this.logDetails.push({
             node: record,
             type,
         });
-        this.filterButtons[type].countElement.innerText = +this.filterButtons[type].countElement.innerText + 1;
+        if (this.filterButtons[type]) {
+            this.filterButtons[type].countElement.innerText = +this.filterButtons[type].countElement.innerText + 1;
+        }
     }
 
     /**

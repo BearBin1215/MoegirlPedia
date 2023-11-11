@@ -1,3 +1,4 @@
+import Loger from "../../components/Loger/jQuery";
 import "./index.less";
 
 $(() => (async () => {
@@ -8,13 +9,34 @@ $(() => (async () => {
     }
     await mw.loader.using(["mediawiki.api", "oojs-ui"]);
     const api = new mw.Api();
+    const loger = new Loger([
+        {
+            name: 'success',
+            icon: '✓',
+            color: '#333',
+            text: '已完成',
+        },
+        {
+            name: 'nochange',
+            icon: '○',
+            color: '#888',
+            text: '无变化',
+        },
+        {
+            name: 'warn',
+            icon: '!',
+            color: '#f28500',
+            text: '警告',
+        },
+        {
+            name: 'error',
+            icon: '✕',
+            color: '#eb3941',
+            text: '出错',
+        },
+    ]);
     mw.loader.load("https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript");
     const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
-    let successCount = 0;
-    let nochangeCount = 0;
-    let errorCount = 0;
-    let warnCount = 0;
-    let length = 0;
 
     /**
      * 在Special:MassEdit构建页面
@@ -50,16 +72,6 @@ $(() => (async () => {
         '<li>编辑间隔单位为秒（s），不填默认为0。不包含本身编辑页面所用的时间。</li>',
         '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
         '</ul>',
-        '<h5 id="bearbintools-log-title">日志<a id="bearbintools-log-clear">[清空]</a></h5>',
-        '<div id="bearbintools-log">',
-        '<div id="bearbintools-log-state">',
-        '<div class="log-success log-selected" id="log-success"><span class="state">✓</span><span id="state-success">0</span> 已完成</div>',
-        '<div class="log-nochange log-selected" id="log-nochange"><span class="state">○</span><span id="state-nochange">0</span> 无变化</div>',
-        '<div class="log-error log-selected" id="log-error"><span class="state">✕</span><span id="state-error">0</span> 出错</div>',
-        '<div class="log-warn log-selected" id="log-warn"><span class="state">!</span><span id="state-warn">0</span> 警告</div>',
-        '</div>',
-        '<ul id="bearbintools-log-lines"></ul>',
-        '</div>',
         '<ul id="bearbintools-log-note">',
         '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
         '</ul>',
@@ -100,6 +112,7 @@ $(() => (async () => {
         intervalBox.$element,
         summaryBox.$element,
     );
+    $("#bearbintools-log-note").before(loger.$element);
 
     /**
      * 实现sleep效果，使用时需要加上await
@@ -108,18 +121,6 @@ $(() => (async () => {
      * @returns {Promise<void>}
      */
     const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
-    /**
-     * 记录编辑日志
-     * 
-     * @param {string} info 日志内容
-     * @param {string} type 日志类型，normal/success/nochange/warn/error
-     */
-    const record = (info, type = "normal") => {
-        $("#bearbintools-log-lines").append(`<li class="log-${type}">${new Date().toLocaleTimeString()} - ${info}</li>`);
-        const message = document.getElementById("bearbintools-log-lines");
-        message.scrollTop = message.scrollHeight;
-    };
 
     /**
      * 获取用户输入的页面或分类
@@ -157,9 +158,9 @@ $(() => (async () => {
                     }
                     cmcontinue = result.continue?.cmcontinue;
                     if (result.query.categorymembers.length > 0) {
-                        record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${result.query.categorymembers.length}个。`, "normal");
+                        loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${result.query.categorymembers.length}个。`, "normal");
                     } else {
-                        record(`【${category}】内没有页面。`, "warn");
+                        loger.record(`【${category}】内没有页面。`, "warn");
                     }
                 } catch (error) {
                     let message = "";
@@ -170,7 +171,7 @@ $(() => (async () => {
                         default:
                             message = error;
                     }
-                    record(`获取【${category}】内的页面出错：${message}。`, "error");
+                    loger.record(`获取【${category}】内的页面出错：${message}。`, "error");
                     break;
                 }
             }
@@ -215,8 +216,7 @@ $(() => (async () => {
             source = source.parse.wikitext["*"]; // 获取源代码并进行替换
             const replacedSource = source.replaceAll(editFrom, changeTo);
             if (source === replacedSource) {
-                record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, "nochange");
-                $("#state-nochange").text(++nochangeCount);
+                loger.record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, "nochange");
                 return "nochange";
             }
             const editResult = await api.postWithToken("csrf", {
@@ -231,8 +231,7 @@ $(() => (async () => {
                 text: replacedSource,
                 summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom}】→【${changeTo}】${summary === "" ? "" : `：${summary}`}`,
             });
-            record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
-            $("#state-success").text(++successCount);
+            loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
             return "success";
         } catch (err) {
             let errorMessage = "";
@@ -249,8 +248,7 @@ $(() => (async () => {
                 default:
                     errorMessage = err;
             }
-            record(`编辑【<a href="/${title}?action=history" target="_blank">${title}</a>】时出现错误：${errorMessage}。`, "error");
-            $("#state-error").text(++errorCount);
+            loger.record(`编辑【<a href="/${title}?action=history" target="_blank">${title}</a>】时出现错误：${errorMessage}。`, "error");
             return "failed";
         }
     };
@@ -265,11 +263,9 @@ $(() => (async () => {
         if (confirm) {
             // 检查输入
             if ($("#me-edit-from").val() === "") {
-                record("请输入要替换的原文字。", "warn");
-                $("#state-warn").text(++warnCount);
+                loger.record("请输入要替换的原文字。", "warn");
             } else if ($("#me-page-list").val() === "" && $("#me-category-list").val() === "") {
-                record("请输入要编辑的页面或分类。", "warn");
-                $("#state-warn").text(++warnCount);
+                loger.record("请输入要编辑的页面或分类。", "warn");
             } else {
                 const additionalSummary = getAdditionalSummary();
                 const interval = getInterval();
@@ -279,12 +275,12 @@ $(() => (async () => {
                 if ($("#me-regex-box input").prop("checked")) {
                     try {
                         if (!/\/[\s\S]+\//.test(editFrom)) {
-                            record("正则表达式有误。");
+                            loger.record("正则表达式有误。", "warn");
                             return;
                         }
                         editFrom = eval(editFrom);
                     } catch (err) {
-                        record(`正则表达式解析失败：${err}`, "error");
+                        loger.record(`正则表达式解析失败：${err}`, "error");
                         return;
                     }
                 }
@@ -294,8 +290,8 @@ $(() => (async () => {
                 await getPageList().then(async (result) => {
                     let complete = 0;
                     // console.log(`页面列表：${result}`);
-                    length = result.length;
-                    record(`共${length}个页面，即将开始编辑……`, "normal");
+                    const length = result.length;
+                    loger.record(`共${length}个页面，即将开始编辑……`, "normal");
                     for (const item of result) {
                         const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
                         complete++;
@@ -303,7 +299,7 @@ $(() => (async () => {
                             await waitInterval(interval);
                         }
                     }
-                    record("编辑完毕。", "normal");
+                    loger.record("编辑完毕。", "normal");
                 });
                 submitButton.setDisabled(false);
                 $("#mw-content-text input, #mw-content-text textarea").prop("disabled", false);
@@ -322,34 +318,6 @@ $(() => (async () => {
         OO.ui.alert(regexHelpText, {
             title: "常用正则表达式",
             size: "medium",
-        });
-    });
-
-    // 清空日志
-    $("#bearbintools-log-clear").on("click", () => {
-        $("#bearbintools-log-lines").html("");
-        $("#state-success, #state-nochange, #state-error, #state-warn").text(0);
-        successCount = 0;
-        nochangeCount = 0;
-        errorCount = 0;
-        warnCount = 0;
-    });
-
-    // 日志隐藏
-    $("#bearbintools-log-state>div").each((_, ele) => {
-        let show = true;
-        const $ele = $(ele);
-        $ele.on("click", (e) => {
-            e.preventDefault();
-            if (show) {
-                $("#bearbintools-log-lines").addClass(`${$ele.attr("id")}-hide`);
-                $ele.removeClass("log-selected");
-                show = false;
-            } else {
-                $("#bearbintools-log-lines").removeClass(`${$ele.attr("id")}-hide`);
-                $ele.addClass("log-selected");
-                show = true;
-            }
         });
     });
 })());
