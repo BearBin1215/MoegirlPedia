@@ -1,0 +1,21 @@
+{
+    "extends": [
+       "stylelint-config-standard"
+    ],
+    "ignoreFiles": [
+       "dist/**/*.css"
+    ],
+    "overrides": [
+       {
+          "files": [
+             "src/**/*.less"
+          ],
+          "customSyntax": "postcss-less"
+       }
+    ],
+    "rules": {
+       "selector-id-pattern": null,
+       "selector-class-pattern": null,
+       "comment-empty-line-before": null
+    }
+ }
