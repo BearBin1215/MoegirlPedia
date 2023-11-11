@@ -3,7 +3,6 @@
   "version": "2.0.0",
   "description": "BearBin's gadgets for MoegirlPedia",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "build": "webpack && tsc --build",
     "build:gadgets": "webpack",
