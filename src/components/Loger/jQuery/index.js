@@ -43,8 +43,9 @@ export default class Loger {
      *     text: string
      *     }>} logTypes 日志行类型及其属性
      * @param {string} id 元素id
+     * @param {string} headlineTagName 标题元素标签名
      */
-    constructor(logTypes = [], id) {
+    constructor(logTypes = [], id = '', headlineTagName = 'h3') {
         if (logTypes.length > 0) {
             // 根据输入生成需要的类型
             this._logTypes = logTypes.reduce((pre, { name, icon, color, text }) => {
@@ -62,7 +63,7 @@ export default class Loger {
         }
 
         // 标题
-        this.headline = document.createElement('div');
+        this.headline = document.createElement(headlineTagName);
         this.headline.classList.add('loger-headline');
 
         // 日志主体

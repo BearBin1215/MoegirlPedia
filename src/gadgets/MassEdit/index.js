@@ -34,7 +34,7 @@ $(() => (async () => {
             color: '#eb3941',
             text: '出错',
         },
-    ]);
+    ], 'massedit-log', 'h5');
     mw.loader.load("https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript");
     const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
 

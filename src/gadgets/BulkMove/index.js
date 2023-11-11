@@ -1,3 +1,4 @@
+import Loger from "../../components/Loger/jQuery";
 import "./index.less";
 
 $(() => (async () => {
@@ -8,9 +9,8 @@ $(() => (async () => {
     }
     await mw.loader.using(["mediawiki.api", "oojs-ui", "mediawiki.user"]);
     const api = new mw.Api();
+    const loger = new Loger();
     let rowCount = 0;
-    let successCount = 0;
-    let errorCount = 0;
 
     /**
      * 实现sleep效果，使用时需要加上await
@@ -34,17 +34,6 @@ $(() => (async () => {
     };
 
     /**
-     * 记录日志
-     * @param {string} info 日志内容
-     * @param {string} type 日志类型，normal/success/warn/error
-     */
-    const record = (info, type = "normal") => {
-        $("#bearbintools-log-lines").append(`<li class="log-${type}">${new Date().toLocaleTimeString()} - ${info}</li>`);
-        const message = document.getElementById("bearbintools-log-lines");
-        message.scrollTop = message.scrollHeight;
-    };
-
-    /**
      * 在Special:BulkMove构建页面
      */
     mw.config.set("wgCanonicalSpecialPageName", "BulkMove");
@@ -52,40 +41,31 @@ $(() => (async () => {
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
     $("#firstHeading").html("批量移动页面<div>By BearBin</div>");
     $("#contentSub").remove();
-    $("#mw-content-text").html(`
-        <h3>页面列表</h3>
-        <table id="bm-page-list-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>源页面</th>
-                    <th>目标页面</th>
-                    <th><div class="oo-ui-icon-add" id="bm-add-row" title="新增一行"></div></th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <ul class="bearbintools-notelist">
-            <li>请输入要移动的页面列表及目标页面，一一对应。</li>
-            <li>点击右上角“+”添加一行，长按可连续添加。</li>
-            <li>可直接从Excel复制（部分浏览器可能不支持）。复制粘贴时浏览器可能会需要获取权限，请注意是否有提醒。</li>
-        </ul>
-        <div id="bm-option"></div>
-        <div id="bm-submit-panel"></div>
-        <ul class="bearbintools-notelist">
-            <li>操作间隔单位为秒（s），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>
-            <li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定的速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>
-        </ul>
-        <h3 id="bearbintools-log-title">日志<a id="bearbintools-log-clear">[清空]</a></h3>
-        <div id="bearbintools-log">
-            <div id="bearbintools-log-state">
-                <div class="log-success log-selected" id="log-success"><span class="state">✓</span><span id="state-success">0</span> 完成</div>
-                <div class="log-error log-selected" id="log-error"><span class="state">✕</span><span id="state-error">0</span> 出错</div>
-                <div class="log-warn log-selected" id="log-warn"><span class="state">!</span><span id="state-error">0</span> 警告</div>
-            </div>
-            <ul id="bearbintools-log-lines"></ul>
-        </div>
-    `);
+    $("#mw-content-text").html([
+        '<h3>页面列表</h3>',
+        '<table id="bm-page-list-table">',
+        '<thead>',
+        '<tr>',
+        '<th></th>',
+        '<th>源页面</th>',
+        '<th>目标页面</th>',
+        '<th><div class="oo-ui-icon-add" id="bm-add-row" title="新增一行"></div></th>',
+        '</tr>',
+        '</thead>',
+        '<tbody></tbody>',
+        '</table>',
+        '<ul class="bearbintools-notelist">',
+        '<li>请输入要移动的页面列表及目标页面，一一对应。</li>',
+        '<li>点击右上角“+”添加一行，长按可连续添加。</li>',
+        '<li>可直接从Excel复制（部分浏览器可能不支持）。复制粘贴时浏览器可能会需要获取权限，请注意是否有提醒。</li>',
+        '</ul>',
+        '<div id="bm-option"></div>',
+        '<div id="bm-submit-panel"></div>',
+        '<ul class="bearbintools-notelist">',
+        '<li>操作间隔单位为秒（s），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>',
+        '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定的速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
+        '</ul>',
+    ].join("")).append(loger.$element);
     addRow(10); // 先加十行
 
     // 移动选项
@@ -187,14 +167,6 @@ $(() => (async () => {
         });
     });
 
-    // 清空日志
-    $("#bearbintools-log-clear").on("click", () => {
-        $("#bearbintools-log-lines").html("");
-        $("#state-success, #state-warn, #state-error").text(0);
-        successCount = 0;
-        errorCount = 0;
-    });
-
     // 日志筛选
     $("#bearbintools-log-state>div").each((_, ele) => {
         let show = true;
@@ -241,9 +213,9 @@ $(() => (async () => {
                 }
             });
             if (pageList.length > 0) {
-                record(`共${pageList.length}个页面，即将开始移动。`);
+                loger.record(`共${pageList.length}个页面，即将开始移动。`);
             } else {
-                record("没有要移动的页面。");
+                loger.record("没有要移动的页面。");
             }
             for (const item of pageList) {
                 const from = item.from;
@@ -262,8 +234,7 @@ $(() => (async () => {
                         bot: true,
                     });
                     if (result.move) {
-                        record(`移动【<a href="/${from}${noredirect ? "" : "?redirect=no"}" class="${noredirect ? "" : "mw-redirect"}">${from}</a>】→【<a href="/${to}">${to}</a>】成功。`, "success");
-                        $("#state-success").text(++successCount);
+                        loger.record(`移动【<a href="/${from}${noredirect ? "" : "?redirect=no"}" class="${noredirect ? "" : "mw-redirect"}">${from}</a>】→【<a href="/${to}">${to}</a>】成功。`, "success");
                         await waitInterval(interval);
                     }
                 } catch (e) {
@@ -281,11 +252,10 @@ $(() => (async () => {
                         default:
                             errorMessage = e;
                     }
-                    record(`移动【<a href="/${from}">${from}</a>】→【<a href="/${to}">${to}</a>】失败：${errorMessage}。`, "error");
-                    $("#state-error").text(++errorCount);
+                    loger.record(`移动【<a href="/${from}">${from}</a>】→【<a href="/${to}">${to}</a>】失败：${errorMessage}。`, "error");
                 }
             }
-            record("移动完毕。");
+            loger.record("移动完毕。");
             submitButton.setDisabled(false);
             window.onbeforeunload = () => null;
             $("#mw-content-text input, #mw-content-text textarea").prop("disabled", false);
