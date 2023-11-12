@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/BearBin1215/MoegirlPedia#readme",
   "dependencies": {
+    "autoprefixer": "^10.4.16",
     "dotenv": "^16.3.1",
     "mwbot": "^2.1.3",
+    "postcss-loader": "^7.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
