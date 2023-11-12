@@ -14,6 +14,7 @@
   - [一键提醒投票](#一键提醒投票)
 - [文件结构](#文件结构)
 - [参与完善](#参与完善)
+  - [指令](#指令)
 
 ## 工具介绍
 
@@ -135,43 +136,49 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 ```
 主要文件
-│  .eslintrc.yml  # eslint配置
-│  .stylelintrc.yaml  #stylelint配置
+│  .eslintrc.js  # eslint配置
+│  .stylelintrc.json  #stylelint配置
 │  package.json  # nodejs配置
 │  tsconfig.json  # typescript配置
-│  webpack.config.cjs  # webpack配置
-│  yarn.lock  #yarn包lockfile
-│  
+│  yarn.lock  # lockfile
+|
 ├─.github
 │  └─workflows  # GitHub Actions配置
-│          GadgetSynchronize.yml
-│          
-├─scripts  # CI脚本
-│          
+│          GadgetSynchronize.yml  # 自动同步dist至萌百
+|
+├─build  # 打包配置
+│      webpack.common.js  # webpack通用配置
+│      webpack.dev.js  # 开发配置
+|      webpack.prod.js  # 生产配置
+|
 ├─dist  # 打包/编译输出
 │  ├─gadgets
 │  │      BatchSend.min.js
 │  │      ...
-│  │      
+│  |
 │  └─oddments
-│          CommentLink.js
-│          ...
-│      
+│         CommentLink.js
+│         ...
+|
+├─scripts  # CI脚本
+|
 └─src  # 源代码
     ├─components  # 用到的一些组件
-    │  └─Snake
-    │              
+    │  ├─Snake
+    |  |
+    |  └─Loger
+    |
     ├─gadgets  # 工具源代码
     │  ├─BatchSend
-    │  │      
+    │  │      index.js  # 脚本代码
+    │  │      index.less  # 样式表（不一定有）
+    │  |
     │  ├─BulkMove
-    │  │      
+    │  |
     │  ├─Excel2Wiki
-    │  │      
-    │  ├─FileUsedNotLinked
-    │  │      
+    │  |
     │  └─...
-    │          
+    |
     └─oddments  # 小代码
             CommentLink.js
             EditFromOld.js
@@ -184,16 +191,18 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`yarn`指令安装依赖。
 
-小工具源代码位于[/src/gadgets/](/src/gadgets/)目录，使用webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js文件中调用。打包指令：
+- 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js文件中调用。
+- 小代码于[src/oddments/](/src/oddments/)目录，通过[typescript](https://github.com/microsoft/TypeScript)编译为MediaWiki可直接接受的ES5语法以便加入common.js使用。
 
-```shell
-yarn run build:gadgets
-```
+### 指令
 
-~~其实就是一个`webpack`。~~
-
-小代码于[/src/oddments/](/src/oddments/)目录，通过[typescript](https://github.com/microsoft/TypeScript)编译为MediaWiki可直接接受的ES5语法以便加入common.js使用：
-
-```shell
-yarn run build:oddment
-```
+- 开发
+  ```shell
+  yarn watch
+  ```
+  开发模式下，所有gadgets都会自动打包输出至[dist/](/dist/dev/)目录，文件发生变动会实时更新（通常体现为<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
+- 打包
+  ```shell
+  yarn build
+  ```
+  输出文件位于[dist](/dist/)目录下。

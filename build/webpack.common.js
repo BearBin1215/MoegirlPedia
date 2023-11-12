@@ -1,6 +1,4 @@
-const path = require('path');
 const glob = require('glob');
-const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: glob.sync('./src/gadgets/**/index.js')
@@ -12,10 +10,6 @@ module.exports = {
       entries[entry] = path;
       return entries;
     }, {}),
-  output: {
-    filename: '[name].min.js',
-    path: path.resolve(__dirname, 'dist/gadgets'),
-  },
   module: {
     rules: [
       {
@@ -62,13 +56,4 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: false,
-      })
-    ]
-  },
-  mode: 'production',
 };
