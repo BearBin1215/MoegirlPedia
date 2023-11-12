@@ -1,7 +1,7 @@
 import "./index.less";
 
 $(() => (async () => {
-    if (!["special:textdiff", "special:差异比较"].includes(mw.config.get("wgPageName").toLowerCase())) {
+    if (mw.config.get("wgPageName") !== "Special:TextDiff") {
         if (window.TextDiff) {
             await mw.loader.using("mediawiki.util");
             mw.util.addPortletLink("p-tb", "/Special:TextDiff", "文本差异比较", "t-textdiff");

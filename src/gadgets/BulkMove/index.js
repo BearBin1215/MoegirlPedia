@@ -2,7 +2,7 @@ import Loger from "../../components/Loger/jQuery";
 import "./index.less";
 
 $(() => (async () => {
-    if (!["special:bulkmove", "special:批量移动", "special:批量移動", "特殊:bulkmove"].includes(mw.config.get("wgPageName").toLowerCase())) {
+    if (mw.config.get("wgPageName") !== "Special:BulkMove") {
         await mw.loader.using(["mediawiki.util"]);
         mw.util.addPortletLink("p-tb", "/Special:BulkMove", "批量移动", "t-bulkmove");
         return;

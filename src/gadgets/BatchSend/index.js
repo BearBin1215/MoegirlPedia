@@ -2,7 +2,7 @@ import Loger from "../../components/Loger/jQuery";
 import "./index.less";
 
 $(() => (async () => {
-    if (mw.config.get("wgNamespaceNumber") !== -1 || !["batchsend", "群发提醒", "群发消息", "群發提醒"].includes(mw.config.get("wgTitle").toLowerCase())) {
+    if (mw.config.get("wgPageName") !== "Special:BatchSend") {
         await mw.loader.using(["mediawiki.util"]);
         mw.util.addPortletLink("p-tb", "/Special:BatchSend", "群发提醒", "t-batchsend");
         return;

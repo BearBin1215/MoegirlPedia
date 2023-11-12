@@ -2,7 +2,7 @@ import Loger from "../../components/Loger/jQuery";
 import "./index.less";
 
 $(() => (async () => {
-    if (!["special:massedit", "special:批量编辑", "special:批量編輯"].includes(mw.config.get("wgPageName").toLowerCase())) {
+    if (mw.config.get("wgPageName") !== "Special:MassEdit") {
         await mw.loader.using("mediawiki.util");
         mw.util.addPortletLink("p-tb", "/Special:MassEdit", "批量编辑", "t-massedit");
         return;
