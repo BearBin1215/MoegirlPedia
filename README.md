@@ -200,7 +200,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   ```shell
   yarn watch
   ```
-  开发模式下，所有gadgets都会自动打包输出至[dist/](/dist/dev/)目录，文件发生变动会实时更新（通常体现为<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
+  开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
 - 打包
   ```shell
   yarn build
