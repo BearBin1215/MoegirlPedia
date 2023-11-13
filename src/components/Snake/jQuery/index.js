@@ -10,7 +10,7 @@ export default class Snake {
 
     /**
      * 创建一个Snake对象
-     * @param {object} token 输入参数组成的对象。token.hasHead决定对象是否有head，token.hasHref决定对象的项目是否有链接，其他对象则成为Snake对象标签的属性值。
+     * @param {{hasHead: boolean, hasHref: boolean, attrs}} token 输入参数组成的对象。token.hasHead决定对象是否有head，token.hasHref决定对象的项目是否有链接，其他对象则成为Snake对象标签的属性值。
      */
     constructor(token = {}) {
         // 给类的属性赋值
@@ -120,7 +120,7 @@ export default class Snake {
     }
 
     /**
-     * 移除一个项目
+     * 移除项目
      * @param {string[]} ...name 要移除项目的名称
      */
     removeScale(...name) {
