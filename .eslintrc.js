@@ -1,7 +1,7 @@
 module.exports = {
   env: {
-    node: true,
     browser: true,
+    node: false,
     jquery: true,
     es6: true,
     es2020: true,
@@ -138,6 +138,7 @@ module.exports = {
         "build/**/*.js"
       ],
       env: {
+        browser: false,
         node: true
       },
       parserOptions: {
