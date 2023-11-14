@@ -38,7 +38,7 @@ bot.loginGetEditToken({
             }).catch((err) => {
                 throw new Error(`${item}保存失败：${err}`);
             });
-            await waitInterval(20000);
+            await waitInterval(6000);
         } catch (err) {
             console.error(err);
         }
