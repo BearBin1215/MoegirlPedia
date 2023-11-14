@@ -18,6 +18,11 @@ const ParserModal = () => {
         });
     };
 
+    const clear = () => {
+        inputRef.current.value = '';
+        outputRef.current.value = '';
+    };
+
     if (isOpen) {
         return (
             <>
@@ -36,7 +41,7 @@ const ParserModal = () => {
                             <textarea name='less-input' ref={inputRef} />
                             <div className='button-area'>
                                 <button onClick={parseLess}>解析</button>
-                                <button onClick={parseLess}>清空</button>
+                                <button onClick={clear}>清空</button>
                             </div>
                             <textarea name='css-output' ref={outputRef} readOnly />
                         </div>
