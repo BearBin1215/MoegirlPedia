@@ -138,18 +138,11 @@ export default class Loger {
         // 创建日志元素
         this.element = document.createElement('div');
         this.element.classList.add('bearbintools-loger');
-        if (id) {
-            this.element.id = id;
-        }
+        this.element.id = id || "";
 
-        this.headline.appendChild(document.createTextNode('日志'));
-        this.headline.appendChild(clearButton);
-
-        this.body.appendChild(logerFilter);
-        this.body.appendChild(this.logerLines);
-
-        this.element.appendChild(this.headline);
-        this.element.appendChild(this.body);
+        this.headline.append(document.createTextNode('日志'), clearButton);
+        this.body.append(logerFilter, this.logerLines);
+        this.element.append(this.headline, this.body);
     }
 
     /**
