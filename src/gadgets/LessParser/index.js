@@ -49,10 +49,8 @@ const ParserModal = () => {
     return null;
 };
 
-await mw.loader.using("mediawiki.util");
-mw.util.addPortletLink("p-tb", "javascript:void(0)", "Less解析器", "t-lessparser").addEventListener("click", () => {
-    const domRoot = document.createElement('div');
-    const root = createRoot(domRoot);
-
-    root.render(<ParserModal />);
+mw.loader.using("mediawiki.util").then(() => {
+    mw.util.addPortletLink("p-tb", "javascript:void(0)", "Less解析器", "t-lessparser").addEventListener("click", () => {
+        createRoot(document.createElement('div')).render(<ParserModal />);
+    });
 });
