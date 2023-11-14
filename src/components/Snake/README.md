@@ -22,13 +22,10 @@ new Snake(token: object)
 ## 元素
 * **`element`**: object
   * Snake对象对应的HTML元素节点，由`head`（若`hasHead !== false`）和`body`组成。
-  * 也可以调用对应的jQuery对象`$element`。
 * **`head`**: object
   * 文字进度对应的HTML元素节点。
-  * 也可以调用对应的jQuery对象`$head`。
 * **`body`**: object
   * 进度条主体对应的HTML元素节点。
-  * 也可以调用对应的jQuery对象`$body`。
 
 ## 属性
 
