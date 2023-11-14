@@ -120,7 +120,8 @@ module.exports = {
     "require-await": "error",
     "arrow-parens": "error",
     "no-use-before-define": "error",
-    "react/self-closing-comp": "error"
+    "react/self-closing-comp": "error",
+    "react/prop-types": "off"
   },
   overrides: [
     {
