@@ -1,4 +1,4 @@
-import Loger from "../../components/Loger/jQuery";
+import Loger from "../../components/Loger";
 import "./index.less";
 
 $(() => (async () => {
@@ -112,7 +112,7 @@ $(() => (async () => {
         intervalBox.$element,
         summaryBox.$element,
     );
-    $("#bearbintools-log-note").before(loger.$element);
+    $("#bearbintools-log-note").before($(loger.element));
 
     /**
      * 实现sleep效果，使用时需要加上await

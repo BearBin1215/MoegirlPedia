@@ -1,4 +1,4 @@
-import Snake from '../../components/Snake/jQuery';
+import Snake from '../../components/Snake';
 
 $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") === -1) {
@@ -90,7 +90,7 @@ $(() => (async () => {
                 $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
                 typeFiled.$element,
                 optionFiled.$element,
-                this.progressBar.$element,
+                $(this.progressBar.element),
             );
             this.$body.append(this.panelLayout.$element);
             $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");

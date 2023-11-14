@@ -1,4 +1,4 @@
-import Loger from "../../components/Loger/jQuery";
+import Loger from "../../components/Loger";
 import "./index.less";
 
 $(() => (async () => {
@@ -82,7 +82,7 @@ $(() => (async () => {
         '<h3 id="bs-preview-headline">预览</h3>',
         '<div id="bs-previewzone"></div>',
         '<div id="bs-previewsummary">编辑摘要：<span class="comment"></span></div>',
-    ].join("")).append(loger.$element);
+    ].join("")).append($(loger.element));
     const pagelistBox = new OO.ui.MultilineTextInputWidget({ // 目标页面列表输入框
         validate: "non-empty",
         placeholder: "使用换行分隔，一行一个\nUser talk前缀加不加都可以，支持发送至子页面",

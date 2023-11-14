@@ -1,4 +1,4 @@
-import Loger from "../../components/Loger/jQuery";
+import Loger from "../../components/Loger";
 import "./index.less";
 
 $(() => (async () => {
@@ -65,7 +65,7 @@ $(() => (async () => {
         '<li>操作间隔单位为秒（s），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>',
         '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定的速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
         '</ul>',
-    ].join("")).append(loger.$element);
+    ].join("")).append($(loger.element));
     addRow(10); // 先加十行
 
     // 移动选项
