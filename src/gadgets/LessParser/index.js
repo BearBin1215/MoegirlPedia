@@ -9,7 +9,6 @@ const ParserModal = () => {
     const inputRef = useRef(null);
     const outputRef = useRef(null);
 
-
     const closeModal = () => setOpen(false);
 
     const parseLess = () => {
@@ -22,30 +21,28 @@ const ParserModal = () => {
     if (isOpen) {
         return (
             <>
-                {
-                    createPortal(
-                        <div id='less-parser'>
-                            <button
-                                onClick={closeModal}
-                                className='close-button'
-                            >
-                                ×
-                            </button>
-                            <header className='modal-header'>
-                                Less解析器
-                            </header>
-                            <div className='modal-body'>
-                                <textarea name='less-input' ref={inputRef} />
-                                <div className='button-area'>
-                                    <button onClick={parseLess}>解析</button>
-                                    <button onClick={parseLess}>清空</button>
-                                </div>
-                                <textarea name='css-output' ref={outputRef} readOnly />
+                {createPortal(
+                    <div id='less-parser'>
+                        <button
+                            onClick={closeModal}
+                            className='close-button'
+                        >
+                            ×
+                        </button>
+                        <header className='modal-header'>
+                            Less解析器
+                        </header>
+                        <div className='modal-body'>
+                            <textarea name='less-input' ref={inputRef} />
+                            <div className='button-area'>
+                                <button onClick={parseLess}>解析</button>
+                                <button onClick={parseLess}>清空</button>
                             </div>
-                        </div>,
-                        document.body,
-                    )
-                }
+                            <textarea name='css-output' ref={outputRef} readOnly />
+                        </div>
+                    </div>,
+                    document.body,
+                )}
             </>
         );
     }
