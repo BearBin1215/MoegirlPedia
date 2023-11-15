@@ -11,6 +11,10 @@ const ParserModal = () => {
     const uploadRef = useRef(null); // 上传框（隐藏）
     const inputRef = useRef(null); // 输入框
     const outputRef = useRef(null); // 输出框
+    const fileReader = new FileReader();
+    fileReader.addEventListener("loadend", () => {
+        inputRef.current.value = fileReader.result;
+    });
 
     /**
      * 关闭弹窗
@@ -29,10 +33,6 @@ const ParserModal = () => {
      * @param {React.ChangeEvent} param0 
      */
     const onUpload = ({ target: { files: [file] } }) => {
-        const fileReader = new FileReader();
-        fileReader.addEventListener("loadend", () => {
-            inputRef.current.value = fileReader.result;
-        });
         fileReader.readAsText(file);
     };
 
