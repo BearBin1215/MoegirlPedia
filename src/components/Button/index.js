@@ -6,11 +6,12 @@ export default class Button extends React.Component {
         const {
             type,
             children,
+            className,
             ...otherProps
         } = this.props;
         return (
             <button
-                className={`bearcompo-button bearcompo-button-${type || 'normal'}`}
+                className={`bearcompo-button bearcompo-button-${type || 'normal'} ${className}`}
                 {...otherProps}
             >
                 {children}
