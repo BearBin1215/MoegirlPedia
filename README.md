@@ -203,11 +203,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
 - 打包
   ```shell
-  yarn build
+  yarn build <gadget name>
   ```
+  `<gadget name>`为小工具名，例如`yarn build MassEdit`会打包[src/gadgets/MassEdit](/src/gadgets/MassEdit/)，直接执行`yarn build`则打包全部小工具。
   输出文件位于[dist](/dist/)目录下。
-- 单个打包
-  ```shell
-  yarn pack <Gadget Name>
-  ```
-  `<Gadget Name>`为小工具名，例如`yarn pack MassEdit`会打包[src/gadgets/MassEdit/](/src/gadgets/MassEdit/)。

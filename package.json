@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "webpack --config build/webpack.dev.js --watch",
-    "build": "webpack --config build/webpack.prod.js && tsc --build",
-    "pak": "node build/pack.js",
-    "build:gadgets": "webpack --config build/webpack.prod.js",
+    "build": "node build/pack.js",
     "build:oddments": "tsc --build",
     "sync": "node scripts/src/Synchronize.js"
   },
