@@ -10,8 +10,6 @@ const entry = (process.env.gadgetname ? [`./src/gadgets/${process.env.gadgetname
     return entries;
   }, {});
 
-console.log(entry);
-
 module.exports = {
   entry,
   module: {
