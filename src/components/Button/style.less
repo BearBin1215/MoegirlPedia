@@ -1,0 +1,107 @@
+@import url('../global.less');
+
+.bearcompo-button {
+  border-radius: 2px;
+  padding: 6px 8px;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+  border: 1px solid @defaultBorderColor;
+
+  +.bearcompo-button {
+    margin-left: .4em;
+  }
+
+  &:disabled {
+    color: #fff;
+    border-color: @disabledColor;
+    background-color: @disabledColor;
+  }
+
+  &.bearcompo-button-primary:disabled {
+    border-color: @disabledPrimaryColor;
+    background-color: @disabledPrimaryColor;
+  }
+
+  &:not(:disabled) {
+    color: @defaultFontColor;
+    background-color: #fff;
+    cursor: pointer;
+    transition:
+      color .3s linear,
+      border-color .3s linear,
+      background-color .3s linear;
+
+    &:hover {
+      color: @primaryColor;
+      border-color: @primaryColor;
+    }
+
+    &.bearcompo-button-primary {
+      color: #fff;
+      background-color: @primaryColor;
+      border-color: @primaryColor;
+
+      &:hover {
+        color: #fff;
+        border-color: lighten(@primaryColor, @defaultLightenAmount);
+        background-color: lighten(@primaryColor, @defaultLightenAmount);
+      }
+
+      &:active {
+        border-color: darken(@primaryColor, @defaultDarkenAmount);
+        background-color: darken(@primaryColor, @defaultDarkenAmount);
+      }
+    }
+
+    &.bearcompo-button-danger {
+      color: #fff;
+      background-color: @dangerColor;
+      border-color: @dangerColor;
+
+      &:hover {
+        color: #fff;
+        border-color: lighten(@dangerColor, @defaultLightenAmount);
+        background-color: lighten(@dangerColor, @defaultLightenAmount);
+      }
+
+      &:active {
+        border-color: darken(@dangerColor, @defaultDarkenAmount);
+        background-color: darken(@dangerColor, @defaultDarkenAmount);
+      }
+    }
+
+    &.bearcompo-button-flat,
+    &.bearcompo-button-link {
+      background-color: transparent;
+      border-color: transparent;
+
+      &:hover {
+        border-color: @flatColor;
+        background-color: @flatColor;
+      }
+
+      &:active {
+        border-color: darken(@flatColor, @defaultDarkenAmount);
+        background-color: darken(@flatColor, @defaultDarkenAmount);
+      }
+    }
+
+    &.bearcompo-button-flat:hover,
+    &.bearcompo-button-flat:active {
+      color: @defaultFontColor;
+    }
+
+    &.bearcompo-button-link {
+      color: @linkColor;
+
+      &:hover {
+        color: lighten(@linkColor, @defaultLightenAmount);
+      }
+
+      &:active {
+        color: darken(@linkColor, @defaultDarkenAmount);
+      }
+    }
+  }
+}

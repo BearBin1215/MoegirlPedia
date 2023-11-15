@@ -1,6 +1,7 @@
 {
     "extends": [
-       "stylelint-config-standard"
+       "stylelint-config-standard",
+       "stylelint-config-recommended-less"
     ],
     "ignoreFiles": [
        "dist/**/*.css"
@@ -16,6 +17,7 @@
     "rules": {
        "selector-id-pattern": null,
        "selector-class-pattern": null,
-       "comment-empty-line-before": null
+       "comment-empty-line-before": null,
+       "no-descending-specificity": null
     }
  }
