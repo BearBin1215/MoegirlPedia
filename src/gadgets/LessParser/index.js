@@ -27,7 +27,6 @@ const ParserModal = () => {
 
     const parseLess = () => {
         render(inputRef.current.value, (err, output) => {
-            console.log(output);
             outputRef.current.value = err ? err.message : output.css;
         });
     };
