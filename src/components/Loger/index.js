@@ -62,22 +62,28 @@ export default class Loger {
             this._logTypes[key].show = true;
         }
 
+        /**
+         * 根据html字符串创建节点
+         * @param {string} html 
+         * @returns {Element} 节点
+         */
+        const createTag = (html) => {
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
+            return template.content.children[0];
+        };
+
         // 标题
-        this.headline = document.createElement(headlineTagName);
-        this.headline.classList.add('loger-headline');
+        this.headline = createTag(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
 
         // 日志主体
-        this.body = document.createElement('div');
-        this.body.classList.add('loger-body');
+        this.body = createTag('<div class="loger-body"></div>');
 
         // 日志行
-        this.logerLines = document.createElement('ul');
-        this.logerLines.classList.add('loger-lines');
+        this.logerLines = createTag('<ul class="loger-lines></ul>"');
 
         // 清空按钮
-        const clearButton = document.createElement('a');
-        clearButton.classList.add('loger-clear');
-        clearButton.innerText = '[清空]';
+        const clearButton = createTag('<a class="loger-clear">[清空]</a>');
         clearButton.addEventListener('click', () => {
             this.logDetails.length = 0;
             this.logerLines.innerHTML = '';
@@ -87,26 +93,17 @@ export default class Loger {
         });
 
         // 日志筛选区
-        const logerFilter = document.createElement('nav');
-        logerFilter.classList.add('loger-filter');
+        const logerFilter = createTag('<nav class="loger-filter"></nav>');
 
         // 筛选按钮
         for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-            const button = document.createElement('div');
-            button.classList.add('loger-filter-selected', `loger-${type}`);
-            button.style.color = color;
+            const button = createTag(`<div class="loger-filter-selected loger-${type} style="color: ${color}"></div>`);
 
-            const iconElement = document.createElement('span');
-            iconElement.classList.add('loger-filter-icon');
-            iconElement.innerHTML = icon;
+            const iconElement = createTag(`<span class="loger-filter-icon">${icon}</span>`);
 
-            const countElement = document.createElement('span');
-            countElement.classList.add('loger-filter-count');
-            countElement.innerText = '0';
+            const countElement = createTag('<span class="loger-filter-count">0</span>');
 
-            button.appendChild(iconElement);
-            button.appendChild(countElement);
-            button.appendChild(document.createTextNode(` ${text}`));
+            button.append(iconElement, countElement, ` ${text}`);
 
             // 添加点击隐藏/显示日志行事件
             button.addEventListener('click', () => {
@@ -136,11 +133,9 @@ export default class Loger {
         }
 
         // 创建日志元素
-        this.element = document.createElement('div');
-        this.element.classList.add('bearbintools-loger');
-        this.element.id = id || "";
+        this.element = createTag(`<div class="bearbintools-loger" id="${id || ''}"></div>`);
 
-        this.headline.append(document.createTextNode('日志'), clearButton);
+        this.headline.append('日志', clearButton);
         this.body.append(logerFilter, this.logerLines);
         this.element.append(this.headline, this.body);
     }

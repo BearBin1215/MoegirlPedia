@@ -19,25 +19,30 @@ export default class Snake {
         Reflect.deleteProperty(token, "hasHead");
         Reflect.deleteProperty(token, "hasHref");
 
+        /**
+         * 根据html字符串创建节点
+         * @param {string} html 
+         * @returns {Element} 节点
+         */
+        const createTag = (html) => {
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
+            return template.content.children[0];
+        };
+
         // 创建element，并加上.snake
-        this.element = document.createElement("div");
+        this.element = createTag('<div class="snake"></div>');
         for (const key in token) {
             this.element.setAttribute(key, token[key]);
         }
-        this.element.classList.add("snake");
 
         // 根据hasHead判断是否创建head
         if (this.hasHead) {
-            this.head = document.createElement("div");
-            this.head.classList.add("snake-head");
+            this.head = createTag('<div class="snake-head"></div>');
 
             // head中的状态显示
-            this.head.complete = document.createElement("span");
-            this.head.complete.classList.add("snake-head-complete");
-            this.head.complete.innerHTML = 0;
-            this.head.length = document.createElement("span");
-            this.head.length.classList.add("snake-head-all");
-            this.head.length.innerHTML = 0;
+            this.head.complete = createTag('<span class=""snake-head-complete">0</div>');
+            this.head.length = createTag('<span class=""snake-head-all">0</div>');
             this.head.append("已完成：", this.head.complete, "/", this.head.length);
 
             // 添加到element
@@ -45,8 +50,7 @@ export default class Snake {
         }
 
         // 创建body
-        this.body = document.createElement("div");
-        this.body.classList.add("snake-body");
+        this.body = createTag('<div class="snake-body"></div>');
         this.element.append(this.body);
     }
 
