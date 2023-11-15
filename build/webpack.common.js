@@ -1,15 +1,19 @@
 const glob = require('glob');
 
+const entry = (process.env.gadgetname ? [`./src/gadgets/${process.env.gadgetname}/index.js`] : glob.sync('./src/gadgets/**/index.js'))
+  .map((filename) => filename
+    .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
+    .replace(/^(?:.\/)?(.*)$/, './$1'))
+  .reduce((entries, path) => {
+    const entry = path.replace('./src/gadgets/', '').replace('/index.js', '');
+    entries[entry] = path;
+    return entries;
+  }, {});
+
+console.log(entry);
+
 module.exports = {
-  entry: glob.sync('./src/gadgets/**/index.js')
-    .map((filename) => filename
-      .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
-      .replace(/^(?:.\/)?(.*)$/, './$1'))
-    .reduce((entries, path) => {
-      const entry = path.replace('./src/gadgets/', '').replace('/index.js', '');
-      entries[entry] = path;
-      return entries;
-    }, {}),
+  entry,
   module: {
     rules: [
       {

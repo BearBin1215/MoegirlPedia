@@ -206,3 +206,8 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   yarn build
   ```
   输出文件位于[dist](/dist/)目录下。
+- 单个打包
+  ```shell
+  yarn pack <Gadget Name>
+  ```
+  `<Gadget Name>`为小工具名，例如`yarn pack MassEdit`会打包[src/gadgets/MassEdit/](/src/gadgets/MassEdit/)。
