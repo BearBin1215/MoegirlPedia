@@ -101,6 +101,8 @@ const ParserModal = () => {
  */
 mw.loader.using("mediawiki.util").then(() => {
     mw.util.addPortletLink("p-tb", "javascript:void(0)", "Less解析器", "t-lessparser").addEventListener("click", () => {
-        createRoot(document.createElement('div')).render(<ParserModal />);
+        if (!document.getElementById('less-parser')) {
+            createRoot(document.createElement('div')).render(<ParserModal />);
+        }
     });
 });
