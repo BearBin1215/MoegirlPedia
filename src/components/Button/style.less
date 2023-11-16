@@ -1,6 +1,6 @@
 @import url('../global.less');
 
-.bearcompo-button {
+.bearui-button {
   border-radius: 2px;
   padding: 6px 8px;
   white-space: nowrap;
@@ -8,7 +8,7 @@
   line-height: 1;
   border: 1px solid @defaultBorderColor;
 
-  +.bearcompo-button {
+  +.bearui-button {
     margin-left: .4em;
   }
 
@@ -18,7 +18,7 @@
     background-color: @disabledColor;
   }
 
-  &.bearcompo-button-primary:disabled {
+  &.bearui-button-primary:disabled {
     border-color: @disabledPrimaryColor;
     background-color: @disabledPrimaryColor;
   }
@@ -37,7 +37,7 @@
       border-color: @primaryColor;
     }
 
-    &.bearcompo-button-primary {
+    &.bearui-button-primary {
       color: #fff;
       background-color: @primaryColor;
       border-color: @primaryColor;
@@ -54,7 +54,7 @@
       }
     }
 
-    &.bearcompo-button-danger {
+    &.bearui-button-danger {
       color: #fff;
       background-color: @dangerColor;
       border-color: @dangerColor;
@@ -71,8 +71,8 @@
       }
     }
 
-    &.bearcompo-button-flat,
-    &.bearcompo-button-link {
+    &.bearui-button-flat,
+    &.bearui-button-link {
       background-color: transparent;
       border-color: transparent;
 
@@ -87,12 +87,12 @@
       }
     }
 
-    &.bearcompo-button-flat:hover,
-    &.bearcompo-button-flat:active {
+    &.bearui-button-flat:hover,
+    &.bearui-button-flat:active {
       color: @defaultFontColor;
     }
 
-    &.bearcompo-button-link {
+    &.bearui-button-link {
       color: @linkColor;
 
       &:hover {

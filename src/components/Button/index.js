@@ -11,7 +11,7 @@ export default class Button extends React.Component {
         } = this.props;
         return (
             <button
-                className={`bearcompo-button bearcompo-button-${type || 'normal'} ${className}`}
+                className={`bearui-button bearui-button-${type || 'normal'} ${className}`}
                 {...otherProps}
             >
                 {children}
