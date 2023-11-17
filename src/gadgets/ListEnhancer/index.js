@@ -63,9 +63,7 @@ if (mw.config.get("wgNamespaceNumber") === -1) {
         $nsToReplace.children("a")
             .text("替换空间")
             .attr("title", "主、模板等替换常用名字空间")
-            .attr("href", function () {
-                return this.href.replace("profile=images", "profile=advanced&limit=500&ns0=1&ns2=1&ns6=1&ns10=1&ns12=1&ns14=1&ns828=1"); // 太多了超时，所以500
-            });
+            .attr("href", (_, attr) => attr.replace("profile=images", "profile=advanced&limit=500&ns0=1&ns2=1&ns6=1&ns10=1&ns12=1&ns14=1&ns828=1")); // 太多了超时，所以500
         $nsToReplace.insertAfter($searchMedia);
 
         // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
