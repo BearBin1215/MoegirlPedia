@@ -39,59 +39,59 @@ module.exports = {
     "react"
   ],
   rules: {
-    "logical-assignment-operators": "error",
-    "no-new-func": "error",
-    "no-new-object": "error",
-    "no-new-wrappers": "error",
-    "no-var": "error",
-    "prefer-const": "error",
-    "no-misleading-character-class": "error",
-    "no-template-curly-in-string": "error",
-    "require-atomic-updates": "error",
-    "curly": "error",
+    "logical-assignment-operators": 2,
+    "no-new-func": 2,
+    "no-new-object": 2,
+    "no-new-wrappers": 2,
+    "no-var": 2,
+    "prefer-const": 2,
+    "no-misleading-character-class": 2,
+    "no-template-curly-in-string": 2,
+    "require-atomic-updates": 2,
+    "curly": 2,
     "indent": [
-      "error",
+      2,
       4,
       {
         "SwitchCase": 1
       }
     ],
     "linebreak-style": [
-      "off",
+      0,
       "windows"
     ],
     "semi": [
-      "error",
+      2,
       "always"
     ],
-    "no-console": "off",
+    "no-console": 0,
     "no-unused-vars": [
-      "warn",
+      1,
       {
         "varsIgnorePattern": "^_"
       }
     ],
-    "no-redeclare": "warn",
-    "no-unreachable": "warn",
-    "no-inner-declarations": "off",
-    "no-unneeded-ternary": "error",
+    "no-redeclare": 1,
+    "no-unreachable": 1,
+    "no-inner-declarations": 0,
+    "no-unneeded-ternary": 2,
     "comma-dangle": [
-      "warn",
+      1,
       "always-multiline"
     ],
-    "eqeqeq": "error",
-    "dot-notation": "error",
-    "no-else-return": "error",
-    "no-extra-bind": "error",
-    "no-labels": "error",
-    "no-floating-decimal": "error",
-    "no-lone-blocks": "error",
-    "no-loop-func": "error",
-    "no-magic-numbers": "off",
-    "no-multi-spaces": "error",
-    "no-param-reassign": "error",
+    "eqeqeq": 2,
+    "dot-notation": 2,
+    "no-else-return": 2,
+    "no-extra-bind": 2,
+    "no-labels": 2,
+    "no-floating-decimal": 2,
+    "no-lone-blocks": 2,
+    "no-loop-func": 2,
+    "no-magic-numbers": 0,
+    "no-multi-spaces": 2,
+    "no-param-reassign": 2,
     "quote-props": [
-      "warn",
+      1,
       "as-needed",
       {
         "keywords": true,
@@ -100,28 +100,37 @@ module.exports = {
       }
     ],
     "no-empty": [
-      "error",
+      2,
       {
         "allowEmptyCatch": true
       }
     ],
     "arrow-spacing": [
-      "error",
+      2,
       {
         "before": true,
         "after": true
       }
     ],
-    "prefer-arrow-callback": "error",
-    "prefer-spread": "error",
-    "prefer-template": "error",
-    "prefer-rest-params": "error",
-    "prefer-exponentiation-operator": "error",
-    "require-await": "error",
-    "arrow-parens": "error",
-    "no-use-before-define": "error",
-    "react/self-closing-comp": "error",
-    "react/prop-types": "off"
+    "prefer-arrow-callback": 2,
+    "prefer-spread": 2,
+    "prefer-template": 2,
+    "prefer-rest-params": 2,
+    "prefer-exponentiation-operator": 2,
+    "require-await": 2,
+    "arrow-parens": 2,
+    "no-use-before-define": 2,
+    "prefer-destructuring": 2,
+    "react/jsx-indent": [2, 4],
+    "react/jsx-indent-props": [2, 4],
+    "react/jsx-max-props-per-line": [2, { "maximum": 3 }],
+    "react/self-closing-comp": 2,
+    "react/jsx-boolean-value": 2,
+    "react/jsx-fragments": 2,
+    "react/no-unused-state": 2,
+    "no-arrow-function-lifecycle": 2,
+    "react/jsx-no-useless-fragment": 2,
+    "react/prop-types": 0,
   },
   overrides: [
     {
@@ -129,7 +138,7 @@ module.exports = {
         "src/oddments/**/*.js"
       ],
       rules: {
-        "prefer-arrow-callback": "off"
+        "prefer-arrow-callback": 0
       }
     },
 
@@ -147,7 +156,7 @@ module.exports = {
       },
       rules: {
         "indent": [
-          "error",
+          2,
           2
         ]
       }

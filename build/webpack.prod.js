@@ -18,6 +18,9 @@ module.exports = merge(common, {
           output: {
             comments: false,
           },
+          compress: {
+            drop_console: true,
+          },
         },
       }),
     ],
