@@ -128,7 +128,7 @@ module.exports = {
     "react/jsx-boolean-value": 2,
     "react/jsx-fragments": 2,
     "react/no-unused-state": 2,
-    "no-arrow-function-lifecycle": 2,
+    "react/no-arrow-function-lifecycle": 2,
     "react/jsx-no-useless-fragment": 2,
     "react/prop-types": 0,
   },
