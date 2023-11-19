@@ -290,7 +290,7 @@ $(() => (async () => {
                 await getPageList().then(async (result) => {
                     let complete = 0;
                     // console.log(`页面列表：${result}`);
-                    const length = result.length;
+                    const { length } = result;
                     loger.record(`共${length}个页面，即将开始编辑……`, "normal");
                     for (const item of result) {
                         const editResult = await editAction(item, additionalSummary, editFrom, changeTo);

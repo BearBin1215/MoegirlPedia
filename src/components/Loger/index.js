@@ -1,5 +1,16 @@
 import './index.less';
 
+/**
+ * 根据html字符串创建节点
+ * @param {string} html 
+ * @returns {Element} 节点
+ */
+const createTag = (html) => {
+    const template = document.createElement('template');
+    template.innerHTML = html.trim();
+    return template.content.children[0];
+};
+
 export default class Loger {
     /**
      * @type {{[key: string]: {icon: string, color: string, text: string, show: boolean}}}
@@ -62,17 +73,6 @@ export default class Loger {
             this._logTypes[key].show = true;
         }
 
-        /**
-         * 根据html字符串创建节点
-         * @param {string} html 
-         * @returns {Element} 节点
-         */
-        const createTag = (html) => {
-            const template = document.createElement('template');
-            template.innerHTML = html.trim();
-            return template.content.children[0];
-        };
-
         // 标题
         this.headline = createTag(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
 
@@ -80,7 +80,7 @@ export default class Loger {
         this.body = createTag('<div class="loger-body"></div>');
 
         // 日志行
-        this.logerLines = createTag('<ul class="loger-lines></ul>"');
+        this.logerLines = createTag('<ul class="loger-lines"></ul>');
 
         // 清空按钮
         const clearButton = createTag('<a class="loger-clear">[清空]</a>');
@@ -97,7 +97,7 @@ export default class Loger {
 
         // 筛选按钮
         for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-            const button = createTag(`<div class="loger-filter-selected loger-${type} style="color: ${color}"></div>`);
+            const button = createTag(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"></div>`);
 
             const iconElement = createTag(`<span class="loger-filter-icon">${icon}</span>`);
 
