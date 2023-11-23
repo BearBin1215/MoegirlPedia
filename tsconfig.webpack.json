@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "removeComments": true,
+        "target": "ESNext",
+        "outDir": "dist/oddments",
+        "alwaysStrict": false,
+        "strict": false,
+        "downlevelIteration": true,
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "ignoreDeprecations": "5.0"
+    },
+    "include": [
+        "src/oddments"
+    ]
+}
