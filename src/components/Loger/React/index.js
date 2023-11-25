@@ -33,20 +33,6 @@ export default class Loger extends Component {
         count: {},
     };
 
-    /**
-     * 清空
-     */
-    clear = () => {
-        if (this.logerData.clear) {
-            this.logerData.clear();
-        } else {
-            this.logerData.detail.length = 0;
-            for (const key in this.logerData.count) {
-                this.logerData.count[key] = 0;
-            }
-        }
-    };
-
     constructor(props) {
         super(props);
         if (props.records) {
@@ -60,6 +46,21 @@ export default class Loger extends Component {
             this.state[type] = true;
         }
     }
+
+    /**
+     * 清空
+     */
+    clear = () => {
+        if (this.logerData.clear) {
+            this.logerData.clear();
+        } else {
+            this.logerData.detail.length = 0;
+            for (const key in this.logerData.count) {
+                this.logerData.count[key] = 0;
+            }
+        }
+        this.setState({});
+    };
 
     render() {
         return (
