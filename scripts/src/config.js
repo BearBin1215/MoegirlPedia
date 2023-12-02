@@ -28,7 +28,6 @@ const config = {
             "OneKeyPurge",
             "purgecache",
             "QuickThank",
-            "SectionPermanentLink",
             "ShowContributors",
             "TextDiff",
             "userStatus",
