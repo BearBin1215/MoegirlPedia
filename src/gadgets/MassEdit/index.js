@@ -76,10 +76,10 @@ $(() => (async () => {
         '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
         '</ul>',
     ].join(""));
-    const regexSelect = new OO.ui.FieldLayout(new OO.ui.CheckboxInputWidget({
-        value: "regex",
+    const regexSelect = new OO.ui.CheckboxInputWidget({
         id: "me-regex-box",
-    }), {
+    });
+    const regexField = new OO.ui.FieldLayout(regexSelect, {
         label: "使用正则表达式",
         align: "inline",
         id: "me-use-regex",
@@ -89,7 +89,7 @@ $(() => (async () => {
         icon: "help",
         id: "me-regex-help",
     });
-    $("#me-regex").append(regexSelect.$element, regexHelp.$element);
+    $("#me-regex").append(regexField.$element, regexHelp.$element);
     const submitButton = new OO.ui.ButtonWidget({
         label: "提交",
         flags: [
@@ -99,19 +99,44 @@ $(() => (async () => {
         icon: "check",
         id: "me-submit",
     });
+
     const intervalBox = new OO.ui.TextInputWidget({
+        type: "number",
         placeholder: "编辑间隔",
         id: "me-interval",
     });
+
     const summaryBox = new OO.ui.TextInputWidget({
         placeholder: "附加摘要",
         id: "me-summary",
     });
+
+    // 重试次数
+    const retryTimesBox = new OO.ui.TextInputWidget({
+        type: "number",
+        placeholder: "0",
+        id: "me-retry-times",
+        disabled: true,
+    });
+    // 是否重试
+    const retrySelect = new OO.ui.CheckboxInputWidget({
+        id: "me-use-retry",
+    });
+    // 点击时切换重试次数输入框的可用性
+    retrySelect.on("change", () => {
+        retryTimesBox.setDisabled(!retrySelect.isSelected());
+    });
+    const retryField = new OO.ui.FieldLayout(retrySelect, {
+        label: $('<div id="me-retry-label">因网络问题出错时，重试至多</div>').append(retryTimesBox.$element, "次"),
+        align: "inline",
+        id: "me-use-retry",
+    });
+
     $("#me-edit-panel").append(
         submitButton.$element,
         intervalBox.$element,
         summaryBox.$element,
-    );
+    ).after(retryField.$element);
     $("#bearbintools-log-note").before($(loger.element));
 
     /**
@@ -191,7 +216,7 @@ $(() => (async () => {
     };
 
     // 获取间隔
-    const getInterval = () => Number(intervalBox.getValue()) * 1000;
+    const getInterval = () => intervalBox.getValue() * 1000;
 
     // 获取附加摘要
     const getAdditionalSummary = () => summaryBox.getValue();
@@ -206,51 +231,60 @@ $(() => (async () => {
      * @returns {Promise<"nochange"|"success"|"failed">} 编辑结果，success/nochange/failed
      */
     const editAction = async (title, summary, editFrom, changeTo) => {
-        try {
-            let source = await api.get({
-                action: "parse",
-                format: "json",
-                page: title,
-                prop: "wikitext",
-            });
-            source = source.parse.wikitext["*"]; // 获取源代码并进行替换
-            const replacedSource = source.replaceAll(editFrom, changeTo);
-            if (source === replacedSource) {
-                loger.record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, "nochange");
-                return "nochange";
+        const retry = retrySelect.isSelected();
+        let retreyTimes = 0;
+        const maxRetryCount = +retryTimesBox.getValue();
+        do {
+            try {
+                let source = await api.get({
+                    action: "parse",
+                    format: "json",
+                    page: title,
+                    prop: "wikitext",
+                });
+                source = source.parse.wikitext["*"]; // 获取源代码并进行替换
+                const replacedSource = source.replaceAll(editFrom, changeTo);
+                if (source === replacedSource) {
+                    loger.record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, "nochange");
+                    return "nochange";
+                }
+                const editResult = await api.postWithToken("csrf", {
+                    format: "json",
+                    action: "edit",
+                    watchlist: "nochange",
+                    tags,
+                    bot: true,
+                    minor: true,
+                    nocreate: true,
+                    title,
+                    text: replacedSource,
+                    summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom}】→【${changeTo}】${summary === "" ? "" : `：${summary}`}`,
+                });
+                loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
+                return "success";
+            } catch (err) {
+                let errorMessage = "";
+                switch (err) {
+                    case "missingtitle":
+                        errorMessage = "页面不存在";
+                        break;
+                    case "http":
+                        retreyTimes++;
+                        errorMessage = retry && retreyTimes <= maxRetryCount ? `网络连接出错，正在重试（${retreyTimes}/${maxRetryCount}）` : "网络连接出错";
+                        break;
+                    case "protectedpage":
+                        errorMessage = "页面被保护";
+                        break;
+                    default:
+                        errorMessage = err;
+                }
+                loger.record(`编辑【<a href="/${title}?action=history" target="_blank">${title}</a>】时出现错误：${errorMessage}。`, "error");
+                if (!retry || err !== "http") {
+                    return "failed";
+                }
             }
-            const editResult = await api.postWithToken("csrf", {
-                format: "json",
-                action: "edit",
-                watchlist: "nochange",
-                tags,
-                bot: true,
-                minor: true,
-                nocreate: true,
-                title,
-                text: replacedSource,
-                summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom}】→【${changeTo}】${summary === "" ? "" : `：${summary}`}`,
-            });
-            loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
-            return "success";
-        } catch (err) {
-            let errorMessage = "";
-            switch (err) {
-                case "missingtitle":
-                    errorMessage = "页面不存在";
-                    break;
-                case "http":
-                    errorMessage = "网络连接出错";
-                    break;
-                case "protectedpage":
-                    errorMessage = "页面被保护";
-                    break;
-                default:
-                    errorMessage = err;
-            }
-            loger.record(`编辑【<a href="/${title}?action=history" target="_blank">${title}</a>】时出现错误：${errorMessage}。`, "error");
-            return "failed";
-        }
+        } while (retreyTimes <= maxRetryCount);
+        return "failed";
     };
 
     // 执行体
@@ -272,7 +306,7 @@ $(() => (async () => {
                 const changeTo = $("#me-change-to").val();
                 let editFrom = $("#me-edit-from").val();
                 // 解析正则表达式
-                if ($("#me-regex-box input").prop("checked")) {
+                if (regexSelect.isSelected()) {
                     try {
                         if (!/\/[\s\S]+\//.test(editFrom)) {
                             loger.record("正则表达式有误。", "warn");
