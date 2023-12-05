@@ -260,8 +260,12 @@ $(() => (async () => {
                     text: replacedSource,
                     summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom}】→【${changeTo}】${summary === "" ? "" : `：${summary}`}`,
                 });
-                loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
-                return "success";
+                if (editResult && editResult.edit?.newrevid) {
+                    loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
+                    return "success";
+                }
+                loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑失败，请将以下内容告知<a href="/User_talk:BearBin" target="_blank">BearBin</a>：${JSON.stringify(editResult)}`, "error");
+                return "failed";
             } catch (err) {
                 let errorMessage = "";
                 switch (err) {
