@@ -1,12 +1,12 @@
 import Snake from '../../components/Snake';
 
 $(() => (async () => {
-    if (mw.config.get("wgNamespaceNumber") === -1) {
+    if (mw.config.get("wgNamespaceNumber") === -1 && mw.config.get("wgRelevantPageName") === mw.config.get("wgPageName")) {
         return;
     }
     await mw.loader.using(["mediawiki.api", "mediawiki.user", "mediawiki.notification", "oojs-ui"]);
     const api = new mw.Api();
-    const PAGENAME = mw.config.get("wgPageName");
+    const PAGENAME = mw.config.get("wgNamespaceNumber") === -1 ? mw.config.get("wgRelevantPageName") : mw.config.get("wgPageName");
     const $body = $("body");
     const UserRights = await mw.user.getRights();
     const Noratelimit = UserRights.includes("noratelimit");
