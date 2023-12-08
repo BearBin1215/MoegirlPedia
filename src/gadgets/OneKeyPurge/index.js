@@ -93,9 +93,19 @@ $(() => (async () => {
                 $(this.progressBar.element),
             );
             this.$body.append(this.panelLayout.$element);
-            $("#one-key-purge .oo-ui-fieldLayout-header").css("font-weight", "bold").css("width", "20%").css("min-width", "6em");
-            $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css("display", "flex").css("flex-wrap", "wrap");
-            $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css("flex", "1 0 11em").css("padding", "4px 0");
+            $("#one-key-purge .oo-ui-fieldLayout-header").css({
+                width: "20%",
+                "min-width": "6em",
+                "font-weight": "bold",
+            });
+            $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css({
+                display: "flex",
+                "flex-wrap": "wrap",
+            });
+            $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css({
+                flex: "1 0 11em",
+                padding: "4px 0",
+            });
         }
 
         /**
