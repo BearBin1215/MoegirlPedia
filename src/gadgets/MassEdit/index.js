@@ -345,7 +345,7 @@ $(() => (async () => {
                     const { length } = result;
                     loger.record(`共${length}个页面，即将开始编辑……`, "normal");
                     for (const item of result) {
-                        if(!running) {
+                        if (!running) {
                             break;
                         }
                         const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
@@ -354,7 +354,7 @@ $(() => (async () => {
                             await waitInterval(interval);
                         }
                     }
-                    if(running) {
+                    if (running) {
                         loger.record("编辑完毕。", "normal");
                     } else {
                         loger.record("编辑终止。", "normal");
