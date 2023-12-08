@@ -4,7 +4,7 @@ import config from "./config.js";
 import { exec } from "child_process";
 
 // 获取最近一次提交变更的文件
-exec('git diff --name-only HEAD HEAD~1', (error, stdout) => {
+exec('git diff --name-only HEAD $(git rev-parse HEAD^)', (error, stdout) => {
     if (error) {
         console.error(`获取最近提交文件失败：${error}`);
         return;
