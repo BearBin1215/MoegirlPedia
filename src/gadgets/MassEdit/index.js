@@ -9,6 +9,7 @@ $(() => (async () => {
     }
     await mw.loader.using(["mediawiki.api", "oojs-ui"]);
     const api = new mw.Api();
+    let running = false;
     const loger = new Loger([
         {
             name: 'success',
@@ -99,6 +100,16 @@ $(() => (async () => {
         icon: "check",
         id: "me-submit",
     });
+    const stopButton = new OO.ui.ButtonWidget({
+        label: "终止",
+        flags: [
+            "primary",
+            "destructive",
+        ],
+        icon: "close",
+        id: "me-stop",
+    });
+    stopButton.$element.hide();
 
     const intervalBox = new OO.ui.TextInputWidget({
         type: "number",
@@ -134,6 +145,7 @@ $(() => (async () => {
 
     $("#me-edit-panel").append(
         submitButton.$element,
+        stopButton.$element,
         intervalBox.$element,
         summaryBox.$element,
     ).after(retryField.$element);
@@ -322,7 +334,9 @@ $(() => (async () => {
                         return;
                     }
                 }
-                submitButton.setDisabled(true);
+                running = true;
+                submitButton.$element.hide();
+                stopButton.$element.show();
                 $("#mw-content-text input, #mw-content-text textarea").prop("disabled", true);
                 window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
                 await getPageList().then(async (result) => {
@@ -331,19 +345,32 @@ $(() => (async () => {
                     const { length } = result;
                     loger.record(`共${length}个页面，即将开始编辑……`, "normal");
                     for (const item of result) {
+                        if(!running) {
+                            break;
+                        }
                         const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
                         complete++;
                         if (editResult === "success" && interval !== 0 && complete < length) {
                             await waitInterval(interval);
                         }
                     }
-                    loger.record("编辑完毕。", "normal");
+                    if(running) {
+                        loger.record("编辑完毕。", "normal");
+                    } else {
+                        loger.record("编辑终止。", "normal");
+                    }
                 });
-                submitButton.setDisabled(false);
+                running = false;
+                submitButton.$element.show();
+                stopButton.$element.hide();
                 $("#mw-content-text input, #mw-content-text textarea").prop("disabled", false);
                 window.onbeforeunload = () => null;
             }
         }
+    });
+
+    stopButton.on("click", () => {
+        running = false;
     });
 
     // 正则帮助
