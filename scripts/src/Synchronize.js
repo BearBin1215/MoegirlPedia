@@ -8,8 +8,6 @@ exec('git diff --name-only HEAD HEAD~1', (error, stdout) => {
     if (error) {
         throw new Error(`获取最近提交文件失败：${error}`);
     }
-    console.log(stdout);
-    return;
     const changedGadgets = stdout
         .split("\n")
         .filter((fileName) => fileName.includes("dist/gadgets/"))
@@ -25,18 +23,19 @@ exec('git diff --name-only HEAD HEAD~1', (error, stdout) => {
     console.log(`发生变化的工具：${list.join("、")}。即将开始同步。`);
 
     const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
-    
+
     const bot = new MWBot({
         apiUrl: config.API_PATH,
     }, {
         timeout: 60000,
     });
-    
+
     bot.loginGetEditToken({
         username: config.username,
         password: config.password,
     }).then(async () => {
-        for (const item of list) {
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
             try {
                 const title = `${config.sync.pagePath + item}.js`;
                 const source = await fs.promises.readFile(`${config.sync.localPath + item}.min.js`, "utf-8").catch((err) => {
@@ -60,7 +59,9 @@ exec('git diff --name-only HEAD HEAD~1', (error, stdout) => {
                 }).catch((err) => {
                     throw new Error(`${item}保存失败：${err}`);
                 });
-                await waitInterval(6000);
+                if (i < list.length) {
+                    await waitInterval(6000);
+                }
             } catch (err) {
                 console.error(err);
             }

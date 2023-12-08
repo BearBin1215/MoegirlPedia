@@ -217,8 +217,11 @@ $(() => (async () => {
             } else {
                 loger.record("没有要移动的页面。");
             }
-            for (const item of pageList) {
-                const {from, to} = item;
+            for (const page of pageList) {
+                const {
+                    from,
+                    to,
+                } = page;
                 try {
                     const result = await api.postWithToken("csrf", {
                         format: "json",
