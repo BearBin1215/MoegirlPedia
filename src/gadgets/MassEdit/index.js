@@ -42,7 +42,7 @@ $(() => (async () => {
      * 在Special:MassEdit构建页面
      */
     mw.config.set("wgCanonicalSpecialPageName", "MassEdit");
-    $("title").text("批量编辑 - 萌娘百科_万物皆可萌的百科全书");
+    document.title = "批量编辑 - 萌娘百科_万物皆可萌的百科全书";
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
     $("#firstHeading").html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
     $("#contentSub").remove();
@@ -300,9 +300,9 @@ $(() => (async () => {
         });
         if (confirm) {
             // 检查输入
-            if ($("#me-edit-from").val() === "") {
+            if (!$("#me-edit-from").val()) {
                 loger.record("请输入要替换的原文字。", "warn");
-            } else if ($("#me-page-list").val() === "" && $("#me-category-list").val() === "") {
+            } else if (!$("#me-page-list").val() && !$("#me-category-list").val()) {
                 loger.record("请输入要编辑的页面或分类。", "warn");
             } else {
                 const additionalSummary = getAdditionalSummary();

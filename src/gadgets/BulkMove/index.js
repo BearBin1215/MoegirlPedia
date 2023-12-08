@@ -37,7 +37,7 @@ $(() => (async () => {
      * 在Special:BulkMove构建页面
      */
     mw.config.set("wgCanonicalSpecialPageName", "BulkMove");
-    $("title").text("批量移动 - 萌娘百科_万物皆可萌的百科全书");
+    document.title = "批量移动 - 萌娘百科_万物皆可萌的百科全书";
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
     $("#firstHeading").html("批量移动页面<div>By BearBin</div>");
     $("#contentSub").remove();
