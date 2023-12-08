@@ -28,82 +28,82 @@
             }
         }
     }
+}
 
-    #me-regex {
-        margin-top: .3rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+#me-regex {
+    margin-top: .3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    #me-regex-note li {
-        margin-top: 0;
-        margin-bottom: 0;
-    }
+#me-regex-note li {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 
-    #me-page-lists {
-        display: flex;
-        gap: .3em;
-        resize: none;
+#me-page-lists {
+    display: flex;
+    gap: .3em;
+    resize: none;
 
-        >div {
-            flex-grow: 1;
+    >div {
+        flex-grow: 1;
 
-            #me-page-list,
-            #me-category-list {
-                resize: none;
-            }
+        #me-page-list,
+        #me-category-list {
+            resize: none;
         }
     }
+}
 
-    #me-pages-note {
-        margin-bottom: .8em;
+#me-pages-note {
+    margin-bottom: .8em;
+}
+
+#me-edit-panel {
+    display: flex;
+    gap: .1rem;
+
+    #me-interval {
+        flex: 0 0 5.5em;
     }
 
-    #me-edit-panel {
-        display: flex;
-        gap: .1rem;
+    #me-summary {
+        max-width: initial;
+    }
+}
 
-        #me-interval {
-            flex: 0 0 5.5em;
+#me-use-retry {
+    margin-top: 0.2em;
+
+    .oo-ui-fieldLayout-body {
+        max-width: unset;
+
+        #me-retry-label {
+            display: flex;
+            align-items: center;
         }
 
-        #me-summary {
-            max-width: initial;
+        #me-retry-times {
+            max-width: 4em;
         }
     }
+}
 
-    #me-use-retry {
-        margin-top: 0.2em;
+#me-regex-help-list {
+    list-style: inside;
+    user-select: none;
 
-        .oo-ui-fieldLayout-body {
-            max-width: unset;
-
-            #me-retry-label {
-                display: flex;
-                align-items: center;
-            }
-
-            #me-retry-times {
-                max-width: 4em;
-            }
-        }
+    li {
+        line-height: 1.6;
+        margin-bottom: 1px;
     }
 
-    #me-regex-help-list {
-        list-style: inside;
-        user-select: none;
-
-        li {
-            line-height: 1.6;
-            margin-bottom: 1px;
-        }
-
-        code {
-            border: 1px solid #ddd;
-            padding: 1px 3px;
-            user-select: all;
-            cursor: text;
-        }
+    code {
+        border: 1px solid #ddd;
+        padding: 1px 3px;
+        user-select: all;
+        cursor: text;
     }
 }
