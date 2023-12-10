@@ -275,6 +275,9 @@ $(() => (async () => {
                 if (editResult && editResult.edit?.newrevid) {
                     loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, "success");
                     return "success";
+                } else if (editResult && editResult.edit?.abusefilter) {
+                    loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑失败：被滥用过滤器${editResult.edit.abusefilter.id}阻止。过滤器描述：${editResult.edit.abusefilter.description}。`, "error");
+                    return "failed";
                 }
                 loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑失败，请将以下内容告知<a href="/User_talk:BearBin" target="_blank">BearBin</a>：${JSON.stringify(editResult)}`, "error");
                 return "failed";
