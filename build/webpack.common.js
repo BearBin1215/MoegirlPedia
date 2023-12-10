@@ -18,6 +18,12 @@ const postCssLoader = {
         [
           'autoprefixer',
         ],
+        [
+          'cssnano',
+          {
+            preset: 'default',
+          },
+        ],
       ],
     },
   },
@@ -63,8 +69,8 @@ module.exports = {
         use: [
           'style-loader',
           'css-loader',
-          'less-loader',
           postCssLoader,
+          'less-loader',
         ],
       },
       {
@@ -72,8 +78,8 @@ module.exports = {
         use: [
           'style-loader',
           'css-loader',
-          'sass-loader',
           postCssLoader,
+          'sass-loader',
         ],
       },
     ],
