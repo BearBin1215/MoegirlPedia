@@ -50,6 +50,8 @@
     "postcss": "^8.4.31",
     "postcss-less": "^6.0.0",
     "postcss-loader": "^7.3.3",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
     "stylelint": "^15.11.0",
     "stylelint-config-recommended-less": "^2.0.0",

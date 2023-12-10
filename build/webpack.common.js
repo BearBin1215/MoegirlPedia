@@ -10,6 +10,19 @@ const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/${process.env.ga
     return entries;
   }, {});
 
+const postCssLoader = {
+  loader: 'postcss-loader',
+  options: {
+    postcssOptions: {
+      plugins: [
+        [
+          'autoprefixer',
+        ],
+      ],
+    },
+  },
+};
+
 module.exports = {
   entry,
   resolve: {
@@ -38,30 +51,29 @@ module.exports = {
         },
       },
       {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          postCssLoader,
+        ],
+      },
+      {
         test: /\.less$/,
         use: [
           'style-loader',
           'css-loader',
           'less-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [
-                  [
-                    'autoprefixer',
-                  ],
-                ],
-              },
-            },
-          },
+          postCssLoader,
         ],
       },
       {
-        test: /\.css$/,
+        test: /\.s[ac]ss$/i,
         use: [
           'style-loader',
           'css-loader',
+          'sass-loader',
+          postCssLoader,
         ],
       },
     ],
