@@ -1,11 +1,10 @@
 const { exec } = require('child_process');
 
 // eslint-disable-next-line prefer-destructuring
-const gadgetName = process.argv[2];
-console.log(`开始打包${gadgetName || '所有小工具'}……`);
+const gadgetName = process.argv.slice(2);
 exec(
   gadgetName
-    ? `cross-env GADGETNAME=${gadgetName} webpack --config build/webpack.prod.js`
+    ? `cross-env GADGETNAME=${gadgetName.join(",")} webpack --config build/webpack.prod.js`
     : 'webpack --config build/webpack.prod.js'
   , (error, stdout) => {
     if (error) {
