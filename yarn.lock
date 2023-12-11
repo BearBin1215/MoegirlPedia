@@ -4878,7 +4878,7 @@ stylelint-config-recommended-less@^2.0.0:
     stylelint-config-recommended "^13.0.0"
     stylelint-less "^2.0.0"
 
-stylelint-config-recommended@^13.0.0:
+stylelint-config-recommended@13, stylelint-config-recommended@^13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/stylelint-config-recommended/-/stylelint-config-recommended-13.0.0.tgz#c48a358cc46b629ea01f22db60b351f703e00597"
   integrity sha512-EH+yRj6h3GAe/fRiyaoO2F9l9Tgg50AOFhaszyfov9v6ayXJ1IkSHwTxd7lB48FmOeSGDPLjatjO11fJpmarkQ==
@@ -4892,7 +4892,7 @@ stylelint-config-standard@^34.0.0:
 
 stylelint-less@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npmmirror.com/stylelint-less/-/stylelint-less-2.0.0.tgz#c9b9c9091ee522dbeeb6ea54c02809a2826ff942"
+  resolved "https://registry.npmjs.org/stylelint-less/-/stylelint-less-2.0.0.tgz#c9b9c9091ee522dbeeb6ea54c02809a2826ff942"
   integrity sha512-HwRdAdrNDBg64BzIOP3SSHFPJHvRJEpqFn8Kp5m5Enw6pf7kI9XoNT3jn1S2zvfzaK/7hdwy6La3cyJT78fK3A==
   dependencies:
     postcss-resolve-nested-selector "^0.1.1"

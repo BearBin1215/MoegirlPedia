@@ -1,0 +1,26 @@
+{
+  "plugins": [
+    "stylelint-less"
+  ],
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended",
+    "stylelint-config-recommended-less"
+  ],
+  "ignoreFiles": [
+    "dist/**/*.css"
+  ],
+  "overrides": [
+    {
+      "files": ["src/**/*.less"],
+      "customSyntax": "postcss-less"
+    }
+  ],
+  "rules": {
+    "selector-id-pattern": null,
+    "selector-class-pattern": null,
+    "comment-empty-line-before": null,
+    "no-descending-specificity": null,
+    "at-rule-no-unknown": null
+  }
+}
