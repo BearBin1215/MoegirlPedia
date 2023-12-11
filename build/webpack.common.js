@@ -1,6 +1,6 @@
 const glob = require('glob');
 
-const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname}}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}')
+const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}')
   .map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'))

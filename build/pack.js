@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 
-// eslint-disable-next-line prefer-destructuring
 const gadgetName = process.argv.slice(2);
+
 exec(
   gadgetName
     ? `cross-env GADGETNAME=${gadgetName.join(",")} webpack --config build/webpack.prod.js`

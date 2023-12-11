@@ -180,19 +180,7 @@ $(() => (async () => {
         submitButton.setDisabled(true);
         try {
             const result = await compare(fromTextBox.getValue(), toTextBox.getValue());
-            $result.html(`
-            <table class="diff diff-contentalign-left">
-                <colgroup>
-                    <col class="diff-marker">
-                    <col class="diff-content">
-                    <col class="diff-marker">
-                    <col class="diff-content">
-                </colgroup>
-                <tbody>
-                    ${result}
-                </tbody>
-            </table>
-            `);
+            $result.html(`<table class="diff diff-contentalign-left"><colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup><tbody>${result}</tbody></table>`);
             $resultAction.show();
         } catch (error) {
             mw.notify(`比较出错：${error}`, { type: "warn" });
