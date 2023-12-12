@@ -374,21 +374,24 @@ $(() => (async () => {
             this.stopButton.$element.show();
 
             // 获取页面列表
-            await this.getList().then(async (result) => {
-                console.log(result);
-                if (result.length > 0) {
-                    mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
-                }
-                for (const item of result) {
-                    this.progressBar.addScale(item);
-                }
-                this.updateSize();
-                if (this.optionType === "nulledit") {
-                    await this.nullEdit(result);
-                } else {
-                    await this.purge(result);
-                }
-            });
+            const pageList = await this.getList();
+
+            if (pageList.length > 0) {
+                mw.notify(`共${pageList.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
+            }
+            // 添加进度条格子
+            for (const item of pageList) {
+                this.progressBar.addScale(item);
+            }
+            this.updateSize();
+
+            // 执行操作
+            if (this.optionType === "nulledit") {
+                await this.nullEdit(pageList);
+            } else {
+                await this.purge(pageList);
+            }
+
             if (this.failList.length > 0) {
                 OO.ui.alert($(`<div>${this.failList.join("、")}<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。</div>`), {
                     title: "提示",
