@@ -1,0 +1,53 @@
+#one-key-purge {
+    @borderStyle: 1px solid #bbb;
+
+    .okp-button {
+        flex: 0 1;
+        padding: 6px;
+    }
+
+    .okp-header {
+        display: flex;
+        border-bottom: @borderStyle;
+
+        .okp-header-text {
+            flex: 1 0;
+            font-weight: 700;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .okp-footer {
+        border-top: @borderStyle;
+    }
+
+    .okp-note {
+        margin-bottom: .8em;
+        font-size: 1.143em;
+        line-height: 1.3;
+    }
+
+    .oo-ui-fieldLayout-header {
+        width: 20%;
+        min-width: 6em;
+        font-weight: bold;
+    }
+
+    .oo-ui-multiselectWidget-group,
+    .oo-ui-radioSelectWidget {
+        display: flex;
+        flex-wrap: wrap;
+
+        >label {
+            flex: 1 0 11em;
+            padding: 4px 0;
+        }
+    }
+}
+
+#one-key-purge-help {
+    list-style: circle;
+    padding-left: 1.2em
+}

@@ -1,58 +1,79 @@
 import Snake from '../../components/Snake';
+import './index.less';
 
 $(() => (async () => {
-    if (mw.config.get("wgNamespaceNumber") === -1 && mw.config.get("wgRelevantPageName") === mw.config.get("wgPageName")) {
+    if (
+        mw.config.get("wgNamespaceNumber") < 0 &&
+        mw.config.get("wgRelevantPageName") === mw.config.get("wgPageName")
+    ) {
         return;
     }
-    await mw.loader.using(["mediawiki.api", "mediawiki.user", "mediawiki.notification", "oojs-ui"]);
+    await mw.loader.using([
+        "mediawiki.api",
+        "mediawiki.user",
+        "mediawiki.notification",
+        "oojs-ui",
+    ]);
     const api = new mw.Api();
-    const PAGENAME = mw.config.get("wgNamespaceNumber") === -1 ? mw.config.get("wgRelevantPageName") : mw.config.get("wgPageName");
-    const $body = $("body");
+    const PAGENAME = mw.config.get("wgNamespaceNumber") === -1
+        ? mw.config.get("wgRelevantPageName")
+        : mw.config.get("wgPageName");
     const UserRights = await mw.user.getRights();
     const Noratelimit = UserRights.includes("noratelimit");
 
-    class OKPWindow extends OO.ui.ProcessDialog {
+    class OKPWindow extends OO.ui.Dialog {
         failList = []; // 记录操作失败的页面
+
         changeList = []; // 记录代码产生意外变化的页面
-        state = 0; // 已完成操作的页面数，成功或发生变化，不含失败
+
+        complete = 0; // 已完成操作的页面数，成功或发生变化，不含失败
+
+        progressBar = new Snake(); // 进度条
+
+        running = false;
+
         static static = {
             ...super.static,
             tagName: "div",
             name: "one-key-purge",
-            title: "批量清除页面缓存",
-            actions: [
-                {
-                    action: "cancel",
-                    label: "取消",
-                    flags: ["safe", "close", "destructive"],
-                },
-                {
-                    action: "submit",
-                    label: "执行",
-                    flags: ["primary", "progressive"],
-                },
-                {
-                    action: "help",
-                    icon: "help",
-                    label: "帮助",
-                },
-            ],
         };
 
-        /**
-         * 构造函数
-         * @param {Object} config 
-         */
-        constructor(config) {
-            super(config);
-        }
         initialize() {
             super.initialize();
+
+            // 顶部按钮和标题
+            this.$header = $('<header class="okp-header"></header>');
+            // 主体选择区
             this.panelLayout = new OO.ui.PanelLayout({
                 scrollable: false,
                 expanded: false,
                 padded: true,
-                id: "one-key-purge",
+            });
+            // 底部帮助
+            this.$footer = $('<footer class="okp-footer"></footer>');
+
+            this.closeButton = new OO.ui.ButtonWidget({
+                label: "取消",
+                flags: [
+                    "destructive",
+                ],
+            });
+
+            this.stopButton = new OO.ui.ButtonWidget({
+                label: "终止",
+                flags: [
+                    "primary",
+                    "destructive",
+                ],
+            });
+            this.stopButton.$element.hide();
+
+            this.actionButton = new OO.ui.ButtonWidget({
+                label: "执行",
+                flags: [
+                    "primary",
+                    "progressive",
+                ],
             });
 
             // 选择要获取的页面类型，可都选
@@ -64,6 +85,12 @@ $(() => (async () => {
             });
             const typeFiled = new OO.ui.FieldLayout(this.typeSelectInput, {
                 label: "页面类型",
+            });
+
+            // 帮助
+            const helpButton = new OO.ui.ButtonWidget({
+                label: "帮助",
+                icon: "help",
             });
 
             // 选择要进行的操作，单选
@@ -80,32 +107,58 @@ $(() => (async () => {
                 label: "操作类型",
             });
 
+            // 根据用户权限提示
             const noteText = Noratelimit ?
-                "<b>警告</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
+                "<b>提醒</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！"
                 :
                 "<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。";
 
-            this.progressBar = new Snake();
-            this.panelLayout.$element.append(
-                $(`<div style="margin-bottom:.8em;font-size:1.143em;line-height:1.3">${noteText}</div>`),
-                typeFiled.$element,
-                optionFiled.$element,
-                $(this.progressBar.element),
+            /**
+             * 添加事件
+             */
+            this.closeButton.on("click", () => this.close());
+
+            this.stopButton.on("click", () => {
+                this.stopButton.setDisabled(true);
+                this.running = false;
+            });
+
+            helpButton.on("click", () => {
+                OO.ui.alert($('<ul id="one-key-purge-help"></ul>').append(
+                    "<li><b>清除缓存</b>：通常在需要刷新页面内容时使用，例如模板编辑后刷新嵌入了此模板的页面。</li>",
+                    `<li><b>零编辑</b>：通常在需要刷新<a href="/Special:链入页面/${PAGENAME}">链入/嵌入页面列表</a>时使用，例如页面移动后清理链入。</li>`,
+                ), {
+                    title: "帮助",
+                    size: "medium",
+                });
+            });
+
+            this.actionButton.on("click", () => this.action());
+
+            /**
+             * 将元素添加到窗口
+             */
+            this.$body.append(
+                this.$header.append(
+                    $('<div class="okp-button okp-cancel-button"></div>').append(
+                        this.closeButton.$element,
+                        this.stopButton.$element,
+                    ),
+                    $('<div class="okp-header-text">批量清除页面缓存</div>'),
+                    $('<div class="okp-button okp-action-button"></div>').append(
+                        this.actionButton.$element,
+                    ),
+                ),
+                this.panelLayout.$element.append(
+                    `<div class="okp-note">${noteText}</div>`,
+                    typeFiled.$element,
+                    optionFiled.$element,
+                    $(this.progressBar.element),
+                ),
+                this.$footer.append(
+                    $('<div class="okp-button okp-help-button"></div>').append(helpButton.$element),
+                ),
             );
-            this.$body.append(this.panelLayout.$element);
-            $("#one-key-purge .oo-ui-fieldLayout-header").css({
-                width: "20%",
-                "min-width": "6em",
-                "font-weight": "bold",
-            });
-            $("#one-key-purge .oo-ui-multiselectWidget-group, #one-key-purge .oo-ui-radioSelectWidget").css({
-                display: "flex",
-                "flex-wrap": "wrap",
-            });
-            $("#one-key-purge .oo-ui-multiselectWidget-group>label, #one-key-purge .oo-ui-radioSelectWidget>label").css({
-                flex: "1 0 11em",
-                padding: "4px 0",
-            });
         }
 
         /**
@@ -128,9 +181,9 @@ $(() => (async () => {
                     ticontinue,
                 });
                 if (Object.values(includeList.query.pages)[0].transcludedin) {
-                    for (const item of Object.values(includeList.query.pages)[0].transcludedin) {
-                        console.log(`查找到嵌入【${PAGENAME}】的页面：${item.title}`);
-                        pageList.push(item.title);
+                    for (const { title } of Object.values(includeList.query.pages)[0].transcludedin) {
+                        console.log(`查找到嵌入【${PAGENAME}】的页面：${title}`);
+                        pageList.push(title);
                     }
                 }
                 ticontinue = includeList.continue ? includeList.continue.ticontinue : false;
@@ -156,12 +209,12 @@ $(() => (async () => {
                     lhcontinue,
                 });
                 if (Object.values(linkList.query.pages)[0].linkshere) {
-                    for (const item of Object.values(linkList.query.pages)[0].linkshere) {
-                        console.log(`查找到链接到【${PAGENAME}】的页面：${item.title}`);
-                        pageList.push(item.title);
+                    for (const { title } of Object.values(linkList.query.pages)[0].linkshere) {
+                        console.log(`查找到链接到【${PAGENAME}】的页面：${title}`);
+                        pageList.push(title);
                     }
                 }
-                lhcontinue = linkList.continue ? linkList.continue.lhcontinue : false;
+                lhcontinue = linkList.continue?.lhcontinue;
             }
             if (pageList.length > 0) {
                 mw.notify(`获取链接到【${PAGENAME}】的页面列表成功。`);
@@ -173,19 +226,20 @@ $(() => (async () => {
 
         // 根据用户选项获取页面列表
         async getList() {
-            let PageList = [];
-            if (this.typeSelectInput.getValue().includes("link")) {
-                await this.getLinkList().then((result) => {
-                    PageList.push(...result);
-                });
+            const pageList = [];
+            try {
+                if (this.typeSelectInput.getValue().includes("link")) {
+                    const result = await this.getLinkList();
+                    pageList.push(...result);
+                }
+                if (this.typeSelectInput.getValue().includes("include")) {
+                    const result = await this.getIncludeList();
+                    pageList.push(...result);
+                }
+            } catch (error) {
+
             }
-            if (this.typeSelectInput.getValue().includes("include")) {
-                await this.getIncludeList().then((result) => {
-                    PageList.push(...result);
-                });
-            }
-            PageList = [...new Set(PageList)];
-            return PageList;
+            return [...new Set(pageList)];
         }
 
         // 返回用户所选择的操作
@@ -204,10 +258,10 @@ $(() => (async () => {
             this.progressBar.crawl(title, result);
             switch (result.toLowerCase()) {
                 case "success": // 成功且无意外
-                    this.state++;
+                    this.complete++;
                     break;
                 case "warn": // 成功但出现意外，目前仅用于编辑产生意外的源代码变动
-                    this.state++;
+                    this.complete++;
                     this.changeList.push(title);
                     break;
                 case "fail": // 失败
@@ -219,7 +273,11 @@ $(() => (async () => {
 
         // 零编辑
         async nullEdit(titles) {
-            for (const title of titles) {
+            for (let index = 0; index < titles.length; index++) {
+                if (!this.running) {
+                    break;
+                }
+                const title = titles[index];
                 this.progressBar.crawl(title, "ongoing");
                 api.postWithToken("csrf", {
                     format: "json",
@@ -242,10 +300,12 @@ $(() => (async () => {
                 }).catch((error) => {
                     this.progressChange(title, "fail", error);
                 });
-                if (!Noratelimit) {
-                    await this.waitInterval(6000);
-                } else {
-                    await this.waitInterval(1000);
+                if (index + 1 < titles.length) {
+                    if (!Noratelimit) {
+                        await this.waitInterval(6000);
+                    } else {
+                        await this.waitInterval(1000);
+                    }
                 }
             }
         }
@@ -257,12 +317,14 @@ $(() => (async () => {
         async purge(pageList) {
             // 分割为5个一批，执行purge
             for (let i = 0; i < pageList.length; i += 5) {
+                if (!this.running) {
+                    break;
+                }
                 const pages = pageList.slice(i, i + 5);
                 // 将准备发送请求的页面标记为进行
                 for (const title of pages) {
                     this.progressBar.crawl(title, "ongoing");
                 }
-                // document.getElementById(`okp-progress-${pages[pages.length - 1]}`).scrollIntoView();
                 api.post({
                     format: "json",
                     action: "purge",
@@ -279,7 +341,7 @@ $(() => (async () => {
                     }
                 });
                 // 如果不是最后一批，根据是否拥有noratelimit权限等待间隔
-                if (i + 50 < pageList.length) {
+                if (i + 5 < pageList.length) {
                     if (!Noratelimit) {
                         await this.waitInterval(2000);
                     } else {
@@ -289,61 +351,67 @@ $(() => (async () => {
             }
         }
 
-        getActionProcess(action) {
-            if (action === "cancel") {
-                return new OO.ui.Process(() => {
-                    this.close({ action });
-                }, this);
-            } else if (action === "help") {
-                const helpText = $('<ul style="list-style:circle;padding-left:1.2em"></ul>');
-                helpText.append(
-                    "<li><b>清除缓存</b>：通常在需要刷新页面内容时使用，例如模板编辑后刷新嵌入了此模板的页面。</li>",
-                    `<li><b>零编辑</b>：通常在需要刷新<a href="/Special:链入页面/${PAGENAME}">链入/嵌入页面列表</a>时使用，例如页面移动后清理链入。</li>`,
-                );
-                OO.ui.alert(helpText, {
-                    title: "帮助",
+        /**
+         * 执行
+         */
+        async action() {
+            this.progressBar.clear();
+            if (this.typeSelectInput.getValue().length === 0) {
+                mw.notify("请选择页面类型。");
+            }
+
+            // 数据初始化
+            this.failList = [];
+            this.changeList = [];
+            this.complete = 0;
+            this.running = true;
+
+            // 元素控制
+            this.$header.addClass("oo-ui-pendingElement-pending");
+            this.actionButton.setDisabled(true);
+            this.stopButton.setDisabled(false);
+            this.closeButton.$element.hide();
+            this.stopButton.$element.show();
+
+            // 获取页面列表
+            await this.getList().then(async (result) => {
+                console.log(result);
+                if (result.length > 0) {
+                    mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
+                }
+                for (const item of result) {
+                    this.progressBar.addScale(item);
+                }
+                this.updateSize();
+                if (this.optionType === "nulledit") {
+                    await this.nullEdit(result);
+                } else {
+                    await this.purge(result);
+                }
+            });
+            if (this.failList.length > 0) {
+                OO.ui.alert($(`<div>${this.failList.join("、")}<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。</div>`), {
+                    title: "提示",
                     size: "medium",
                 });
-            } else if (action === "submit") {
-                return new OO.ui.Process($.when((async () => {
-                    this.progressBar.clear();
-                    if (this.typeSelectInput.getValue().length === 0) {
-                        mw.notify("请选择页面类型。");
-                    }
-                    this.failList = [];
-                    this.changeList = [];
-                    this.state = 0;
-                    $("#okp-done").text(0);
-                    // 获取页面列表
-                    await this.getList().then(async (result) => {
-                        console.log(result);
-                        if (result.length > 0) {
-                            mw.notify(`共${result.length}个页面，开始执行${this.optionType === "nulledit" ? "零编辑" : "清除缓存"}……`);
-                        }
-                        for (const item of result) {
-                            this.progressBar.addScale(item);
-                        }
-                        this.updateSize();
-                        if (this.optionType === "nulledit") {
-                            await this.nullEdit(result);
-                        } else {
-                            await this.purge(result);
-                        }
-                    }).then(() => {
-                        // this.close({ action });
-                        if (this.failList.length > 0) {
-                            throw new OO.ui.Error($(`<div>${this.failList.join("、")}<br>可能页面受到保护，或编辑被过滤器拦截，请手动检查。</div>`));
-                        }
-                        if (this.changeList.length > 0) {
-                            throw new OO.ui.Error($(`<div>${this.changeList.join("、")}。<br>被意外更改，请手动撤回或回退`));
-                        }
-                    });
-                })()).promise(), this);
             }
-            return super.getActionProcess(action);
+            if (this.changeList.length > 0) {
+                OO.ui.alert($(`<div>${this.changeList.join("、")}。<br>被意外更改，请手动撤回或回退`), {
+                    title: "警告",
+                    size: "medium",
+                });
+            }
+
+            // 元素控制
+            this.$header.removeClass("oo-ui-pendingElement-pending");
+            this.actionButton.setDisabled(false);
+            this.closeButton.$element.show();
+            this.stopButton.$element.hide();
         }
     }
 
+    // 将窗口添加至body
+    const $body = $("body");
     const windowManager = new OO.ui.WindowManager({
         id: "one-key-purge",
     });
@@ -353,6 +421,7 @@ $(() => (async () => {
     });
     windowManager.addWindows([OKPDialog]);
 
+    // 添加入口
     $(mw.util.addPortletLink("p-cactions", "javascript:void(0)", "批量清除缓存", "ca-okp")).on("click", () => {
         $("#mw-notification-area").appendTo("body"); // 使提醒在窗口上层
         windowManager.openWindow(OKPDialog);
