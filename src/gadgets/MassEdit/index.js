@@ -10,6 +10,7 @@ $(() => (async () => {
     await mw.loader.using(["mediawiki.api", "oojs-ui"]);
     const api = new mw.Api();
     let running = false;
+    let timeout;
     const loger = new Loger([
         {
             name: 'success',
@@ -157,7 +158,7 @@ $(() => (async () => {
      * @param {number} time 等待时间（ms）
      * @returns {Promise<void>}
      */
-    const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
+    const waitInterval = (time) => new Promise((resolve) => timeout = setTimeout(resolve, time));
 
     /**
      * 获取用户输入的页面或分类
@@ -374,6 +375,7 @@ $(() => (async () => {
 
     stopButton.on("click", () => {
         running = false;
+        clearTimeout(timeout);
     });
 
     // 正则帮助
