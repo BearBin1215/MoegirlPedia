@@ -39,6 +39,7 @@ $(() => (async () => {
     ], 'massedit-log', 'h5');
     mw.loader.load("https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript");
     const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
+    const canGetCategoryMembers = mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group));
 
     /**
      * 在Special:MassEdit构建页面
@@ -65,10 +66,12 @@ $(() => (async () => {
         '</div>',
         '<div>',
         '<h5>分类</h5>',
-        '<textarea id="me-category-list" name="me-category-list" rows="12"></textarea>',
+        `<textarea id="me-category-list" name="me-category-list" rows="12"${canGetCategoryMembers ? '' : ' disabled'}></textarea>`,
         '</div>',
         '</div>',
-        '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。</div>',
+        '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；',
+        canGetCategoryMembers ? '分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。' : '非维护人员/机器人/机器用户暂无法通过API获取分类成员',
+        '</div>',
         '<div id="me-edit-panel"></div>',
         '<ul id="me-submit-note">',
         '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
