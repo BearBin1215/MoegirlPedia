@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "webpack --config build/webpack.dev.js --watch",
+    "start": "yarn run watch",
     "build": "node build/pack.js",
     "build:oddments": "tsc --build",
     "sync": "node scripts/src/Synchronize.js"
