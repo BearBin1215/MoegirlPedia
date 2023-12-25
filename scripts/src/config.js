@@ -30,6 +30,7 @@ const config = {
             "QuickThank",
             "ShowContributors",
             "TextDiff",
+            "TableExporter",
             "userStatus",
         ],
     },

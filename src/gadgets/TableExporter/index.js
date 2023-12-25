@@ -1,7 +1,7 @@
 import {
     utils,
     writeFile,
-} from "xlsx";
+} from "xlsx/dist/xlsx.mini.min";
 import './index.less';
 
 document.querySelectorAll("table.wikitable").forEach((table) => {

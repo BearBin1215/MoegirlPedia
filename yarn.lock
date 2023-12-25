@@ -5467,6 +5467,10 @@ xlsx@^0.18.5:
     wmf "~1.0.1"
     word "~0.3.0"
 
+"xlsx@https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz":
+  version "0.20.1"
+  resolved "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz#8980af12ddad223649a6d99ccb712443d3008ca4"
+
 yallist@^3.0.2:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.1.1.tgz#dbb7daf9bfd8bac9ab45ebf602b8cbad0d5d08fd"
