@@ -1,4 +1,4 @@
-import { 
+import {
     utils,
     writeFile,
 } from "xlsx";
@@ -11,8 +11,7 @@ document.querySelectorAll("table.wikitable").forEach((table) => {
     exportButton.title = "导出表格";
 
     exportButton.addEventListener("click", () => {
-        const workbook = utils.table_to_book(table);
-        writeFile(workbook, "export.xlsx");
+        writeFile(utils.table_to_book(table), "export.xlsx");
     });
 
     table.append(exportButton);
