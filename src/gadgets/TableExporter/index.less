@@ -1,0 +1,33 @@
+table.wikitable {
+    position: relative;
+
+    .export-table-button {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        width: 16px;
+        height: 16px;
+        border: 1px solid #bbb;
+        border-radius: 2px;
+        background-color: #eee;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 0 0 3px rgb(127 127 127 / 40%);
+        }
+
+        >svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    &:hover {
+        .export-table-button {
+            display: flex;
+        }
+    }
+}
