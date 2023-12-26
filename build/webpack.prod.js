@@ -14,7 +14,6 @@ module.exports = merge(common, {
     minimizer: [
       new TerserPlugin({
         extractComments: false,
-        minify: TerserPlugin.uglifyJsMinify,
         terserOptions: {
           output: {
             comments: false,
