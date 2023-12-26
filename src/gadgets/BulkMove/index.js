@@ -126,15 +126,19 @@ $(() => (async () => {
         }
     });
 
-    // 点击按钮添加一行，长按连续添加
-    let addRowInterval;
-    $("#bm-add-row").on("mousedown", () => {
-        addRowInterval = setInterval(() => {
-            addRow();
-        }, 200);
-    }).on("mouseup", () => {
-        clearInterval(addRowInterval);
-        addRow();
+    const addRowBox = new OO.ui.TextInputWidget({
+        type: "number",
+        value: 1,
+    });
+
+    // 点击按钮打开弹窗提示添加行
+    $("#bm-add-row").on("click", async () => {
+        const confirm = await OO.ui.confirm(addRowBox.$element, {
+            title: "增加行",
+        });
+        if (confirm) {
+            addRow(+addRowBox.getValue());
+        }
     });
 
     // 点击按钮删除行
