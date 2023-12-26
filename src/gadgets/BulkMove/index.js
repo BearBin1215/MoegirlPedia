@@ -69,10 +69,11 @@ $(() => (async () => {
     addRow(10); // 先加十行
 
     // 移动选项
-    const moveTalkSelect = new OO.ui.FieldLayout(new OO.ui.CheckboxInputWidget({
+    const moveTalkWidget = new OO.ui.CheckboxInputWidget({
         id: "bm-movetalk-box",
         selected: true,
-    }), {
+    });
+    const moveTalkSelect = new OO.ui.FieldLayout(moveTalkWidget, {
         label: "移动关联的讨论页",
         align: "inline",
         id: "bm-movetalk",
@@ -83,9 +84,10 @@ $(() => (async () => {
         align: "inline",
         id: "bm-redirect",
     });
-    const watchlistSelect = new OO.ui.FieldLayout(new OO.ui.CheckboxInputWidget({
+    const watchlistWidget = new OO.ui.CheckboxInputWidget({
         id: "bm-watchlist-box",
-    }), {
+    });
+    const watchlistSelect = new OO.ui.FieldLayout(watchlistWidget, {
         label: "监视源页面和目标页面",
         align: "inline",
         id: "bm-watchlist",
@@ -201,9 +203,10 @@ $(() => (async () => {
             window.onbeforeunload = () => true;
             $("#mw-content-text input, #mw-content-text textarea").prop("disabled", true);
 
-            const movetalk = $("#bm-movetalk-box input").prop("checked");
-            const noredirect = !$("#bm-redirect-box input").prop("checked");
-            const watchlist = $("#bm-watchlist-box input").prop("checked") ? "watch" : "unwatch";
+            const movetalk = moveTalkWidget.isSelected();
+            const noredirect = !redirectWidget.isSelected();
+            const watchlist = watchlistWidget.isSelected() ? "watch" : "unwatch";
+            console.log(movetalk, noredirect, watchlist);
             const reason = reasonBox.getValue().length > 0 ? `[[User:BearBin/js#批量移动页面|BulkMove]]：${reasonBox.getValue()}` : "[[User:BearBin/js#批量移动页面|BulkMove]]";
             const interval = Number(intervalBox.getValue()) * 1000;
             const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
