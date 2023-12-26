@@ -63,6 +63,7 @@
     "stylelint-less": "^2.0.0",
     "types-mediawiki": "^1.4.0",
     "typescript": "^5.2.2",
+    "uglify-js": "^3.17.4",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0"

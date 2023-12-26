@@ -22,7 +22,7 @@ if (!list.length) {
     const bot = new MWBot({
         apiUrl: config.API_PATH,
     }, {
-        timeout: 60000,
+        timeout: 90000,
     });
 
     // 获取最近一次提交的消息
@@ -34,6 +34,7 @@ if (!list.length) {
         password: config.password,
     }).then(async () => {
         console.log("登陆成功，开始同步");
+        const errorList = [];
         for (let i = 0; i < list.length; i++) {
             const item = list[i];
             const title = `${config.sync.pagePath + item}.js`;
@@ -41,24 +42,31 @@ if (!list.length) {
                 throw new Error(`读取${item}失败：${err}`);
             });
             const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
-            await bot.request({
-                action: "edit",
-                title,
-                text,
-                summary: `同步GitHub更改：${lastCommitMessage}`,
-                bot: true,
-                tags: "Bot",
-                token: bot.editToken,
-            }).then((res) => {
-                if (res.edit.nochange === "") {
-                    console.log(`${title}保存前后无变化。`);
-                } else {
-                    console.log(`${item}已保存至${title}`);
-                }
-            });
+            try {
+                await bot.request({
+                    action: "edit",
+                    title,
+                    text,
+                    summary: `同步GitHub更改：${lastCommitMessage}`,
+                    bot: true,
+                    tags: "Bot",
+                    token: bot.editToken,
+                }).then((res) => {
+                    if (res.edit.nochange === "") {
+                        console.log(`${title}保存前后无变化。`);
+                    } else {
+                        console.log(`${item}已保存至${title}`);
+                    }
+                });
+            } catch (e) {
+                errorList.push(e);
+            }
             if (i < list.length) {
                 await waitInterval(6000);
             }
+        }
+        if (errorList.length > 0) {
+            throw new Error(`部分工具打包失败：\n${errorList.join("\n")}`);
         }
     });
 }
