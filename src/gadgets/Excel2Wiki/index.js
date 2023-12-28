@@ -42,6 +42,9 @@ if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
                 })
                 .children(".oo-ui-icon-table").removeClass("oo-ui-icon-table").addClass("oo-ui-icon-tableCaption");
 
+            /**
+             * 读取表格并解析
+             */
             const parseTable = () => {
                 const table = document.getElementById("e2w-input").firstElementChild;
                 if (table?.tagName === "TABLE") { // 判断粘贴的内容是否为table标签
@@ -77,15 +80,11 @@ if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
                 parseTable();
             });
 
-            // 切换双竖线模式时也允许
-            useDoubleSelect.on("change", () => {
-                parseTable();
-            });
+            // 切换双竖线模式时也执行解析
+            useDoubleSelect.on("change", parseTable);
 
             // 点×关闭面板
-            $("#e2w-close").on("click", () => {
-                e2wHTML.hide();
-            });
+            $("#e2w-close").on("click", () => e2wHTML.hide());
 
             // 复制
             $("#e2w-copy").on("click", (e) => {
