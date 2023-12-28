@@ -11,17 +11,17 @@ if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
             let tableWikitext = "";
 
             // 输入面板
-            const e2wHTML = $(`
-            <div id="excel-to-wiki">
-                <button id="e2w-close" title="关闭">×</button>
-                <div id="e2w-panel">
-                    <h5>在此处粘贴表格</h5>
-                    <div id="e2w-input" contenteditable="true"></div>
-                    <h5>输出<a id="e2w-copy">[复制]</a></h5>
-                    <div id="e2w-output"></div>
-                </div>
-            </div>
-            `);
+            const e2wHTML = $([
+                '<div id="excel-to-wiki">',
+                '<button id="e2w-close" title="关闭">×</button>',
+                '<div id="e2w-panel">',
+                '<h5>在此处粘贴表格</h5>',
+                '<div id="e2w-input" contenteditable="true"></div>',
+                '<h5>输出<a id="e2w-copy">[复制]</a></h5>',
+                '<div id="e2w-output"></div>',
+                '</div>',
+                '</div>',
+            ].join(""));
             const useDoubleSelect = new OO.ui.CheckboxInputWidget();
             const useDoubleField = new OO.ui.FieldLayout(useDoubleSelect, {
                 label: $("<span>同行使用<code>||</code></span>"),
