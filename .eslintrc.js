@@ -146,8 +146,20 @@ module.exports = {
       files: [
         "src/oddments/**/*.js"
       ],
+      env: {
+        browser: true,
+        node: false,
+        jquery: true,
+        es6: true
+      },
+      parserOptions: {
+        ecmaVersion: 5,
+        sourceType: "script",
+      },
       rules: {
-        "prefer-arrow-callback": 0
+        "prefer-arrow-callback": 0,
+        "no-var": 0,
+        "prefer-template": 0,
       }
     },
 
