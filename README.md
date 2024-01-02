@@ -192,7 +192,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`yarn`指令安装依赖。
 
 - 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js文件中调用。
-- 小代码于[src/oddments/](/src/oddments/)目录，通过[typescript](https://github.com/microsoft/TypeScript)编译为MediaWiki可直接接受的ES5语法以便加入common.js使用。
+- 小代码于[src/oddments/](/src/oddments/)目录~~，通过[typescript](https://github.com/microsoft/TypeScript)编译为MediaWiki可直接接受的ES5语法以便加入common.js使用~~。
 
 ### 指令
 
