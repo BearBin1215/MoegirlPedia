@@ -6,11 +6,11 @@ if (mw.config.get("skin") === "moeskin") {
         localStorage.setItem("moeStretch", "0");
     }
     if (localStorage.getItem("moeStretch") === "1") {
-        $("head").append($stretchStyle);
+        $(document.head).append($stretchStyle);
     }
     $stretchButton.on("click", () => {
         if (localStorage.getItem("moeStretch") === "0") {
-            $("head").append($stretchStyle);
+            $(document.head).append($stretchStyle);
             localStorage.setItem("moeStretch", "1");
         } else {
             $stretchStyle.remove();

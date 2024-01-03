@@ -1,6 +1,6 @@
 $(function () {
     $("pre").each(function () {
-        $("head").append("<style>pre::before{content:attr(lang);display:block;text-align:right;font-weight:700;margin-right:.5em;}</style>");
+        $(document.head).append("<style>pre::before{content:attr(lang);display:block;text-align:right;font-weight:700;margin-right:.5em;}</style>");
         var preLang = $(this).attr("lang");
         if (!preLang) {
             var className = $(this).attr("class");
