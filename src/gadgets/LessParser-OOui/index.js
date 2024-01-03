@@ -71,7 +71,7 @@ class LessParser extends OO.ui.Dialog {
 }
 
 const windowManager = new OO.ui.WindowManager();
-$("body").append(windowManager.$element);
+$(document.body).append(windowManager.$element);
 const parserDialog = new LessParser();
 windowManager.addWindows([parserDialog]);
 

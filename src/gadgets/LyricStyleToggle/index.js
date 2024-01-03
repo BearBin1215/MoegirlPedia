@@ -9,7 +9,7 @@ $(() => (async () => {
     });
 
     btn.on("click", () => {
-        $("body").toggleClass("lyric-style-toggle-on");
+        $(document.body).toggleClass("lyric-style-toggle-on");
 
         if (document.getElementsByClassName("lyric-style-toggle-on")[0]) {
             $(".Lyrics-original").each(function () {

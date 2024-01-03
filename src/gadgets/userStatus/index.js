@@ -81,7 +81,7 @@ $(() => (async () => {
             await mw.loader.using(["oojs-ui", "mediawiki.api"]);
             const messageDialog = new OO.ui.MessageDialog();
             const windowManager = new OO.ui.WindowManager();
-            $("body").append(windowManager.$element);
+            $(document.body).append(windowManager.$element);
             windowManager.addWindows([messageDialog]);
             messageDialog.title.$label.html("修改自己的状态");
             const container = $("<div/>");

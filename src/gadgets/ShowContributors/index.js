@@ -117,7 +117,7 @@ $(() => (async () => {
     const windowManager = new OO.ui.WindowManager({
         id: "show-contributor",
     });
-    $("body").append(windowManager.$element);
+    $(document.body).append(windowManager.$element);
     const SCDialog = new ContributorDialog();
     windowManager.addWindows([SCDialog]);
 

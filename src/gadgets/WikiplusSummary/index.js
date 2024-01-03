@@ -1,4 +1,4 @@
-$("body").on("click", "#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, .Wikiplus-Edit-EveryWhereBtn", () => {
+$(document.body).on("click", "#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, .Wikiplus-Edit-EveryWhereBtn", () => {
     const WPSummary = window.WPSummary || [
         "修饰语句",
         "修正笔误",

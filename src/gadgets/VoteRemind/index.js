@@ -8,7 +8,7 @@ $(() => (async () => {
     }
     await mw.loader.using(["mediawiki.api", "mediawiki.util", "mediawiki.notification", "oojs-ui", "ext.gadget.site-lib"]);
     const api = new mw.Api;
-    const $body = $("body");
+    const $body = $(document.body);
     const PAGENAME = mw.config.get("wgPageName");
     const isProposal = mw.config.get("wgTitle").startsWith("提案/讨论中提案/"); // 提案还是人事案
     const isBot = mw.config.get("wgUserGroups").includes("flood"); // 是否拥有机器用户权限

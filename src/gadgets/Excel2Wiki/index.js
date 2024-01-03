@@ -28,7 +28,7 @@ if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
                 align: "inline",
                 id: "e2w-usedouble",
             });
-            e2wHTML.appendTo($("body"));
+            e2wHTML.appendTo($(document.body));
             $("#e2w-output").before(useDoubleField.$element);
             e2wHTML.hide();
 

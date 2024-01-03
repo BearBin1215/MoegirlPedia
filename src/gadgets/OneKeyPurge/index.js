@@ -414,7 +414,7 @@ $(() => (async () => {
     }
 
     // 将窗口添加至body
-    const $body = $("body");
+    const $body = $(document.body);
     const windowManager = new OO.ui.WindowManager({
         id: "one-key-purge",
     });
