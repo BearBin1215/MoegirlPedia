@@ -39,7 +39,6 @@ $(() => (async () => {
     ], 'massedit-log', 'h5');
     mw.loader.load("https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript");
     const tags = mw.config.get("wgUserGroups").includes("bot") ? "bot" : "Automation tool";
-    const canGetCategoryMembers = mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group));
 
     /**
      * 在Special:MassEdit构建页面
@@ -66,11 +65,10 @@ $(() => (async () => {
         '</div>',
         '<div>',
         '<h5>分类</h5>',
-        `<textarea id="me-category-list" name="me-category-list" rows="12"${canGetCategoryMembers ? '' : ' disabled'}></textarea>`,
+        `<textarea id="me-category-list" name="me-category-list" rows="12"></textarea>`,
         '</div>',
         '</div>',
-        '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；',
-        canGetCategoryMembers ? '分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。' : '非维护人员/机器人/机器用户暂无法通过API获取分类成员',
+        '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。',
         '</div>',
         '<div id="me-edit-panel"></div>',
         '<ul id="me-submit-note">',
@@ -182,39 +180,76 @@ $(() => (async () => {
     const getPagesFromCats = async (categories) => {
         const pageList = [];
         const promises = categories.map(async (category) => {
-            let cmcontinue = "";
-            while (cmcontinue !== undefined) {
-                try {
-                    const result = await api.get({
-                        action: "query",
-                        list: "categorymembers",
-                        cmlimit: "max",
-                        cmtitle: category,
-                        cmcontinue,
-                    });
-                    if (result.query.categorymembers[0]) {
-                        for (const page of result.query.categorymembers) {
-                            pageList.push(page.title);
+            // 有api权限的用户通过API获取，无权限用户通过ajax获取
+            if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
+                let cmcontinue = "";
+                while (cmcontinue !== undefined) {
+                    try {
+                        const result = await api.get({
+                            action: "query",
+                            list: "categorymembers",
+                            cmlimit: "max",
+                            cmtitle: category,
+                            cmcontinue,
+                        });
+                        if (result.query.categorymembers[0]) {
+                            for (const page of result.query.categorymembers) {
+                                pageList.push(page.title);
+                            }
                         }
+                        cmcontinue = result.continue?.cmcontinue;
+                        if (result.query.categorymembers.length > 0) {
+                            loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${result.query.categorymembers.length}个。`, "normal");
+                        } else {
+                            loger.record(`【${category}】内没有页面。`, "warn");
+                        }
+                    } catch (error) {
+                        let message = "";
+                        switch (error) {
+                            case "http":
+                                message = "网络连接出错";
+                                break;
+                            default:
+                                message = error;
+                        }
+                        loger.record(`获取【${category}】内的页面出错：${message}。`, "error");
+                        break;
                     }
-                    cmcontinue = result.continue?.cmcontinue;
-                    if (result.query.categorymembers.length > 0) {
-                        loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${result.query.categorymembers.length}个。`, "normal");
-                    } else {
-                        loger.record(`【${category}】内没有页面。`, "warn");
-                    }
-                } catch (error) {
-                    let message = "";
-                    switch (error) {
-                        case "http":
-                            message = "网络连接出错";
-                            break;
-                        default:
-                            message = error;
-                    }
-                    loger.record(`获取【${category}】内的页面出错：${message}。`, "error");
-                    break;
                 }
+            } else {
+                const getCategoryMembersByAjax = async (link) => {
+                    try {
+                        const ajaxResult = await $.ajax(link);
+                        // 将分类内的页面加入列表
+                        const members = $(ajaxResult).find('li a').map((_, ele) => {
+                            if (ele.classList.contains('CategoryTreeLabel')) {
+                                return `Category:${$(ele).text()}`;
+                            }
+                            return $(ele).text();
+                        }).get();
+                        if (members.length > 0) {
+                            loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${members.length}个。`, "normal");
+                            pageList.push(...members);
+                        } else {
+                            loger.record(`【${category}】内没有页面。`, "warn");
+                        }
+
+                        // 获取下一页分类内页面
+                        const $pageContinueLink = $(ajaxResult).find('a[href*="&pagefrom="]');
+                        if ($pageContinueLink.length > 0) {
+                            await getCategoryMembersByAjax($pageContinueLink.eq(0).attr('href'));
+                        }
+
+                        // 获取下一页子分类
+                        const $catContinueLink = $(ajaxResult).find('a[href*="&subcatfrom="]');
+                        if ($catContinueLink.length > 0) {
+                            await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
+                        }
+                    } catch (error) {
+                        loger.record(`获取【${category}】内的页面出错：${error}。`, "error");
+                    }
+                };
+                await getCategoryMembersByAjax(`/${category}?action=render`);
             }
         });
         await Promise.all(promises);
