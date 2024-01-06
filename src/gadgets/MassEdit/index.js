@@ -1,4 +1,5 @@
 import Loger from "../../components/Loger";
+import { categoryMembers } from "../../utils/apiList";
 import "./index.less";
 
 $(() => (async () => {
@@ -181,75 +182,24 @@ $(() => (async () => {
         const pageList = [];
         const promises = categories.map(async (category) => {
             // 有api权限的用户通过API获取，无权限用户通过ajax获取
-            if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
-                let cmcontinue = "";
-                while (cmcontinue !== undefined) {
-                    try {
-                        const result = await api.get({
-                            action: "query",
-                            list: "categorymembers",
-                            cmlimit: "max",
-                            cmtitle: category,
-                            cmcontinue,
-                        });
-                        if (result.query.categorymembers[0]) {
-                            for (const page of result.query.categorymembers) {
-                                pageList.push(page.title);
-                            }
-                        }
-                        cmcontinue = result.continue?.cmcontinue;
-                        if (result.query.categorymembers.length > 0) {
-                            loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${result.query.categorymembers.length}个。`, "normal");
-                        } else {
-                            loger.record(`【${category}】内没有页面。`, "warn");
-                        }
-                    } catch (error) {
-                        let message = "";
-                        switch (error) {
-                            case "http":
-                                message = "网络连接出错";
-                                break;
-                            default:
-                                message = error;
-                        }
-                        loger.record(`获取【${category}】内的页面出错：${message}。`, "error");
-                        break;
-                    }
+            try {
+                const members = await categoryMembers(category);
+                if (members.length > 0) {
+                    loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${members.length}个。`, "normal");
+                    pageList.push(...members);
+                } else {
+                    loger.record(`【${category}】内没有页面。`, "warn");
                 }
-            } else {
-                const getCategoryMembersByAjax = async (link) => {
-                    try {
-                        const ajaxResult = await $.ajax(link);
-                        // 将分类内的页面加入列表
-                        const members = $(ajaxResult).find('li a').map((_, ele) => {
-                            if (ele.classList.contains('CategoryTreeLabel')) {
-                                return `Category:${$(ele).text()}`;
-                            }
-                            return $(ele).text();
-                        }).get();
-                        if (members.length > 0) {
-                            loger.record(`获取到【<a href="/${category}" target="_blank">${category}</a>】内的页面${members.length}个。`, "normal");
-                            pageList.push(...members);
-                        } else {
-                            loger.record(`【${category}】内没有页面。`, "warn");
-                        }
-
-                        // 获取下一页分类内页面
-                        const $pageContinueLink = $(ajaxResult).find('a[href*="&pagefrom="]');
-                        if ($pageContinueLink.length > 0) {
-                            await getCategoryMembersByAjax($pageContinueLink.eq(0).attr('href'));
-                        }
-
-                        // 获取下一页子分类
-                        const $catContinueLink = $(ajaxResult).find('a[href*="&subcatfrom="]');
-                        if ($catContinueLink.length > 0) {
-                            await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
-                        }
-                    } catch (error) {
-                        loger.record(`获取【${category}】内的页面出错：${error}。`, "error");
-                    }
-                };
-                await getCategoryMembersByAjax(`/${category}?action=render`);
+            } catch (error) {
+                let message = "";
+                switch (error) {
+                    case "http":
+                        message = "网络连接出错";
+                        break;
+                    default:
+                        message = error;
+                }
+                loger.record(`获取【${category}】内的页面出错：${message}。`, "error");
             }
         });
         await Promise.all(promises);
