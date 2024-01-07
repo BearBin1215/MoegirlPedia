@@ -1,4 +1,5 @@
 import Snake from '../../components/Snake';
+import { linkList, includeList } from '../../utils/api';
 import './index.less';
 
 $(() => (async () => {
@@ -168,72 +169,26 @@ $(() => (async () => {
          */
         waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-        // 获取嵌入页面
-        getIncludeList = async () => {
-            let ticontinue = 1;
-            const pageList = [];
-            while (ticontinue) {
-                const includeList = await api.get({
-                    action: "query",
-                    prop: "transcludedin",
-                    titles: PAGENAME,
-                    tilimit: "max",
-                    ticontinue,
-                });
-                if (Object.values(includeList.query.pages)[0].transcludedin) {
-                    for (const { title } of Object.values(includeList.query.pages)[0].transcludedin) {
-                        console.log(`查找到嵌入【${PAGENAME}】的页面：${title}`);
-                        pageList.push(title);
-                    }
-                }
-                ticontinue = includeList.continue ? includeList.continue.ticontinue : false;
-            }
-            if (pageList.length > 0) {
-                mw.notify(`获取嵌入【${PAGENAME}】的页面列表成功。`);
-            } else {
-                mw.notify(`没有页面嵌入了【${PAGENAME}】。`);
-            }
-            return pageList;
-        };
-
-        // 获取链入页面
-        getLinkList = async () => {
-            let lhcontinue = 1;
-            const pageList = [];
-            while (lhcontinue) {
-                const linkList = await api.get({
-                    action: "query",
-                    prop: "linkshere",
-                    titles: PAGENAME,
-                    lhlimit: "max",
-                    lhcontinue,
-                });
-                if (Object.values(linkList.query.pages)[0].linkshere) {
-                    for (const { title } of Object.values(linkList.query.pages)[0].linkshere) {
-                        console.log(`查找到链接到【${PAGENAME}】的页面：${title}`);
-                        pageList.push(title);
-                    }
-                }
-                lhcontinue = linkList.continue?.lhcontinue;
-            }
-            if (pageList.length > 0) {
-                mw.notify(`获取链接到【${PAGENAME}】的页面列表成功。`);
-            } else {
-                mw.notify(`没有页面链接到【${PAGENAME}】。`);
-            }
-            return pageList;
-        };
-
         // 根据用户选项获取页面列表
         async getList() {
             const pageList = [];
             try {
                 if (this.typeSelectInput.getValue().includes("link")) {
-                    const result = await this.getLinkList();
+                    const result = await linkList(PAGENAME);
+                    if (result.length > 0) {
+                        mw.notify(`获取链接到【${PAGENAME}】的页面列表成功。`);
+                    } else {
+                        mw.notify(`没有页面链接到【${PAGENAME}】。`);
+                    }
                     pageList.push(...result);
                 }
                 if (this.typeSelectInput.getValue().includes("include")) {
-                    const result = await this.getIncludeList();
+                    const result = await includeList(PAGENAME);
+                    if (result.length > 0) {
+                        mw.notify(`获取链接到【${PAGENAME}】的页面列表成功。`);
+                    } else {
+                        mw.notify(`没有页面链接到【${PAGENAME}】。`);
+                    }
                     pageList.push(...result);
                 }
             } catch (error) {
