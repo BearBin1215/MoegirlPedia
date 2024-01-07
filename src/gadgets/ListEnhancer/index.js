@@ -102,13 +102,12 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
         const $categoryFiles = $('#mw-category-media'); // 分类内文件
         $subCategories.find('h2').append(
             $('<span class="mw-editsection"></span>').append(
-                $('<span class="mw-editsection-bracket">[</span>'),
-                $('<a>复制本页</a>')
-                    .on('click', ({ target }) => {
-                        copyAction($subCategories.find('li a').map((_, ele) => `Category:${$(ele).text()}`).get().join("\n"), $(target));
-                    }),
+                '<span class="mw-editsection-bracket">[</span>',
+                $('<a>复制本页</a>').on('click', ({ target }) => {
+                    copyAction($subCategories.find('li a').map((_, ele) => `Category:${$(ele).text()}`).get().join("\n"), $(target));
+                }),
                 $subCategories.children('a').length
-                    ? $('<span class="mw-editsection-divider"> | </span>')
+                    ? '<span class="mw-editsection-divider"> | </span>'
                     : null,
                 $subCategories.children('a').length
                     ? $('<a>复制全部</a>').on('click', async ({ target }) => {
@@ -116,19 +115,18 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                         copyAction(pageList.join('\n'), $(target));
                     })
                     : null,
-                $('<span class="mw-editsection-bracket">]</span>'),
+                '<span class="mw-editsection-bracket">]</span>',
             ),
         );
 
         $categoryMembers.find('h2').append(
             $('<span class="mw-editsection"></span>').append(
-                $('<span class="mw-editsection-bracket">[</span>'),
-                $('<a>复制本页</a>')
-                    .on('click', ({ target }) => {
-                        copyAction($categoryMembers.find('li a').map((_, ele) => $(ele).text()).get().join("\n"), $(target));
-                    }),
+                '<span class="mw-editsection-bracket">[</span>',
+                $('<a>复制本页</a>').on('click', ({ target }) => {
+                    copyAction($categoryMembers.find('li a').map((_, ele) => $(ele).text()).get().join("\n"), $(target));
+                }),
                 $categoryMembers.children('a').length
-                    ? $('<span class="mw-editsection-divider"> | </span>')
+                    ? '<span class="mw-editsection-divider"> | </span>'
                     : null,
                 $categoryMembers.children('a').length
                     ? $('<a>复制全部</a>').on('click', async ({ target }) => {
@@ -136,19 +134,18 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                         copyAction(pageList.join('\n'), $(target));
                     })
                     : null,
-                $('<span class="mw-editsection-bracket">]</span>'),
+                '<span class="mw-editsection-bracket">]</span>',
             ),
         );
 
         $categoryFiles.find('h2').append(
             $('<span class="mw-editsection"></span>').append(
-                $('<span class="mw-editsection-bracket">[</span>'),
-                $('<a>复制本页</a>')
-                    .on('click', ({ target }) => {
-                        copyAction($categoryFiles.find('li a.galleryfilename').map((_, ele) => `File:${$(ele).text()}`).get().join("\n"), $(target));
-                    }),
+                '<span class="mw-editsection-bracket">[</span>',
+                $('<a>复制本页</a>').on('click', ({ target }) => {
+                    copyAction($categoryFiles.find('li a.galleryfilename').map((_, ele) => `File:${$(ele).text()}`).get().join("\n"), $(target));
+                }),
                 $categoryFiles.children('a').length
-                    ? $('<span class="mw-editsection-divider"> | </span>')
+                    ? '<span class="mw-editsection-divider"> | </span>'
                     : null,
                 $categoryFiles.children('a').length
                     ? $('<a>复制全部</a>').on('click', async ({ target }) => {
@@ -156,7 +153,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                         copyAction(pageList.join('\n'), $(target));
                     })
                     : null,
-                $('<span class="mw-editsection-bracket">]</span>'),
+                '<span class="mw-editsection-bracket">]</span>',
             ),
         );
     }
