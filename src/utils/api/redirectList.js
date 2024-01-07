@@ -1,3 +1,8 @@
+/**
+ * 获取重定向列表
+ * @param {string} pagename 页面名
+ * @returns {Promise<string[]>}
+ */
 const redirectList = async (pagename) => {
     const api = new mw.Api();
     let rdcontinue = '';

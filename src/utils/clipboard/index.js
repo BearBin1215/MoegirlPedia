@@ -1,4 +1,5 @@
 /**
+ * 复制文本到剪贴板
  * @param {string} text
  * @returns {Promise<void>}
  */
@@ -21,6 +22,7 @@ const copyText = async (text = '') => {
 };
 
 /**
+ * 从剪贴板读取文本
  * @returns {Promise<string>}
  */
 const pasteText = () => new Promise((resolve, reject) => {
