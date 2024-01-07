@@ -1,0 +1,23 @@
+const redirectList = async (pagename) => {
+    const api = new mw.Api();
+    let rdcontinue = '';
+    const pageList = [];
+    while (rdcontinue) {
+        const res = await api.get({
+            action: "query",
+            prop: "redirects",
+            titles: pagename,
+            tilimit: "max",
+            rdcontinue,
+        });
+        if (Object.values(res.query.pages)[0].transcludedin) {
+            for (const { title } of Object.values(res.query.pages)[0].redirects) {
+                pageList.push(title);
+            }
+        }
+        rdcontinue = res.continue?.rdcontinue;
+    }
+    return pageList;
+};
+
+export default redirectList;
