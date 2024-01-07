@@ -1,4 +1,4 @@
-import { categoryMembers } from "../../utils/apiList";
+import { categoryMembers } from "../../utils/api";
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     /**
