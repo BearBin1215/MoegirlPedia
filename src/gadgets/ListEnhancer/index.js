@@ -26,43 +26,39 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
     if (mw.config.get('wgNamespaceNumber') === -1) {
         // Special:链入页面
-        const linkshereEnhance = () => {
-            $('#mw-whatlinkshere-list').before(
-                $('<span class="listenhancer-linkshere"></span>').append(
-                    '（',
-                    $('<a>复制本页</a>').on('click', ({ target }) => {
-                        const linkList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
-                        copyAction(linkList.join('\n'), $(target));
-                    }),
-                    $('#mw-content-text a[href*="&from="]').length > 0
-                        ? ' | '
-                        : null,
-                    $('#mw-content-text a[href*="&from="]').length > 0
-                        ? $('<a>复制全部</a>').on('click', ({ target }) => {
-                            // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
-                            try {
-                                const search = new URLSearchParams(location.search);
-                                const promises = [
-                                    search.get('hidetrans') ? Promise.resolve([]) : includeList(mw.config.get('wgRelevantPageName')),
-                                    search.get('hidelinks') ? Promise.resolve([]) : linkList(mw.config.get('wgRelevantPageName')),
-                                    search.get('hideredirs') ? Promise.resolve([]) : redirectList(mw.config.get('wgRelevantPageName')),
-                                ];
-                                Promise.all(promises).then((results) => {
-                                    const pageList = [].concat(...results); // 二维数组展开为一维
-                                    copyAction(pageList.join('\n'), $(target));
-                                });
-                            } catch (error) {
-                                mw.notify($(`复制失败: ${error}`), {
-                                    type: 'error',
-                                    autoHideSeconds: 'long',
-                                });
-                            }
-                        })
-                        : null,
-                    '）',
-                ),
-            );
-        };
+        const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere"></span>').append(
+            '（',
+            $('<a>复制本页</a>').on('click', ({ target }) => {
+                const linkList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
+                copyAction(linkList.join('\n'), $(target));
+            }),
+            $('#mw-content-text a[href*="&from="]').length > 0
+                ? ' | '
+                : null,
+            $('#mw-content-text a[href*="&from="]').length > 0
+                ? $('<a>复制全部</a>').on('click', ({ target }) => {
+                    // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
+                    try {
+                        const search = new URLSearchParams(location.search);
+                        const promises = [
+                            search.get('hidetrans') ? Promise.resolve([]) : includeList(mw.config.get('wgRelevantPageName')),
+                            search.get('hidelinks') ? Promise.resolve([]) : linkList(mw.config.get('wgRelevantPageName')),
+                            search.get('hideredirs') ? Promise.resolve([]) : redirectList(mw.config.get('wgRelevantPageName')),
+                        ];
+                        Promise.all(promises).then((results) => {
+                            const pageList = [].concat(...results); // 二维数组展开为一维
+                            copyAction(pageList.join('\n'), $(target));
+                        });
+                    } catch (error) {
+                        mw.notify($(`复制失败: ${error}`), {
+                            type: 'error',
+                            autoHideSeconds: 'long',
+                        });
+                    }
+                })
+                : null,
+            '）',
+        ));
 
         // Special:搜索
         const searchEnhance = () => {
