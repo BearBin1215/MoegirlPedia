@@ -1,6 +1,6 @@
-/***
+/**
  * 获取链接到指定页面的列表
- * @params {string} pagename 页面名
+ * @param {string} pagename 页面名
  * @returns {Promise<string[]>} 列表
  */
 const linkList = async (pagename) => {
