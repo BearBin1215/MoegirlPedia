@@ -74,15 +74,6 @@ module.exports = {
           'less-loader',
         ],
       },
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          'style-loader',
-          'css-loader',
-          postCssLoader,
-          'sass-loader',
-        ],
-      },
     ],
   },
 };

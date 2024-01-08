@@ -7,7 +7,6 @@
     "watch": "webpack --config build/webpack.dev.js --watch",
     "start": "yarn run watch",
     "build": "node build/pack.js",
-    "build:oddments": "tsc --build",
     "sync": "node scripts/src/Synchronize.js",
     "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\" && stylelint \"src/**/*.less\""
   },
@@ -54,8 +53,6 @@
     "postcss": "^8.4.31",
     "postcss-less": "^6.0.0",
     "postcss-loader": "^7.3.3",
-    "sass": "^1.69.5",
-    "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
     "stylelint": "^15.11.0",
     "stylelint-config-recommended": "13",
@@ -63,8 +60,6 @@
     "stylelint-config-standard": "^34.0.0",
     "stylelint-less": "^2.0.0",
     "types-mediawiki": "^1.4.0",
-    "typescript": "^5.2.2",
-    "uglify-js": "^3.17.4",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0"
