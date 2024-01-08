@@ -1,11 +1,11 @@
 /**
  * 获取分类成员，有权限用户使用api，无权限用户使用ajax。
  * 
- * @param {string} category 分类名
- * @param {string[]} cmtype 获取类型：page, subcat, file
+ * @param {string} cmtitle 分类名
+ * @param {('page' | 'subcat' | 'file')[]} cmtype 获取类型
  * @returns 
  */
-const getCategoryMembers = async (category, cmtype = ['page', 'subcat', 'file']) => {
+const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) => {
     const api = new mw.Api();
     const pageList = [];
     // 有api权限的用户通过API获取，无权限用户通过ajax获取
@@ -16,7 +16,7 @@ const getCategoryMembers = async (category, cmtype = ['page', 'subcat', 'file'])
                 action: "query",
                 list: "categorymembers",
                 cmlimit: "max",
-                cmtitle: category,
+                cmtitle,
                 cmtype: cmtype.join('|'),
                 cmcontinue,
             });
@@ -28,8 +28,12 @@ const getCategoryMembers = async (category, cmtype = ['page', 'subcat', 'file'])
             cmcontinue = result.continue?.cmcontinue;
         }
     } else {
+        /**
+         * 对于未持有对应用户组的用户，通过ajax递归获取分类成员
+         * @param {string} link 
+         */
         const getCategoryMembersByAjax = async (link) => {
-            const ajaxResult = await $.ajax(link);
+            const $ajaxResult = $(await $.ajax(link));
             const selector = cmtype.map((type) => {
                 switch (type) {
                     case 'page':
@@ -40,8 +44,9 @@ const getCategoryMembers = async (category, cmtype = ['page', 'subcat', 'file'])
                         return '#mw-category-media li a.galleryfilename';
                 }
             }).join(',');
+
             // 将分类内的页面加入列表
-            const members = $(ajaxResult).find(selector).map((_, ele) => {
+            const members = $ajaxResult.find(selector).map((_, ele) => {
                 if (ele.classList.contains('CategoryTreeLabel')) {
                     return `Category:${$(ele).text()}`;
                 } else if (ele.classList.contains('galleryfilename')) {
@@ -53,29 +58,30 @@ const getCategoryMembers = async (category, cmtype = ['page', 'subcat', 'file'])
 
             // 获取下一页分类内页面
             if (cmtype.includes('page')) {
-                const $pageContinueLink = $(ajaxResult).find('a[href*="&pagefrom="]');
-                if ($pageContinueLink.length > 0) {
+                const $pageContinueLink = $ajaxResult.find('a[href*="&pagefrom="]');
+                if ($pageContinueLink.length) {
                     await getCategoryMembersByAjax($pageContinueLink.eq(0).attr('href'));
                 }
             }
 
+            // 获取下一页子分类
             if (cmtype.includes('subcat')) {
-                // 获取下一页子分类
-                const $catContinueLink = $(ajaxResult).find('a[href*="&subcatfrom="]');
-                if ($catContinueLink.length > 0) {
+                const $catContinueLink = $ajaxResult.find('a[href*="&subcatfrom="]');
+                if ($catContinueLink.length) {
                     await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
                 }
             }
 
+            // 获取下一页分类文件
             if (cmtype.includes('file')) {
-                // 获取下一页分类文件
-                const $catContinueLink = $(ajaxResult).find('a[href*="&filefrom="]');
-                if ($catContinueLink.length > 0) {
+                const $catContinueLink = $ajaxResult.find('a[href*="&filefrom="]');
+                if ($catContinueLink.length) {
                     await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
                 }
             }
         };
-        await getCategoryMembersByAjax(`/${category}?action=render`);
+
+        await getCategoryMembersByAjax(`/${cmtitle}?action=render`);
     }
     return pageList;
 };

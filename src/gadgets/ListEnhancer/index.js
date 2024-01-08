@@ -79,7 +79,6 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                         }
                     }
                     copyAction(cacheText, $(target));
-
                 })
                 : null,
             '）',
@@ -102,7 +101,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
             // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
             $('a[data-serp-pos]').each((_, ele) => {
-                linkList.push(decodeURIComponent($(ele).attr('href')).replace('/', '').replaceAll('_', ' '));
+                linkList.push(decodeURIComponent($(ele).attr('href')).replace('/', '').replace(/_/g, ' '));
                 $(ele).before(`<a class="listenhancer-search-edit" href="${ele.href}?action=edit">[编辑]</a>`);
             });
 
@@ -147,68 +146,44 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                 break;
         }
     } else if (ns === 14) {
-        const $subCategories = $('#mw-subcategories'); // 子分类
-        const $categoryMembers = $('#mw-pages'); // 分类内页面
-        const $categoryFiles = $('#mw-category-media'); // 分类内文件
-
         /**
-         * @param {string[]} type `subcat`|`file`|`page `
-         * @returns {JQuery<HTMLAnchorElement>}
+         * 给对应的标题加上复制按钮及功能
+         * @param {jQuery<HTMLElement>} $element 元素
+         * @param {('page' | 'subcat' | 'file')} type 类型
+         * @param {string} prefix 页面前缀
+         * @param {string} linkSelector 成员链接选择器
          */
-        const $copyAll = (type) => $('<a>复制全部</a>').on('click', async ({ target }) => {
-            if (!cacheText) {
-                const pageList = await categoryMembers(mw.config.get('wgPageName'), type);
-                setCache(pageList.join('\n'));
-            }
-            copyAction(cacheText, $(target));
-        });
+        const addCopyButton = ($element, type, prefix = '', linkSelector = 'li a') => {
+            $element.find('h2').append(
+                $(editSection).append(
+                    bracketStart,
+                    $('<a>复制本页</a>').on('click', ({ target }) => {
+                        copyAction($element.find(linkSelector).map((_, ele) => `${prefix}${$(ele).text()}`).get().join("\n"), $(target));
+                    }),
+                    $element.children('a').length
+                        ? divider
+                        : null,
+                    $element.children('a').length
+                        ? $('<a>复制全部</a>').on('click', async ({ target }) => {
+                            if (!cacheText) {
+                                const pageList = await categoryMembers(mw.config.get('wgPageName'), [type]);
+                                setCache(pageList.join('\n'));
+                            }
+                            copyAction(cacheText, $(target));
+                        })
+                        : null,
+                    bracketEnd,
+                ),
+            );
+        };
 
-        $subCategories.find('h2').append(
-            $(editSection).append(
-                bracketStart,
-                $('<a>复制本页</a>').on('click', ({ target }) => {
-                    copyAction($subCategories.find('li a').map((_, ele) => `Category:${$(ele).text()}`).get().join("\n"), $(target));
-                }),
-                $subCategories.children('a').length
-                    ? divider
-                    : null,
-                $subCategories.children('a').length
-                    ? $copyAll(['subcat'])
-                    : null,
-                bracketEnd,
-            ),
-        );
+        // 子分类
+        addCopyButton($('#mw-subcategories'), 'subcat', 'Category:');
 
-        $categoryMembers.find('h2').append(
-            $(editSection).append(
-                bracketStart,
-                $('<a>复制本页</a>').on('click', ({ target }) => {
-                    copyAction($categoryMembers.find('li a').map((_, ele) => $(ele).text()).get().join("\n"), $(target));
-                }),
-                $categoryMembers.children('a').length
-                    ? divider
-                    : null,
-                $categoryMembers.children('a').length
-                    ? $copyAll(['page'])
-                    : null,
-                bracketEnd,
-            ),
-        );
+        // 分类内页面
+        addCopyButton($('#mw-pages'), 'page');
 
-        $categoryFiles.find('h2').append(
-            $(editSection).append(
-                bracketStart,
-                $('<a>复制本页</a>').on('click', ({ target }) => {
-                    copyAction($categoryFiles.find('li a.galleryfilename').map((_, ele) => `File:${$(ele).text()}`).get().join("\n"), $(target));
-                }),
-                $categoryFiles.children('a').length
-                    ? divider
-                    : null,
-                $categoryFiles.children('a').length
-                    ? $copyAll(['file'])
-                    : null,
-                bracketEnd,
-            ),
-        );
+        // 分类内文件
+        addCopyButton($('#mw-category-media'), 'file', 'File:', 'li a.galleryfilename');
     }
 });
