@@ -55,7 +55,6 @@ module.exports = {
     "prefer-const": 2,
     "no-misleading-character-class": 2,
     "no-template-curly-in-string": 2,
-    "require-atomic-updates": 2,
     "curly": 2,
     "indent": [
       2,

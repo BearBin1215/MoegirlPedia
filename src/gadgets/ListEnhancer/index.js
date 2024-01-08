@@ -26,14 +26,6 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     };
 
     /**
-     * 缓存复制文本
-     * @param {string} value 
-     */
-    const setCache = (value) => {
-        cacheText = value;
-    };
-
-    /**
      * 按钮html
      */
     const
@@ -59,24 +51,17 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                 ? $('<a>复制全部</a>').on('click', async ({ target }) => {
                     // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
                     if (!cacheText) {
-                        try {
-                            const search = new URLSearchParams(location.search);
-                            const pageName = mw.config.get('wgRelevantPageName');
-                            const promises = [
-                                search.get('hidetrans') ? Promise.resolve([]) : includeList(pageName),
-                                search.get('hidelinks') ? Promise.resolve([]) : linkList(pageName),
-                                search.get('hideredirs') ? Promise.resolve([]) : redirectList(pageName),
-                            ];
-                            await Promise.all(promises).then((results) => {
-                                const pageList = [].concat(...results); // 二维数组展开为一维
-                                setCache(pageList.join('\n'));
-                            });
-                        } catch (error) {
-                            mw.notify($(`读取列表失败: ${error}`), {
-                                type: 'error',
-                                autoHideSeconds: 'long',
-                            });
-                        }
+                        const search = new URLSearchParams(location.search);
+                        const pageName = mw.config.get('wgRelevantPageName');
+                        const promises = [
+                            search.get('hidetrans') ? Promise.resolve([]) : includeList(pageName),
+                            search.get('hidelinks') ? Promise.resolve([]) : linkList(pageName),
+                            search.get('hideredirs') ? Promise.resolve([]) : redirectList(pageName),
+                        ];
+                        await Promise.all(promises).then((results) => {
+                            const pageList = [].concat(...results); // 二维数组展开为一维
+                            cacheText = pageList.join('\n');
+                        });
                     }
                     copyAction(cacheText, $(target));
                 })
@@ -167,7 +152,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                         ? $('<a>复制全部</a>').on('click', async ({ target }) => {
                             if (!cacheText) {
                                 const pageList = await categoryMembers(mw.config.get('wgPageName'), [type]);
-                                setCache(pageList.join('\n'));
+                                cacheText = pageList.join('\n');
                             }
                             copyAction(cacheText, $(target));
                         })
