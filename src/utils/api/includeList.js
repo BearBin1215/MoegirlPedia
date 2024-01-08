@@ -20,7 +20,7 @@ const includeList = async (pagename) => {
                 pageList.push(title);
             }
         }
-        ticontinue = res.continue ? res.continue.ticontinue : false;
+        ticontinue = res.continue?.ticontinue;
     }
     return pageList;
 };

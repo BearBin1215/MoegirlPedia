@@ -7,12 +7,12 @@ const redirectList = async (pagename) => {
     const api = new mw.Api();
     let rdcontinue = '';
     const pageList = [];
-    while (rdcontinue) {
+    while (rdcontinue !== void 0) {
         const res = await api.get({
             action: "query",
             prop: "redirects",
             titles: pagename,
-            tilimit: "max",
+            rdlimit: "max",
             rdcontinue,
         });
         if (Object.values(res.query.pages)[0].transcludedin) {
