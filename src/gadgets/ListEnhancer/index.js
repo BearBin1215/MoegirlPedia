@@ -2,6 +2,7 @@ import { categoryMembers, linkList, includeList, redirectList } from "../../util
 import { copyText } from "../../utils/clipboard";
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
+    let cacheText;
     /**
      * 执行复制操作
      * @param {string} content 要复制的内容
@@ -25,15 +26,11 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     };
 
     /**
-     * 将文本暂存到window
+     * 缓存复制文本
      * @param {string} value 
      */
-    const saveTextToGlobal = (value) => {
-        Object.defineProperty(window, 'listEnhancerCopyText', {
-            value,
-            writable: true,
-            configurable: true,
-        });
+    const setCache = (value) => {
+        cacheText = value;
     };
 
     /**
@@ -61,7 +58,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
             $('#mw-content-text a[href*="&from="]').length
                 ? $('<a>复制全部</a>').on('click', async ({ target }) => {
                     // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
-                    if (!window.listEnhancerCopyText) {
+                    if (!cacheText) {
                         try {
                             const search = new URLSearchParams(location.search);
                             const pageName = mw.config.get('wgRelevantPageName');
@@ -72,7 +69,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                             ];
                             await Promise.all(promises).then((results) => {
                                 const pageList = [].concat(...results); // 二维数组展开为一维
-                                saveTextToGlobal(pageList.join('\n'));
+                                setCache(pageList.join('\n'));
                             });
                         } catch (error) {
                             mw.notify($(`读取列表失败: ${error}`), {
@@ -81,7 +78,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                             });
                         }
                     }
-                    copyAction(window.listEnhancerCopyText, $(target));
+                    copyAction(cacheText, $(target));
 
                 })
                 : null,
@@ -159,11 +156,11 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
          * @returns {JQuery<HTMLAnchorElement>}
          */
         const $copyAll = (type) => $('<a>复制全部</a>').on('click', async ({ target }) => {
-            if (!window.listEnhancerCopyText) {
+            if (!cacheText) {
                 const pageList = await categoryMembers(mw.config.get('wgPageName'), type);
-                saveTextToGlobal(pageList.join('\n'));
+                setCache(pageList.join('\n'));
             }
-            copyAction(window.listEnhancerCopyText, $(target));
+            copyAction(cacheText, $(target));
         });
 
         $subCategories.find('h2').append(
