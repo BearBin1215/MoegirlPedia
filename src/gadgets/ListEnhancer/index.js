@@ -36,7 +36,18 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
         });
     };
 
-    if (mw.config.get('wgNamespaceNumber') === -1) {
+    /**
+     * 按钮html
+     */
+    const
+        editSection = '<span class="mw-editsection"></span>',
+        bracketStart = '<span class="mw-editsection-bracket">[</span>',
+        bracketEnd = '<span class="mw-editsection-bracket">]</span>',
+        divider = '<span class="mw-editsection-divider"> | </span>';
+
+    const ns = mw.config.get('wgNamespaceNumber');
+
+    if (ns === -1) {
         // Special:链入页面
         const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere"></span>').append(
             '（',
@@ -53,17 +64,18 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                     if (!window.listEnhancerCopyText) {
                         try {
                             const search = new URLSearchParams(location.search);
+                            const pageName = mw.config.get('wgRelevantPageName');
                             const promises = [
-                                search.get('hidetrans') ? Promise.resolve([]) : includeList(mw.config.get('wgRelevantPageName')),
-                                search.get('hidelinks') ? Promise.resolve([]) : linkList(mw.config.get('wgRelevantPageName')),
-                                search.get('hideredirs') ? Promise.resolve([]) : redirectList(mw.config.get('wgRelevantPageName')),
+                                search.get('hidetrans') ? Promise.resolve([]) : includeList(pageName),
+                                search.get('hidelinks') ? Promise.resolve([]) : linkList(pageName),
+                                search.get('hideredirs') ? Promise.resolve([]) : redirectList(pageName),
                             ];
                             await Promise.all(promises).then((results) => {
                                 const pageList = [].concat(...results); // 二维数组展开为一维
                                 saveTextToGlobal(pageList.join('\n'));
                             });
                         } catch (error) {
-                            mw.notify($(`复制失败: ${error}`), {
+                            mw.notify($(`读取列表失败: ${error}`), {
                                 type: 'error',
                                 autoHideSeconds: 'long',
                             });
@@ -98,30 +110,30 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
             });
 
             // 添加详情开关和复制列表按钮
-            const $detailToggle = $('<a>隐藏详情</a>').on('click', (e) => {
+            const $detailToggle = $('<a>隐藏详情</a>').on('click', ({ target }) => {
                 if (showDetail) {
                     $('.searchresult, .mw-search-result-data').hide(); // 隐藏除标题以外的详情
                     $('.mw-search-results li').css('padding-bottom', '0.1em'); // 间距很大，需要控制
-                    $(e.target).text('显示详情');
+                    $(target).text('显示详情');
                     showDetail = false;
                 } else {
                     $('.searchresult, .mw-search-result-data').show();
                     $('.mw-search-results li').css('padding-bottom', '');
-                    $(e.target).text('隐藏详情');
+                    $(target).text('隐藏详情');
                     showDetail = true;
                 }
             });
-            const $copyList = $('<a>复制列表</a>').on('click', (e) => {
-                copyAction(linkList.join('\n'), $(e.target));
+            const $copyList = $('<a>复制列表</a>').on('click', ({ target }) => {
+                copyAction(linkList.join('\n'), $(target));
             });
 
             // 把按钮放到输入条下方的名字空间选择右侧
             $('#search .search-types, #powersearch .search-types').append($('<div id="bearbintools-listenhancer-search"></div>').append(
-                '<span class="mw-editsection-bracket">[</span>',
+                bracketStart,
                 $detailToggle,
-                '<span class="mw-editsection-divider"> | </span>',
+                divider,
                 $copyList,
-                '<span class="mw-editsection-bracket">]</span>',
+                bracketEnd,
             ));
 
             // 把下方翻页条复制一份到上面
@@ -137,7 +149,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                 searchEnhance();
                 break;
         }
-    } else if (mw.config.get('wgNamespaceNumber') === 14) {
+    } else if (ns === 14) {
         const $subCategories = $('#mw-subcategories'); // 子分类
         const $categoryMembers = $('#mw-pages'); // 分类内页面
         const $categoryFiles = $('#mw-category-media'); // 分类内文件
@@ -155,50 +167,50 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
         });
 
         $subCategories.find('h2').append(
-            $('<span class="mw-editsection"></span>').append(
-                '<span class="mw-editsection-bracket">[</span>',
+            $(editSection).append(
+                bracketStart,
                 $('<a>复制本页</a>').on('click', ({ target }) => {
                     copyAction($subCategories.find('li a').map((_, ele) => `Category:${$(ele).text()}`).get().join("\n"), $(target));
                 }),
                 $subCategories.children('a').length
-                    ? '<span class="mw-editsection-divider"> | </span>'
+                    ? divider
                     : null,
                 $subCategories.children('a').length
                     ? $copyAll(['subcat'])
                     : null,
-                '<span class="mw-editsection-bracket">]</span>',
+                bracketEnd,
             ),
         );
 
         $categoryMembers.find('h2').append(
-            $('<span class="mw-editsection"></span>').append(
-                '<span class="mw-editsection-bracket">[</span>',
+            $(editSection).append(
+                bracketStart,
                 $('<a>复制本页</a>').on('click', ({ target }) => {
                     copyAction($categoryMembers.find('li a').map((_, ele) => $(ele).text()).get().join("\n"), $(target));
                 }),
                 $categoryMembers.children('a').length
-                    ? '<span class="mw-editsection-divider"> | </span>'
+                    ? divider
                     : null,
                 $categoryMembers.children('a').length
                     ? $copyAll(['page'])
                     : null,
-                '<span class="mw-editsection-bracket">]</span>',
+                bracketEnd,
             ),
         );
 
         $categoryFiles.find('h2').append(
-            $('<span class="mw-editsection"></span>').append(
-                '<span class="mw-editsection-bracket">[</span>',
+            $(editSection).append(
+                bracketStart,
                 $('<a>复制本页</a>').on('click', ({ target }) => {
                     copyAction($categoryFiles.find('li a.galleryfilename').map((_, ele) => `File:${$(ele).text()}`).get().join("\n"), $(target));
                 }),
                 $categoryFiles.children('a').length
-                    ? '<span class="mw-editsection-divider"> | </span>'
+                    ? divider
                     : null,
                 $categoryFiles.children('a').length
                     ? $copyAll(['file'])
                     : null,
-                '<span class="mw-editsection-bracket">]</span>',
+                bracketEnd,
             ),
         );
     }
