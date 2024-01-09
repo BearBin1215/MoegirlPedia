@@ -8,7 +8,7 @@
     "start": "yarn run watch",
     "build": "node build/pack.js",
     "sync": "node scripts/src/Synchronize.js",
-    "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\" && stylelint \"src/**/*.less\""
+    "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\""
   },
   "repository": {
     "type": "git",
