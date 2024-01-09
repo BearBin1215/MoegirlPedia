@@ -1,5 +1,5 @@
 import Loger from "../../components/Loger";
-import { categoryMembers } from "../../utils/api";
+import { categoryMembers, pageSource } from "../../utils/api";
 import "./index.less";
 
 $(() => (async () => {
@@ -237,13 +237,7 @@ $(() => (async () => {
         const maxRetryCount = +retryTimesBox.getValue();
         do {
             try {
-                let source = await api.get({
-                    action: "parse",
-                    format: "json",
-                    page: title,
-                    prop: "wikitext",
-                });
-                source = source.parse.wikitext["*"]; // 获取源代码并进行替换
+                const source = await pageSource(title); // 获取源代码并进行替换
                 const replacedSource = source.replaceAll(editFrom, changeTo);
                 if (source === replacedSource) {
                     loger.record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, "nochange");

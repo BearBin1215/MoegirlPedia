@@ -1,3 +1,4 @@
+import { pageSource } from "../../utils/api";
 import "./index.less";
 
 $(() => (async () => {
@@ -22,7 +23,7 @@ $(() => (async () => {
                 fromtitle: "PAGENAME",
             });
             return res.compare["*"];
-        } catch(error) {
+        } catch (error) {
             mw.notify(`获取差异失败：${error}`, { type: "warn" });
         }
     };
@@ -30,15 +31,8 @@ $(() => (async () => {
     // 获取页面源代码
     const getSource = async (title) => {
         try {
-            const res = await api.get({
-                action: "query",
-                prop: "revisions",
-                titles: title,
-                rvprop: "content",
-            });
-            return Object.values(res.query.pages)[0].revisions[0]["*"];
-
-        } catch(error) {
+            return await pageSource(title);
+        } catch (error) {
             mw.notify(`获取源代码失败：${error}`, { type: "warn" });
         }
         mw.notify("获取源代码完毕");
@@ -62,7 +56,7 @@ $(() => (async () => {
         autosize: true,
     });
 
-    const fromPageBox = new OO.ui.TextInputWidget( {
+    const fromPageBox = new OO.ui.TextInputWidget({
         labelPosition: "before",
         label: "从页面",
     });
@@ -80,7 +74,7 @@ $(() => (async () => {
         fromPageButton.$element,
     );
 
-    const toPageBox = new OO.ui.TextInputWidget( {
+    const toPageBox = new OO.ui.TextInputWidget({
         labelPosition: "before",
         label: "从页面",
     });
