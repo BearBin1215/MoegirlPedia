@@ -40,7 +40,7 @@ $(() => (async () => {
 
     $("#mw-notification-area").appendTo("body"); // 使提醒在窗口上层
     mw.config.set("wgCanonicalSpecialPageName", "TextDiff");
-    $("title").text("差异比较 - 萌娘百科_万物皆可萌的百科全书");
+    document.title = "差异比较 - 萌娘百科_万物皆可萌的百科全书";
     $(document.head).append(
         `<link rel="stylesheet" href="${mw.config.get("wgLoadScript")}?debug=false&modules=mediawiki.diff.styles&only=styles" />`,
         '<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>',
