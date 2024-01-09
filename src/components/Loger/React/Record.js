@@ -36,7 +36,7 @@ export default class Records {
 
     /**
      * 创建一个Records对象
-     * @param {string | undefined} types 
+     * @param {string | undefined} types
      */
     constructor(types) {
         if (types) {
@@ -61,7 +61,7 @@ export default class Records {
             this.count[type]++;
         }
     };
-    
+
     /**
      * 清空日志
      */

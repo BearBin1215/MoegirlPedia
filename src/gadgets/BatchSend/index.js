@@ -14,7 +14,7 @@ $(() => (async () => {
     /**
      * 实现sleep效果，使用时需要加上await
      * @param {number} time 等待时间（ms）
-     * @returns 
+     * @returns
      */
     const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -39,9 +39,9 @@ $(() => (async () => {
 
     /**
      * 在目标用户讨论（子）页面新增章节
-     * 
+     *
      * 返回的sendResult对象中，sendResult.edit.result为Success/Failure
-     * 
+     *
      * 为Failure时，Object.keys(sendResult.edit)[0]为原因，sendResult.edit[Object.keys(sendResult.edit)[0]]为详情
      * @param {string} user 目标用户
      * @param {string} sectiontitle 新章节标题
@@ -65,7 +65,7 @@ $(() => (async () => {
     };
 
     mw.config.set("wgCanonicalSpecialPageName", "BulkMove");
-    $("title").text("群发提醒 - 萌娘百科_万物皆可萌的百科全书");
+    document.title = "群发提醒 - 萌娘百科_万物皆可萌的百科全书";
     $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
     $("#firstHeading").html("群发讨论页消息<div>By BearBin</div>");
     $("#contentSub").remove();

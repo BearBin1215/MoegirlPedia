@@ -1,9 +1,9 @@
 /**
  * 获取分类成员，有权限用户使用api，无权限用户使用ajax。
- * 
+ *
  * @param {string} cmtitle 分类名
  * @param {('page' | 'subcat' | 'file')[]} cmtype 获取类型
- * @returns 
+ * @returns
  */
 const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) => {
     const api = new mw.Api();
@@ -30,7 +30,7 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
     } else {
         /**
          * 对于未持有对应用户组的用户，通过ajax递归获取分类成员
-         * @param {string} link 
+         * @param {string} link
          */
         const getCategoryMembersByAjax = async (link) => {
             const $ajaxResult = $(await $.ajax(link));

@@ -156,7 +156,7 @@ $(() => (async () => {
 
     /**
      * 实现sleep效果，使用时需要加上await
-     * 
+     *
      * @param {number} time 等待时间（ms）
      * @returns {Promise<void>}
      */
@@ -164,9 +164,9 @@ $(() => (async () => {
 
     /**
      * 获取用户输入的页面或分类
-     * 
+     *
      * 经测试postWithToken()会自动去掉title的首尾空格，不需要另外去除。
-     * 
+     *
      * @param {string} type "page"或"category"
      * @returns {string[]} 页面列表
      */
@@ -174,7 +174,7 @@ $(() => (async () => {
 
     /**
      * 获取分类列表内的页面
-     * 
+     *
      * @param {string[]} categories 分类列表
      * @returns {Promise<string[]>} 分类内的页面
      */
@@ -208,7 +208,7 @@ $(() => (async () => {
 
     /**
      * 根据用户输入获取最终要编辑的页面列表
-     * 
+     *
      * @returns {Promise<string[]>} 得到的页面列表
      */
     const getPageList = async () => {
@@ -224,11 +224,11 @@ $(() => (async () => {
 
     /**
      * 根据替换规则对指定页面进行编辑
-     * 
+     *
      * @param {string} title 页面标题
      * @param {string} summary 编辑摘要
      * @param {string|RegExp} editFrom 原文字
-     * @param {string} changeTo 替换为 
+     * @param {string} changeTo 替换为
      * @returns {Promise<"nochange"|"success"|"failed">} 编辑结果，success/nochange/failed
      */
     const editAction = async (title, summary, editFrom, changeTo) => {

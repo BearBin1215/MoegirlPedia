@@ -2,7 +2,7 @@ import './index.less';
 
 /**
  * 根据html字符串创建节点
- * @param {string} html 
+ * @param {string} html
  * @returns {Element} 节点
  */
 const createTag = (html) => {

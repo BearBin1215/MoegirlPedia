@@ -165,7 +165,7 @@ $(() => (async () => {
         /**
          * 等待一段时间，用于模拟sleep
          * @param {number} time 等待间隔，单位ms
-         * @returns 
+         * @returns
          */
         waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 

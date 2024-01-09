@@ -30,7 +30,7 @@ const ParserModal = () => {
 
   /**
    * 上传完毕读取内容
-   * @param {React.ChangeEvent} param0 
+   * @param {React.ChangeEvent} param0
    */
   const onUpload = ({ target: { files: [file] } }) => {
     fileReader.readAsText(file);

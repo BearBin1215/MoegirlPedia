@@ -15,7 +15,7 @@ $(() => (async () => {
     /**
      * 实现sleep效果，使用时需要加上await
      * @param {number} time 等待时间（ms）
-     * @returns 
+     * @returns
      */
     const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
