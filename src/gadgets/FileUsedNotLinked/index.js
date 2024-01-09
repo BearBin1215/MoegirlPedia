@@ -3,6 +3,7 @@
  * 
  * @todo 标记时跳出窗口可选输入用途
  */
+import { pageSource } from "../../utils/api";
 
 $(() => (async () => {
     // 本来想做一个检测当前页面文件存在不存在的，但想了想没啥必要。
@@ -157,14 +158,8 @@ $(() => (async () => {
             mw.notify("正在移除标记……");
             $("#remove-mark-button a").addClass("oo-ui-pendingElement-pending");
             try {
-                let pageSource = await api.get({
-                    action: "parse",
-                    format: "json",
-                    page: PAGENAME,
-                    prop: "wikitext",
-                });
-                pageSource = pageSource.parse.wikitext["*"];
-                const replacedSource = pageSource.replace(/\{\{非链入使用\|[^{}]*\}\}/g, ""); // 移除非链入使用模板
+                const source = await pageSource(PAGENAME);
+                const replacedSource = source.replace(/\{\{非链入使用\|[^{}]*\}\}/g, ""); // 移除非链入使用模板
                 await api.postWithToken("csrf", {
                     format: "json",
                     action: "edit",

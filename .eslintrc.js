@@ -97,6 +97,7 @@ module.exports = {
     "no-magic-numbers": 0,
     "no-multi-spaces": 2,
     "no-param-reassign": 2,
+    'no-trailing-spaces': 2,
     "quote-props": [
       1,
       "as-needed",
