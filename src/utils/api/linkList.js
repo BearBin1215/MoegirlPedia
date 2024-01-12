@@ -9,10 +9,10 @@ const linkList = async (pagename) => {
     const pageList = [];
     while (lhcontinue) {
         const res = await api.get({
-            action: "query",
-            prop: "linkshere",
+            action: 'query',
+            prop: 'linkshere',
             titles: pagename,
-            lhlimit: "max",
+            lhlimit: 'max',
             lhcontinue,
         });
         if (Object.values(res.query.pages)[0].linkshere) {

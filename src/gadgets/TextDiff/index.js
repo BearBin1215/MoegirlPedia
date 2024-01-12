@@ -1,30 +1,30 @@
-import { pageSource } from "../../utils/api";
-import "./index.less";
+import { pageSource } from '../../utils/api';
+import './index.less';
 
 $(() => (async () => {
-    if (mw.config.get("wgPageName") !== "Special:TextDiff") {
+    if (mw.config.get('wgPageName') !== 'Special:TextDiff') {
         if (window.TextDiff) {
-            await mw.loader.using("mediawiki.util");
-            mw.util.addPortletLink("p-tb", "/Special:TextDiff", "文本差异比较", "t-textdiff");
+            await mw.loader.using('mediawiki.util');
+            mw.util.addPortletLink('p-tb', '/Special:TextDiff', '文本差异比较', 't-textdiff');
         }
         return;
     }
-    await mw.loader.using(["mediawiki.api", "oojs-ui", "mediawiki.notification"]);
+    await mw.loader.using(['mediawiki.api', 'oojs-ui', 'mediawiki.notification']);
     const api = new mw.Api();
 
     // 获取比较差异
     const compare = async (fromtext, totext) => {
         try {
             const res = await api.post({
-                action: "compare",
+                action: 'compare',
                 fromtext,
                 totext,
                 topst: true,
-                fromtitle: "PAGENAME",
+                fromtitle: 'PAGENAME',
             });
-            return res.compare["*"];
+            return res.compare['*'];
         } catch (error) {
-            mw.notify(`获取差异失败：${error}`, { type: "warn" });
+            mw.notify(`获取差异失败：${error}`, { type: 'warn' });
         }
     };
 
@@ -33,22 +33,22 @@ $(() => (async () => {
         try {
             return await pageSource(title);
         } catch (error) {
-            mw.notify(`获取源代码失败：${error}`, { type: "warn" });
+            mw.notify(`获取源代码失败：${error}`, { type: 'warn' });
         }
-        mw.notify("获取源代码完毕");
+        mw.notify('获取源代码完毕');
     };
 
-    $("#mw-notification-area").appendTo("body"); // 使提醒在窗口上层
-    mw.config.set("wgCanonicalSpecialPageName", "TextDiff");
-    document.title = "差异比较 - 萌娘百科_万物皆可萌的百科全书";
+    $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层
+    mw.config.set('wgCanonicalSpecialPageName', 'TextDiff');
+    document.title = '差异比较 - 萌娘百科_万物皆可萌的百科全书';
     $(document.head).append(
-        `<link rel="stylesheet" href="${mw.config.get("wgLoadScript")}?debug=false&modules=mediawiki.diff.styles&only=styles" />`,
+        `<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`,
         '<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>',
         '<script src="https://npm.elemecdn.com/file-saver/dist/FileSaver.min.js"></script>',
     );
-    $(".mw-invalidspecialpage").removeClass("mw-invalidspecialpage");
-    $("#firstHeading").html("差异比较<div>By BearBin</div>");
-    $("#contentSub").remove();
+    $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
+    $('#firstHeading').html('差异比较<div>By BearBin</div>');
+    $('#contentSub').remove();
 
     const fromTextBox = new OO.ui.MultilineTextInputWidget({
         rows: 10,
@@ -57,16 +57,16 @@ $(() => (async () => {
     });
 
     const fromPageBox = new OO.ui.TextInputWidget({
-        labelPosition: "before",
-        label: "从页面",
+        labelPosition: 'before',
+        label: '从页面',
     });
 
     const fromPageButton = new OO.ui.ButtonWidget({
-        label: "获取源代码",
+        label: '获取源代码',
         flags: [
-            "progressive",
+            'progressive',
         ],
-        id: "from-page-button",
+        id: 'from-page-button',
     });
 
     const $getOriginSource = $('<div class="get-source-from-page"></div>').append(
@@ -75,16 +75,16 @@ $(() => (async () => {
     );
 
     const toPageBox = new OO.ui.TextInputWidget({
-        labelPosition: "before",
-        label: "从页面",
+        labelPosition: 'before',
+        label: '从页面',
     });
 
     const toPageButton = new OO.ui.ButtonWidget({
-        label: "获取源代码",
+        label: '获取源代码',
         flags: [
-            "progressive",
+            'progressive',
         ],
-        id: "from-page-button",
+        id: 'from-page-button',
     });
 
     const $getTargetSource = $('<div class="get-source-from-page"></div>').append(
@@ -99,24 +99,24 @@ $(() => (async () => {
     });
 
     const submitButton = new OO.ui.ButtonWidget({
-        label: "比较",
+        label: '比较',
         flags: [
-            "primary",
-            "progressive",
+            'primary',
+            'progressive',
         ],
-        icon: "check",
-        id: "submit-button",
+        icon: 'check',
+        id: 'submit-button',
     });
 
     const saveButton = new OO.ui.ButtonWidget({
-        label: "保存图片",
-        icon: "download",
-        id: "save-button",
+        label: '保存图片',
+        icon: 'download',
+        id: 'save-button',
     });
 
     const copyButton = new OO.ui.ButtonWidget({
-        label: "复制到剪贴板",
-        id: "copy-button",
+        label: '复制到剪贴板',
+        id: 'copy-button',
     });
 
     const $result = $('<div id="diff-result"></div>');
@@ -126,15 +126,15 @@ $(() => (async () => {
         copyButton.$element,
     ).hide();
 
-    $("#mw-content-text").empty().append(
-        $("<h3>旧版本</h3>"),
+    $('#mw-content-text').empty().append(
+        $('<h3>旧版本</h3>'),
         fromTextBox.$element,
         $getOriginSource,
-        $("<h3>新版本</h3>"),
+        $('<h3>新版本</h3>'),
         toTextBox.$element,
         $getTargetSource,
         submitButton.$element,
-        $("<h3>差异</h3>"),
+        $('<h3>差异</h3>'),
         $result,
         $resultAction,
     );
@@ -142,7 +142,7 @@ $(() => (async () => {
     // 保存图片
     const saveImage = () => {
         html2canvas($result[0]).then((canvas) => {
-            saveAs(canvas.toDataURL("image/png"), "image.png");
+            saveAs(canvas.toDataURL('image/png'), 'image.png');
         });
     };
 
@@ -150,43 +150,43 @@ $(() => (async () => {
     const copyImage = () => {
         html2canvas($result[0]).then((canvas) => {
             canvas.toBlob((blob) => {
-                navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]).then(() => {
-                    mw.notify("复制成功");
+                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+                    mw.notify('复制成功');
                 }, (error) => {
-                    mw.notify(`复制失败：${error}`, { type: "warn" });
+                    mw.notify(`复制失败：${error}`, { type: 'warn' });
                 });
             });
         });
     };
 
     // 通过页面获取源代码按钮
-    fromPageButton.on("click", async () => {
+    fromPageButton.on('click', async () => {
         const source = await getSource(fromPageBox.getValue());
         fromTextBox.setValue(source);
     });
 
-    toPageButton.on("click", async () => {
+    toPageButton.on('click', async () => {
         const source = await getSource(toPageBox.getValue());
         toTextBox.setValue(source);
     });
 
-    submitButton.on("click", async () => {
+    submitButton.on('click', async () => {
         submitButton.setDisabled(true);
         try {
             const result = await compare(fromTextBox.getValue(), toTextBox.getValue());
             $result.html(`<table class="diff diff-contentalign-left"><colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup><tbody>${result}</tbody></table>`);
             $resultAction.show();
         } catch (error) {
-            mw.notify(`比较出错：${error}`, { type: "warn" });
+            mw.notify(`比较出错：${error}`, { type: 'warn' });
         }
         submitButton.setDisabled(false);
     });
 
-    saveButton.on("click", () => {
+    saveButton.on('click', () => {
         saveImage();
     });
 
-    copyButton.on("click", () => {
+    copyButton.on('click', () => {
         copyImage();
     });
 })());

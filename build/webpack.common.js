@@ -33,10 +33,10 @@ module.exports = {
   entry,
   resolve: {
     alias: {
-      react: "preact/compat",
-      "react-dom/test-utils": "preact/test-utils",
-      "react-dom": "preact/compat",
-      "react/jsx-runtime": "preact/jsx-runtime",
+      react: 'preact/compat',
+      'react-dom/test-utils': 'preact/test-utils',
+      'react-dom': 'preact/compat',
+      'react/jsx-runtime': 'preact/jsx-runtime',
     },
   },
   module: {
@@ -47,7 +47,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [ '@babel/preset-env', '@babel/preset-react'],
-            targets: "> 0.3%, not dead",
+            targets: '> 0.3%, not dead',
           },
         },
       },

@@ -1,5 +1,5 @@
-import { categoryMembers, linkList, includeList, redirectList } from "../../utils/api";
-import { copyText } from "../../utils/clipboard";
+import { categoryMembers, linkList, includeList, redirectList } from '../../utils/api';
+import { copyText } from '../../utils/clipboard';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     let cacheText;
@@ -123,10 +123,10 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
         // 根据特殊页面进行显示
         switch (mw.config.get('wgCanonicalSpecialPageName')) {
-            case "Whatlinkshere":
+            case 'Whatlinkshere':
                 linkshereEnhance();
                 break;
-            case "Search":
+            case 'Search':
                 searchEnhance();
                 break;
         }
@@ -143,7 +143,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
                 $(editSection).append(
                     bracketStart,
                     $('<a>复制本页</a>').on('click', ({ target }) => {
-                        copyAction($element.find(linkSelector).map((_, ele) => `${prefix}${$(ele).text()}`).get().join("\n"), $(target));
+                        copyAction($element.find(linkSelector).map((_, ele) => `${prefix}${$(ele).text()}`).get().join('\n'), $(target));
                     }),
                     $element.children('a').length
                         ? divider

@@ -1,4 +1,4 @@
-import Snake from "../index";
+import Snake from '../index';
 
 export default class extends Snake {
     /**

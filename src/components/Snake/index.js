@@ -1,7 +1,7 @@
 /**
  * @author BearBin, 鬼影233
  */
-import "./index.less";
+import './index.less';
 
 export default class Snake {
     _length = 0; // 项目数
@@ -16,8 +16,8 @@ export default class Snake {
         // 给类的属性赋值
         this.hasHead = token.hasHead !== false;
         this.hasHref = token.hasHref !== false;
-        Reflect.deleteProperty(token, "hasHead");
-        Reflect.deleteProperty(token, "hasHref");
+        Reflect.deleteProperty(token, 'hasHead');
+        Reflect.deleteProperty(token, 'hasHref');
 
         /**
          * 根据html字符串创建节点
@@ -43,7 +43,7 @@ export default class Snake {
             // head中的状态显示
             this.head.complete = createTag('<span class=""snake-head-complete">0</div>');
             this.head.length = createTag('<span class=""snake-head-all">0</div>');
-            this.head.append("已完成：", this.head.complete, "/", this.head.length);
+            this.head.append('已完成：', this.head.complete, '/', this.head.length);
 
             // 添加到element
             this.element.append(this.head);
@@ -91,18 +91,18 @@ export default class Snake {
 
         // 根据hasHref判断创建<a>或<div>
         if (this.hasHref) {
-            scaleNode = document.createElement("a");
+            scaleNode = document.createElement('a');
             scaleNode.title = title || name;
             scaleNode.href = href || `/${name}`;
-            scaleNode.target = "_blank";
+            scaleNode.target = '_blank';
         } else {
-            scaleNode = document.createElement("div");
+            scaleNode = document.createElement('div');
             if (title) {
                 scaleNode.title = title;
             }
         }
-        scaleNode.classList.add("snake-scale", "scale-state-ready");
-        scaleNode.dataset.scaleState = "ready"; // 记录项目状态
+        scaleNode.classList.add('snake-scale', 'scale-state-ready');
+        scaleNode.dataset.scaleState = 'ready'; // 记录项目状态
 
         // 加入blocks列表，并添加到body中显示
         this.length++;
@@ -131,23 +131,23 @@ export default class Snake {
      * @param {string} name 项目的名称
      * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为success
      */
-    crawl(name, state = "success") {
+    crawl(name, state = 'success') {
         if (!this.blocks[name]) {
             throw new Error(`Snake: 不存在名为${name}的项目。`);
         }
 
         // 根据当前状态和目标状态调整complete并设置data-scale-state值
-        if (this.blocks[name].dataset.scaleState === "success") {
+        if (this.blocks[name].dataset.scaleState === 'success') {
             this.complete--;
         }
-        if (state === "success") {
+        if (state === 'success') {
             this.complete++;
         }
-        if (this.blocks[name].dataset.scaleState === "ongoing") {
-            this.blocks[name].classList.remove("oo-ui-pendingElement-pending");
+        if (this.blocks[name].dataset.scaleState === 'ongoing') {
+            this.blocks[name].classList.remove('oo-ui-pendingElement-pending');
         }
-        if (state === "ongoing") {
-            this.blocks[name].classList.add("oo-ui-pendingElement-pending");
+        if (state === 'ongoing') {
+            this.blocks[name].classList.add('oo-ui-pendingElement-pending');
         }
         this.blocks[name].dataset.scaleState = state;
         this.blocks[name].scrollIntoView();
@@ -160,6 +160,6 @@ export default class Snake {
         this.complete = 0;
         this.length = 0;
         this.blocks = {};
-        this.body.innerHTML = "";
+        this.body.innerHTML = '';
     }
 }

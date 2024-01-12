@@ -9,10 +9,10 @@ const redirectList = async (pagename) => {
     const pageList = [];
     while (rdcontinue !== void 0) {
         const res = await api.get({
-            action: "query",
-            prop: "redirects",
+            action: 'query',
+            prop: 'redirects',
             titles: pagename,
-            rdlimit: "max",
+            rdlimit: 'max',
             rdcontinue,
         });
         if (Object.values(res.query.pages)[0].transcludedin) {

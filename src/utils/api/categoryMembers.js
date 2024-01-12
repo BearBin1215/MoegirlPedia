@@ -10,12 +10,12 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
     const pageList = [];
     // 有api权限的用户通过API获取，无权限用户通过ajax获取
     if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
-        let cmcontinue = "";
+        let cmcontinue = '';
         while (cmcontinue !== undefined) {
             const result = await api.get({
-                action: "query",
-                list: "categorymembers",
-                cmlimit: "max",
+                action: 'query',
+                list: 'categorymembers',
+                cmlimit: 'max',
                 cmtitle,
                 cmtype: cmtype.join('|'),
                 cmcontinue,

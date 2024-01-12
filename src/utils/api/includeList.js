@@ -9,10 +9,10 @@ const includeList = async (pagename) => {
     const pageList = [];
     while (ticontinue) {
         const res = await api.get({
-            action: "query",
-            prop: "transcludedin",
+            action: 'query',
+            prop: 'transcludedin',
             titles: pagename,
-            tilimit: "max",
+            tilimit: 'max',
             ticontinue,
         });
         if (Object.values(res.query.pages)[0].transcludedin) {

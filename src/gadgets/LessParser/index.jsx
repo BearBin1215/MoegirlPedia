@@ -12,7 +12,7 @@ const ParserModal = () => {
   const inputRef = useRef(null); // 输入框
   const outputRef = useRef(null); // 输出框
   const fileReader = new FileReader();
-  fileReader.addEventListener("loadend", () => {
+  fileReader.addEventListener('loadend', () => {
     inputRef.current.value = fileReader.result;
   });
 
@@ -100,8 +100,8 @@ const ParserModal = () => {
 /**
  * 添加入口
  */
-mw.loader.using("mediawiki.util").then(() => {
-  mw.util.addPortletLink("p-tb", "javascript:void(0)", "Less解析器", "t-lessparser").addEventListener("click", () => {
+mw.loader.using('mediawiki.util').then(() => {
+  mw.util.addPortletLink('p-tb', 'javascript:void(0)', 'Less解析器', 't-lessparser').addEventListener('click', () => {
     if (!document.getElementById('less-parser')) {
       createRoot(document.createElement('div')).render(<ParserModal />);
     }

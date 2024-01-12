@@ -31,9 +31,9 @@ const pasteText = () => new Promise((resolve, reject) => {
             .then((text) => resolve(text))
             .catch((err) => reject(err));
     } else {
-        const pasteArea = document.createElement("textarea");
+        const pasteArea = document.createElement('textarea');
         document.body.appendChild(pasteArea);
-        pasteArea.style.position = "absolute";
+        pasteArea.style.position = 'absolute';
         pasteArea.style.top = 0;
         pasteArea.style.zIndex = -999;
         pasteArea.focus();

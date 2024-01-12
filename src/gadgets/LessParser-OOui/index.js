@@ -2,25 +2,25 @@ import './index.less';
 import { render } from 'less';
 import { copyText } from '../../utils/clipboard';
 
-await mw.loader.using("oojs-ui");
+await mw.loader.using('oojs-ui');
 
 class LessParser extends OO.ui.Dialog {
     static static = {
         ...super.static,
-        name: "LessParser",
-        size: "large",
+        name: 'LessParser',
+        size: 'large',
     };
 
     initialize() {
         super.initialize();
 
         // 标题和关闭按钮
-        const $closeButton = $('<button class="close-button">×</button>').on("click", () => this.close());
+        const $closeButton = $('<button class="close-button">×</button>').on('click', () => this.close());
         const $inputArea = $('<textarea name="less-input" />');
         const $outputArea = $('<textarea name="less-output" />');
 
         const fileReader = new FileReader();
-        fileReader.addEventListener("loadend", () => {
+        fileReader.addEventListener('loadend', () => {
             $inputArea.val(fileReader.result);
         });
 
@@ -75,9 +75,9 @@ $(document.body).append(windowManager.$element);
 const parserDialog = new LessParser();
 windowManager.addWindows([parserDialog]);
 
-mw.loader.using("mediawiki.util").then(() => {
-    mw.util.addPortletLink("p-tb", "javascript:void(0)", "Less解析器", "t-lessparser")
-        .addEventListener("click", () => {
+mw.loader.using('mediawiki.util').then(() => {
+    mw.util.addPortletLink('p-tb', 'javascript:void(0)', 'Less解析器', 't-lessparser')
+        .addEventListener('click', () => {
             windowManager.openWindow(parserDialog);
         });
 });

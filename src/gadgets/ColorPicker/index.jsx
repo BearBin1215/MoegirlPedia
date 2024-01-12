@@ -50,9 +50,9 @@ class PickerModal extends Component {
   }
 }
 
-mw.loader.using("mediawiki.util").then(() => {
-  mw.util.addPortletLink("p-tb", "javascript:void(0)", "颜色选择器", "t-colorpicker")
-    .addEventListener("click", () => {
+mw.loader.using('mediawiki.util').then(() => {
+  mw.util.addPortletLink('p-tb', 'javascript:void(0)', '颜色选择器', 't-colorpicker')
+    .addEventListener('click', () => {
       if (!document.getElementById('color-picker')) {
         createRoot(document.createElement('div')).render(<PickerModal open />);
       }

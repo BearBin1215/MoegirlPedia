@@ -1,4 +1,4 @@
-import Loger from "../index";
+import Loger from '../index';
 
 export default class extends Loger {
     /**

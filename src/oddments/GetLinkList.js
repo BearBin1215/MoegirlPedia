@@ -1,19 +1,19 @@
-if (mw.config.get("wgCanonicalSpecialPageName") === "Whatlinkshere") {
-    $("#mw-content-text>p>strong").after($("<a>[复制列表]</a>").on("click", function (e) {
+if (mw.config.get('wgCanonicalSpecialPageName') === 'Whatlinkshere') {
+    $('#mw-content-text>p>strong').after($('<a>[复制列表]</a>').on('click', function (e) {
         var linkList = [];
-        $("#mw-whatlinkshere-list>li>a").each(function (_, ele) {
+        $('#mw-whatlinkshere-list>li>a').each(function (_, ele) {
             linkList.push($(ele).text());
         });
-        navigator.clipboard.writeText(linkList.join("\n")).then(function () {
-            $(e.target).text("[复制成功]");
+        navigator.clipboard.writeText(linkList.join('\n')).then(function () {
+            $(e.target).text('[复制成功]');
             setTimeout(function () {
-                $(e.target).text("[复制列表]");
+                $(e.target).text('[复制列表]');
             }, 3000);
         }, function (err) {
-            $(e.target).text("[复制失败：" + err + "]");
+            $(e.target).text('[复制失败：' + err + ']');
             setTimeout(function () {
-                $(e.target).text("[复制列表]");
+                $(e.target).text('[复制列表]');
             }, 3000);
         });
-    }).css("padding-left", ".6em"));
+    }).css('padding-left', '.6em'));
 }
