@@ -103,9 +103,9 @@ $(() => (async () => {
       titles: titles.join('|'),
     });
     apiPost++;
-    for (const page of Object.values(pageInfo.query.pages)) {
-      if (page.pageid) {
-        filteredPages.push(page.title);
+    for (const { pageid, title } of Object.values(pageInfo.query.pages)) {
+      if (pageid) {
+        filteredPages.push(title);
       }
     }
     return filteredPages;
@@ -128,8 +128,8 @@ $(() => (async () => {
     const categories = [];
     for (const page of Object.values(result.query.pages)) {
       if (page.categories) {
-        for (const item of page.categories) {
-          categories.push(item.title);
+        for (const { title } of page.categories) {
+          categories.push(title);
         }
       }
     }

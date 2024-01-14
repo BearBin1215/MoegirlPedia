@@ -17,10 +17,11 @@ $(() => (async () => {
     let pageList = [];
 
     // 重定向页面和其他页面元素有所区别，分别处理
+    const funlNote = '<div id="funl-note">请注意：对过短的文件名使用本工具可能会出现误判，建议手动检查。</div>';
     if (mw.config.get('wgIsRedirect')) {
-      $('.redirectMsg').after('<hr/><div id="funl-note">请注意：对过短的文件名使用本工具可能会出现误判，建议手动检查。</div>');
+      $('.redirectMsg').after('<hr/>', funlNote);
     } else {
-      $('#filelinks').after('<div id="funl-note">请注意：对过短的文件名使用本工具可能会出现误判，建议手动检查。</div>');
+      $('#filelinks').after(funlNote);
     }
     // 搜索按钮
     const searchButton = new OO.ui.ButtonWidget({
@@ -64,31 +65,29 @@ $(() => (async () => {
      * 最多获取50个，但多于50个的文件根本不需要使用此工具，所以不用考虑这个问题
      * @returns 页面列表
      */
-    const usedLinked = () => {
-      const pageList = [];
-      for (const item of $('.mw-gu-onwiki-zh_moegirl_org_cn').find('a')) {
-        pageList.push(item.text);
-      }
-      return pageList;
+    const usedLinked = () => $('.mw-gu-onwiki-zh_moegirl_org_cn a').map((_, { text }) => text).get();
+
+    /**
+     * 搜索
+     * @param {string} srsearch 搜索文本
+     */
+    const search = async (srsearch) => {
+      return await zhmoeApi.get({
+        action: 'query',
+        list: 'search',
+        srnamespace: '0|4|10|12|14|274|828',
+        srwhat: 'text',
+        srsearch,
+      });
     };
 
     // 搜索
     const searchInSource = async () => {
       // 需要分别搜索未编码和编码后的文件名
-      const decodeSearchResult = await zhmoeApi.get({
-        action: 'query',
-        list: 'search',
-        srnamespace: '0|4|10|12|14|274|828',
-        srwhat: 'text',
-        srsearch: `insource:"${FILENAME.replaceAll('"', ' ')}"`, // 文件名可能带有半角双引号，和insource的引号混淆，要替换掉
-      });
-      const encodeSearchResult = await zhmoeApi.get({
-        action: 'query',
-        list: 'search',
-        srnamespace: '0|4|10|12|14|274|828',
-        srwhat: 'text',
-        srsearch: `insource:"${encodeURI(FILENAME).replaceAll('"', ' ').replaceAll('%20', ' ')}"`,
-      });
+      const [decodeSearchResult, encodeSearchResult] = await Promise.all([
+        search(`insource:"${FILENAME.replaceAll('"', ' ')}"`), // 文件名可能带有半角双引号，和insource的引号混淆，要替换掉
+        search(`insource:"${encodeURI(FILENAME).replaceAll('"', ' ').replaceAll('%20', ' ')}"`),
+      ]);
 
       const notLinkedList = [];
       [...encodeSearchResult.query.search, ...decodeSearchResult.query.search].forEach((item) => {
@@ -115,9 +114,9 @@ $(() => (async () => {
       $('#result-overview').text('文件在以下页面以非内链形式使用：');
 
       pageList = [...new Set(pageList)];
-      for (const item of pageList) {
-        $('#result-list').append(`<li><a href="https://zh.moegirl.org.cn/${item}">zhmoe:${item}</a></li>`);
-      }
+      $('#result-list').append(
+        pageList.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
+      );
       $('#search-submit-button a').removeClass('oo-ui-pendingElement-pending');
       return pageList;
     };
@@ -128,7 +127,7 @@ $(() => (async () => {
     const addMark = async () => {
       mw.notify('正在标记……');
       $('#add-mark-button a').addClass('oo-ui-pendingElement-pending');
-      const linkList = `[[zhmoe:${pageList.join(']]、[[zhmoe:')}]]`; // 将页面列表写为[[zhmoe:A]]、[[zhmoe:B]]、[[zhmoe:C]]……的形式
+      const linkList = pageList.map((title) => `[[zhmoe:${title}]]`).join('、'); // 将页面列表写为[[zhmoe:A]]、[[zhmoe:B]]、[[zhmoe:C]]……的形式
       try {
         await api.postWithToken('csrf', {
           format: 'json',
@@ -187,19 +186,16 @@ $(() => (async () => {
       mw.notify('正在查询……');
       $('#search-submit-button a').addClass('oo-ui-pendingElement-pending');
       pageList = await searchInSource();
-      if (pageList.length > 0 && $('.used-not-linked').length === 0) {
+      if (pageList.length && $('.used-not-linked').length === 0) {
         markButton.$element.show();
-      } else if (pageList.length === 0 && $('.used-not-linked').length > 0) {
+      } else if (pageList.length === 0 && $('.used-not-linked').length) {
         removeButton.$element.show();
       }
       mw.notify('查询完毕');
       $('#search-submit-button a').removeClass('oo-ui-pendingElement-pending');
     });
-    markButton.on('click', () => {
-      addMark();
-    });
-    removeButton.on('click', () => {
-      removeMark();
-    });
+
+    markButton.on('click', addMark);
+    removeButton.on('click', removeMark);
   }
 })());

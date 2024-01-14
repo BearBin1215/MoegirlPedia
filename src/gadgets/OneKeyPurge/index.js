@@ -285,10 +285,10 @@ $(() => (async () => {
           action: 'purge',
           titles: pages.join('|'),
           forcelinkupdate: true,
-        }).done((response) => {
+        }).done(({ purge }) => {
           // 将成功purge的页面标记为完成。其余标记为失败？
-          for (const page of response.purge) {
-            this.progressChange(page.title, 'success');
+          for (const { title } of purge) {
+            this.progressChange(title, 'success');
           }
         }).catch((error) => {
           for (const title of pages) {

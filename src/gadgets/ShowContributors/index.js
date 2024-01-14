@@ -77,10 +77,10 @@ $(() => (async () => {
         try {
           const res = await api.get(config);
           rvcontinue = res.continue?.rvcontinue || false;
-          for (const item of Object.values(res.query.pages)[0].revisions) {
-            contributors[item.user] ||= [];
-            contributors[item.user].push(item.size - prevSize);
-            prevSize = item.size;
+          for (const { user, size } of Object.values(res.query.pages)[0].revisions) {
+            contributors[user] ||= [];
+            contributors[user].push(size - prevSize);
+            prevSize = size;
           }
         } catch (error) {
           mw.notify(`获取编辑记录失败：${error}`, { type: 'error' });
@@ -90,12 +90,12 @@ $(() => (async () => {
     };
 
     // 向表格添加一行
-    addRow = ($tbody, data) => {
+    addRow = ($tbody, { user, count, add, remove }) => {
       $tbody.append($('<tr></tr>').append(
-        `<td><a href="${mw.config.get('wgArticlePath').replace('$1', `User:${data.user}`)}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${data.user}" />${data.user}</a></td>`,
-        `<td>${data.count}</td>`,
-        `<td>${data.add}</td>`,
-        `<td>${data.remove}</td>`,
+        `<td><a href="${mw.config.get('wgArticlePath').replace('$1', `User:${user}`)}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${user}" />${user}</a></td>`,
+        `<td>${count}</td>`,
+        `<td>${add}</td>`,
+        `<td>${remove}</td>`,
       ));
     };
 
