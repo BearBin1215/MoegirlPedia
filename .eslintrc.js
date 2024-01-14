@@ -58,7 +58,7 @@ module.exports = {
     "curly": 2,
     "indent": [
       2,
-      4,
+      2,
       {
         "SwitchCase": 1
       }
@@ -129,8 +129,8 @@ module.exports = {
     "arrow-parens": 2,
     "no-use-before-define": 2,
     "prefer-destructuring": 2,
-    "react/jsx-indent": [2, 4],
-    "react/jsx-indent-props": [2, 4],
+    "react/jsx-indent": [2, 2],
+    "react/jsx-indent-props": [2, 2],
     "react/jsx-max-props-per-line": [2, { maximum: 1, when: 'multiline' }],
     "react/jsx-closing-bracket-location": 2,
     "react/self-closing-comp": 2,
@@ -167,17 +167,6 @@ module.exports = {
       files: [
         "src/gadgets/**/*.jsx"
       ],
-      rules: {
-        "indent": [
-          2,
-          2,
-          {
-            "SwitchCase": 1
-          }
-        ],
-        "react/jsx-indent": [2, 2],
-        "react/jsx-indent-props": [2, 2],
-      }
     },
 
     // 打包配置
@@ -192,12 +181,6 @@ module.exports = {
       parserOptions: {
         ecmaVersion: "latest"
       },
-      rules: {
-        "indent": [
-          2,
-          2
-        ]
-      }
     },
 
     // CI脚本

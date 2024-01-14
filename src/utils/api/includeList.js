@@ -4,25 +4,25 @@
  * @returns {Promise<string[]>} 页面列表
  */
 const includeList = async (pagename) => {
-    const api = new mw.Api();
-    let ticontinue = 1;
-    const pageList = [];
-    while (ticontinue) {
-        const res = await api.get({
-            action: 'query',
-            prop: 'transcludedin',
-            titles: pagename,
-            tilimit: 'max',
-            ticontinue,
-        });
-        if (Object.values(res.query.pages)[0].transcludedin) {
-            for (const { title } of Object.values(res.query.pages)[0].transcludedin) {
-                pageList.push(title);
-            }
-        }
-        ticontinue = res.continue?.ticontinue;
+  const api = new mw.Api();
+  let ticontinue = 1;
+  const pageList = [];
+  while (ticontinue) {
+    const res = await api.get({
+      action: 'query',
+      prop: 'transcludedin',
+      titles: pagename,
+      tilimit: 'max',
+      ticontinue,
+    });
+    if (Object.values(res.query.pages)[0].transcludedin) {
+      for (const { title } of Object.values(res.query.pages)[0].transcludedin) {
+        pageList.push(title);
+      }
     }
-    return pageList;
+    ticontinue = res.continue?.ticontinue;
+  }
+  return pageList;
 };
 
 export default includeList;
