@@ -47,7 +47,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [ '@babel/preset-env', '@babel/preset-react'],
-            targets: '> 0.3%, not dead',
+            targets: '> 0.35%, not dead',
           },
         },
       },
