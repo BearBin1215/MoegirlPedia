@@ -97,7 +97,8 @@ module.exports = {
     "no-magic-numbers": 0,
     "no-multi-spaces": 2,
     "no-param-reassign": 2,
-    'no-trailing-spaces': 2,
+    "no-trailing-spaces": 2,
+    "spaced-comment": 2,
     "quote-props": [
       1,
       "as-needed",
@@ -131,7 +132,7 @@ module.exports = {
     "prefer-destructuring": 2,
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
-    "react/jsx-max-props-per-line": [2, { maximum: 1, when: 'multiline' }],
+    "react/jsx-max-props-per-line": [2, { maximum: 1, when: "multiline" }],
     "react/jsx-closing-bracket-location": 2,
     "react/self-closing-comp": 2,
     "react/jsx-boolean-value": 2,
