@@ -173,24 +173,6 @@ $(() => (async () => {
     });
   });
 
-  // 日志筛选
-  $('#bearbintools-log-state>div').each((_, ele) => {
-    let show = true;
-    const $ele = $(ele);
-    $ele.on('click', (e) => {
-      e.preventDefault();
-      if (show) {
-        $('#bearbintools-log-lines').addClass(`${$ele.attr('id')}-hide`);
-        $ele.removeClass('log-selected');
-        show = false;
-      } else {
-        $('#bearbintools-log-lines').removeClass(`${$ele.attr('id')}-hide`);
-        $ele.addClass('log-selected');
-        show = true;
-      }
-    });
-  });
-
   // 执行体
   submitButton.on('click', async () => {
     const confirmText = $('<p>请确认您的移动是否有误。若因输入不当而产生错误，请自行<ruby><rb>承担后果</rb><rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>');

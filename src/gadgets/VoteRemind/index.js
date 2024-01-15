@@ -141,23 +141,21 @@ $(() => (async () => {
 
     // 获取已投票用户列表
     get userVoted() {
-      const userVotedList = [];
-      const hrefList = [];
+      let hrefList;
       if (isProposal) {
         // 提案检测.votebox后面的<ol>内的用户链接
-        $('.votebox ~ ol a[href^=\'/User\'], .votebox ~ ol a[href^=\'/index.php?title=User\']').each(function () {
-          hrefList.push(this.href);
-        });
+        hrefList = $('.votebox ~ ol a[href^="/User"], .votebox ~ ol a[href^="/index.php?title=User"]')
+          .map((_, { href }) => href)
+          .get();
       } else {
         // 人事案检测当前选择标题所在.discussionContainer内.votebox后面的ol
-        $(`#${this.sectionTitle.replaceAll(':', '\\:')}`).parents('.discussionContainer').find('.votebox ~ ol a[href^=\'/User\'], .votebox ~ ol a[href^=\'/index.php?title=User\']').each(function () {
-          hrefList.push(this.href);
-        });
+        hrefList = $(`#${this.sectionTitle.replaceAll(':', '\\:')}`)
+          .parents('.discussionContainer')
+          .find('.votebox ~ ol a[href^="/User"], .votebox ~ ol a[href^="/index.php?title=User"]')
+          .map((_, { href }) => href)
+          .get();
       }
-      for (const item of hrefList) {
-        userVotedList.push(decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, '$2')));
-      }
-      return userVotedList; // 这个用于后面求差集
+      return hrefList.map((item) => decodeURI(item.replace(/.*User(_talk)?:([^&]*).*/g, '$2')));
     }
 
     // 根据选择的用户组，去掉已投票用户和不愿收到提醒用户，得到要提醒的用户列表
