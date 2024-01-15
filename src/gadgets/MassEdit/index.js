@@ -235,12 +235,13 @@ $(() => (async () => {
     const retry = retrySelect.isSelected();
     let retreyTimes = 0;
     const maxRetryCount = +retryTimesBox.getValue();
+    const pageLink = `<a href="/${title}" target="_blank">${title}</a>`;
     do {
       try {
         const source = await pageSource(title); // 获取源代码并进行替换
         const replacedSource = source.replaceAll(editFrom, changeTo);
         if (source === replacedSource) {
-          loger.record(`【<a href="/${title}" target="_blank">${title}</a>】编辑前后无变化。`, 'nochange');
+          loger.record(`【${pageLink}】编辑前后无变化。`, 'nochange');
           return 'nochange';
         }
         const editResult = await api.postWithToken('csrf', {
@@ -255,14 +256,14 @@ $(() => (async () => {
           text: replacedSource,
           summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom}】→【${changeTo}】${summary === '' ? '' : `：${summary}`}`,
         });
-        if (editResult && editResult.edit?.newrevid) {
+        if (editResult?.edit?.newrevid) {
           loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, 'success');
           return 'success';
-        } else if (editResult && editResult.edit?.abusefilter) {
-          loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑失败：被滥用过滤器${editResult.edit.abusefilter.id}阻止。过滤器描述：${editResult.edit.abusefilter.description}。`, 'error');
+        } else if (editResult?.edit?.abusefilter) {
+          loger.record(`【${pageLink}】编辑失败：被滥用过滤器${editResult.edit.abusefilter.id}阻止。过滤器描述：${editResult.edit.abusefilter.description}。`, 'error');
           return 'failed';
         }
-        loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑失败，请将以下内容告知<a href="/User_talk:BearBin" target="_blank">BearBin</a>：${JSON.stringify(editResult)}`, 'error');
+        loger.record(`【${pageLink}】编辑失败，请将以下内容告知<a href="/User_talk:BearBin" target="_blank">BearBin</a>：${JSON.stringify(editResult)}`, 'error');
         return 'failed';
       } catch (err) {
         let errorMessage = '';
