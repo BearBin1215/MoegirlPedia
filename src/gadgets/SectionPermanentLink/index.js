@@ -7,7 +7,7 @@ if (mw.config.get('wgNamespaceNumber') % 2 === 1) {
   $('#mw-content-text .mw-parser-output h2').each((_, ele) => {
     const $ele = $(ele);
     const $divider = $('<span class="mw-editsection-divider"> | </span>'); // 分隔符
-    const $permanentLink = $(`<a data-thread-id="${$ele.find('.mw-headline').attr('id')}">${buttunText}</a>`); // 复制按钮
+    const $permanentLink = $(`<a>${buttunText}</a>`); // 复制按钮
     if (document.getElementsByClassName('mw-editsection')[0]) {
       // 有编辑按钮时将元素添加到现有的编辑按钮边上
       $(ele)
@@ -25,16 +25,16 @@ if (mw.config.get('wgNamespaceNumber') % 2 === 1) {
       }
     } else {
       // 没有编辑按钮时新增一个
-      const permanentLinkButton = $('<span class="mw-editsection"></span>');
-      permanentLinkButton.append(
-        '<span class="mw-editsection-bracket">[</span>',
-        $permanentLink,
-        '<span class="mw-editsection-bracket">]</span>',
-      );
-      $ele.find('.mw-headline').after(permanentLinkButton);
+      $ele
+        .find('.mw-headline')
+        .after($('<span class="mw-editsection"></span>').append(
+          '<span class="mw-editsection-bracket">[</span>',
+          $permanentLink,
+          '<span class="mw-editsection-bracket">]</span>',
+        ));
     }
     $permanentLink.on('click', () => {
-      navigator.clipboard.writeText(`[[Special:PermanentLink/${mw.config.get('wgRevisionId')}#${$permanentLink.data('thread-id')}]]`);
+      navigator.clipboard.writeText(`[[Special:PermanentLink/${mw.config.get('wgRevisionId')}#${$ele.find('.mw-headline').attr('id')}]]`);
       $permanentLink.text(wgULS('复制成功', '復製成功'));
       setTimeout(() => {
         $permanentLink.text(buttunText);
