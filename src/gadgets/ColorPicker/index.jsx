@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { SketchPicker } from 'react-color';
-import { Button } from '../../components';
-import { copyText } from '../../utils/clipboard';
+import { Button } from '@/components';
+import { copyText } from '@/utils/clipboard';
 import './index.less';
 
 class PickerModal extends Component {

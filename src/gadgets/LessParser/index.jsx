@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'less';
-import { copyText } from '../../utils/clipboard';
-import { Button } from '../../components';
+import { copyText } from '@/utils/clipboard';
+import { Button } from '@/components';
 import './index.less';
 
 const ParserModal = () => {

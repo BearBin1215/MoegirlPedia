@@ -1,6 +1,6 @@
 import './index.less';
 import { render } from 'less';
-import { copyText } from '../../utils/clipboard';
+import { copyText } from '@/utils/clipboard';
 
 await mw.loader.using('oojs-ui');
 
