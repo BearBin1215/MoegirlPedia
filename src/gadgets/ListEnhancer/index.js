@@ -133,7 +133,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   } else if (ns === 14) {
     /**
      * 给对应的标题加上复制按钮及功能
-     * @param {jQuery<HTMLElement>} $element 元素
+     * @param {JQuery<HTMLElement>} $element 元素
      * @param {('page' | 'subcat' | 'file')} type 类型
      * @param {string} prefix 页面前缀
      * @param {string} linkSelector 成员链接选择器

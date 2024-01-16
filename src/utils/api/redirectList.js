@@ -15,7 +15,7 @@ const redirectList = async (pagename) => {
       rdlimit: 'max',
       rdcontinue,
     });
-    if (Object.values(res.query.pages)[0].transcludedin) {
+    if (Object.values(res.query.pages)[0].redirects) {
       for (const { title } of Object.values(res.query.pages)[0].redirects) {
         pageList.push(title);
       }
