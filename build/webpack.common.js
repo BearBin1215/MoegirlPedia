@@ -1,4 +1,5 @@
 const glob = require('glob');
+const path = require('path');
 
 const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}')
   .map((filename) => filename
@@ -37,6 +38,7 @@ module.exports = {
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
+      '@': path.resolve(__dirname, '..', 'src'),
     },
   },
   module: {

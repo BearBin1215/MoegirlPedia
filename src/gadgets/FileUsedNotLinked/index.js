@@ -3,7 +3,7 @@
  *
  * @todo 标记时跳出窗口可选输入用途
  */
-import { pageSource } from '../../utils/api';
+import { pageSource } from '@/utils/api';
 
 $(() => (async () => {
   // 本来想做一个检测当前页面文件存在不存在的，但想了想没啥必要。

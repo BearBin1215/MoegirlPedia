@@ -1,5 +1,5 @@
-import Loger from '../../components/Loger';
-import { categoryMembers, pageSource } from '../../utils/api';
+import Loger from '@/components/Loger';
+import { categoryMembers, pageSource } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {

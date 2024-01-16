@@ -1,5 +1,5 @@
-import { categoryMembers, linkList, includeList, redirectList } from '../../utils/api';
-import { copyText } from '../../utils/clipboard';
+import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
+import { copyText } from '@/utils/clipboard';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   let cacheText;

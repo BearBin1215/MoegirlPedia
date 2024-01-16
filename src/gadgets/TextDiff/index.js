@@ -1,4 +1,4 @@
-import { pageSource } from '../../utils/api';
+import { pageSource } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {

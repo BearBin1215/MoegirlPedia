@@ -1,4 +1,4 @@
-import Loger from '../../components/Loger';
+import Loger from '@/components/Loger';
 import './index.less';
 
 $(() => (async () => {

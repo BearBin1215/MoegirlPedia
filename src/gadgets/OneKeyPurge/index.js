@@ -1,5 +1,5 @@
-import Snake from '../../components/Snake';
-import { linkList, includeList } from '../../utils/api';
+import Snake from '@/components/Snake';
+import { linkList, includeList } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {
