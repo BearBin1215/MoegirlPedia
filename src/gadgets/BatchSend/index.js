@@ -187,14 +187,14 @@ $(() => (async () => {
 
       for (const item of pageList) {
         const title = item.replace(/^ *(?:User[_ ]talk:|用[户戶][讨討][论論]:|使用者[讨討][论論]:|U:|User:|用[户戶]:)?(.*)$/i, 'User_talk:$1');
-        let sendResult;
         try {
-          sendResult = await send(title, sectiontitle, text, summary);
+          const sendResult = await send(title, sectiontitle, text, summary);
+          const userLink = `<a href="/${title}" target="_blank">${title}</a>`;
           if (sendResult.edit?.result === 'Success') {
-            loger.record(`向【<a href="/${title}">${title}</a>】发送成功。`, 'success');
+            loger.record(`向【${userLink}】发送成功。`, 'success');
             await waitInterval(interval);
           } else if (sendResult.edit?.result === 'Failure') {
-            loger.record(`向【<a href="/${title}" target="_blank">${title}</a>】发送失败：${Object.keys(sendResult.edit)[0]}：${sendResult.edit[Object.keys(sendResult.edit)[0]]}。`, 'error');
+            loger.record(`向【${userLink}】发送失败：${Object.keys(sendResult.edit)[0]}：${sendResult.edit[Object.keys(sendResult.edit)[0]]}。`, 'error');
           }
         } catch (err) {
           loger.record(`向【<a href="/${title}">${title}</a>】发送失败：${err}。`, 'error');
