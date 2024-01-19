@@ -4,7 +4,7 @@ $(() => (async () => {
   if (
     ![0, 2, 4, 10, 12, 14, 828, 274].includes(mw.config.get('wgNamespaceNumber')) ||
     mw.config.get('wgArticleId') === 0 ||
-    mw.config.get('wgAction') !== 'view'
+    !['view', 'history'].includes(mw.config.get('wgAction'))
   ) { return; }
   await mw.loader.using([
     'mediawiki.api',
