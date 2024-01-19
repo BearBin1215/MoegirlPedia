@@ -311,11 +311,17 @@ $(() => (async () => {
         // 解析正则表达式
         if (regexSelect.isSelected()) {
           try {
-            if (!/\/[\s\S]+\//.test(editFrom)) {
-              loger.record('正则表达式有误。', 'warn');
+            const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
+            if (!parts) {
+              loger.record('正则表达式格式有误。', 'warn');
               return;
             }
-            editFrom = eval(editFrom);
+            const [_, pattern, flags] = parts;
+            if (!flags.includes('g')) {
+              loger.record('正则表达式必须包含全局匹配(g)修饰符。', 'warn');
+              return;
+            }
+            editFrom = new RegExp(pattern, flags);
           } catch (err) {
             loger.record(`正则表达式解析失败：${err}`, 'error');
             return;
