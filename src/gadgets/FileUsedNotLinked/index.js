@@ -28,8 +28,8 @@ $(() => (async () => {
       label: '查询非链入使用',
       flags: 'progressive',
       icon: 'search',
-      id: 'search-submit-button',
     });
+    const $searchButtonAnchor = searchButton.$element.children('a');
     $('#funl-note').after(searchButton.$element);
 
     // 标记非链入使用按钮
@@ -37,8 +37,8 @@ $(() => (async () => {
       label: '标记非链入使用',
       flags: 'progressive',
       icon: 'tag',
-      id: 'add-mark-button',
     });
+    const $markButtonLink = markButton.$element.children('a');
     searchButton.$element.after(markButton.$element);
 
     // 移除非链入使用标记按钮
@@ -46,8 +46,8 @@ $(() => (async () => {
       label: '移除非链入标记',
       flags: 'progressive',
       icon: 'tag',
-      id: 'remove-mark-button',
     });
+    const $removeButtonAnchor = removeButton.$element.children('a');
     markButton.$element.after(removeButton.$element);
 
     markButton.$element.hide();
@@ -117,7 +117,7 @@ $(() => (async () => {
       $('#result-list').append(
         pageList.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
       );
-      $('#search-submit-button a').removeClass('oo-ui-pendingElement-pending');
+      $searchButtonAnchor.removeClass('oo-ui-pendingElement-pending');
       return pageList;
     };
 
@@ -126,7 +126,7 @@ $(() => (async () => {
      */
     const addMark = async () => {
       mw.notify('正在标记……');
-      $('#add-mark-button a').addClass('oo-ui-pendingElement-pending');
+      $markButtonLink.addClass('oo-ui-pendingElement-pending');
       const linkList = pageList.map((title) => `[[zhmoe:${title}]]`).join('、'); // 将页面列表写为[[zhmoe:A]]、[[zhmoe:B]]、[[zhmoe:C]]……的形式
       try {
         await api.postWithToken('csrf', {
@@ -140,7 +140,7 @@ $(() => (async () => {
           summary: '标记非链入使用的文件',
         }).done(() => {
           mw.notify('标记成功！将在2秒后刷新……');
-          $('#add-mark-button a').removeClass('oo-ui-pendingElement-pending');
+          $markButtonLink.removeClass('oo-ui-pendingElement-pending');
           setTimeout(() => {
             window.location.reload();
           }, 2000);
@@ -155,7 +155,7 @@ $(() => (async () => {
      */
     const removeMark = async () => {
       mw.notify('正在移除标记……');
-      $('#remove-mark-button a').addClass('oo-ui-pendingElement-pending');
+      $removeButtonAnchor.addClass('oo-ui-pendingElement-pending');
       try {
         const source = await pageSource(PAGENAME);
         const replacedSource = source.replace(/\{\{非链入使用\|[^{}]*\}\}/g, ''); // 移除非链入使用模板
@@ -171,7 +171,7 @@ $(() => (async () => {
           summary: '移除非链入使用标记',
         }).done(() => {
           mw.notify('移除成功！将在2秒后刷新……');
-          $('#remove-mark-button a').removeClass('oo-ui-pendingElement-pending');
+          $removeButtonAnchor.removeClass('oo-ui-pendingElement-pending');
           setTimeout(() => {
             window.location.reload();
           }, 2000);
@@ -184,7 +184,7 @@ $(() => (async () => {
     // 执行体
     searchButton.on('click', async () => {
       mw.notify('正在查询……');
-      $('#search-submit-button a').addClass('oo-ui-pendingElement-pending');
+      $searchButtonAnchor.addClass('oo-ui-pendingElement-pending');
       pageList = await searchInSource();
       if (pageList.length && $('.used-not-linked').length === 0) {
         markButton.$element.show();
@@ -192,7 +192,7 @@ $(() => (async () => {
         removeButton.$element.show();
       }
       mw.notify('查询完毕');
-      $('#search-submit-button a').removeClass('oo-ui-pendingElement-pending');
+      $searchButtonAnchor.removeClass('oo-ui-pendingElement-pending');
     });
 
     markButton.on('click', addMark);

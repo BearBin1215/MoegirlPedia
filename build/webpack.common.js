@@ -1,7 +1,7 @@
 const glob = require('glob');
 const path = require('path');
 
-const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}')
+const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}', { nocase: true })
   .map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'))
@@ -48,7 +48,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [ '@babel/preset-env', '@babel/preset-react'],
+            presets: ['@babel/preset-env', '@babel/preset-react'],
             targets: '> 0.35%, not dead',
           },
         },
