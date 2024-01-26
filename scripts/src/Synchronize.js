@@ -4,7 +4,7 @@ import config from './config.js';
 import { execSync } from 'child_process';
 
 // 获取最近一次提交所修改的页面
-const changedGadgets = execSync('git diff --name-only HEAD HEAD~1')
+const changedGadgets = execSync('git diff-tree --no-commit-id --name-only -r HEAD^ HEAD')
   .toString()
   .split('\n')
   .filter((fileName) => fileName.includes('dist/gadgets/'))
