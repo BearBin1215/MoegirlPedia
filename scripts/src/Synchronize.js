@@ -10,7 +10,9 @@ const changedGadgets = execSync('git diff-tree --no-commit-id --name-only -r HEA
   .filter((fileName) => fileName.includes('dist/gadgets/'))
   .map((fileName) => fileName.replace(/dist\/gadgets\/(.*)\.min\.js/, '$1'));
 
-const list = config.sync.list.filter((gadgetName) => changedGadgets.includes(gadgetName));
+const list = config.sync.list.filter((gadgetName) => changedGadgets.includes(gadgetName)); // 同步工具列表
+
+const maxRetry = 5; // 最大重试次数
 
 if (!list.length) {
   console.log('列表中无小工具发生变化。');
@@ -29,21 +31,20 @@ if (!list.length) {
   const lastCommitMessage = execSync('git log -1 --pretty=%s').toString();
 
   // 执行同步
-  bot.loginGetEditToken({
+  await bot.loginGetEditToken({
     username: config.username,
     password: config.password,
-  }).then(async () => {
-    console.log('登陆成功，开始同步');
-    const errorList = [];
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      const title = `${config.sync.pagePath + item}.js`;
-      const source = await fs.promises.readFile(`${config.sync.localPath + item}.min.js`, 'utf-8').catch((err) => {
-        throw new Error(`读取${item}失败：${err}`);
-      });
-      const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
+  });
+  console.log('登陆成功，开始同步');
+  const errorList = [];
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    const title = `${config.sync.pagePath + item}.js`;
+    const source = await fs.promises.readFile(`${config.sync.localPath + item}.min.js`, 'utf-8');
+    const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
+    for (let j = 0; j <= maxRetry;) {
       try {
-        await bot.request({
+        const res = await bot.request({
           action: 'edit',
           title,
           text,
@@ -51,22 +52,29 @@ if (!list.length) {
           bot: true,
           tags: 'Bot',
           token: bot.editToken,
-        }).then((res) => {
-          if (res.edit.nochange === '') {
-            console.log(`${title}保存前后无变化。`);
-          } else {
-            console.log(`${item}已保存至${title}`);
-          }
         });
+        if (res.edit.nochange === '') {
+          console.log(`${title}保存前后无变化。`);
+        } else {
+          console.log(`${item}已保存至${title}`);
+        }
+        break;
       } catch (e) {
-        errorList.push(e);
-      }
-      if (i < list.length) {
-        await waitInterval(6000);
+        console.log(`${item}同步失败`);
+        j++;
+        if (j <= maxRetry) {
+          console.log(`正在重试（${j}/${maxRetry}）`);
+        } else {
+          errorList.push(item);
+        }
+        continue;
       }
     }
-    if (errorList.length > 0) {
-      throw new Error(`部分工具打包失败：\n${errorList.join('\n')}`);
+    if (i < list.length) {
+      await waitInterval(6000);
     }
-  });
+  }
+  if (errorList.length > 0) {
+    throw new Error(`部分工具打包失败：\n${errorList.join('\n')}`);
+  }
 }
