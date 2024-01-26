@@ -203,7 +203,7 @@ $(() => (async () => {
       }
     });
     await Promise.all(promises);
-    return [...new Set(pageList)];
+    return pageList;
   };
 
   /**
