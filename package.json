@@ -4,7 +4,7 @@
   "description": "BearBin's gadgets for MoegirlPedia",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config build/webpack.dev.js --watch",
+    "watch": "webpack --config build/webpack.dev.js --watch --mode development",
     "start": "yarn run watch",
     "build": "node build/pack.js",
     "sync": "node scripts/src/Synchronize.js",
