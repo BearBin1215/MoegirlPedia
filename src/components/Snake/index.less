@@ -1,6 +1,6 @@
 .snake {
     .snake-head {
-        margin: .8em 0 .5em;
+        margin: 0.8em 0 0.5em;
         font-size: 1.3em;
         text-align: center;
         text-decoration: underline;
@@ -10,7 +10,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: .2em;
+        gap: 0.2em;
         max-height: 10.5em;
         overflow-y: auto;
     }
@@ -22,23 +22,23 @@
 
         &[data-scale-state="ready"],
         &[data-scale-state="ongoing"] {
-            background-color: #EAECF0;
-            border-color: #A2A9B1;
+            background-color: #eaecf0;
+            border-color: #a2a9b1;
         }
 
         &[data-scale-state="success"] {
-            background-color: #D5FDF4;
-            border-color: #16876E;
+            background-color: #d5fdf4;
+            border-color: #16876e;
         }
 
         &[data-scale-state="warn"] {
-            background-color: #FEE7E6;
-            border-color: #D33;
+            background-color: #fee7e6;
+            border-color: #d33;
         }
 
         &[data-scale-state="fail"] {
-            background-color: #FEF6E7;
-            border-color: #EDAB00;
+            background-color: #fef6e7;
+            border-color: #edab00;
         }
     }
 }

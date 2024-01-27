@@ -41,7 +41,7 @@ const purgeCache = () => {
 };
 
 let containerNodeDesktop, containerNodeMobile;
-//判断是否特殊页面
+// 判断是否特殊页面
 if (mw.config.get('wgNamespaceNumber') === -1) {
   containerNodeDesktop = $('<span class="special-page"/>');
   containerNodeDesktop.append('特殊页面');
