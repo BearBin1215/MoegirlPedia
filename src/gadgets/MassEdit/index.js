@@ -254,7 +254,7 @@ $(() => (async () => {
           nocreate: true,
           title,
           text: replacedSource,
-          summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary === '' ? '' : `：${summary}`}`,
+          summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.toString().replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary === '' ? '' : `：${summary}`}`,
         });
         if (editResult?.edit?.newrevid) {
           loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, 'success');
