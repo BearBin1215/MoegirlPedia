@@ -109,6 +109,7 @@ $(() => (async () => {
     id: 'bm-submit',
   });
   const intervalBox = new OO.ui.TextInputWidget({
+    type: 'number',
     placeholder: '操作间隔',
     id: 'bm-interval',
   });
@@ -144,16 +145,16 @@ $(() => (async () => {
   });
 
   // 点击按钮删除行
-  $('#bm-page-list-table').on('click', '.remove-row', function () {
+  $('#bm-page-list-table').on('click', '.remove-row', (_, ele) => {
     rowCount--;
-    $(this).closest('tr').remove();
-    $('#bm-page-list-table tbody tr').each((i, ele) => {
-      $(ele).find('input').attr('data-row-no', i + 1);
+    $(ele).closest('tr').remove();
+    $('#bm-page-list-table tbody tr').each((i, tr) => {
+      $(tr).find('input').attr('data-row-no', i + 1);
     });
   });
 
   // 从剪贴板粘贴
-  $('#bm-page-list-table').on('paste', 'input[type="text"]', function (e) {
+  $('#bm-page-list-table').on('paste', 'input[type="text"]', (e) => {
     navigator.clipboard.readText().then((text) => {
       if (text.indexOf('\t') > -1 || text.indexOf('\n') > -1 && text.indexOf('\n') !== text.length - 1) {
         e.preventDefault();
