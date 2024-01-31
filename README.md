@@ -208,3 +208,4 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   ```
   `<gadget names>`为小工具名，可输入多个，例如`yarn build MassEdit BulkMove`会打包[src/gadgets/MassEdit](/src/gadgets/MassEdit/)和[src/gadgets/BulkMove](/src/gadgets/BulkMove/)，直接执行`yarn build`则打包全部小工具。该指令输入的工具名大小写不敏感。
   输出文件位于[dist](/dist/)目录下。
+  

@@ -31,7 +31,6 @@ const config = {
       'ShowContributors',
       'TextDiff',
       'userStatus',
-      'TableExporter',
     ],
   },
 };
