@@ -38,6 +38,9 @@ $(() => {
       addFold($('#moe-custom-sidenav-block h2'), $('#moe-custom-sidenav-block-list'), folderIcon.clone()); // 自定义工具栏
       addFold($('#side-toc-container h3'), $('#side-toc-container > .moe-table-of-contents'), folderIcon.clone()); // 目录
       addFold($('#p-sl h3'), $('#p-sl > div > div'), folderIcon.clone()); // 短连接
+
+      // 将工具放到sticky容器
+      $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
       break;
     case 'vector':
     default:
