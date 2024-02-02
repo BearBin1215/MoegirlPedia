@@ -26,6 +26,10 @@ $(() => {
     });
   };
 
+  const setPanelHeight = () => {
+    document.getElementById('mw-panel').style.height = `${document.body.scrollHeight}px`;
+  };
+
   let folderIcon;
 
   switch (mw.config.get('skin')) {
@@ -41,5 +45,10 @@ $(() => {
       $('#mw-panel .portal').each((_, portal) => {
         addFold($(portal).children('h3'), $(portal).children('.body'), folderIcon);
       });
+
+      // 将工具放到sticky容器
+      $('#mw-panel').append($('<div class="sidebar-enhance-stickywrapper"></div>').append($('#p-tb, #p-sl')));
+      setPanelHeight();
+      window.onresize = setPanelHeight;
   }
 });
