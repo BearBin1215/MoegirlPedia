@@ -1,0 +1,61 @@
+@transform-transition: transform 0.2s ease-in-out;
+
+// vector
+#mw-panel {
+    .portal {
+        &[role="navigation"] {
+            padding-bottom: 0.5em;
+        }
+
+        h3 {
+            display: flex;
+            justify-content: space-between;
+            margin: 0;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            transition: @transform-transition;
+
+            &:hover {
+                background-color: rgb(192 192 191 / 30%);
+            }
+        }
+
+        .folder-icon {
+            height: 18px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .body-folded {
+            .folder-icon {
+                transform: rotate(90deg);
+            }
+        }
+    }
+}
+
+// moeskin
+.moe-card {
+    h2,
+    h3 {
+        cursor: pointer;
+    }
+
+    .sidebar-enchance-title {
+        .n-collapse-item-arrow {
+            float: right;
+
+            svg {
+                transition: transform 0.2s ease-in-out;
+                transform: rotate(90deg);
+            }
+        }
+
+        &.body-folded .n-collapse-item-arrow {
+            svg {
+                transform: rotate(0);
+            }
+        }
+    }
+}

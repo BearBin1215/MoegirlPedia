@@ -29,6 +29,7 @@ const config = {
       'purgecache',
       'QuickThank',
       'ShowContributors',
+      'SidebarEnhance',
       'TextDiff',
       'userStatus',
     ],
