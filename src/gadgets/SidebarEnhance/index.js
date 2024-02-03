@@ -26,8 +26,21 @@ $(() => {
     });
   };
 
+  /**
+   * vector将侧栏高度设为body高度
+   */
   const setPanelHeight = () => {
     document.getElementById('mw-panel').style.height = `${document.body.scrollHeight}px`;
+  };
+
+  /**
+   * moeskin将自定义工具栏移到sticky块
+   */
+  const moveToSticky = () => {
+    if (document.getElementById('#moe-custom-sidenav-block')) {
+      $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
+      window.removeEventListener('scroll', moveToSticky); // 添加后移除事件
+    }
   };
 
   let folderIcon;
@@ -41,6 +54,7 @@ $(() => {
 
       // 将工具放到sticky容器
       $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
+      window.addEventListener('scroll', moveToSticky);
       break;
     case 'vector':
     default:
@@ -52,6 +66,6 @@ $(() => {
       // 将工具放到sticky容器
       $('#mw-panel').append($('<div class="sidebar-enhance-stickywrapper"></div>').append($('#p-tb, #p-sl')));
       setPanelHeight();
-      window.onresize = setPanelHeight;
+      window.addEventListener('resize', setPanelHeight);
   }
 });
