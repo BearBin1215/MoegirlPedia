@@ -50,6 +50,6 @@ webpack(config, (err, stats) => {
   log(`打包成功，用时${endTime - startTime}ms。`);
   log('输出文件：');
   for (const [file, { _size }] of Object.entries(assets)) {
-    log(`- ${chalk.green(file)}：${chalk.yellow((_size / 1024).toFixed(3))} KB (${chalk.underline(_size)}字节)`);
+    log(`  ${chalk.green(file)}：${chalk.yellow((_size / 1024).toFixed(3))} KB (${chalk.underline(_size)}字节)`);
   }
 });
