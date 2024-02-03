@@ -1,5 +1,5 @@
 import Snake from '@/components/Snake';
-import { linkList, includeList } from '@/utils/api';
+import { linkList, includeList, categoryMembers } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {
@@ -82,6 +82,7 @@ $(() => (async () => {
         options: [
           { data: 'link', label: '链接' },
           { data: 'include', label: '嵌入' },
+          mw.config.get('wgNamespaceNumber') === 14 && { data: 'category', label: '分类成员' },
         ],
       });
       const typeFiled = new OO.ui.FieldLayout(this.typeSelectInput, {
@@ -188,6 +189,15 @@ $(() => (async () => {
             mw.notify(`获取链接到【${PAGENAME}】的页面列表成功。`);
           } else {
             mw.notify(`没有页面链接到【${PAGENAME}】。`);
+          }
+          pageList.push(...result);
+        }
+        if (this.typeSelectInput.getValue().includes('category')) {
+          const result = await categoryMembers(PAGENAME, ['page']);
+          if (result.length > 0) {
+            mw.notify(`获取【${PAGENAME}】的分类成员成功。`);
+          } else {
+            mw.notify(`【${PAGENAME}】内没有成员。`);
           }
           pageList.push(...result);
         }

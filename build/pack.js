@@ -52,7 +52,7 @@ webpack(config, (err, stats) => {
     errors,
   } } = stats;
 
-  if (errors) {
+  if (errors.length) {
     console.error('打包出错', errors);
     return;
   }
