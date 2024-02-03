@@ -161,13 +161,6 @@ module.exports = {
         "prefer-arrow-callback": 0,
         "no-var": 0,
         "prefer-template": 0,
-        "indent": [
-          2,
-          4,
-          {
-            "SwitchCase": 1
-          }
-        ],
       }
     },
     {
