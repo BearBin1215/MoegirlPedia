@@ -58,7 +58,7 @@ $(() => {
       break;
     case 'vector':
     default:
-      folderIcon = '<svg class="folder-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>'; // vector另外搓一个
+      folderIcon = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>'; // vector另外搓一个
       $('#mw-panel .portal').each((_, portal) => {
         addFold($(portal).children('h3'), $(portal).children('.body'), folderIcon);
       });
