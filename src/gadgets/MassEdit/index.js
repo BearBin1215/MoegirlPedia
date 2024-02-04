@@ -143,7 +143,6 @@ $(() => (async () => {
       stopButton.$element.hide(), // 默认隐藏停止按钮、显示提交按钮
       intervalBox.$element,
       summaryBox.$element,
-
     ),
     $('<div id="me-retry">').append(
       retryField.$element,
