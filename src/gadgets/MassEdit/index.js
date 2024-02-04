@@ -102,12 +102,12 @@ $(() => (async () => {
   });
   // 是否重试
   const retrySelect = new OO.ui.CheckboxInputWidget();
-  const retryField = new OO.ui.FieldLayout(retrySelect, {
+  const retryField = new OO.ui.FieldLayout(retrySelect.on('change', () => {
+    retryTimesBox.setDisabled(!retrySelect.isSelected()); // 点击时切换重试次数输入框的可用性
+  }), {
     label: '因网络问题出错时，重试至多',
     align: 'inline',
     id: 'me-use-retry',
-  }).on('change', () => {
-    retryTimesBox.setDisabled(!retrySelect.isSelected()); // 点击时切换重试次数输入框的可用性
   });
 
   $('#mw-content-text').empty().append(
