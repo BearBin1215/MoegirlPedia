@@ -90,7 +90,8 @@ $(() => (async () => {
     }
   };
 
-  $('#mw-content-text').empty().append(
+  const fragment = document.createDocumentFragment();
+  $(fragment).append(
     '<h3>页面列表</h3>',
     $table.append(
       $('<thead>').append(
@@ -124,6 +125,8 @@ $(() => (async () => {
     ),
     $(loger.element),
   );
+
+  $('#mw-content-text').empty().append(fragment);
 
   // 先加十行
   addRow(10);

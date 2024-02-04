@@ -113,7 +113,8 @@ $(() => (async () => {
   const $previewSummary = $('<div id="bs-previewsummary">').hide();
 
   // 构建页面
-  $('#mw-content-text').empty().append(
+  const fragment = document.createDocumentFragment();
+  $(fragment).append(
     '<h3>页面列表</h3>',
     pagelistBox.$element,
     '<h3>标题</h3>',
@@ -139,6 +140,8 @@ $(() => (async () => {
     ),
     $(loger.element),
   );
+
+  $('#mw-content-text').empty().append(fragment);
 
   // 监听页面列表、标题、内容栏的change事件，用户关闭页面时发出提醒
   for (const item of [pagelistBox, headlineBox, contentBox]) {
