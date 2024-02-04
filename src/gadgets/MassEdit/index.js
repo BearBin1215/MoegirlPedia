@@ -50,18 +50,20 @@ $(() => (async () => {
   $('#firstHeading').html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
 
+  const $editFromBox = $('<textarea name="me-edit-from" rows="4">'); // “原文字”输入框
+  const $changeToBox = $('<textarea name="me-change-to" rows="4">'); // “替换为”输入框
+  const $pageListBox = $('<textarea name="me-page-list" rows="12">'); // 页面列表
+  const $categoryListBox = $('<textarea name="me-category-list" rows="12">'); // 分类列表
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
   });
   const regexField = new OO.ui.FieldLayout(regexSelect, {
     label: '使用正则表达式',
     align: 'inline',
-    id: 'me-use-regex',
   });
   const regexHelp = new OO.ui.ButtonWidget({
     label: '常用正则',
     icon: 'help',
-    id: 'me-regex-help',
   });
   const submitButton = new OO.ui.ButtonWidget({
     label: '提交',
@@ -70,7 +72,6 @@ $(() => (async () => {
       'progressive',
     ],
     icon: 'check',
-    id: 'me-submit',
   });
   const stopButton = new OO.ui.ButtonWidget({
     label: '终止',
@@ -79,7 +80,6 @@ $(() => (async () => {
       'destructive',
     ],
     icon: 'close',
-    id: 'me-stop',
   });
 
   const intervalBox = new OO.ui.TextInputWidget({
@@ -101,9 +101,7 @@ $(() => (async () => {
     disabled: true,
   });
   // 是否重试
-  const retrySelect = new OO.ui.CheckboxInputWidget({
-    id: 'me-use-retry',
-  });
+  const retrySelect = new OO.ui.CheckboxInputWidget();
   const retryField = new OO.ui.FieldLayout(retrySelect, {
     label: '因网络问题出错时，重试至多',
     align: 'inline',
@@ -114,25 +112,25 @@ $(() => (async () => {
 
   $('#mw-content-text').empty().append(
     '<h5>原文字：</h5>',
-    '<textarea id="me-edit-from" name="me-edit-from" rows="4"></textarea>',
+    $editFromBox,
     '<h5>替换为：</h5>',
-    '<textarea id="me-change-to" name="me-change-to" rows="4"></textarea>',
+    $changeToBox,
     $('<div id="me-regex">').append(
       regexField.$element,
       regexHelp.$element,
     ),
-    $('<ul id="me-regex-note">').append(
+    $('<ul>').append(
       '<li>正则表达式须使用斜线包裹（如<code>/regex/g</code>），且<code>g</code>为必须，否则无法被js解析。</li>',
       '<li>替换后文本若有换行请直接敲回车，不要用<code>\\n</code>。</li>',
     ),
     $('<div id="me-page-lists">').append(
       $('<div>').append(
         '<h5>页面</h5>',
-        '<textarea id="me-page-list" name="me-page-list" rows="12"></textarea>',
+        $pageListBox,
       ),
       $('<div>').append(
         '<h5>分类</h5>',
-        '<textarea id="me-category-list" name="me-category-list" rows="12"></textarea>',
+        $categoryListBox,
       ),
     ),
     $('<div id="me-pages-note">').append(
@@ -152,12 +150,12 @@ $(() => (async () => {
       retryTimesBox.$element,
       '次',
     ),
-    $('<ul id="me-submit-note">').append(
+    $('<ul>').append(
       '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
       '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
     ),
     $(loger.element),
-    $('<ul id="bearbintools-log-note">').append(
+    $('<ul>').append(
       '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
     ),
   );
@@ -178,7 +176,7 @@ $(() => (async () => {
    * @param {string} type "page"或"category"
    * @returns {string[]} 页面列表
    */
-  const getList = (type) => $(`#me-${type}-list`).val().split('\n').filter((s) => s && s.trim());
+  const getList = (type) => (type === 'page' ? $pageListBox.val() : $categoryListBox.val()).split('\n').filter((s) => s && s.trim());
 
   /**
    * 获取分类列表内的页面
@@ -307,15 +305,15 @@ $(() => (async () => {
     });
     if (confirm) {
       // 检查输入
-      if (!$('#me-edit-from').val()) {
+      if (!$editFromBox.val()) {
         loger.record('请输入要替换的原文字。', 'warn');
-      } else if (!$('#me-page-list').val() && !$('#me-category-list').val()) {
+      } else if (!$pageListBox.val() && !$categoryListBox.val()) {
         loger.record('请输入要编辑的页面或分类。', 'warn');
       } else {
         const additionalSummary = getAdditionalSummary();
         const interval = getInterval();
-        const changeTo = $('#me-change-to').val();
-        let editFrom = $('#me-edit-from').val();
+        const changeTo = $changeToBox.val();
+        let editFrom = $editFromBox.val();
         // 解析正则表达式
         if (regexSelect.isSelected()) {
           try {

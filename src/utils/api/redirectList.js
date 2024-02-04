@@ -8,7 +8,7 @@ const redirectList = async (pagename) => {
   let rdcontinue = '';
   const pageList = [];
   while (rdcontinue !== void 0) {
-    const res = await api.get({
+    const res = await api.post({
       action: 'query',
       prop: 'redirects',
       titles: pagename,

@@ -8,7 +8,7 @@ const includeList = async (pagename) => {
   let ticontinue = 1;
   const pageList = [];
   while (ticontinue) {
-    const res = await api.get({
+    const res = await api.post({
       action: 'query',
       prop: 'transcludedin',
       titles: pagename,

@@ -10,7 +10,6 @@ module.exports = merge(common, {
     path: resolve(__dirname, '../dist/dev'),
   },
   watchOptions: {
-    ignored: /node_modules/, // 忽略不需要监听变更的目录
-    aggregateTimeout: 1000, // 防止重复保存时频繁重建
+    ignored: /node_modules/,
   },
 });

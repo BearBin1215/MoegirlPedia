@@ -8,7 +8,7 @@ const linkList = async (pagename) => {
   let lhcontinue = 1;
   const pageList = [];
   while (lhcontinue) {
-    const res = await api.get({
+    const res = await api.post({
       action: 'query',
       prop: 'linkshere',
       titles: pagename,

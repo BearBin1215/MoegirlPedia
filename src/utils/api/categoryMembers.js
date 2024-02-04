@@ -12,7 +12,7 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
   if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
     let cmcontinue = '';
     while (cmcontinue !== undefined) {
-      const result = await api.get({
+      const result = await api.post({
         action: 'query',
         list: 'categorymembers',
         cmlimit: 'max',

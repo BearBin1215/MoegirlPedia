@@ -5,7 +5,7 @@
  */
 const pageSource = async (title) => {
   const api = new mw.Api();
-  const res = await api.get({
+  const res = await api.post({
     action: 'query',
     prop: 'revisions',
     titles: title,
