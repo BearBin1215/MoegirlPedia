@@ -14,7 +14,6 @@ if (!gadgets.length) {
 } else {
   // 根据输入读取src/gadgets中的文件
   const sourceFiles = glob.sync(`./src/gadgets/{${gadgets.join(',')},}/index.{js,jsx}`);
-  console.log(sourceFiles);
   // 没读取到多半是拼写错误
   if (!sourceFiles.length) {
     console.error('未找到指定的源代码，请检查拼写。');

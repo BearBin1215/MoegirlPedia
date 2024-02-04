@@ -74,20 +74,33 @@
     }
 }
 
-#me-use-retry {
-    margin-top: 0.2em;
+#me-retry {
+    margin-top: 0.3em;
 
-    .oo-ui-fieldLayout-body {
-        max-width: unset;
+    #me-use-retry {
+        display: inline;
 
-        #me-retry-label {
-            display: flex;
-            align-items: center;
+        .oo-ui-fieldLayout-body {
+            display: inline;
+            max-width: unset;
+
+            > span {
+                display: inline;
+            }
         }
 
-        #me-retry-times {
-            max-width: 4em;
+        .oo-ui-checkboxInputWidget-checkIcon {
+            top: 0;
         }
+
+        &::after {
+            content: unset;
+        }
+    }
+
+    #me-retry-times {
+        display: inline-block;
+        width: 3em;
     }
 }
 
