@@ -25,7 +25,7 @@ $(() => (async () => {
    * @returns HTML源代码
    */
   const preview = async (sectiontitle, text) => {
-    const parseResult = await api.post({
+    const { parse } = await api.post({
       action: 'parse',
       uselang: mw.config.get('wgUserLanguage'),
       section: 'new',
@@ -34,7 +34,7 @@ $(() => (async () => {
       sectiontitle,
       text,
     });
-    return parseResult.parse;
+    return parse;
   };
 
   /**
@@ -67,38 +67,22 @@ $(() => (async () => {
   mw.config.set('wgCanonicalSpecialPageName', 'BulkMove');
   document.title = '群发提醒 - 萌娘百科_万物皆可萌的百科全书';
   $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
-  $('#firstHeading').html('群发讨论页消息<div>By BearBin</div>');
+  $('#firstHeading').html('群发讨论页消息<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
-  $('#mw-content-text').html([
-    '<h3 id="bs-pagelist-headline">页面列表</h3>',
-    '<h3 id="bs-headline-headline">标题</h3>',
-    '<h3 id="bs-content-headline">正文</h3>',
-    '<div id="bs-submit-panel"></div>',
-    '<ul class="bearbintools-notelist">',
-    '<li>发送间隔单位为秒（s），不包含本身编辑所用的服务器响应时间。</li>',
-    '<li>非维护人员请注意<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>和<a href="/萌娘百科:机器用户#其他规范">机器用户方针规定的速率</a>，自行设置间隔或申请机器用户以免撞墙或超速。</li>',
-    '<li>摘要留空则会由系统自动生成。</li>',
-    '</ul>',
-    '<h3 id="bs-preview-headline">预览</h3>',
-    '<div id="bs-previewzone"></div>',
-    '<div id="bs-previewsummary">编辑摘要：<span class="comment"></span></div>',
-  ].join('')).append($(loger.element));
+
   const pagelistBox = new OO.ui.MultilineTextInputWidget({ // 目标页面列表输入框
     validate: 'non-empty',
     placeholder: '使用换行分隔，一行一个\nUser talk前缀加不加都可以，支持发送至子页面',
     rows: 5,
     autosize: true,
-    id: 'bs-pagelist',
   });
   const headlineBox = new OO.ui.TextInputWidget({
     validate: 'non-empty',
-    id: 'bs-headline',
   });
   const contentBox = new OO.ui.MultilineTextInputWidget({
     validate: 'non-empty',
     rows: 10,
     autosize: true,
-    id: 'bs-content',
   });
   const submitButton = new OO.ui.ButtonWidget({
     label: '提交',
@@ -107,14 +91,12 @@ $(() => (async () => {
       'progressive',
     ],
     icon: 'check',
-    id: 'bs-submit',
   });
   const previewButton = new OO.ui.ButtonWidget({
     label: '预览',
     flags: [
       'primary',
     ],
-    id: 'bs-preview',
   });
   const intervalBox = new OO.ui.TextInputWidget({
     placeholder: '发送间隔',
@@ -124,15 +106,38 @@ $(() => (async () => {
     placeholder: '编辑摘要',
     id: 'bs-summary',
   });
-  $('#bs-preview-headline, #bs-previewzone, #bs-previewsummary').hide();
-  $('#bs-pagelist-headline').after(pagelistBox.$element);
-  $('#bs-headline-headline').after(headlineBox.$element);
-  $('#bs-content-headline').after(contentBox.$element);
-  $('#bs-submit-panel').append(
-    submitButton.$element,
-    previewButton.$element,
-    intervalBox.$element,
-    summaryBox.$element,
+
+  const $previewHeadline = $('<h3>预览</h3>').hide();
+  const $previewZone = $('<div id="bs-previewzone">').hide();
+  const $previewSummaryComment = $('<span class="comment">');
+  const $previewSummary = $('<div id="bs-previewsummary">').hide();
+
+  // 构建页面
+  $('#mw-content-text').empty().append(
+    '<h3>页面列表</h3>',
+    pagelistBox.$element,
+    '<h3>标题</h3>',
+    headlineBox.$element,
+    '<h3>正文</h3>',
+    contentBox.$element,
+    $('<div id="bs-submit-panel">').append(
+      submitButton.$element,
+      previewButton.$element,
+      intervalBox.$element,
+      summaryBox.$element,
+    ),
+    $('<ul class="bearbintools-notelist">').append(
+      '<li>发送间隔单位为秒（s），不包含本身编辑所用的服务器响应时间。</li>',
+      '<li>非维护人员请注意<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>和<a href="/萌娘百科:机器用户#其他规范">机器用户方针规定的速率</a>，自行设置间隔或申请机器用户以免撞墙或超速。</li>',
+      '<li>摘要留空则会由系统自动生成。</li>',
+    ),
+    $previewHeadline,
+    $previewZone,
+    $previewSummary.append(
+      '编辑摘要：',
+      $previewSummaryComment,
+    ),
+    $(loger.element),
   );
 
   // 监听页面列表、标题、内容栏的change事件，用户关闭页面时发出提醒
@@ -146,11 +151,13 @@ $(() => (async () => {
   previewButton.on('click', async () => {
     previewButton.setDisabled(true); // 禁用预览按钮
 
-    $('#bs-preview-headline, #bs-previewzone, #bs-previewsummary').show();
-    $('#bs-previewzone').html('<div class="oo-ui-pendingElement-pending">正在加载预览……</div>');
+    $previewHeadline.show();
+    $previewZone.show();
+    $previewSummary.show();
+    $previewZone.html('<div class="oo-ui-pendingElement-pending">正在加载预览……</div>');
     const { text, parsedsummary } = await preview(headlineBox.getValue(), contentBox.getValue());
-    $('#bs-previewzone').html(text['*']);
-    $('#bs-previewsummary .comment').html(`（${parsedsummary['*']}）`);
+    $previewZone.html(text['*']);
+    $previewSummaryComment.html(`（${parsedsummary['*']}）`);
 
     previewButton.setDisabled(false); // 恢复预览按钮使用
   });
