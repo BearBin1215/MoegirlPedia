@@ -110,8 +110,7 @@ $(() => (async () => {
     retryTimesBox.setDisabled(!retrySelect.isSelected()); // 点击时切换重试次数输入框的可用性
   });
 
-  const fragment = document.createDocumentFragment();
-  $(fragment).append(
+  $('#mw-content-text').empty().append(
     '<h5>原文字：</h5>',
     $editFromBox,
     '<h5>替换为：</h5>',
@@ -158,9 +157,7 @@ $(() => (async () => {
     $('<ul>').append(
       '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
     ),
-  ),
-
-  $('#mw-content-text').empty().append(fragment);
+  );
 
   /**
    * 实现sleep效果，使用时需要加上await
