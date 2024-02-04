@@ -49,38 +49,7 @@ $(() => (async () => {
   $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
   $('#firstHeading').html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
-  $('#mw-content-text').html([
-    '<h5>原文字：</h5>',
-    '<textarea id="me-edit-from" name="me-edit-from" rows="4"></textarea>',
-    '<h5>替换为：</h5>',
-    '<textarea id="me-change-to" name="me-change-to" rows="4"></textarea>',
-    '<div id="me-regex"></div>',
-    '<ul id="me-regex-note">',
-    '<li>正则表达式须使用斜线包裹（如<code>/regex/g</code>），且<code>g</code>为必须，否则无法被js解析。</li>',
-    '<li>替换后文本若有换行请直接敲回车，不要用<code>\\n</code>。</li>',
-    '</ul>',
-    '<div id="me-page-lists">',
-    '<div>',
-    '<h5>页面</h5>',
-    '<textarea id="me-page-list" name="me-page-list" rows="12"></textarea>',
-    '</div>',
-    '<div>',
-    '<h5>分类</h5>',
-    '<textarea id="me-category-list" name="me-category-list" rows="12"></textarea>',
-    '</div>',
-    '</div>',
-    '<div id="me-pages-note">输入要编辑的页面或分类，<u>每行一个</u>；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。',
-    '</div>',
-    '<div id="me-edit-panel"></div>',
-    '<div id="me-retry"></div>',
-    '<ul id="me-submit-note">',
-    '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
-    '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
-    '</ul>',
-    '<ul id="bearbintools-log-note">',
-    '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
-    '</ul>',
-  ].join(''));
+
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
   });
@@ -94,7 +63,6 @@ $(() => (async () => {
     icon: 'help',
     id: 'me-regex-help',
   });
-  $('#me-regex').append(regexField.$element, regexHelp.$element);
   const submitButton = new OO.ui.ButtonWidget({
     label: '提交',
     flags: [
@@ -113,7 +81,6 @@ $(() => (async () => {
     icon: 'close',
     id: 'me-stop',
   });
-  stopButton.$element.hide();
 
   const intervalBox = new OO.ui.TextInputWidget({
     type: 'number',
@@ -137,24 +104,63 @@ $(() => (async () => {
   const retrySelect = new OO.ui.CheckboxInputWidget({
     id: 'me-use-retry',
   });
-  // 点击时切换重试次数输入框的可用性
-  retrySelect.on('change', () => {
-    retryTimesBox.setDisabled(!retrySelect.isSelected());
-  });
   const retryField = new OO.ui.FieldLayout(retrySelect, {
     label: '因网络问题出错时，重试至多',
     align: 'inline',
     id: 'me-use-retry',
+  }).on('change', () => {
+    retryTimesBox.setDisabled(!retrySelect.isSelected()); // 点击时切换重试次数输入框的可用性
   });
 
-  $('#me-edit-panel').append(
-    submitButton.$element,
-    stopButton.$element,
-    intervalBox.$element,
-    summaryBox.$element,
+  $('#mw-content-text').empty().append(
+    '<h5>原文字：</h5>',
+    '<textarea id="me-edit-from" name="me-edit-from" rows="4"></textarea>',
+    '<h5>替换为：</h5>',
+    '<textarea id="me-change-to" name="me-change-to" rows="4"></textarea>',
+    $('<div id="me-regex">').append(
+      regexField.$element,
+      regexHelp.$element,
+    ),
+    $('<ul id="me-regex-note">').append(
+      '<li>正则表达式须使用斜线包裹（如<code>/regex/g</code>），且<code>g</code>为必须，否则无法被js解析。</li>',
+      '<li>替换后文本若有换行请直接敲回车，不要用<code>\\n</code>。</li>',
+    ),
+    $('<div id="me-page-lists">').append(
+      $('<div>').append(
+        '<h5>页面</h5>',
+        '<textarea id="me-page-list" name="me-page-list" rows="12"></textarea>',
+      ),
+      $('<div>').append(
+        '<h5>分类</h5>',
+        '<textarea id="me-category-list" name="me-category-list" rows="12"></textarea>',
+      ),
+    ),
+    $('<div id="me-pages-note">').append(
+      '输入要编辑的页面或分类，',
+      '<u>每行一个</u>',
+      '；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。',
+    ),
+    $('<div id="me-edit-panel">').append(
+      submitButton.$element,
+      stopButton.$element.hide(), // 默认隐藏停止按钮、显示提交按钮
+      intervalBox.$element,
+      summaryBox.$element,
+
+    ),
+    $('<div id="me-retry">').append(
+      retryField.$element,
+      retryTimesBox.$element,
+      '次',
+    ),
+    $('<ul id="me-submit-note">').append(
+      '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
+      '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
+    ),
+    $(loger.element),
+    $('<ul id="bearbintools-log-note">').append(
+      '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
+    ),
   );
-  $('#me-retry').append(retryField.$element, retryTimesBox.$element, '次');
-  $('#bearbintools-log-note').before($(loger.element));
 
   /**
    * 实现sleep效果，使用时需要加上await
