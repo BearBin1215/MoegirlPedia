@@ -18,6 +18,7 @@ const config = {
     list: [
       'BatchSend',
       'BulkMove',
+      'CtrlS',
       'Excel2Wiki',
       'FileUsedNotLinked',
       'ListEnhancer',
