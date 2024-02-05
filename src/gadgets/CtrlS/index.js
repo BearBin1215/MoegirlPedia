@@ -1,4 +1,5 @@
 if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
+  const si = setInterval;
   // 编辑页Ctrl+S保存，Ctrl+Shift+S小编辑保存
   window.addEventListener('keydown', (event) => {
     console.log(event);
@@ -28,7 +29,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   });
 
   // 在编辑框中时按tab跳转到摘要输入框而非快捷插入
-  const itv = setInterval(() => {
+  const itv = si(() => {
     const lineWrapping = document.getElementsByClassName('cm-lineWrapping')?.[0];
     if (lineWrapping) {
       lineWrapping.tabIndex = 1;

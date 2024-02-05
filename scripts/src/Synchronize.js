@@ -60,7 +60,7 @@ if (!list.length) {
         }
         break;
       } catch (e) {
-        console.log(`${item}同步失败`);
+        console.log(`${item}同步失败：${e}`);
         j++;
         if (j <= maxRetry) {
           console.log(`正在重试（${j}/${maxRetry}）`);
