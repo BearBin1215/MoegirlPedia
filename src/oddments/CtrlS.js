@@ -12,7 +12,6 @@ if (mw.config.get('wgAction') === 'edit') {
 
   // 在编辑框中时按tab跳转到摘要输入框而非快捷插入
   var itv = setInterval(function () {
-    console.log(1);
     if (document.getElementsByClassName('cm-lineWrapping')[0]) {
       document.getElementsByClassName('cm-lineWrapping')[0].tabIndex = 1;
       clearInterval(itv);
