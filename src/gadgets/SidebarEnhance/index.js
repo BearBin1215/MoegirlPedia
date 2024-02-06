@@ -50,7 +50,7 @@ $(() => {
       folderIcon = $('#moe-sitenotice-container .n-collapse-item-arrow'); // moeskin使用现成的图标
       addFold($('#moe-custom-sidenav-block h2'), $('#moe-custom-sidenav-block-list'), folderIcon.clone()); // 自定义工具栏
       addFold($('#side-toc-container h3'), $('#side-toc-container > .moe-table-of-contents'), folderIcon.clone()); // 目录
-      addFold($('#p-sl h3'), $('#p-sl > div > div'), folderIcon.clone()); // 短连接
+      addFold($('#p-sl h3'), $('#p-sl>div>div'), folderIcon.clone()); // 短连接
 
       // 将工具放到sticky容器
       $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
@@ -64,7 +64,11 @@ $(() => {
       });
 
       // 将工具放到sticky容器
-      $('#mw-panel').append($('<div class="sidebar-enhance-stickywrapper"></div>').append($('#p-tb, #p-sl')));
+      $('#mw-panel').append(
+        $('<div class="sidebar-enhance-stickywrapper">').append(
+          $('#p-tb, #p-sl'),
+        ),
+      );
       setPanelHeight();
       window.addEventListener('resize', setPanelHeight);
   }
