@@ -38,7 +38,7 @@ $(() => {
    */
   const moveToSticky = () => {
     if (document.getElementById('#moe-custom-sidenav-block')) {
-      $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
+      $('.moe-siderail-sticky').prepend($('#moe-custom-sidenav-block'));
       window.removeEventListener('scroll', moveToSticky); // 添加后移除事件
     }
   };
@@ -53,7 +53,7 @@ $(() => {
       addFold($('#p-sl h3'), $('#p-sl>div>div'), folderIcon.clone()); // 短连接
 
       // 将工具放到sticky容器
-      $(".moe-siderail-sticky").prepend($("#moe-custom-sidenav-block"));
+      moveToSticky();
       window.addEventListener('scroll', moveToSticky);
       break;
     case 'vector':
