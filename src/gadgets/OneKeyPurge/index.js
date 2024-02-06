@@ -82,7 +82,7 @@ $(() => (async () => {
         options: [
           { data: 'link', label: '链接' },
           { data: 'include', label: '嵌入' },
-          mw.config.get('wgNamespaceNumber') === 14 && { data: 'category', label: '分类成员' },
+          ...(mw.config.get('wgNamespaceNumber') === 14 ? [{ data: 'category', label: '分类成员' }] : []),
         ],
       });
       const typeFiled = new OO.ui.FieldLayout(this.typeSelectInput, {
