@@ -50,10 +50,10 @@ $(() => (async () => {
   $('#firstHeading').html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
 
-  const $editFromBox = $('<textarea name="me-edit-from" rows="4">'); // “原文字”输入框
-  const $changeToBox = $('<textarea name="me-change-to" rows="4">'); // “替换为”输入框
-  const $pageListBox = $('<textarea name="me-page-list" rows="12">'); // 页面列表
-  const $categoryListBox = $('<textarea name="me-category-list" rows="12">'); // 分类列表
+  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>'); // “原文字”输入框
+  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>'); // “替换为”输入框
+  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>'); // 页面列表
+  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>'); // 分类列表
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
   });
@@ -115,46 +115,46 @@ $(() => (async () => {
     $editFromBox,
     '<h5>替换为：</h5>',
     $changeToBox,
-    $('<div id="me-regex">').append(
+    $('<div id="me-regex"/>').append(
       regexField.$element,
       regexHelp.$element,
     ),
-    $('<ul>').append(
+    $('<ul/>').append(
       '<li>正则表达式须使用斜线包裹（如<code>/regex/g</code>），且<code>g</code>为必须，否则无法被js解析。</li>',
       '<li>替换后文本若有换行请直接敲回车，不要用<code>\\n</code>。</li>',
     ),
-    $('<div id="me-page-lists">').append(
-      $('<div>').append(
+    $('<div id="me-page-lists"/>').append(
+      $('<div/>').append(
         '<h5>页面</h5>',
         $pageListBox,
       ),
-      $('<div>').append(
+      $('<div/>').append(
         '<h5>分类</h5>',
         $categoryListBox,
       ),
     ),
-    $('<div id="me-pages-note">').append(
+    $('<div id="me-pages-note"/>').append(
       '输入要编辑的页面或分类，',
       '<u>每行一个</u>',
       '；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。',
     ),
-    $('<div id="me-edit-panel">').append(
+    $('<div id="me-edit-panel"/>').append(
       submitButton.$element,
       stopButton.$element.hide(), // 默认隐藏停止按钮、显示提交按钮
       intervalBox.$element,
       summaryBox.$element,
     ),
-    $('<div id="me-retry">').append(
+    $('<div id="me-retry"/>').append(
       retryField.$element,
       retryTimesBox.$element,
       '次',
     ),
-    $('<ul>').append(
+    $('<ul/>').append(
       '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
       '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
     ),
     $(loger.element),
-    $('<ul>').append(
+    $('<ul/>').append(
       '<li>报错“http”不一定是编辑失败，可能实际已提交但等待成功信息过久而判定超时。</li>',
     ),
   );
@@ -373,7 +373,7 @@ $(() => (async () => {
   });
 
   // 正则帮助
-  const regexHelpText = $('<ul id="me-regex-help-list"></ul>').append(
+  const regexHelpText = $('<ul id="me-regex-help-list"/>').append(
     `<li><code>${/\[\[(?:Category|Cat|分[类類]):分类名(\|[^[]*)?\]\]/gi.toString()}</code>：匹配分类</li>`,
     `<li><code>${/\{\{(?:Template:|T:|[模样樣]板:)?模板名/gi.toString()}</code>：匹配模板（不含内容）</li>`,
     `<li><code>${/^.*$/gs.toString()}</code>：匹配全文（感谢鬼影）</li>`,
