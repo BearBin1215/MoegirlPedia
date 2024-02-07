@@ -10,7 +10,7 @@ $(() => {
   const addFold = ($title, $body, $icon) => {
     $title
       .addClass('sidebar-enchance-title')
-      .prepend($icon);
+      .append($icon);
 
     let foldState = false;
     $title.on('click', () => {
