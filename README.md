@@ -5,6 +5,7 @@
 - [工具介绍](#工具介绍)
   - [一键更新页面缓存](#一键更新页面缓存)
   - [共享站查询文件非链入使用](#共享站查询文件非链入使用)
+  - [批量编辑](#批量编辑)
   - [歌词样式开关](#歌词样式开关)
   - [批量发送讨论页提醒](#批量发送讨论页提醒)
   - [批量移动页面](#批量移动页面)
@@ -42,6 +43,17 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/FileUsedNotLinked.min.js");
 // 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/FileUsedNotLinked.js&action=raw&ctype=text/javascript");
+```
+
+### 批量编辑
+
+- 将[Special:MassEdit](https://zh.moegirl.org.cn/Special:MassEdit)页面改为批量编辑页面，可以输入页面列表或分类列表，按照指定的规则对页面进行批量替换。
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/MassEdit.min.js");
+// 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/MassEdit.js&action=raw&ctype=text/javascript");
 ```
 
 ### 歌词样式开关
