@@ -1,5 +1,6 @@
 import Snake from '@/components/Snake';
 import { linkList, includeList, categoryMembers } from '@/utils/api';
+import waitInterval from '@/utils/wait';
 import './index.less';
 
 $(() => (async () => {
@@ -163,13 +164,6 @@ $(() => (async () => {
       );
     }
 
-    /**
-     * 等待一段时间，用于模拟sleep
-     * @param {number} time 等待间隔，单位ms
-     * @returns
-     */
-    waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
     // 根据用户选项获取页面列表
     async getList() {
       const pageList = [];
@@ -267,9 +261,9 @@ $(() => (async () => {
         });
         if (index + 1 < titles.length) {
           if (!Noratelimit) {
-            await this.waitInterval(6000);
+            await waitInterval(6000);
           } else {
-            await this.waitInterval(1000);
+            await waitInterval(1000);
           }
         }
       }
@@ -308,9 +302,9 @@ $(() => (async () => {
         // 如果不是最后一批，根据是否拥有noratelimit权限等待间隔
         if (i + 5 < pageList.length) {
           if (!Noratelimit) {
-            await this.waitInterval(2000);
+            await waitInterval(2000);
           } else {
-            await this.waitInterval(1000);
+            await waitInterval(1000);
           }
         }
       }

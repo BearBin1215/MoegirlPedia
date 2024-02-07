@@ -1,4 +1,5 @@
 import Loger from '@/components/Loger';
+import waitInterval from '@/utils/wait';
 import './index.less';
 
 $(() => (async () => {
@@ -11,13 +12,6 @@ $(() => (async () => {
   const api = new mw.Api();
   const loger = new Loger();
   let rowCount = 0;
-
-  /**
-   * 实现sleep效果，使用时需要加上await
-   * @param {number} time 等待时间（ms）
-   * @returns
-   */
-  const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
   /**
    * 在Special:BulkMove构建页面

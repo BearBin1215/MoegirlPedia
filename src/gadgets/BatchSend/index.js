@@ -1,4 +1,5 @@
 import Loger from '@/components/Loger';
+import waitInterval from '@/utils/wait';
 import './index.less';
 
 $(() => (async () => {
@@ -10,13 +11,6 @@ $(() => (async () => {
   await mw.loader.using(['mediawiki.api', 'oojs-ui', 'mediawiki.user']);
   const api = new mw.Api();
   const loger = new Loger();
-
-  /**
-   * 实现sleep效果，使用时需要加上await
-   * @param {number} time 等待时间（ms）
-   * @returns
-   */
-  const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
   /**
    * 解析内容
