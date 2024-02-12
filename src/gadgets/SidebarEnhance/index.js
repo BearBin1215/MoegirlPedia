@@ -58,7 +58,7 @@ $(() => {
       window.addEventListener('scroll', moveToSticky);
       break;
     case 'vector-2022':
-      $('#vector-main-menu .vector-menu').each((_, ele) => {
+      $('.vector-pinnable-element .vector-menu').each((_, ele) => {
         addFold($(ele).children('.vector-menu-heading'), $(ele).children('.vector-menu-content'), folderIcon);
       });
       break;
