@@ -71,3 +71,22 @@
         }
     }
 }
+
+// vector 2022
+#vector-main-menu {
+    .vector-menu-heading {
+        justify-content: space-between;
+        cursor: pointer;
+
+        &.body-folded {
+            .folder-icon {
+                transform: rotate(90deg);
+            }
+        }
+    }
+
+    .folder-icon {
+        width: 18px;
+        transition: @transform-transition;
+    }
+}

@@ -43,7 +43,7 @@ $(() => {
     }
   };
 
-  let folderIcon;
+  let folderIcon = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>';
 
   switch (mw.config.get('skin')) {
     case 'moeskin':
@@ -57,9 +57,13 @@ $(() => {
       moveToSticky();
       window.addEventListener('scroll', moveToSticky);
       break;
+    case 'vector-2022':
+      $('#vector-main-menu .vector-menu').each((_, ele) => {
+        addFold($(ele).children('.vector-menu-heading'), $(ele).children('.vector-menu-content'), folderIcon);
+      });
+      break;
     case 'vector':
     default:
-      folderIcon = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>'; // vector另外搓一个
       $('#mw-panel .portal').each((_, portal) => {
         addFold($(portal).children('h3'), $(portal).children('.body'), folderIcon);
       });
