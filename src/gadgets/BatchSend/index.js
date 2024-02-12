@@ -16,9 +16,10 @@ $(() => (async () => {
    * 解析内容
    * @param {string} sectiontitle 章节标题
    * @param {string} text 正文源代码
+   * @param {string} summary 摘要
    * @returns HTML源代码
    */
-  const preview = async (sectiontitle, text) => {
+  const preview = async (sectiontitle, text, summary = '') => {
     const { parse } = await api.post({
       action: 'parse',
       uselang: mw.config.get('wgUserLanguage'),
@@ -27,6 +28,7 @@ $(() => (async () => {
       pst: true,
       sectiontitle,
       text,
+      summary,
     });
     return parse;
   };
@@ -149,7 +151,7 @@ $(() => (async () => {
     $previewZone.show();
     $previewSummary.show();
     $previewZone.html('<div class="oo-ui-pendingElement-pending">正在加载预览……</div>');
-    const { text, parsedsummary } = await preview(headlineBox.getValue(), contentBox.getValue());
+    const { text, parsedsummary } = await preview(headlineBox.getValue(), contentBox.getValue(), summaryBox.getValue());
     $previewZone.html(text['*']);
     $previewSummaryComment.html(`（${parsedsummary['*']}）`);
 
