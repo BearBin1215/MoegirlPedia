@@ -20,11 +20,7 @@ const includeList = async (pagename, tinamespace = '') => {
       postBody.tinamespace = tinamespace;
     }
     const res = await api.post(postBody);
-    if (Object.values(res.query.pages)[0].transcludedin) {
-      for (const { title } of Object.values(res.query.pages)[0].transcludedin) {
-        pageList.push(title);
-      }
-    }
+    pageList.push(...(Object.values(res.query.pages)[0].transcludedin || []).map(({ title }) => title));
     ticontinue = res.continue?.ticontinue;
   }
   return pageList;

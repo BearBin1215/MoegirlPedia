@@ -20,11 +20,7 @@ const linkList = async (pagename, lhnamespace = '') => {
       postBody.lhnamespace = lhnamespace;
     }
     const res = await api.post(postBody);
-    if (Object.values(res.query.pages)[0].linkshere) {
-      for (const { title } of Object.values(res.query.pages)[0].linkshere) {
-        pageList.push(title);
-      }
-    }
+    pageList.push(...(Object.values(res.query.pages)[0].linkshere || []).map(({ title }) => title));
     lhcontinue = res.continue?.lhcontinue;
   }
   return pageList;
