@@ -19,13 +19,7 @@ const includeList = async (pagename, tinamespace = '') => {
     if (tinamespace) {
       postBody.tinamespace = tinamespace;
     }
-    const res = await api.post({
-      action: 'query',
-      prop: 'transcludedin',
-      titles: pagename,
-      tilimit: 'max',
-      ticontinue,
-    });
+    const res = await api.post(postBody);
     if (Object.values(res.query.pages)[0].transcludedin) {
       for (const { title } of Object.values(res.query.pages)[0].transcludedin) {
         pageList.push(title);
