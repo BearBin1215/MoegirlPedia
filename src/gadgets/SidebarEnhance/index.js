@@ -1,3 +1,4 @@
+import { throttle } from 'lodash-es';
 import './index.less';
 
 $(() => {
@@ -76,5 +77,6 @@ $(() => {
       );
       setPanelHeight();
       window.addEventListener('resize', setPanelHeight);
+      window.addEventListener('scroll', throttle(setPanelHeight, 500));
   }
 });
