@@ -36,4 +36,12 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
       clearInterval(itv);
     }
   }, 1000);
+} else if (document.getElementById('ca-edit')) {
+  // ctrl+e打开w+快速编辑
+  window.addEventListener('keydown', (event) => {
+    if (event.ctrlKey && event.key === 'e') {
+      event.preventDefault();
+      document.getElementById('Wikiplus-Edit-TopBtn').click();
+    }
+  });
 }
