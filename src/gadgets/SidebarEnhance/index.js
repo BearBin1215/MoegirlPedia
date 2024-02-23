@@ -77,6 +77,6 @@ $(() => {
       );
       setPanelHeight();
       window.addEventListener('resize', setPanelHeight);
-      window.addEventListener('scroll', throttle(setPanelHeight, 500));
+      window.addEventListener('scroll', throttle(setPanelHeight, 400));
   }
 });
