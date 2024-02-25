@@ -1,4 +1,4 @@
-import { pageSource } from '@/utils/api';
+import { pageSource, compare } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {
@@ -10,19 +10,12 @@ $(() => (async () => {
     return;
   }
   await mw.loader.using(['mediawiki.api', 'oojs-ui', 'mediawiki.notification']);
-  const api = new mw.Api();
 
   // 获取比较差异
-  const compare = async (fromtext, totext) => {
+  const textCompare = async (fromtext, totext) => {
     try {
-      const res = await api.post({
-        action: 'compare',
-        fromtext,
-        totext,
-        topst: true,
-        fromtitle: 'PAGENAME',
-      });
-      return res.compare['*'];
+      const res = await compare(fromtext, totext);
+      return res;
     } catch (error) {
       mw.notify(`获取差异失败：${error}`, { type: 'warn' });
     }
@@ -173,8 +166,8 @@ $(() => (async () => {
   submitButton.on('click', async () => {
     submitButton.setDisabled(true);
     try {
-      const result = await compare(fromTextBox.getValue(), toTextBox.getValue());
-      $result.html(`<table class="diff diff-contentalign-left"><colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup><tbody>${result}</tbody></table>`);
+      const result = await textCompare(fromTextBox.getValue(), toTextBox.getValue());
+      $result.html(result);
       $resultAction.show();
     } catch (error) {
       mw.notify(`比较出错：${error}`, { type: 'warn' });
