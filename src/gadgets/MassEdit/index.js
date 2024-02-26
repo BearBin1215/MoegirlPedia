@@ -1,5 +1,5 @@
 import Loger from '@/components/Loger';
-import { categoryMembers, pageSource } from '@/utils/api';
+import { categoryMembers, pageSource, compare } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {
@@ -38,7 +38,7 @@ $(() => (async () => {
       text: '出错',
     },
   ], 'massedit-log', 'h5');
-  mw.loader.load('https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
+  mw.loader.load('https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript'); $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
   const tags = mw.config.get('wgUserGroups').includes('bot') ? 'bot' : 'Automation tool';
 
   /**
@@ -93,6 +93,21 @@ $(() => (async () => {
     id: 'me-summary',
   });
 
+  const previewButton = new OO.ui.ButtonWidget({
+    label: '预览',
+    icon: 'search',
+    disabled: true,
+  });
+  const previewTitleBox = new OO.ui.TextInputWidget({
+    placeholder: '要应用本编辑的页面',
+  }).on('change', (value) => {
+    if (value?.length) {
+      previewButton.setDisabled(false);
+    } else {
+      previewButton.setDisabled(true);
+    }
+  });
+
   // 重试次数
   const retryTimesBox = new OO.ui.TextInputWidget({
     type: 'number',
@@ -138,11 +153,15 @@ $(() => (async () => {
       '<u>每行一个</u>',
       '；分类栏请带上 分类/Category/Cat 等能被系统识别的分类名字空间前缀。',
     ),
-    $('<div id="me-edit-panel"/>').append(
+    $('<div id="me-edit-panel" class="me-panel"/>').append(
       submitButton.$element,
       stopButton.$element.hide(), // 默认隐藏停止按钮、显示提交按钮
       intervalBox.$element,
       summaryBox.$element,
+    ),
+    $('<div id="me-preview-panel" class="me-panel"/>').append(
+      previewButton.$element,
+      previewTitleBox.$element,
     ),
     $('<div id="me-retry"/>').append(
       retryField.$element,
@@ -226,6 +245,63 @@ $(() => (async () => {
 
   // 获取附加摘要
   const getAdditionalSummary = () => summaryBox.getValue();
+
+  /**
+   * 按照选择情况解析正则表达式或输出原字符串
+   * @param {string} editFrom 输入的正则表达式或字符串
+   * @param {boolean} isRegex 是否勾选解析
+   * @returns {string | RegExp}
+   */
+  const solveRegex = (editFrom, isRegex) => {
+    let output = editFrom;
+    // 解析正则表达式
+    if (isRegex) {
+      try {
+        const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
+        if (!parts) {
+          loger.record('正则表达式格式有误。', 'warn');
+          return '';
+        }
+        const [_, pattern, flags] = parts;
+        if (!flags.includes('g')) {
+          loger.record('正则表达式必须包含全局匹配(g)修饰符。', 'warn');
+          return '';
+        }
+        output = new RegExp(pattern, flags);
+      } catch (err) {
+        loger.record(`正则表达式解析失败：${err}`, 'error');
+        return;
+      }
+    }
+    return output;
+  };
+
+  /**
+   * @param {string} title 页面标题
+   * @param {string | RegExp} editFrom
+   * @param {string} changeTo
+   * @returns {string}
+   */
+  const preview = async (title, editFrom, changeTo) => {
+    previewButton.setDisabled(true);
+    loger.record('正在获取预览……');
+    try {
+      const fromtext = await pageSource(title);
+      if (!fromtext) {
+        loger.record(`获取${title}当前内容出错。`, 'error');
+        return;
+      }
+      const totext = fromtext.replaceAll(editFrom, changeTo);
+      const diff = await compare(fromtext, totext, true);
+      OO.ui.alert($(diff), {
+        title: `预览${title}的更改`,
+        size: 'larger',
+      });
+    } catch (err) {
+      loger.record(`预览出错：${err}。`, 'error');
+    }
+    previewButton.setDisabled(false);
+  };
 
   /**
    * 根据替换规则对指定页面进行编辑
@@ -312,25 +388,9 @@ $(() => (async () => {
         const additionalSummary = getAdditionalSummary();
         const interval = getInterval();
         const changeTo = $changeToBox.val();
-        let editFrom = $editFromBox.val();
-        // 解析正则表达式
-        if (regexSelect.isSelected()) {
-          try {
-            const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
-            if (!parts) {
-              loger.record('正则表达式格式有误。', 'warn');
-              return;
-            }
-            const [_, pattern, flags] = parts;
-            if (!flags.includes('g')) {
-              loger.record('正则表达式必须包含全局匹配(g)修饰符。', 'warn');
-              return;
-            }
-            editFrom = new RegExp(pattern, flags);
-          } catch (err) {
-            loger.record(`正则表达式解析失败：${err}`, 'error');
-            return;
-          }
+        const editFrom = solveRegex($editFromBox.val(), regexSelect.isSelected());
+        if (!editFrom) {
+          return;
         }
         running = true;
         submitButton.$element.hide();
@@ -370,6 +430,19 @@ $(() => (async () => {
   stopButton.on('click', () => {
     running = false;
     clearTimeout(timeout);
+  });
+
+  previewButton.on('click', () => {
+    const editFrom = $editFromBox.val();
+    if (!editFrom) {
+      loger.record('请输入要替换的原文字。', 'warn');
+      return;
+    }
+    preview(
+      previewTitleBox.getValue(),
+      solveRegex(editFrom, regexSelect.isSelected()),
+      $changeToBox.val(),
+    );
   });
 
   // 正则帮助

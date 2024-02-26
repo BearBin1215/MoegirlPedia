@@ -1,7 +1,7 @@
 /**
  * 获取页面源代码
  * @param {string} title 页面标题
- * @returns {Promise<string>} 页面源代码
+ * @returns {Promise<string | undefined>} 页面源代码
  */
 const pageSource = async (title) => {
   const api = new mw.Api();
@@ -11,7 +11,13 @@ const pageSource = async (title) => {
     titles: title,
     rvprop: 'content',
   });
-  return Object.values(res.query.pages)[0].revisions[0]['*'];
+  const [pageData] = Object.values(res.query.pages);
+  if ('revision' in pageData) {
+    return pageData.revisions?.[0]['*'];
+  }
+  if ('missing' in pageData) {
+    throw ('missingtitle');
+  }
 };
 
 export default pageSource;

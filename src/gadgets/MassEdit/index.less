@@ -59,10 +59,16 @@
     margin-bottom: 0.6em;
 }
 
-#me-edit-panel {
+.me-panel {
     display: flex;
     gap: 0.1rem;
 
+    &+.me-panel {
+        margin-top: 0.4em;
+    }
+}
+
+#me-edit-panel {
     #me-interval {
         flex: 0 0 5.5em;
     }
