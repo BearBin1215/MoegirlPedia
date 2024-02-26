@@ -438,9 +438,13 @@ $(() => (async () => {
       loger.record('请输入要替换的原文字。', 'warn');
       return;
     }
+    const solvedEditFrom = solveRegex(editFrom, regexSelect.isSelected());
+    if(!solvedEditFrom) {
+      return;
+    }
     preview(
       previewTitleBox.getValue(),
-      solveRegex(editFrom, regexSelect.isSelected()),
+      solvedEditFrom,
       $changeToBox.val(),
     );
   });
