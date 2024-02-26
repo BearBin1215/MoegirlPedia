@@ -12,7 +12,7 @@ const pageSource = async (title) => {
     rvprop: 'content',
   });
   const [pageData] = Object.values(res.query.pages);
-  if ('revision' in pageData) {
+  if ('revisions' in pageData) {
     return pageData.revisions?.[0]['*'];
   }
   if ('missing' in pageData) {
