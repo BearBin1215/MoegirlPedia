@@ -439,7 +439,7 @@ $(() => (async () => {
       return;
     }
     const solvedEditFrom = solveRegex(editFrom, regexSelect.isSelected());
-    if(!solvedEditFrom) {
+    if (!solvedEditFrom) {
       return;
     }
     preview(
