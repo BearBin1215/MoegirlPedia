@@ -38,7 +38,8 @@ $(() => (async () => {
       text: '出错',
     },
   ], 'massedit-log', 'h5');
-  mw.loader.load('https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript'); $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
+  mw.loader.load('https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
+  $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
   const tags = mw.config.get('wgUserGroups').includes('bot') ? 'bot' : 'Automation tool';
 
   /**
@@ -294,7 +295,7 @@ $(() => (async () => {
       const totext = fromtext.replaceAll(editFrom, changeTo);
       const diff = await compare(fromtext, totext, true);
       OO.ui.alert($(diff), {
-        title: `预览${title}的更改`,
+        title: $(`<span>预览<b>【${title}】</b>的更改</span>`),
         size: 'larger',
       });
     } catch (err) {
