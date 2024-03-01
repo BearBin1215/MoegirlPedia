@@ -394,7 +394,7 @@ $(() => (async () => {
           return;
         }
         running = true;
-        submitButton.$element.hide();
+        submitButton.setDisabled(false).$element.hide();
         stopButton.$element.show();
         $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
         window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
@@ -415,11 +415,11 @@ $(() => (async () => {
           }
           if (running) {
             loger.record('编辑完毕。', 'normal');
+            running = false;
           } else {
             loger.record('编辑终止。', 'normal');
           }
         });
-        running = false;
         submitButton.$element.show();
         stopButton.$element.hide();
         $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
@@ -431,6 +431,7 @@ $(() => (async () => {
   stopButton.on('click', () => {
     running = false;
     clearTimeout(timeout);
+    stopButton.setDisabled(true);
   });
 
   previewButton.on('click', () => {
