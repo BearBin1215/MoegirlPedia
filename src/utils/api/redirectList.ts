@@ -3,7 +3,7 @@
  * @param {string} pagename 页面名
  * @returns {Promise<string[]>}
  */
-const redirectList = async (pagename) => {
+const redirectList = async (pagename: string): Promise<string[]> => {
   const api = new mw.Api();
   let rdcontinue = '';
   const pageList = [];
@@ -15,6 +15,7 @@ const redirectList = async (pagename) => {
       rdlimit: 'max',
       rdcontinue,
     });
+    // @ts-ignore
     pageList.push(...(Object.values(res.query.pages)[0].redirects || []).map(({ title }) => title));
     rdcontinue = res.continue?.rdcontinue;
   }

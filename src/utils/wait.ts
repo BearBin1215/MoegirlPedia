@@ -1,9 +1,8 @@
 /**
  * 同步延时
  * @param {number} time 等待时间
- * @returns {Promise<void>}
  */
-const waitInterval = (time) => {
+const waitInterval = (time: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, time));
 };
 

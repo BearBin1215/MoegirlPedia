@@ -1,12 +1,12 @@
 const glob = require('glob');
 const path = require('path');
 
-const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx}` : './src/gadgets/**/index.{js,jsx}', { nocase: true })
+const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}` : './src/gadgets/**/index.{js,jsx,ts,tsx}', { nocase: true })
   .map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'))
   .reduce((entries, path) => {
-    const entry = path.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx)$/, '');
+    const entry = path.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
     entries[entry] = path;
     return entries;
   }, {});
@@ -33,6 +33,7 @@ const postCssLoader = {
 module.exports = {
   entry,
   resolve: {
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     alias: {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
@@ -44,19 +45,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
             targets: '> 0.35%, not dead',
           },
-        },
-      },
-      {
-        test: /\.m?js$/,
-        resolve: {
-          fullySpecified: false,
         },
       },
       {
@@ -74,6 +69,15 @@ module.exports = {
           'css-loader',
           postCssLoader,
           'less-loader',
+        ],
+      },
+      {
+        test: /\.(ts|tsx)$/i,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+          },
         ],
       },
     ],

@@ -255,7 +255,6 @@ $(() => (async () => {
    */
   const solveRegex = (editFrom, isRegex) => {
     let output = editFrom;
-    // 解析正则表达式
     if (isRegex) {
       try {
         const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
@@ -400,7 +399,6 @@ $(() => (async () => {
         window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
         await getPageList().then(async (result) => {
           let complete = 0;
-          // console.log(`页面列表：${result}`);
           const { length } = result;
           loger.record(`共${length}个页面，即将开始编辑……`, 'normal');
           for (const item of result) {

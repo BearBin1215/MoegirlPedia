@@ -5,9 +5,9 @@
  * @param {('page' | 'subcat' | 'file')[]} cmtype 获取类型
  * @returns
  */
-const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) => {
+const getCategoryMembers = async (cmtitle: string, cmtype: ('page' | 'subcat' | 'file')[] = ['page', 'subcat', 'file']) => {
   const api = new mw.Api();
-  const pageList = [];
+  const pageList: string[] = [];
   // 有api权限的用户通过API获取，无权限用户通过ajax获取
   if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
     let cmcontinue = '';
@@ -29,10 +29,10 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
     }
   } else {
     /**
-         * 对于未持有对应用户组的用户，通过ajax递归获取分类成员
-         * @param {string} link
-         */
-    const getCategoryMembersByAjax = async (link) => {
+     * 对于未持有对应用户组的用户，通过ajax递归获取分类成员
+     * @param {string} link
+     */
+    const getCategoryMembersByAjax = async (link: string) => {
       const $ajaxResult = $(await $.ajax(link));
       const selector = cmtype.map((type) => {
         switch (type) {
@@ -60,7 +60,7 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
       if (cmtype.includes('page')) {
         const $pageContinueLink = $ajaxResult.find('a[href*="&pagefrom="]');
         if ($pageContinueLink.length) {
-          await getCategoryMembersByAjax($pageContinueLink.eq(0).attr('href'));
+          await getCategoryMembersByAjax($pageContinueLink.eq(0).attr('href')!);
         }
       }
 
@@ -68,7 +68,7 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
       if (cmtype.includes('subcat')) {
         const $catContinueLink = $ajaxResult.find('a[href*="&subcatfrom="]');
         if ($catContinueLink.length) {
-          await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
+          await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href')!);
         }
       }
 
@@ -76,7 +76,7 @@ const getCategoryMembers = async (cmtitle, cmtype = ['page', 'subcat', 'file']) 
       if (cmtype.includes('file')) {
         const $catContinueLink = $ajaxResult.find('a[href*="&filefrom="]');
         if ($catContinueLink.length) {
-          await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href'));
+          await getCategoryMembersByAjax($catContinueLink.eq(0).attr('href')!);
         }
       }
     };

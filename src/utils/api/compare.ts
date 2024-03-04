@@ -3,9 +3,9 @@
  * @param {string} fromtext 旧版本
  * @param {string} totext 新版本
  * @param {boolean} showTitle 是否显示标题（旧版本、新版本）
- * @returns {string}
+ * @returns {Promise<string>}
  */
-const compare = async (fromtext, totext, showTitle = false) => {
+const compare = async (fromtext: string, totext: string, showTitle: boolean = false): Promise<string> => {
   const api = new mw.Api();
   const res = await api.post({
     action: 'compare',
