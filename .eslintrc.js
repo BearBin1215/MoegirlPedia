@@ -6,11 +6,18 @@ module.exports = {
     es6: true,
     es2020: true,
     es2021: true,
-    es2022: true
+    es2022: true,
   },
-  extends: [
+  plugins: [
+    "react",
+    '@typescript-eslint',
+  ],
+  parser: '@typescript-eslint/parser',
+  "extends": [
     "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/stylistic',
   ],
   globals: {
     mw: "readonly",
@@ -29,22 +36,19 @@ module.exports = {
     MOE_SKIN_GLOBAL_DATA_REF: "readonly",
     libCachedCode: "readonly",
     html2canvas: "readonly",
-    saveAs: "readonly"
+    saveAs: "readonly",
   },
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
     ecmaFeatures: {
-      "jsx": true,
+      jsx: true,
     },
   },
-  plugins: [
-    "react"
-  ],
   settings: {
-    "react": {
-      "version": "detect"
-    }
+    react: {
+      version: "detect",
+    },
   },
   rules: {
     "logical-assignment-operators": 2,
@@ -55,28 +59,29 @@ module.exports = {
     "prefer-const": 2,
     "no-misleading-character-class": 2,
     "no-template-curly-in-string": 2,
-    "curly": 2,
-    "indent": [
+    curly: 2,
+    indent: [
       2,
       2,
       {
-        "SwitchCase": 1
-      }
+        SwitchCase: 1,
+      },
     ],
     "linebreak-style": [
       0,
-      "windows"
+      "windows",
     ],
-    "semi": [
+    semi: [
       2,
-      "always"
+      "always",
     ],
     "no-console": 0,
-    "no-unused-vars": [
-      1,
+    'no-unused-vars': 0,
+    '@typescript-eslint/no-unused-vars': [
+      2,
       {
-        "varsIgnorePattern": "^_"
-      }
+        varsIgnorePattern: '^_',
+      },
     ],
     "no-redeclare": 1,
     "no-unreachable": 1,
@@ -84,9 +89,9 @@ module.exports = {
     "no-unneeded-ternary": 2,
     "comma-dangle": [
       1,
-      "always-multiline"
+      "always-multiline",
     ],
-    "eqeqeq": 2,
+    eqeqeq: 2,
     "dot-notation": 2,
     "no-else-return": 2,
     "no-extra-bind": 2,
@@ -103,23 +108,23 @@ module.exports = {
       1,
       "as-needed",
       {
-        "keywords": true,
-        "unnecessary": true,
-        "numbers": false
-      }
+        keywords: true,
+        unnecessary: true,
+        numbers: false,
+      },
     ],
     "no-empty": [
       2,
       {
-        "allowEmptyCatch": true
-      }
+        allowEmptyCatch: true,
+      },
     ],
     "arrow-spacing": [
       2,
       {
-        "before": true,
-        "after": true
-      }
+        before: true,
+        after: true,
+      },
     ],
     "prefer-arrow-callback": 2,
     "prefer-spread": 2,
@@ -130,6 +135,8 @@ module.exports = {
     "arrow-parens": 2,
     "no-use-before-define": 2,
     "prefer-destructuring": 2,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
     "react/jsx-max-props-per-line": [2, { maximum: 1, when: "multiline" }],
@@ -145,13 +152,13 @@ module.exports = {
   overrides: [
     {
       files: [
-        "src/oddments/**/*.js"
+        "src/oddments/**/*.js",
       ],
       env: {
         browser: true,
         node: false,
         jquery: true,
-        es6: true
+        es6: true,
       },
       parserOptions: {
         ecmaVersion: 5,
@@ -161,38 +168,39 @@ module.exports = {
         "prefer-arrow-callback": 0,
         "no-var": 0,
         "prefer-template": 0,
-      }
+      },
     },
     {
       // 给JSX配置单独的缩进格数
       files: [
-        "src/gadgets/**/*.jsx"
+        "src/gadgets/**/*.jsx",
       ],
     },
 
     // 打包配置
     {
       files: [
-        "build/**/*.js"
+        "build/**/*.js",
+        "*.*",
       ],
       env: {
         browser: false,
-        node: true
+        node: true,
       },
       parserOptions: {
-        ecmaVersion: "latest"
+        ecmaVersion: "latest",
       },
     },
 
     // CI脚本
     {
       files: [
-        "scripts/**/*.js"
+        "scripts/**/*.js",
       ],
       env: {
         browser: false,
-        node: true
-      }
-    }
-  ]
-}
+        node: true,
+      },
+    },
+  ],
+};
