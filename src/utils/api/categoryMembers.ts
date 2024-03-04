@@ -1,11 +1,13 @@
+type cmtypes = 'page' | 'subcat' | 'file';
+
 /**
  * 获取分类成员，有权限用户使用api，无权限用户使用ajax。
  *
  * @param {string} cmtitle 分类名
- * @param {('page' | 'subcat' | 'file')[]} cmtype 获取类型
+ * @param {cmtypes[]} cmtype 获取类型
  * @returns
  */
-const getCategoryMembers = async (cmtitle: string, cmtype: ('page' | 'subcat' | 'file')[] = ['page', 'subcat', 'file']) => {
+const getCategoryMembers = async (cmtitle: string, cmtype: cmtypes[] = ['page', 'subcat', 'file']) => {
   const api = new mw.Api();
   const pageList: string[] = [];
   // 有api权限的用户通过API获取，无权限用户通过ajax获取
