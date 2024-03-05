@@ -1,7 +1,7 @@
 /**
  * 复制文本到剪贴板
  */
-const copyText = async (text: string = ''): Promise<void> => {
+const copyText = async (text = ''): Promise<void> => {
   if (typeof navigator.clipboard?.writeText === 'function') {
     await navigator.clipboard.writeText(text);
   } else {

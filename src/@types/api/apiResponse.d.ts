@@ -1,6 +1,10 @@
 import type {
-  contentmodel,
-  contentformat,
+  ContentModel,
+  ContentFormat,
+} from './utils';
+import {
+  Protection,
+  ResponseNotification,
 } from './utils';
 
 /**
@@ -51,23 +55,150 @@ export interface ApiContinue {
 /**
  * api响应基础接口
  */
-export type ApiResponse = Record<string, any>;
-
-/**
- * action=query响应接口
- */
-export interface ApiQueryResponse extends ApiResponse {
-  /**
-   * 用于继续请求
-   */
-  continue?: ApiContinue;
-
+export interface ApiResponse {
   /**
    * 警告
    */
-  warnings?: string;
+  warnings?: {
+    main: ResponseNotification;
 
-  query?: Record<string, any>;
+    [key: string]: ResponseNotification;
+  };
+
+  /**
+   * 错误信息
+   */
+  error?: ResponseNotification;
+
+  [key: string]: any;
+}
+
+export interface ApiQueryPageInfo {
+  /**
+   * 页面id
+   */
+  pageid?: number;
+
+  /**
+   * 页面所属命名空间
+   */
+  ns: number,
+
+  /**
+   * 页面标题
+   */
+  title?: string,
+
+  /**
+   * 页面是否存在
+   */
+  missing?: '',
+
+  /**
+   * 页面内容模型
+   */
+  contentmodel?: ContentModel,
+
+  /**
+   * 页面语言
+   */
+  pagelanguage?: string,
+
+  /**
+   *
+   */
+  pagelanguagehtmlcode?: string,
+
+  pagelanguagedir?: string,
+
+  touched?: string,
+
+  lastrevid?: number,
+
+  /**
+   * 页面长度（字节）
+   */
+  length?: string,
+
+  /**
+   * 保护信息
+   */
+  protection?: Protection[],
+
+  /**
+   * 可操作类型
+   */
+  restrictiontypes?: string[],
+
+  /**
+   * 是否监视
+   */
+  watched?: '',
+
+  /**
+   * 监视用户数量
+   */
+  watchers?: number,
+
+  /**
+   * 最近编辑的监视者数量
+   */
+  visitingwatchers?: number,
+
+  /**
+   * 监视列表通知时间戳
+   */
+  notificationtimestamp?: '',
+
+  /**
+   * 每个非讨论页面的讨论页的页面ID。
+   */
+  talkid?: number,
+
+  /**
+   * 讨论页的母页面的页面ID
+   */
+  subjectid?: number,
+
+  /**
+   * 页面的完整URL
+   */
+  fullurl?: string,
+
+  /**
+   * 页面的编辑URL
+   */
+  editurl?: string,
+
+  /**
+   * 页面的规范URL
+   */
+  canonicalurl?: string,
+
+  /**
+   * 用户是否可以阅读此页面
+   */
+  readable?: '',
+
+  /**
+   * 提供由EditFormPreloadText返回的文本
+   */
+  preload?: string | null,
+
+  /**
+   * 在页面标题实际显示的地方提供方式
+   */
+  displaytitle?: string,
+
+  /**
+   * 网站内容语言所有变体的显示标题
+   */
+  varianttitles?: Record<string, string>,
+
+  /**
+   * 用户可以在页面上执行的操作
+   */
+  actions?: Record<string, ''>,
 }
 
 export interface Revisions {
@@ -106,7 +237,7 @@ export interface Revisions {
   /**
    * 修订的内容模型ID
    */
-  contentmodel?: contentmodel;
+  contentmodel?: ContentModel;
 
   /**
    * 编辑摘要
@@ -131,10 +262,41 @@ export interface Revisions {
   /**
    * 内容序列化格式
    */
-  contentformat?: contentformat;
+  contentformat?: ContentFormat;
 
   /**
    * 修订文本
    */
   "*"?: string;
+}
+
+/**
+ * action=query响应接口
+ */
+export interface ApiQueryResponse extends ApiResponse {
+  /**
+   * 用于继续请求
+   */
+  continue?: ApiContinue;
+
+  /**
+   * 请求结果
+   */
+  query?: Record<string, any>;
+}
+
+export interface ApiQueryRevisionsPageInfo extends ApiQueryPageInfo {
+  /**
+   * 修订版本列表
+   */
+  revisions: Revisions[];
+}
+
+export interface ApiQueryRevisionsResponse extends ApiQueryResponse {
+  query?: {
+    /**
+     * 页面数据
+     */
+    pages: Record<number, ApiQueryRevisionsPageInfo>
+  };
 }

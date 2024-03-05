@@ -5,7 +5,7 @@ import { ApiParams } from "@/@types/api";
  * @param {string} lhnamespace 命名空间，格式同api.php中以|分隔
  * @returns {Promise<string[]>} 列表
  */
-const linkList = async (pagename: string, lhnamespace: string = ''): Promise<string[]> => {
+const linkList = async (pagename: string, lhnamespace = ''): Promise<string[]> => {
   const api = new mw.Api();
   let lhcontinue = 1;
   const pageList = [];
