@@ -40,7 +40,7 @@ class PickerModal extends Component {
             />
             <div className='button-zone'>
               <Button onClick={this.handleCopy}>复制</Button>
-              <Button type='danger' onClick={this.handleClose}>关闭</Button>
+              <Button buttonType='danger' onClick={this.handleClose}>关闭</Button>
             </div>
           </div> : null,
           document.body,

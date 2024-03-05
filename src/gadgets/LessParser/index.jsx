@@ -82,8 +82,8 @@ const ParserModal = () => {
                   hidden
                 />
                 <Button onClick={upload}>上传</Button>
-                <Button onClick={parseLess} type='primary'>解析</Button>
-                <Button onClick={clear} type='danger'>清空</Button>
+                <Button onClick={parseLess} buttonType='primary'>解析</Button>
+                <Button onClick={clear} buttonType='danger'>清空</Button>
                 <Button onClick={() => copyText(outputRef.current.value)}>复制</Button>
               </div>
               <textarea name='css-output' ref={outputRef} readOnly />
