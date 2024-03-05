@@ -225,31 +225,19 @@ export interface ApiParams {
   formatversion?: '1' | '2' | 'latest';
 
   /**
-   * 仅在`format=xml`时有效。
+   * 仅在`format=xml`时有效
    *
    * 如果指定，加入已命名的页面作为一个XSL样式表。
-   * 值必须是在MediaWiki名字空间以.xsl为结尾的标题。
+   * 值必须是在MediaWiki名字空间以.xsl为结尾的标题
    */
   xslt?: string;
 
   /**
-   * 仅在`format=xml`时有效。
+   * 仅在`format=xml`时有效
    *
    * 如果指定，添加一个XML名字空间。
    */
   includexmlnamespace?: boolean;
 
   [key: string]: string | string[] | boolean | number | number[];
-}
-
-/**
- * api响应基础接口
- */
-export type ApiResponse = Record<string, any>;
-
-/**
- * action=query响应接口
- */
-export interface ApiQueryResponse extends ApiResponse {
-  query: Record<string, any>;
 }

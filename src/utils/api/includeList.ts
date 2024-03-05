@@ -3,7 +3,7 @@ import { ApiParams } from "@/@types/api";
 /**
  * 获取嵌入了指定页面的页面列表
  * @param {string} pagename 页面名
- * @param {string} tinamespace 命名空间，格式同api.php中以|分隔
+ * @param {number[]} tinamespace 命名空间，格式同api.php中以|分隔
  * @returns {Promise<string[]>} 页面列表
  */
 const includeList = async (pagename: string, tinamespace: number[]): Promise<string[]> => {

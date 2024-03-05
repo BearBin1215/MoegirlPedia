@@ -100,7 +100,7 @@ $(() => (async () => {
     const pageInfo = await api.post({
       action: 'query',
       prop: 'info',
-      titles: titles.join('|'),
+      titles,
     });
     apiPost++;
     for (const { pageid, title } of Object.values(pageInfo.query.pages)) {
@@ -121,7 +121,7 @@ $(() => (async () => {
     const result = await api.post({
       action: 'query',
       prop: 'categories',
-      titles: titles.join('|'),
+      titles,
       cllimit: 'max',
     });
     apiPost++;
@@ -140,7 +140,7 @@ $(() => (async () => {
    * 递归主体
    * @param {array} titles 页面名
    * @param {string} category 分类名
-   * @return {boolean} 是否属于
+   * @return {Promise<boolean>} 是否属于
    */
   const pageInCat = async (titles, category) => {
     try {

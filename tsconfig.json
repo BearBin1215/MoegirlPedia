@@ -3,7 +3,8 @@
     "target": "ESNext",
     "lib": [
       "ESNext",
-      "DOM"
+      "DOM",
+      "dom.iterable"
     ],
     "jsx": "preserve",
     "module": "ESNext",

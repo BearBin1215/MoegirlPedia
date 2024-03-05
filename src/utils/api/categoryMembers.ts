@@ -19,7 +19,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: cmtypes[] = ['page', 
         list: 'categorymembers',
         cmlimit: 'max',
         cmtitle,
-        cmtype: cmtype.join('|'),
+        cmtype,
         cmcontinue,
       });
       if (result.query.categorymembers[0]) {

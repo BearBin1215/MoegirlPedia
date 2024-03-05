@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     browser: true,
     node: false,
@@ -9,17 +10,32 @@ module.exports = {
     es2022: true,
   },
   plugins: [
-    "react",
     '@typescript-eslint',
+    "react",
   ],
   parser: '@typescript-eslint/parser',
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended",
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
+    "plugin:react/recommended",
   ],
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
+    requireConfigFile: false,
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
   globals: {
+    window: true,
+    document: true,
     mw: "readonly",
     mediaWiki: "readonly",
     OO: "readonly",
@@ -37,18 +53,6 @@ module.exports = {
     libCachedCode: "readonly",
     html2canvas: "readonly",
     saveAs: "readonly",
-  },
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    ecmaFeatures: {
-      jsx: true,
-    },
-  },
-  settings: {
-    react: {
-      version: "detect",
-    },
   },
   rules: {
     "logical-assignment-operators": 2,
@@ -104,6 +108,7 @@ module.exports = {
     "no-param-reassign": 2,
     "no-trailing-spaces": 2,
     "spaced-comment": 2,
+    "object-shorthand": 2,
     "quote-props": [
       1,
       "as-needed",
@@ -151,9 +156,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        "src/oddments/**/*.js",
-      ],
+      files: ["src/oddments/**/*.js"],
       env: {
         browser: true,
         node: false,
@@ -169,12 +172,6 @@ module.exports = {
         "no-var": 0,
         "prefer-template": 0,
       },
-    },
-    {
-      // 给JSX配置单独的缩进格数
-      files: [
-        "src/gadgets/**/*.jsx",
-      ],
     },
 
     // 打包配置
@@ -194,9 +191,7 @@ module.exports = {
 
     // CI脚本
     {
-      files: [
-        "scripts/**/*.js",
-      ],
+      files: ["scripts/**/*.js"],
       env: {
         browser: false,
         node: true,
