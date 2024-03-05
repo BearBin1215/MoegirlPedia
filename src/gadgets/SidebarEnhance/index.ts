@@ -8,7 +8,7 @@ $(() => {
    * @param {JQuery<HTMLElement>} $body 侧栏块内容
    * @param {JQuery<HTMLElement> | string} $icon 折叠图标
    */
-  const addFold = ($title, $body, $icon) => {
+  const addFold = ($title: JQuery<HTMLElement>, $body: JQuery<HTMLElement>, $icon: JQuery<HTMLElement> | string) => {
     $title
       .addClass('sidebar-enchance-title')
       .append($icon);
@@ -31,7 +31,7 @@ $(() => {
    * vector将侧栏高度设为body高度
    */
   const setPanelHeight = () => {
-    document.getElementById('mw-panel').style.height = `${document.body.scrollHeight}px`;
+    document.getElementById('mw-panel')!.style.height = `${document.body.scrollHeight}px`;
   };
 
   /**
@@ -44,7 +44,10 @@ $(() => {
     }
   };
 
-  let folderIcon = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>';
+  /**
+   * 折叠图标
+   */
+  let folderIcon: string | JQuery<HTMLElement> = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>';
 
   switch (mw.config.get('skin')) {
     case 'moeskin':

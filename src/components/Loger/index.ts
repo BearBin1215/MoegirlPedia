@@ -1,21 +1,77 @@
 import './index.less';
 
 /**
+ * Loger对象的日志类型基础接口
+ */
+interface LogerProps {
+  /**
+   * 类型图标
+   */
+  icon: string | HTMLElement;
+
+  /**
+   * 类型颜色
+   */
+  color: string;
+
+  /**
+   * 类型文本
+   */
+  text: string;
+}
+
+/**
+ * Loger对象的日志类型信息
+ */
+interface LogerType extends LogerProps {
+  /**
+   * 日志类型名
+   */
+  name: string;
+}
+
+interface LogType extends LogerProps {
+  show?: boolean;
+}
+
+type LogTypes = Record<string, LogType>;
+
+/**
+ * 日志筛选按钮对象
+ */
+interface FilterButton {
+  button: HTMLElement,
+  countElement: HTMLElement,
+}
+
+/**
+ * 日志行详情信息
+ */
+interface LogDetail {
+  /**
+   * 日志行对应的HTML元素
+   */
+  node: HTMLElement,
+
+  /**
+   * 日志类型
+   */
+  type: string,
+}
+
+/**
  * 根据html字符串创建节点
  * @param {string} html
  * @returns {Element} 节点
  */
-const createTag = (html) => {
-  const template = document.createElement('template');
+const createTag = (html: string): HTMLElement => {
+  const template: HTMLTemplateElement = document.createElement('template');
   template.innerHTML = html.trim();
-  return template.content.children[0];
+  return template.content.children[0] as HTMLElement;
 };
 
 export default class Loger {
-  /**
-   * @type {{[key: string]: {icon: string, color: string, text: string, show: boolean}}}
-   */
-  _logTypes = {
+  _logTypes: LogTypes = {
     success: {
       icon: '✓',
       color: '#333',
@@ -34,32 +90,46 @@ export default class Loger {
   };
 
   /**
+   * Loger对应的HTML元素
+   */
+  element: HTMLElement;
+
+  /**
+   * 标题对应的HTML元素
+   */
+  headline: HTMLElement;
+
+  /**
+   * 日志主体对应的HTML元素
+   */
+  body: HTMLElement;
+
+  /**
+   * 日志详情列表HTML元素
+   */
+  logerLines: HTMLElement;
+
+  /**
    * 记录日志详情
    * @type {Array<{node: HTMLAnchorElement, type: string}>}
    */
-  logDetails = [];
+  logDetails: LogDetail[] = [];
 
   /**
    * 日志按钮
-   * @type {{[key: string]: {button: HTMLAnchorElement, countElement: HTMLAnchorElement}}}
    */
-  filterButtons = {};
+  filterButtons: Record<string, FilterButton> = {};
 
   /**
    * 创建一个Loger对象
-   * @param {Array<{
-   *     name: string,
-   *     icon: string | HTMLElement,
-   *     color: string,
-   *     text: string
-   *     }>} logTypes 日志行类型及其属性
-   * @param {string} id 元素id
-   * @param {string} headlineTagName 标题元素标签名
+   * @param logTypes 日志行类型及其属性
+   * @param id 元素id
+   * @param headlineTagName 标题元素标签名
    */
-  constructor(logTypes = [], id = '', headlineTagName = 'h3') {
+  constructor(logTypes: LogerType[] = [], id = '', headlineTagName = 'h3') {
     if (logTypes.length > 0) {
       // 根据输入生成需要的类型
-      this._logTypes = logTypes.reduce((pre, { name, icon, color, text }) => {
+      this._logTypes = logTypes.reduce<LogTypes>((pre, { name, icon, color, text }) => {
         pre[name] = {
           icon,
           color,
@@ -142,11 +212,11 @@ export default class Loger {
 
   /**
    * 添加一条日志
-   * @param {string} text 文本
-   * @param {string} type 日志，接受HTML形式的字符串
-   * @param {string} time 时间
+   * @param text 文本
+   * @param type 日志，接受HTML形式的字符串
+   * @param time 时间
    */
-  record(text, type = 'normal', time = new Date().toLocaleTimeString()) {
+  record(text: string, type = 'normal', time = new Date().toLocaleTimeString()) {
     const record = document.createElement('li');
     record.classList.add('loger-record', `loger-${type}`);
     record.innerHTML = `${time} - ${text}`;
@@ -164,7 +234,7 @@ export default class Loger {
       type,
     });
     if (this.filterButtons[type]) {
-      this.filterButtons[type].countElement.innerText = +this.filterButtons[type].countElement.innerText + 1;
+      this.filterButtons[type].countElement.innerText = String(+this.filterButtons[type].countElement.innerText + 1);
     }
   }
 }
