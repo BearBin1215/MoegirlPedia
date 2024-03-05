@@ -34,8 +34,6 @@ module.exports = {
     },
   },
   globals: {
-    window: true,
-    document: true,
     mw: "readonly",
     mediaWiki: "readonly",
     OO: "readonly",
@@ -178,7 +176,7 @@ module.exports = {
     {
       files: [
         "build/**/*.js",
-        "*.*",
+        "./*.*",
       ],
       env: {
         browser: false,
