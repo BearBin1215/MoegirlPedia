@@ -9,28 +9,28 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
         event.preventDefault();
         if (event.shiftKey) {
           // Ctrl+Shift+S切换小编辑后保存
-          document.getElementById('wpMinoredit').click();
+          document.getElementById('wpMinoredit')!.click();
         }
-        document.getElementById('wpSave').click();
+        document.getElementById('wpSave')!.click();
       } else if (event.key === 'V') {
         // Ctrl+Shift+V预览
         event.preventDefault();
         // 模块页“预览使用本模板的页面”
         if (mw.config.get('wgCodeEditorCurrentLanguage') === 'lua') {
-          document.querySelector('#wpTemplateSandboxPreview input').click();
+          (document.querySelector('#wpTemplateSandboxPreview input') as HTMLInputElement)!.click();
         }
-        document.getElementById('wpPreview').click();
+        document.getElementById('wpPreview')!.click();
       } else if (event.key === 'D') {
         // Ctrl+Shift+D查看差异
         event.preventDefault();
-        document.getElementById('wpDiff').click();
+        document.getElementById('wpDiff')!.click();
       }
     }
   });
 
   // 在编辑框中时按tab跳转到摘要输入框而非快捷插入
   const itv = si(() => {
-    const lineWrapping = document.getElementsByClassName('cm-lineWrapping')?.[0];
+    const lineWrapping = document.getElementsByClassName('cm-lineWrapping')?.[0] as HTMLDivElement;
     if (lineWrapping) {
       lineWrapping.tabIndex = 1;
       clearInterval(itv);
@@ -41,7 +41,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   window.addEventListener('keydown', (event) => {
     if (event.ctrlKey && event.key === 'e') {
       event.preventDefault();
-      document.getElementById('Wikiplus-Edit-TopBtn').click();
+      document.getElementById('Wikiplus-Edit-TopBtn')!.click();
     }
   });
 }
