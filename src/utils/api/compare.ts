@@ -1,3 +1,5 @@
+import type { ApiCompareResponse } from '@/@types/api';
+
 /**
  * 比较差异
  * @param fromtext 旧版本
@@ -13,7 +15,7 @@ const compare = async (fromtext: string, totext: string, showTitle = false): Pro
     totext,
     topst: true,
     fromtitle: 'PAGENAME',
-  });
+  }) as ApiCompareResponse;
   const result = res.compare['*'];
   const diffTitle = `<tr class="diff-title"><td colspan="${result ? 2 : 1}" class="diff-otitle">旧版本</td><td colspan="${result ? 2 : 1}" class="diff-ntitle">新版本</td></tr>`;
   const diffMarker = '<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>';

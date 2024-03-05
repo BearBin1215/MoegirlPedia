@@ -4,6 +4,9 @@ import type { PageProps, Cmtype } from '../utils';
  * 通过`list=xxx`请求得到的数据
  */
 
+/**
+ * `list=categorymembers`获取到的分类信息
+ */
 export interface Categorymembers extends PageProps {
   /**
    * 添加用于分类中排序的关键字（十六进制字符串）
