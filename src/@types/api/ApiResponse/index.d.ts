@@ -1,11 +1,6 @@
-import type {
-  ContentModel,
-  ContentFormat,
-} from './utils';
-import {
-  Protection,
-  ResponseNotification,
-} from './utils';
+import type { ContentModel } from '../utils';
+import type { Linkshere, Redirects, Revisions, Transcludedin } from './propData';
+import type { Categorymembers } from './listData';
 
 /**
  * 一次API查询经常不能获取你想要的所有数据。当这种情况发生时，
@@ -30,30 +25,162 @@ export interface ApiContinue {
   continue: string;
 
   /**
-   * prop=categories (cl)
+   * prop=categories
    */
   clcontinue?: string;
 
   /**
-   * prop=categoryinfo (ci)
+   * prop=categoryinfo
    */
   cicontinue?: string;
 
   /**
-   * prop=contributors (pc)
+   * prop=contributors
    */
   pccontinue?: string;
 
   /**
-   * prop=deletedrevisions (drv)
+   * prop=deletedrevisions
    */
   drvcontinue?: string;
+
+  /**
+   * prop=duplicatefiles
+   */
+  dfcontinue?: string;
+
+  /**
+   * prop=extlinks
+   */
+  eloffset?: string;
+
+  /**
+   * prop=extracts
+   */
+  excontinue?: string;
+
+  /**
+   * prop=fileusage
+   */
+  fucontinue?: string;
+
+  /**
+   * prop=globalusage
+   */
+  gucontinue?: string;
+
+  /**
+   * prop=imageinfo
+   */
+  iicontinue?: string;
+
+  /**
+   * prop=images
+   */
+  imcontinue?: string;
+
+  /**
+   * prop=info
+   */
+  incontinue?: string;
+
+  /**
+   * prop=iwlinks
+   */
+  iwcontinue?: string;
+
+  /**
+   * prop=langlinks
+   */
+  llcontinue?: string;
+
+  /**
+   * prop=links
+   */
+  plcontinue?: string;
+
+  /**
+   * prop=linkshere
+   */
+  lhcontinue?: string;
+
+  /**
+   * prop=pageimages
+   */
+  picontinue?: string;
+
+  /**
+   * prop=pageprops
+   */
+  ppcontinue?: string;
+
+  /**
+   * prop=redirects
+   */
+  rdcontinue?: string;
+
+  /**
+   * prop=references
+   */
+  rfcontinue?: string;
+
+  /**
+   * prop=revisions
+   */
+  rvcontinue?: string;
+
+  /**
+   * prop=templates
+   */
+  tlcontinue?: string;
+
+  /**
+   * prop=transcludedin
+   */
+  ticontinue?: string;
+
+  /**
+   * prop=videoinfo
+   */
+  vicontinue?: string;
 
   [key: string]: string;
 }
 
 /**
- * api响应基础接口
+ * 页面保护信息
+ */
+export interface Protection {
+  /**
+   * 受保护的操作类型
+   */
+  type: string;
+
+  /**
+   * 保护等级
+   */
+  level: string;
+
+  /**
+   * 保护期限，infinity为无限期
+   */
+  expiry: string;
+}
+
+/**
+ * API响应的错误或警告信息
+ */
+export interface ResponseNotification {
+  code?: string;
+
+  info?: string;
+
+  "*": string;
+}
+
+
+/**
+ * API响应基础接口
  */
 export interface ApiResponse {
   /**
@@ -73,6 +200,9 @@ export interface ApiResponse {
   [key: string]: any;
 }
 
+/**
+ * `prop=xxx`获取到的数据
+ */
 export interface ApiQueryPageInfo {
   /**
    * 页面id
@@ -199,81 +329,41 @@ export interface ApiQueryPageInfo {
    * 用户可以在页面上执行的操作
    */
   actions?: Record<string, ''>,
-}
-
-export interface Revisions {
-  /**
-   * 修订版本的ID
-   */
-  revid?: number;
-
-  parentid?: number;
 
   /**
-   * 做出修订的用户
+   * `prop=redirects`获取的至指定页面的所有重定向
    */
-  user?: string;
+  redirects: Redirects[];
 
   /**
-   * 修订创建者的用户ID
+   * `prop=revisions`获取的修订版本信息
    */
-  userid?: number;
+  revisions?: Revisions[];
 
   /**
-   * 编辑时间
+   * `prop=transcludedin`获取的所有嵌入指定页面的页面
    */
-  timestamp?: string;
+  transcludedin?: Transcludedin[];
 
   /**
-   * 修订的长度（字节）
+   * `prop=linkshere`获取的所有链接至指定页面的页面
    */
-  size?: number;
+  linkshere?: Linkshere[];
 
-  /**
-   * 修订的SHA-1（base 16）
-   */
-  sha1?: string;
-
-  /**
-   * 修订的内容模型ID
-   */
-  contentmodel?: ContentModel;
-
-  /**
-   * 编辑摘要
-   */
-  comment: string;
-
-  /**
-   * 由用户对修订做出的被解析的摘要
-   */
-  parsedcomment?: string;
-
-  /**
-   * 修订标签
-   */
-  tags?: string[];
-
-  /**
-   * 修订内容的XML解析树（需要内容模型`wikitext`）
-   */
-  parsetree?: string;
-
-  /**
-   * 内容序列化格式
-   */
-  contentformat?: ContentFormat;
-
-  /**
-   * 修订文本
-   */
-  "*"?: string;
+  [key: string]: any;
 }
 
 /**
- * action=query响应接口
+ * `action=query`响应数据接口
  */
 export interface ApiQueryResponse extends ApiResponse {
+  /**
+   * 1.25版本后，API返回一个`batchcomplete`，表示当前“批次”的
+   * 所有页面数据已经返回，而`continue`元素不包含属性的继续数据，
+   * 而可能包含生成器的继续数据。
+   */
+  batchcomplete?: "";
+
   /**
    * 用于继续请求
    */
@@ -282,21 +372,17 @@ export interface ApiQueryResponse extends ApiResponse {
   /**
    * 请求结果
    */
-  query?: Record<string, any>;
-}
-
-export interface ApiQueryRevisionsPageInfo extends ApiQueryPageInfo {
-  /**
-   * 修订版本列表
-   */
-  revisions: Revisions[];
-}
-
-export interface ApiQueryRevisionsResponse extends ApiQueryResponse {
-  query?: {
+  query: {
     /**
-     * 页面数据
+     * `prop=xxx`获取到的数据
      */
-    pages: Record<number, ApiQueryRevisionsPageInfo>
+    pages?: Record<number, ApiQueryPageInfo>;
+
+    /**
+     * `list=categorymembers`获取到的分类成员信息
+     */
+    categorymembers?: Categorymembers[];
+
+    [key: string]: any;
   };
 }

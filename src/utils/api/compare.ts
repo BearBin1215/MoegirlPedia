@@ -1,9 +1,9 @@
 /**
  * 比较差异
- * @param {string} fromtext 旧版本
- * @param {string} totext 新版本
- * @param {boolean} showTitle 是否显示标题（旧版本、新版本）
- * @returns {Promise<string>}
+ * @param fromtext 旧版本
+ * @param totext 新版本
+ * @param showTitle 是否显示标题（旧版本、新版本）
+ * @returns 新旧版本差异
  */
 const compare = async (fromtext: string, totext: string, showTitle = false): Promise<string> => {
   const api = new mw.Api();

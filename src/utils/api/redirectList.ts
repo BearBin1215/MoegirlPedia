@@ -1,11 +1,13 @@
+import type { ApiQueryResponse } from '@/@types/api';
+
 /**
  * 获取重定向列表
- * @param {string} pagename 页面名
- * @returns {Promise<string[]>}
+ * @param pagename 页面名
+ * @returns 页面列表
  */
 const redirectList = async (pagename: string): Promise<string[]> => {
   const api = new mw.Api();
-  let rdcontinue = '';
+  let rdcontinue: string | undefined = '';
   const pageList = [];
   while (rdcontinue !== void 0) {
     const res = await api.post({
@@ -14,9 +16,8 @@ const redirectList = async (pagename: string): Promise<string[]> => {
       titles: pagename,
       rdlimit: 'max',
       rdcontinue,
-    });
-    // @ts-ignore
-    pageList.push(...(Object.values(res.query.pages)[0].redirects || []).map(({ title }) => title));
+    }) as ApiQueryResponse;
+    pageList.push(...(Object.values(res.query.pages!)[0].redirects || []).map(({ title }) => title!));
     rdcontinue = res.continue?.rdcontinue;
   }
   return pageList;

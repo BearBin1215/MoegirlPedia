@@ -30,30 +30,27 @@ export type ContentFormat =
   'text/x-wiki' |
   'text/javascript';
 
-export interface Protection {
-  /**
-   * 受保护的操作类型
-   */
-  type: string;
-
-  /**
-   * 保护等级
-   */
-  level: string;
-
-  /**
-   * 保护期限，infinity为无限期
-   */
-  expiry: string;
-}
+/**
+ * 页面被分类的类型
+ */
+export type Cmtype = 'page' | 'subcat' | 'file';
 
 /**
- * api请求响应的错误或警告信息
+ * 页面信息
  */
-export interface ResponseNotification {
-  code?: string;
+export interface PageProps {
+  /**
+   * 页面id
+   */
+  pageid?: number;
 
-  info?: string;
+  /**
+   * 名字空间
+   */
+  ns?: number;
 
-  "*": string;
+  /**
+   * 页面标题
+   */
+  title?: string;
 }

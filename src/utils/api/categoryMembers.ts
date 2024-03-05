@@ -1,18 +1,18 @@
-type cmtypes = 'page' | 'subcat' | 'file';
+import type { Cmtype, ApiQueryResponse } from "@/@types/api";
 
 /**
  * 获取分类成员，有权限用户使用api，无权限用户使用ajax。
  *
- * @param {string} cmtitle 分类名
- * @param {cmtypes[]} cmtype 获取类型
- * @returns
+ * @param cmtitle 分类名
+ * @param cmtype 获取类型
+ * @returns 页面列表
  */
-const getCategoryMembers = async (cmtitle: string, cmtype: cmtypes[] = ['page', 'subcat', 'file']) => {
+const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', 'subcat', 'file']) => {
   const api = new mw.Api();
   const pageList: string[] = [];
   // 有api权限的用户通过API获取，无权限用户通过ajax获取
   if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
-    let cmcontinue = '';
+    let cmcontinue: string | undefined = '';
     while (cmcontinue !== undefined) {
       const result = await api.post({
         action: 'query',
@@ -21,10 +21,10 @@ const getCategoryMembers = async (cmtitle: string, cmtype: cmtypes[] = ['page', 
         cmtitle,
         cmtype,
         cmcontinue,
-      });
-      if (result.query.categorymembers[0]) {
-        for (const page of result.query.categorymembers) {
-          pageList.push(page.title);
+      }) as ApiQueryResponse;
+      if (result.query.categorymembers![0]) {
+        for (const page of result.query.categorymembers!) {
+          pageList.push(page.title!);
         }
       }
       cmcontinue = result.continue?.cmcontinue;

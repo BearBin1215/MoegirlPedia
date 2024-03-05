@@ -30,7 +30,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
 
   // 在编辑框中时按tab跳转到摘要输入框而非快捷插入
   const itv = si(() => {
-    const lineWrapping = document.getElementsByClassName('cm-lineWrapping')?.[0] as HTMLDivElement;
+    const lineWrapping = document.querySelector<HTMLDivElement>('.cm-lineWrapping');
     if (lineWrapping) {
       lineWrapping.tabIndex = 1;
       clearInterval(itv);

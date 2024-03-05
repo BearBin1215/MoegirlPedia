@@ -1,3 +1,4 @@
 export * from './utils';
-export * from './apiParams';
-export * from './apiResponse';
+
+export * from './ApiParams';
+export * from './ApiResponse';

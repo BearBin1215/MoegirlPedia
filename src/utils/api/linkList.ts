@@ -1,14 +1,14 @@
-import { ApiParams } from "@/@types/api";
+import type { ApiParams, ApiQueryResponse } from "@/@types/api";
 /**
  * 获取链接到指定页面的列表
- * @param {string} pagename 页面名
- * @param {string} lhnamespace 命名空间，格式同api.php中以|分隔
- * @returns {Promise<string[]>} 列表
+ * @param pagename 页面名
+ * @param lhnamespace 命名空间，格式同api.php中以|分隔
+ * @returns 页面列表
  */
 const linkList = async (pagename: string, lhnamespace = ''): Promise<string[]> => {
   const api = new mw.Api();
-  let lhcontinue = 1;
-  const pageList = [];
+  let lhcontinue: string | undefined = '1';
+  const pageList: string[] = [];
   while (lhcontinue) {
     const postBody: ApiParams = {
       action: 'query',
@@ -20,9 +20,8 @@ const linkList = async (pagename: string, lhnamespace = ''): Promise<string[]> =
     if (lhnamespace) {
       postBody.lhnamespace = lhnamespace;
     }
-    const res = await api.post(postBody);
-    // @ts-ignore
-    pageList.push(...(Object.values(res.query.pages)[0].linkshere || []).map(({ title }) => title));
+    const res = await api.post(postBody) as ApiQueryResponse;
+    pageList.push(...(Object.values(res.query.pages!)[0].linkshere || []).map(({ title }) => title!));
     lhcontinue = res.continue?.lhcontinue;
   }
   return pageList;
