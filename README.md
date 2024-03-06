@@ -204,7 +204,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`yarn`指令安装依赖。
 
-- 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js文件中调用。
+- 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js和ts编写都可以。通过webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js或ts文件中调用。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
 
 ### 指令
