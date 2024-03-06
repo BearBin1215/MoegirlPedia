@@ -185,6 +185,9 @@ module.exports = {
       parserOptions: {
         ecmaVersion: "latest",
       },
+      rules: {
+        "@typescript-eslint/no-var-requires": 0,
+      },
     },
 
     // CI脚本
