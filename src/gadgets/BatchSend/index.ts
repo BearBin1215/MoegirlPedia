@@ -1,5 +1,6 @@
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
+import type { ApiEditResponse } from '@/@types/api';
 import './index.less';
 
 $(() => (async () => {
@@ -14,12 +15,12 @@ $(() => (async () => {
 
   /**
    * 解析内容
-   * @param {string} sectiontitle 章节标题
-   * @param {string} text 正文源代码
-   * @param {string} summary 摘要
+   * @param sectiontitle 章节标题
+   * @param text 正文源代码
+   * @param summary 摘要
    * @returns HTML源代码
    */
-  const preview = async (sectiontitle, text, summary = '') => {
+  const preview = async (sectiontitle: string, text: string, summary = '') => {
     const { parse } = await api.post({
       action: 'parse',
       uselang: mw.config.get('wgUserLanguage'),
@@ -29,7 +30,7 @@ $(() => (async () => {
       sectiontitle,
       text,
       summary,
-    });
+    }) as { parse: { text: { '*': string }, parsedsummary: { '*': string } } };
     return parse;
   };
 
@@ -39,12 +40,12 @@ $(() => (async () => {
    * 返回的sendResult对象中，sendResult.edit.result为Success/Failure
    *
    * 为Failure时，Object.keys(sendResult.edit)[0]为原因，sendResult.edit[Object.keys(sendResult.edit)[0]]为详情
-   * @param {string} user 目标用户
-   * @param {string} sectiontitle 新章节标题
-   * @param {string} text 源代码
+   * @param title 目标用户
+   * @param sectiontitle 新章节标题
+   * @param text 源代码
    * @returns 编辑结果
    */
-  const send = async (title, sectiontitle, text, summary = '') => {
+  const send = async (title: string, sectiontitle: string, text: string, summary = '') => {
     const sendResult = await api.postWithToken('csrf', {
       format: 'json',
       action: 'edit',
@@ -56,7 +57,7 @@ $(() => (async () => {
       sectiontitle,
       text,
       summary,
-    });
+    }) as ApiEditResponse;
     return sendResult;
   };
 
@@ -138,7 +139,7 @@ $(() => (async () => {
 
   // 监听页面列表、标题、内容栏的change事件，用户关闭页面时发出提醒
   for (const item of [pagelistBox, headlineBox, contentBox]) {
-    item.on('change', () => {
+    (item as OO.ui.InputWidget).on('change', () => {
       window.onbeforeunload = () => true;
     });
   }
@@ -197,7 +198,7 @@ $(() => (async () => {
             loger.record(`向【${userLink}】发送成功。`, 'success');
             await waitInterval(interval);
           } else if (sendResult.edit?.result === 'Failure') {
-            loger.record(`向【${userLink}】发送失败：${Object.keys(sendResult.edit)[0]}：${sendResult.edit[Object.keys(sendResult.edit)[0]]}。`, 'error');
+            loger.record(`向【${userLink}】发送失败：${Object.keys(sendResult.edit)[0]}：${Object.values(sendResult.edit)[0]}。`, 'error');
           }
         } catch (err) {
           loger.record(`向【<a href="/${title}">${title}</a>】发送失败：${err}。`, 'error');
