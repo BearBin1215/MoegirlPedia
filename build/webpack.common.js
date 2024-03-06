@@ -45,7 +45,19 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx)$/,
+        test: /\.(ts|tsx)$/i,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(js|jsx)$/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -53,14 +65,6 @@ module.exports = {
             targets: '> 0.35%, not dead',
           },
         },
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          postCssLoader,
-        ],
       },
       {
         test: /\.less$/,
@@ -72,12 +76,11 @@ module.exports = {
         ],
       },
       {
-        test: /\.(ts|tsx)$/i,
-        exclude: /node_modules/,
+        test: /\.css$/,
         use: [
-          {
-            loader: 'ts-loader',
-          },
+          'style-loader',
+          'css-loader',
+          postCssLoader,
         ],
       },
     ],
