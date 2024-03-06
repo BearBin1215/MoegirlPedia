@@ -1,6 +1,6 @@
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
-import type { ApiEditResponse } from '@/@types/api';
+import type { ApiEditResponse, ApiParseResponse } from '@/@types/api';
 import './index.less';
 
 $(() => (async () => {
@@ -30,7 +30,7 @@ $(() => (async () => {
       sectiontitle,
       text,
       summary,
-    }) as { parse: { text: { '*': string }, parsedsummary: { '*': string } } };
+    }) as ApiParseResponse;
     return parse;
   };
 
@@ -153,8 +153,8 @@ $(() => (async () => {
     $previewSummary.show();
     $previewZone.html('<div class="oo-ui-pendingElement-pending">正在加载预览……</div>');
     const { text, parsedsummary } = await preview(headlineBox.getValue(), contentBox.getValue(), summaryBox.getValue());
-    $previewZone.html(text['*']);
-    $previewSummaryComment.html(`（${parsedsummary['*']}）`);
+    $previewZone.html(text!['*']);
+    $previewSummaryComment.html(`（${parsedsummary!['*']}）`);
 
     previewButton.setDisabled(false); // 恢复预览按钮使用
   });
