@@ -3,37 +3,79 @@
  */
 import './index.less';
 
+interface SnakeProps {
+  /**
+   * 决定对象是否有head
+   */
+  hasHead: boolean;
+
+  /**
+   * 决定对象的项目是否有链接
+   */
+  hasHref: boolean;
+
+  /**
+   * Snake对象标签的属性值
+   */
+  [key: string]: string | boolean;
+}
+
 export default class Snake {
-  _length = 0; // 项目数
-  _complete = 0; // 已完成项目数
-  blocks = {}; // 项目集合
+  private _length = 0; // 项目数
+  private _complete = 0; // 已完成项目数
+
+  /**
+   * 是否有head
+   */
+  hasHead: boolean;
+
+  /**
+   * 是否有链接
+   */
+  hasHref: boolean;
+
+  /**
+   * 对象对应的HTML元素
+   */
+  element: HTMLElement;
+
+  head: HTMLElement | undefined;
+
+  body: HTMLElement;
+
+  headComplete: HTMLElement | undefined;
+
+  headLength: HTMLElement | undefined;
+
+  /**
+   * scale项目集合
+   */
+  blocks: Record<string, HTMLAnchorElement | HTMLDivElement> = {};
 
   /**
    * 创建一个Snake对象
-   * @param {{hasHead: boolean, hasHref: boolean, attrs}} token 输入参数组成的对象。token.hasHead决定对象是否有head，token.hasHref决定对象的项目是否有链接，其他对象则成为Snake对象标签的属性值。
+   * @param token 输入参数组成的对象
    */
-  constructor(token = {}) {
+  constructor({ hasHead = true, hasHref = true, ...props }: SnakeProps) {
     // 给类的属性赋值
-    this.hasHead = token.hasHead !== false;
-    this.hasHref = token.hasHref !== false;
-    Reflect.deleteProperty(token, 'hasHead');
-    Reflect.deleteProperty(token, 'hasHref');
+    this.hasHead = hasHead;
+    this.hasHref = hasHref;
 
     /**
      * 根据html字符串创建节点
-     * @param {string} html
-     * @returns {Element} 节点
+     * @param html
+     * @returns 节点
      */
-    const createTag = (html) => {
+    const createTag = (html: string) => {
       const template = document.createElement('template');
       template.innerHTML = html.trim();
-      return template.content.children[0];
+      return template.content.children[0] as HTMLElement;
     };
 
     // 创建element，并加上.snake
     this.element = createTag('<div class="snake"></div>');
-    for (const key in token) {
-      this.element.setAttribute(key, token[key]);
+    for (const key in props) {
+      this.element.setAttribute(key, props[key] as string);
     }
 
     // 根据hasHead判断是否创建head
@@ -41,9 +83,9 @@ export default class Snake {
       this.head = createTag('<div class="snake-head"></div>');
 
       // head中的状态显示
-      this.head.complete = createTag('<span class=""snake-head-complete">0</div>');
-      this.head.length = createTag('<span class=""snake-head-all">0</div>');
-      this.head.append('已完成：', this.head.complete, '/', this.head.length);
+      this.headComplete = createTag('<span class="snake-head-complete">0</div>');
+      this.headLength = createTag('<span class="snake-head-all">0</div>');
+      this.head.append('已完成：', this.headComplete, '/', this.headLength);
 
       // 添加到element
       this.element.append(this.head);
@@ -60,7 +102,7 @@ export default class Snake {
   set length(val) {
     this._length = val;
     if (this.hasHead) {
-      this.head.length.innerHTML = val;
+      this.headLength!.innerHTML = (val as unknown) as string;
     }
   }
   get length() {
@@ -70,7 +112,7 @@ export default class Snake {
   set complete(val) {
     this._complete = val;
     if (this.hasHead) {
-      this.head.complete.innerHTML = val;
+      this.headComplete!.innerHTML = (val as unknown) as string;
     }
   }
   get complete() {
@@ -83,7 +125,7 @@ export default class Snake {
    * @param {string} title 项目元素的title属性；若留空，hasHref为true时会从name继承，为false时不会继承
    * @param {string} href 项目元素的href属性，仅在hasHref为true时有效；若留空则会从name继承
    */
-  addScale(name, title, href) {
+  addScale(name: string, title: string, href: string) {
     if (this.blocks[name]) {
       throw new Error(`Snake: 项目${name}已存在。`);
     }
@@ -112,9 +154,9 @@ export default class Snake {
 
   /**
    * 移除项目
-   * @param {string[]} ...name 要移除项目的名称
+   * @param ...name 要移除项目的名称
    */
-  removeScale(...name) {
+  removeScale(...name: string[]) {
     // 根据name的类型判断是一个或多个
     for (const item of name) {
       if (!this.blocks[item]) {
@@ -128,10 +170,10 @@ export default class Snake {
 
   /**
    * 更改项目状态
-   * @param {string} name 项目的名称
-   * @param {string} state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为success
+   * @param name 项目的名称
+   * @param state 目标状态，可以是ready/ongoing/warn/success/fail之一，默认为success
    */
-  crawl(name, state = 'success') {
+  crawl(name: string, state = 'success') {
     if (!this.blocks[name]) {
       throw new Error(`Snake: 不存在名为${name}的项目。`);
     }
