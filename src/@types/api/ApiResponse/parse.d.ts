@@ -158,9 +158,6 @@ export interface ApiParseIWLink {
   '*': string;
 }
 
-/**
- * `action=parse`响应数据接口
- */
 export interface ApiParseResult {
   /**
    * 页面标题
@@ -247,6 +244,9 @@ export interface ApiParseResult {
   [key: string]: any;
 }
 
+/**
+ * 通过API解析文本（`action=parse`）响应数据
+ */
 export interface ApiParseResponse extends ApiResponse {
   parse: ApiParseResult;
 }
