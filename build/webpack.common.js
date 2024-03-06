@@ -30,6 +30,9 @@ const postCssLoader = {
   },
 };
 
+/**
+ * @type {(import('webpack').Configuration)}
+ */
 module.exports = {
   entry,
   resolve: {

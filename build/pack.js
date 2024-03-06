@@ -6,7 +6,12 @@ const webpackConfig = require('./webpack.prod');
 const { log } = console;
 
 const gadgets = process.argv.slice(2); // 读取命令行输入的工具名
-let config; // 打包配置
+
+/**
+ * 打包配置
+ * @type {(import('webpack').Configuration)}
+ */
+let config;
 
 if (!gadgets.length) {
   log('未指定要打包的工具，即将全部打包……');
