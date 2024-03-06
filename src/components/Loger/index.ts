@@ -23,14 +23,14 @@ interface LogerProps {
 /**
  * Loger对象的日志类型信息
  */
-interface LogerType extends LogerProps {
+export interface LogerType extends LogerProps {
   /**
    * 日志类型名
    */
   name: string;
 }
 
-interface LogType extends LogerProps {
+export interface LogType extends LogerProps {
   show?: boolean;
 }
 
@@ -47,7 +47,7 @@ interface FilterButton {
 /**
  * 日志行详情信息
  */
-interface LogDetail {
+export interface LogDetail {
   /**
    * 日志行对应的HTML元素
    */
