@@ -3,7 +3,7 @@
  */
 import './index.less';
 
-interface SnakeProps {
+export interface SnakeProps {
   /**
    * 决定对象是否有head
    */
