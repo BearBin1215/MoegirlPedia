@@ -195,7 +195,10 @@ $(() => (async () => {
    * @param {string} type "page"或"category"
    * @returns {string[]} 页面列表
    */
-  const getList = (type: string): string[] => ((type === 'page' ? $pageListBox.val() : $categoryListBox.val())!).split('\n').filter((s) => s && s.trim());
+  const getList = (type: string): string[] => ((type === 'page'
+    ? $pageListBox.val()
+    : $categoryListBox.val()
+  )!).split('\n').filter((s) => s && s.trim());
 
   /**
    * 获取分类列表内的页面
@@ -254,7 +257,7 @@ $(() => (async () => {
    * @returns
    */
   const solveRegex = (editFrom: string, isRegex: boolean): string | RegExp | undefined => {
-    let output: string|RegExp = editFrom;
+    let output: string | RegExp = editFrom;
     if (isRegex) {
       try {
         const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
