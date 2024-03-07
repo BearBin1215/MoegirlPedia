@@ -11,7 +11,7 @@ $(() => (async () => {
   await mw.loader.using(['mediawiki.api', 'oojs-ui']);
   const api = new mw.Api();
   let running = false;
-  let timeout;
+  let timeout: NodeJS.Timeout;
   const loger = new Loger([
     {
       name: 'success',
@@ -51,10 +51,10 @@ $(() => (async () => {
   $('#firstHeading').html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
 
-  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>'); // “原文字”输入框
-  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>'); // “替换为”输入框
-  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>'); // 页面列表
-  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>'); // 分类列表
+  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>') as JQuery<HTMLTextAreaElement>; // “原文字”输入框
+  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>') as JQuery<HTMLTextAreaElement>; // “替换为”输入框
+  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>') as JQuery<HTMLTextAreaElement>; // 页面列表
+  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>') as JQuery<HTMLTextAreaElement>; // 分类列表
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
   });
@@ -185,7 +185,7 @@ $(() => (async () => {
    * @param {number} time 等待时间（ms）
    * @returns {Promise<void>}
    */
-  const waitInterval = (time) => new Promise((resolve) => timeout = setTimeout(resolve, time));
+  const waitInterval = (time: number): Promise<void> => new Promise((resolve) => timeout = setTimeout(resolve, time));
 
   /**
    * 获取用户输入的页面或分类
@@ -195,7 +195,7 @@ $(() => (async () => {
    * @param {string} type "page"或"category"
    * @returns {string[]} 页面列表
    */
-  const getList = (type) => (type === 'page' ? $pageListBox.val() : $categoryListBox.val()).split('\n').filter((s) => s && s.trim());
+  const getList = (type: string): string[] => ((type === 'page' ? $pageListBox.val() : $categoryListBox.val())!).split('\n').filter((s) => s && s.trim());
 
   /**
    * 获取分类列表内的页面
@@ -203,8 +203,8 @@ $(() => (async () => {
    * @param {string[]} categories 分类列表
    * @returns {Promise<string[]>} 分类内的页面
    */
-  const getPagesFromCats = async (categories) => {
-    const pageList = [];
+  const getPagesFromCats = async (categories: string[]): Promise<string[]> => {
+    const pageList: string[] = [];
     const promises = categories.map(async (category) => {
       // 有api权限的用户通过API获取，无权限用户通过ajax获取
       try {
@@ -222,7 +222,7 @@ $(() => (async () => {
             message = '网络连接出错';
             break;
           default:
-            message = error;
+            message = error as string;
         }
         loger.record(`获取【${category}】内的页面出错：${message}。`, 'error');
       }
@@ -236,25 +236,25 @@ $(() => (async () => {
    *
    * @returns {Promise<string[]>} 得到的页面列表
    */
-  const getPageList = async () => {
+  const getPageList = async (): Promise<string[]> => {
     const pageSet = new Set([...getList('page'), ...await getPagesFromCats(getList('category'))]);
     return [...pageSet];
   };
 
   // 获取间隔
-  const getInterval = () => (intervalBox.getValue() === '' ? 20 : intervalBox.getValue()) * 1000;
+  const getInterval = () => +(intervalBox.getValue() === '' ? 20 : intervalBox.getValue()) * 1000;
 
   // 获取附加摘要
   const getAdditionalSummary = () => summaryBox.getValue();
 
   /**
    * 按照选择情况解析正则表达式或输出原字符串
-   * @param {string} editFrom 输入的正则表达式或字符串
-   * @param {boolean} isRegex 是否勾选解析
-   * @returns {string | RegExp}
+   * @param editFrom 输入的正则表达式或字符串
+   * @param isRegex 是否勾选解析
+   * @returns
    */
-  const solveRegex = (editFrom, isRegex) => {
-    let output = editFrom;
+  const solveRegex = (editFrom: string, isRegex: boolean): string | RegExp | undefined => {
+    let output: string|RegExp = editFrom;
     if (isRegex) {
       try {
         const parts = editFrom.match(/^\/(.*)\/([gimsuy]*)$/);
@@ -277,12 +277,13 @@ $(() => (async () => {
   };
 
   /**
-   * @param {string} title 页面标题
-   * @param {string | RegExp} editFrom
-   * @param {string} changeTo
-   * @returns {string}
+   * 预览差异
+   * @param title 页面标题
+   * @param editFrom
+   * @param changeTo
+   * @returns
    */
-  const preview = async (title, editFrom, changeTo) => {
+  const preview = async (title: string, editFrom: string | RegExp, changeTo?: string): Promise<string | undefined> => {
     previewButton.setDisabled(true);
     loger.record('正在获取预览……');
     try {
@@ -291,7 +292,7 @@ $(() => (async () => {
         loger.record(`获取${title}当前内容出错。`, 'error');
         return;
       }
-      const totext = fromtext.replaceAll(editFrom, changeTo);
+      const totext = fromtext.replaceAll(editFrom, changeTo!);
       const diff = await compare(fromtext, totext, true);
       OO.ui.alert($(diff), {
         title: $(`<span>预览<b>【${title}】</b>的更改</span>`),
@@ -312,7 +313,7 @@ $(() => (async () => {
    * @param {string} changeTo 替换为
    * @returns {Promise<"nochange"|"success"|"failed">} 编辑结果，success/nochange/failed
    */
-  const editAction = async (title, summary, editFrom, changeTo) => {
+  const editAction = async (title: string, summary: string, editFrom: string | RegExp, changeTo: string): Promise<"nochange" | "success" | "failed"> => {
     const retry = retrySelect.isSelected();
     let retreyTimes = 0;
     const maxRetryCount = +retryTimesBox.getValue();
@@ -320,7 +321,7 @@ $(() => (async () => {
     do {
       try {
         const source = await pageSource(title); // 获取源代码并进行替换
-        const replacedSource = source.replaceAll(editFrom, changeTo);
+        const replacedSource = source!.replaceAll(editFrom, changeTo);
         if (source === replacedSource) {
           loger.record(`【${pageLink}】编辑前后无变化。`, 'nochange');
           return 'nochange';
@@ -360,7 +361,7 @@ $(() => (async () => {
             errorMessage = '页面被保护';
             break;
           default:
-            errorMessage = err;
+            errorMessage = err as string;
         }
         loger.record(`编辑【<a href="/${title}?action=history" target="_blank">${title}</a>】时出现错误：${errorMessage}。`, 'error');
         if (!retry || err !== 'http') {
@@ -387,8 +388,8 @@ $(() => (async () => {
       } else {
         const additionalSummary = getAdditionalSummary();
         const interval = getInterval();
-        const changeTo = $changeToBox.val();
-        const editFrom = solveRegex($editFromBox.val(), regexSelect.isSelected());
+        const changeTo = $changeToBox.val()!;
+        const editFrom = solveRegex($editFromBox.val()!, regexSelect.isSelected());
         if (!editFrom) {
           return;
         }
