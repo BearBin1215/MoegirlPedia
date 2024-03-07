@@ -104,10 +104,10 @@ $(() => (async () => {
     id: 'bs-summary',
   });
 
-  const $previewHeadline = $('<h3>预览</h3>').hide();
-  const $previewZone = $('<div id="bs-previewzone">').hide();
-  const $previewSummaryComment = $('<span class="comment">');
-  const $previewSummary = $('<div id="bs-previewsummary">').hide();
+  const $previewHeadline = $('<h3>预览</h3>').hide() as JQuery<HTMLHeadingElement>;
+  const $previewZone = $('<div id="bs-previewzone">').hide() as JQuery<HTMLDivElement>;
+  const $previewSummaryComment = $('<span class="comment">') as JQuery<HTMLSpanElement>;
+  const $previewSummary = $('<div id="bs-previewsummary">').hide() as JQuery<HTMLDivElement>;
 
   // 构建页面
   $('#mw-content-text').empty().append(
@@ -134,7 +134,7 @@ $(() => (async () => {
       '编辑摘要：',
       $previewSummaryComment,
     ),
-    $(loger.element),
+    loger.element,
   );
 
   // 监听页面列表、标题、内容栏的change事件，用户关闭页面时发出提醒

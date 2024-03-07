@@ -1,3 +1,6 @@
+/**
+ * @todo 判定移动的子页面和讨论页
+ */
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import './index.less';
@@ -24,11 +27,11 @@ $(() => (async () => {
   $('#contentSub').remove();
 
   // 页面表格
-  const $table = $('<table id="bm-page-list-table">');
+  const $table: JQuery<HTMLTableElement> = $('<table id="bm-page-list-table">');
   // 表格内的tbody
-  const $tableBody = $('<tbody>');
+  const $tableBody: JQuery<HTMLTableSectionElement> = $('<tbody>');
   // 新增行按钮
-  const $addRowButton = $('<th><div class="oo-ui-icon-add" id="bm-add-row" title="新增一行"></div></th>');
+  const $addRowButton: JQuery<HTMLTableCellElement> = $('<th><div class="oo-ui-icon-add" id="bm-add-row" title="新增一行"></div></th>');
   // 移动选项
   const moveTalkWidget = new OO.ui.CheckboxInputWidget({
     id: 'bm-movetalk-box',
@@ -80,7 +83,7 @@ $(() => (async () => {
 
   /**
    * 添加表格行
-   * @param {number} count 行数
+   * @param count 行数
    */
   const addRow = (count = 1) => {
     for (let i = 0; i < count; i++) {
@@ -125,7 +128,7 @@ $(() => (async () => {
       '<li>操作间隔单位为秒（s），不填默认为0。不包含本身移动页面所用的服务器响应时间。</li>',
       '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定的速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
     ),
-    $(loger.element),
+    loger.element,
   );
 
   // 先加十行

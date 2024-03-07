@@ -1,9 +1,10 @@
+import domtoimage from 'dom-to-image';
 import { pageSource, compare } from '@/utils/api';
 import './index.less';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:TextDiff') {
-    if (window.TextDiff) {
+    if ('TextDiff' in window) {
       await mw.loader.using('mediawiki.util');
       mw.util.addPortletLink('p-tb', '/Special:TextDiff', '文本差异比较', 't-textdiff');
     }
@@ -12,7 +13,7 @@ $(() => (async () => {
   await mw.loader.using(['mediawiki.api', 'oojs-ui', 'mediawiki.notification']);
 
   // 获取比较差异
-  const textCompare = async (fromtext, totext) => {
+  const textCompare = async (fromtext: string, totext: string) => {
     try {
       const res = await compare(fromtext, totext);
       return res;
@@ -22,7 +23,7 @@ $(() => (async () => {
   };
 
   // 获取页面源代码
-  const getSource = async (title) => {
+  const getSource = async (title: string) => {
     try {
       return await pageSource(title);
     } catch (error) {
@@ -34,11 +35,7 @@ $(() => (async () => {
   $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层
   mw.config.set('wgCanonicalSpecialPageName', 'TextDiff');
   document.title = '差异比较 - 萌娘百科_万物皆可萌的百科全书';
-  $(document.head).append(
-    `<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`,
-    '<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>',
-    '<script src="https://npm.elemecdn.com/file-saver/dist/FileSaver.min.js"></script>',
-  );
+  $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
   $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
   $('#firstHeading').html('差异比较<div>By BearBin</div>');
   $('#contentSub').remove();
@@ -120,34 +117,35 @@ $(() => (async () => {
   ).hide();
 
   $('#mw-content-text').empty().append(
-    $('<h3>旧版本</h3>'),
+    '<h3>旧版本</h3>',
     fromTextBox.$element,
     $getOriginSource,
-    $('<h3>新版本</h3>'),
+    '<h3>新版本</h3>',
     toTextBox.$element,
     $getTargetSource,
     submitButton.$element,
-    $('<h3>差异</h3>'),
+    '<h3>差异</h3>',
     $result,
     $resultAction,
   );
 
   // 保存图片
   const saveImage = () => {
-    html2canvas($result[0]).then((canvas) => {
-      saveAs(canvas.toDataURL('image/png'), 'image.png');
+    domtoimage.toJpeg($result.get(0)!, { bgcolor: '#fff' }).then((dataUrl) => {
+      const link = document.createElement('a');
+      link.download = 'image.jpg';
+      link.href = dataUrl;
+      link.click();
     });
   };
 
   // 复制图片至剪贴板
   const copyImage = () => {
-    html2canvas($result[0]).then((canvas) => {
-      canvas.toBlob((blob) => {
-        navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
-          mw.notify('复制成功');
-        }, (error) => {
-          mw.notify(`复制失败：${error}`, { type: 'warn' });
-        });
+    domtoimage.toBlob($result.get(0)!, { bgcolor: '#fff' }).then((blob) => {
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': blob! })]).then(() => {
+        mw.notify('复制成功');
+      }, (error) => {
+        mw.notify(`复制失败：${error}`, { type: 'warn' });
       });
     });
   };
@@ -155,20 +153,26 @@ $(() => (async () => {
   // 通过页面获取源代码按钮
   fromPageButton.on('click', async () => {
     const source = await getSource(fromPageBox.getValue());
-    fromTextBox.setValue(source);
+    if (source) {
+      fromTextBox.setValue(source);
+    }
   });
 
   toPageButton.on('click', async () => {
     const source = await getSource(toPageBox.getValue());
-    toTextBox.setValue(source);
+    if (source) {
+      toTextBox.setValue(source);
+    }
   });
 
   submitButton.on('click', async () => {
     submitButton.setDisabled(true);
     try {
       const result = await textCompare(fromTextBox.getValue(), toTextBox.getValue());
-      $result.html(result);
-      $resultAction.show();
+      if (result) {
+        $result.html(result);
+        $resultAction.show();
+      }
     } catch (error) {
       mw.notify(`比较出错：${error}`, { type: 'warn' });
     }

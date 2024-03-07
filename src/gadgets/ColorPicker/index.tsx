@@ -5,19 +5,24 @@ import { SketchPicker } from 'react-color';
 import { Button } from '@/components';
 import { copyText } from '@/utils/clipboard';
 import './index.less';
+import type { ColorResult } from 'react-color';
 
-class PickerModal extends Component {
+interface ColorPickerProps {
+  open: boolean;
+}
+
+class PickerModal extends Component<ColorPickerProps> {
   state = {
     displayPicker: true,
     color: '#222',
   };
 
-  constructor(props) {
+  constructor(props: ColorPickerProps) {
     super(props);
     this.setState({ displayPicker: props.open });
   }
 
-  handleChange = (color) => {
+  handleChange = (color: ColorResult) => {
     this.setState({ color: color.hex });
   };
 
@@ -51,7 +56,7 @@ class PickerModal extends Component {
 }
 
 mw.loader.using('mediawiki.util').then(() => {
-  mw.util.addPortletLink('p-tb', 'javascript:void(0)', '颜色选择器', 't-colorpicker')
+  mw.util.addPortletLink('p-tb', 'javascript:void(0)', '颜色选择器', 't-colorpicker')!
     .addEventListener('click', () => {
       if (!document.getElementById('color-picker')) {
         createRoot(document.createElement('div')).render(<PickerModal open />);

@@ -10,35 +10,32 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
 
       let tableWikitext = '';
 
-      // 输入面板
-      const e2wHTML = $([
-        '<div id="excel-to-wiki">',
-        '<button id="e2w-close" title="关闭">×</button>',
-        '<div id="e2w-panel">',
-        '<h5>在此处粘贴表格</h5>',
-        '<div id="e2w-input" contenteditable="true"></div>',
-        '<h5>输出<a id="e2w-copy">[复制]</a></h5>',
-        '<div id="e2w-output"></div>',
-        '</div>',
-        '</div>',
-      ].join(''));
       const useDoubleSelect = new OO.ui.CheckboxInputWidget();
       const useDoubleField = new OO.ui.FieldLayout(useDoubleSelect, {
         label: $('<span>同行使用<code>||</code></span>'),
         align: 'inline',
         id: 'e2w-usedouble',
       });
-      e2wHTML.appendTo($(document.body));
-      $('#e2w-output').before(useDoubleField.$element);
-      e2wHTML.hide();
+      const $e2wInput = $('<div id="e2w-input" contenteditable="true"/>');
+      // 输入面板
+      const $e2wHTML = $('<div id="excel-to-wiki"/>').append(
+        '<button id="e2w-close" title="关闭">×</button>',
+        $('<div id="e2w-panel"/>').append(
+          '<h5>在此处粘贴表格</h5>',
+          $e2wInput,
+          '<h5>输出<a id="e2w-copy">[复制]</a></h5>',
+          useDoubleField.$element,
+          '<div id="e2w-output"/>',
+        ),
+      ).appendTo($(document.body)).hide();
 
       // 从编辑栏中复制插入表格的按钮并修改图标，绑定事件
-      const tableButton = $('[rel="table"]');
+      const tableButton = $('[rel="table"]') as JQuery<HTMLSpanElement>;
       const excelButton = tableButton.clone();
       excelButton.attr('rel', 'excel2wiki')
         .children().attr('title', '从Excel粘贴表格').on('click', (e) => {
           e.preventDefault();
-          e2wHTML.show();
+          $e2wHTML.show();
         })
         .children('.oo-ui-icon-table').removeClass('oo-ui-icon-table').addClass('oo-ui-icon-tableCaption');
 
@@ -46,13 +43,13 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
        * 读取表格并解析
        */
       const parseTable = () => {
-        const table = document.getElementById('e2w-input').firstElementChild;
+        const table = $e2wInput.get(0)!.firstElementChild;
         if (table?.tagName === 'TABLE') { // 判断粘贴的内容是否为table标签
-          const useDouble = useDoubleSelect.isSelected();
-          const wikitable = []; // 用于存放各tr内容
+          const useDouble: boolean = useDoubleSelect.isSelected();
+          const wikitable: string[] = []; // 用于存放各tr内容
           table.querySelectorAll('tr').forEach((tr) => { // 遍历所有tr
-            const tableRow = []; // 用于存放各td内容
-            tr.querySelectorAll('td, th').forEach((td, index) => {
+            const tableRow: string[] = []; // 用于存放各td内容
+            tr.querySelectorAll<HTMLTableCellElement>('td, th').forEach((td, index) => {
               // 对于每一个td，判断其是否有大于1的colspan或rowspan属性并加入
               tableRow.push(
                 /* eslint-disable prefer-template */
@@ -84,7 +81,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
       useDoubleSelect.on('change', parseTable);
 
       // 点×关闭面板
-      $('#e2w-close').on('click', () => e2wHTML.hide());
+      $('#e2w-close').on('click', () => $e2wHTML.hide());
 
       // 复制
       $('#e2w-copy').on('click', (e) => {
