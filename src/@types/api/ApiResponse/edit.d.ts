@@ -1,4 +1,4 @@
-import type { ApiResponse } from './index';
+import type { ApiResponse } from './core';
 
 /**
  * 编辑成功响应基础接口

@@ -1,4 +1,4 @@
-import type { ApiResponse } from './index';
+import type { ApiResponse } from './core';
 
 interface TextResponse {
   '*': string;
@@ -158,6 +158,56 @@ export interface ApiParseIWLink {
   '*': string;
 }
 
+/**
+ * wiki文本中的属性信息，如`notoc`
+ */
+export interface ApiParseProperty {
+  /**
+   * 属性名
+   */
+  name: string;
+
+  /**
+   *
+   */
+  '*': string;
+}
+
+/**
+ * 页面状态指示器信息
+ */
+export interface ApiParseIndicator {
+  /**
+   * 指示器名称
+   */
+  name: string;
+
+  /**
+   * 指示器HTML
+   */
+  '*': string;
+}
+
+/**
+ * 限制报告数据
+ */
+export interface ApiParseLimitReportData {
+  /**
+   * 限制报告名称
+   */
+  name: string;
+
+  /**
+   * 使用量
+   */
+  0?: number;
+
+  /**
+   * 上限
+   */
+  1?: number;
+}
+
 export interface ApiParseResult {
   /**
    * 页面标题
@@ -200,6 +250,11 @@ export interface ApiParseResult {
   categories?: ApiParseCategory[];
 
   /**
+   * 分类条HTML
+   */
+  categorieshtml?: TextResponse;
+
+  /**
    * 内部链接
    */
   links?: ApiParseLink[];
@@ -237,11 +292,65 @@ export interface ApiParseResult {
 
   /**
    * 多种定义在被解析的wiki文本中的属性
-   * @todo 不确定格式
    */
-  properties?: any[];
+  properties?: ApiParseProperty[];
 
-  [key: string]: any;
+  headitems?: any[];
+
+  /**
+   * `<head>`标签内容
+   */
+  headhtml?: TextResponse;
+
+  /**
+   * 使用到的模块
+   */
+  modules?: string[];
+
+  /**
+   * 使用到的扩展脚本
+   */
+  modulescripts?: string[];
+
+  /**
+   * 使用到的扩展样式表
+   */
+  modulestyles?: string[];
+
+  /**
+   * @todo 确定格式
+   */
+  jsconfigvars?: object;
+
+  /**
+   * @todo 确定格式
+   */
+  encodedjsconfigvars?: any[];
+
+  /**
+   * 页面状态指示器
+   */
+  indicators?: ApiParseIndicator[]
+
+  /**
+   * 被解析的wiki文本
+   */
+  wikitext?: TextResponse;
+
+  /**
+   * 解析器限制报告数据
+   */
+  limitreportdata?: ApiParseLimitReportData[];
+
+  /**
+   * HTML格式的解析器限制报告
+   */
+  limitreporthtml?: TextResponse;
+
+  /**
+   * 修订内容的XML解析树
+   */
+  parsetree?: TextResponse;
 }
 
 /**

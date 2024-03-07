@@ -1,7 +1,7 @@
 /**
  * 通过`prop=xxx`请求得到的数据
  */
-import type { ContentModel, ContentFormat, PageProps } from '../utils';
+import type { ContentModel, ContentFormat, PageProps } from '../../utils';
 
 /**
  * `prop=images` 返回指定页面上包含的所有文件

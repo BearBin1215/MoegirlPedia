@@ -1,4 +1,4 @@
-import type { PageProps, Cmtype } from '../utils';
+import type { PageProps, Cmtype } from '../../utils';
 
 /**
  * 通过`list=xxx`请求得到的数据
