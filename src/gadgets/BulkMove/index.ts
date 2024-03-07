@@ -1,6 +1,7 @@
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import './index.less';
+import type { ApiMoveResponse } from '@/@types/api';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:BulkMove') {
@@ -47,6 +48,13 @@ $(() => (async () => {
   });
   const watchlistSelect = new OO.ui.FieldLayout(watchlistWidget, {
     label: '监视源页面和目标页面',
+    align: 'inline',
+  });
+  const movesubWidget = new OO.ui.CheckboxInputWidget({
+    id: 'bm-watchlist-box',
+  });
+  const movesubSelect = new OO.ui.FieldLayout(movesubWidget, {
+    label: '移动子页面',
     align: 'inline',
   });
 
@@ -106,6 +114,7 @@ $(() => (async () => {
       moveTalkSelect.$element,
       noredirectSelect.$element,
       watchlistSelect.$element,
+      movesubSelect.$element,
     ),
     $('<div id="bm-submit-panel">').append(
       submitButton.$element,
@@ -132,7 +141,7 @@ $(() => (async () => {
   $addRowButton.on('click', async () => {
     const addRowBox = new OO.ui.TextInputWidget({
       type: 'number',
-      value: 1,
+      value: 1 as unknown as string,
     });
     const confirm = await OO.ui.confirm(addRowBox.$element, {
       title: '增加行',
@@ -162,8 +171,8 @@ $(() => (async () => {
           const columns = rows[i].split('\t');
           for (let j = 0; j < 2; j++) {
             if (columns[j]?.trim().length > 0) { // 经过split可能产生空字符串，要去掉
-              const rowNo = i + Number($(this).attr('data-row-no'));
-              const colNo = j + Number($(this).attr('data-col-no'));
+              const rowNo = i + Number($(e.target).attr('data-row-no'));
+              const colNo = j + Number($(e.target).attr('data-col-no'));
               $inputs.filter(`[data-row-no="${rowNo}"][data-col-no="${colNo}"]`).val(columns[j]);
             }
           }
@@ -186,11 +195,12 @@ $(() => (async () => {
 
       const movetalk = moveTalkWidget.isSelected();
       const noredirect = !redirectWidget.isSelected();
+      const movesubpages = movesubWidget.isSelected();
       const watchlist = watchlistWidget.isSelected() ? 'watch' : 'unwatch';
       const reason = reasonBox.getValue().length > 0 ? `[[User:BearBin/js#批量移动页面|BulkMove]]：${reasonBox.getValue()}` : '[[User:BearBin/js#批量移动页面|BulkMove]]';
       const interval = Number(intervalBox.getValue()) * 1000;
       const tags = mw.config.get('wgUserGroups').includes('bot') ? 'bot' : 'Automation tool';
-      const pageList = [];
+      const pageList: { from: string; to: string }[] = [];
 
       $tableBody.children('tr').each((_, tr) => {
         const from = $(tr).find('input')[0].value;
@@ -214,11 +224,12 @@ $(() => (async () => {
             movetalk,
             noredirect,
             watchlist,
+            movesubpages,
             reason,
             tags,
             bot: true,
-          });
-          if (result.move) {
+          }) as ApiMoveResponse;
+          if ('move' in result) {
             loger.record(`移动【<a href="/${from}${noredirect ? '' : '?redirect=no'}" class="${noredirect ? '' : 'mw-redirect'}">${from}</a>】→【<a href="/${to}">${to}</a>】成功。`, 'success');
             await waitInterval(interval);
           }
@@ -235,7 +246,7 @@ $(() => (async () => {
               errorMessage = '网络连接出错';
               break;
             default:
-              errorMessage = e;
+              errorMessage = e as string;
           }
           loger.record(`移动【<a href="/${from}">${from}</a>】→【<a href="/${to}">${to}</a>】失败：${errorMessage}。`, 'error');
         }

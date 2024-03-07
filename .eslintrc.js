@@ -73,7 +73,7 @@ module.exports = {
       },
     ],
     "linebreak-style": [
-      2,
+      0,
       "unix",
     ],
     semi: [
