@@ -137,7 +137,7 @@ $(() => (async () => {
           });
           await localObjectStorage.setItem('localStatus', {
             timestamp: new Date().getTime(),
-            status: status,
+            status,
           });
           pt.find('#pt-userpage-link').html(builtinStatus[status]);
           rawStatus = status;
