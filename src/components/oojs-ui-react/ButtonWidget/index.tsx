@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../Widget';
-import type { IconWidgetProps } from '../IconWidget';
-import type { IndicatorWidgetProps } from '../IndicatorWidget';
+import type { WidgetProps, IconWidgetProps, IndicatorWidgetProps } from '../props';
 
 export type Flag = 'progressive' | 'destructive' | 'primary';
 
