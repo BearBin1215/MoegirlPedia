@@ -8,6 +8,8 @@ export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, Omit<Ic
   /** 是否为激活状态 */
   active?: boolean;
 
+  accessKey?: string;
+
   /** 是否生成边框 */
   framed?: boolean;
 
@@ -29,6 +31,7 @@ export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, Omit<Ic
 
 const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
   active,
+  accessKey,
   children,
   classes,
   disabled,
@@ -36,13 +39,11 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
   flags = [],
   href,
   icon,
-  id,
   indicator,
-  onClick,
-  ref,
   rel = [],
   text,
   title,
+  ...rest
 }) => {
   const [pressed, setPressed] = useState(false);
 
@@ -82,14 +83,12 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
 
   return (
     <span
-      id={id}
       className={buttonClassName}
-      onClick={onClick}
       onMouseUp={() => setPressed(false)}
       onMouseDown={() => setPressed(true)}
       onMouseLeave={() => setPressed(false)}
       aria-disabled={false}
-      ref={ref}
+      {...rest}
     >
       {text}
       <a
@@ -99,6 +98,7 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
         href={href}
         rel={anchorRel}
         title={title}
+        accessKey={accessKey}
       >
         <span className={iconClassName} />
         <span className='oo-ui-labelElement-label'>{children}</span>

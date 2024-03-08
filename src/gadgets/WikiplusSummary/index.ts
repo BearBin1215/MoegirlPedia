@@ -1,5 +1,10 @@
+interface SummaryDetail {
+  name: string;
+  detail: string;
+}
+
 $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, .Wikiplus-Edit-EveryWhereBtn', () => {
-  const WPSummary = window.WPSummary || [
+  const WPSummary: (string | SummaryDetail)[] = (window as any).WPSummary || [
     '修饰语句',
     '修正笔误',
     '内容扩充',
@@ -16,19 +21,21 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
     clearInterval(itv);
     const $WSList = $('<div></div>', { id: 'ws-buttons' }).css('margin-top', '0.2em');
     const $WSButtons = WPSummary.reduce((acc, val, index, arr) => {
-      let $button,
-        summaryDetail;
+      let $button: JQuery<HTMLElement>;
+      let summaryDetail: string;
       if (typeof val === 'string') {
         $button = $(`<a>${val}</a>`);
         summaryDetail = val;
       } else if (typeof val === 'object') {
         $button = $(`<a>${val.name}</a>`);
         summaryDetail = val.detail;
+      } else {
+        return acc;
       }
       $button.on('click', () => {
-        const $summary = $('#Wikiplus-Quickedit-Summary-Input');
+        const $summary = $('#Wikiplus-Quickedit-Summary-Input') as JQuery<HTMLInputElement>;
         const summary = $summary.val();
-        $summary.val(summary.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${summaryDetail} $2`))
+        $summary.val(summary!.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${summaryDetail} $2`))
           .trigger('focus');
       });
       acc.push($button); // 逐一插入按钮
@@ -36,11 +43,11 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
         acc.push($('<span> | </span>')); // 除最后一个外，插入分割线
       }
       return acc;
-    }, []);
+    }, [] as JQuery<HTMLElement>[]);
 
     $WSList.append(
       $('<span>摘要：</span>'),
-      ...$WSButtons,
+      $WSButtons,
       '<br/>',
     );
     $('#Wikiplus-Quickedit-Summary-Input+br').replaceWith($WSList);

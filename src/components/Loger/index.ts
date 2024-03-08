@@ -129,14 +129,14 @@ export default class Loger {
   constructor(logTypes: LogerType[] = [], id = '', headlineTagName = 'h3') {
     if (logTypes.length > 0) {
       // 根据输入生成需要的类型
-      this._logTypes = logTypes.reduce<LogTypes>((pre, { name, icon, color, text }) => {
+      this._logTypes = logTypes.reduce((pre, { name, icon, color, text }) => {
         pre[name] = {
           icon,
           color,
           text,
         };
         return pre;
-      }, {});
+      }, {} as LogTypes);
     }
     for (const key in this._logTypes) {
       // 默认显示
