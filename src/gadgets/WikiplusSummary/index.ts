@@ -15,11 +15,11 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
     '消歧义',
     '萌百化',
   ];
-  const itv = setInterval(() => {
+  const itv = si(() => {
     if (!document.getElementById('Wikiplus-Quickedit-Summary-Input')) {
       return;
     }
-    si(itv);
+    clearInterval(itv);
     const $WSList = $('<div></div>', { id: 'ws-buttons' }).css('margin-top', '0.2em');
     const $WSButtons = WPSummary.reduce((acc, val, index, { length }) => {
       let $button: JQuery<HTMLElement>;
