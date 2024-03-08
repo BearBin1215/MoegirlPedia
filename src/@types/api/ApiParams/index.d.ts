@@ -115,34 +115,22 @@ export interface ApiParams {
    */
   maxage?: number;
 
-  /**
-   * 如果设置为user就验证用户是否登录，或如果设置为bot就验证是否有机器人用户权限。
-   */
+  /** 如果设置为user就验证用户是否登录，或如果设置为bot就验证是否有机器人用户权限。 */
   assert?: 'user' | 'bot';
 
-  /**
-   * 验证当前用户是命名用户。
-   */
+  /** 验证当前用户是命名用户。 */
   assertuser?: string;
 
-  /**
-   * 任何在此提供的值将包含在响应中。可以用以区别请求。
-   */
+  /** 任何在此提供的值将包含在响应中。可以用以区别请求。 */
   requestid?: string;
 
-  /**
-   * 包含保存结果请求的主机名。
-   */
+  /** 包含保存结果请求的主机名。 */
   servedby?: boolean;
 
-  /**
-   * 在结果中包括当前时间戳。
-   */
+  /** 在结果中包括当前时间戳。 */
   curtimestamp?: boolean;
 
-  /**
-   * 包含在结果中用于uselang和errorlang的语言。
-   */
+  /** 包含在结果中用于uselang和errorlang的语言。 */
   responselanginfo?: boolean;
 
   /**

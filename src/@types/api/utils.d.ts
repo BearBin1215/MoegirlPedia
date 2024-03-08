@@ -39,18 +39,12 @@ export type Cmtype = 'page' | 'subcat' | 'file';
  * 页面信息
  */
 export interface PageProps {
-  /**
-   * 页面id
-   */
+  /** 页面id */
   pageid?: number;
 
-  /**
-   * 名字空间
-   */
+  /** 名字空间 */
   ns?: number;
 
-  /**
-   * 页面标题
-   */
+  /** 页面标题 */
   title?: string;
 }

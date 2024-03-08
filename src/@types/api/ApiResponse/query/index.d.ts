@@ -25,124 +25,76 @@ import type { Categorymembers, Search } from './listData';
 export interface ApiContinue {
   continue: string;
 
-  /**
-   * prop=categories
-   */
+  /** prop=categories */
   clcontinue?: string;
 
-  /**
-   * prop=categoryinfo
-   */
+  /** prop=categoryinfo */
   cicontinue?: string;
 
-  /**
-   * prop=contributors
-   */
+  /** prop=contributors */
   pccontinue?: string;
 
-  /**
-   * prop=deletedrevisions
-   */
+  /** prop=deletedrevisions */
   drvcontinue?: string;
 
-  /**
-   * prop=duplicatefiles
-   */
+  /** prop=duplicatefiles */
   dfcontinue?: string;
 
-  /**
-   * prop=extlinks
-   */
+  /** prop=extlinks */
   eloffset?: string;
 
-  /**
-   * prop=extracts
-   */
+  /** prop=extracts */
   excontinue?: string;
 
-  /**
-   * prop=fileusage
-   */
+  /** prop=fileusage */
   fucontinue?: string;
 
-  /**
-   * prop=globalusage
-   */
+  /** prop=globalusage */
   gucontinue?: string;
 
-  /**
-   * prop=imageinfo
-   */
+  /** prop=imageinfo */
   iicontinue?: string;
 
-  /**
-   * prop=images
-   */
+  /** prop=images */
   imcontinue?: string;
 
-  /**
-   * prop=info
-   */
+  /** prop=info */
   incontinue?: string;
 
-  /**
-   * prop=iwlinks
-   */
+  /** prop=iwlinks */
   iwcontinue?: string;
 
-  /**
-   * prop=langlinks
-   */
+  /** prop=langlinks */
   llcontinue?: string;
 
-  /**
-   * prop=links
-   */
+  /** prop=links */
   plcontinue?: string;
 
-  /**
-   * prop=linkshere
-   */
+  /** prop=linkshere */
   lhcontinue?: string;
 
-  /**
-   * prop=pageimages
-   */
+  /** prop=pageimages */
   picontinue?: string;
 
-  /**
-   * prop=pageprops
-   */
+  /** prop=pageprops */
   ppcontinue?: string;
 
-  /**
-   * prop=redirects
-   */
+  /** prop=redirects */
   rdcontinue?: string;
 
-  /**
-   * prop=references
-   */
+  /** prop=references */
   rfcontinue?: string;
 
-  /**
-   * prop=revisions
-   */
+  /** prop=revisions */
   rvcontinue?: string;
 
-  /**
-   * prop=templates
-   */
+  /** prop=templates */
   tlcontinue?: string;
 
-  /**
-   * prop=transcludedin
-   */
+  /** prop=transcludedin */
   ticontinue?: string;
 
-  /**
-   * prop=videoinfo
-   */
+  /** prop=videoinfo */
   vicontinue?: string;
 
   [key: string]: string | undefined;
@@ -152,19 +104,13 @@ export interface ApiContinue {
  * 页面保护信息
  */
 export interface Protection {
-  /**
-   * 受保护的操作类型
-   */
+  /** 受保护的操作类型 */
   type: string;
 
-  /**
-   * 保护等级
-   */
+  /** 保护等级 */
   level: string;
 
-  /**
-   * 保护期限，infinity为无限期
-   */
+  /** 保护期限，infinity为无限期 */
   expiry: string;
 }
 
@@ -172,39 +118,25 @@ export interface Protection {
  * `prop=xxx`获取到的数据
  */
 export interface ApiQueryPageInfo {
-  /**
-   * 页面id
-   */
+  /** 页面id */
   pageid?: number;
 
-  /**
-   * 页面所属命名空间
-   */
+  /** 页面所属命名空间 */
   ns: number,
 
-  /**
-   * 页面标题
-   */
+  /** 页面标题 */
   title?: string,
 
-  /**
-   * 页面是否存在
-   */
+  /** 页面是否存在 */
   missing?: '',
 
-  /**
-   * 页面内容模型
-   */
+  /** 页面内容模型 */
   contentmodel?: ContentModel,
 
-  /**
-   * 页面语言
-   */
+  /** 页面语言 */
   pagelanguage?: string,
 
-  /**
-   *
-   */
+  /** */
   pagelanguagehtmlcode?: string,
 
   pagelanguagedir?: string,
@@ -213,109 +145,67 @@ export interface ApiQueryPageInfo {
 
   lastrevid?: number,
 
-  /**
-   * 页面长度（字节）
-   */
+  /** 页面长度（字节） */
   length?: string,
 
-  /**
-   * 保护信息
-   */
+  /** 保护信息 */
   protection?: Protection[],
 
-  /**
-   * 可操作类型
-   */
+  /** 可操作类型 */
   restrictiontypes?: string[],
 
-  /**
-   * 是否监视
-   */
+  /** 是否监视 */
   watched?: '',
 
-  /**
-   * 监视用户数量
-   */
+  /** 监视用户数量 */
   watchers?: number,
 
-  /**
-   * 最近编辑的监视者数量
-   */
+  /** 最近编辑的监视者数量 */
   visitingwatchers?: number,
 
-  /**
-   * 监视列表通知时间戳
-   */
+  /** 监视列表通知时间戳 */
   notificationtimestamp?: '',
 
-  /**
-   * 每个非讨论页面的讨论页的页面ID。
-   */
+  /** 每个非讨论页面的讨论页的页面ID。 */
   talkid?: number,
 
-  /**
-   * 讨论页的母页面的页面ID
-   */
+  /** 讨论页的母页面的页面ID */
   subjectid?: number,
 
-  /**
-   * 页面的完整URL
-   */
+  /** 页面的完整URL */
   fullurl?: string,
 
-  /**
-   * 页面的编辑URL
-   */
+  /** 页面的编辑URL */
   editurl?: string,
 
-  /**
-   * 页面的规范URL
-   */
+  /** 页面的规范URL */
   canonicalurl?: string,
 
-  /**
-   * 用户是否可以阅读此页面
-   */
+  /** 用户是否可以阅读此页面 */
   readable?: '',
 
-  /**
-   * 提供由EditFormPreloadText返回的文本
-   */
+  /** 提供由EditFormPreloadText返回的文本 */
   preload?: string | null,
 
-  /**
-   * 在页面标题实际显示的地方提供方式
-   */
+  /** 在页面标题实际显示的地方提供方式 */
   displaytitle?: string,
 
-  /**
-   * 网站内容语言所有变体的显示标题
-   */
+  /** 网站内容语言所有变体的显示标题 */
   varianttitles?: Record<string, string>,
 
-  /**
-   * 用户可以在页面上执行的操作
-   */
+  /** 用户可以在页面上执行的操作 */
   actions?: Record<string, ''>,
 
-  /**
-   * `prop=redirects`获取的至指定页面的所有重定向
-   */
+  /** `prop=redirects`获取的至指定页面的所有重定向 */
   redirects: Redirects[];
 
-  /**
-   * `prop=revisions`获取的修订版本信息
-   */
+  /** `prop=revisions`获取的修订版本信息 */
   revisions?: Revisions[];
 
-  /**
-   * `prop=transcludedin`获取的所有嵌入指定页面的页面
-   */
+  /** `prop=transcludedin`获取的所有嵌入指定页面的页面 */
   transcludedin?: Transcludedin[];
 
-  /**
-   * `prop=linkshere`获取的所有链接至指定页面的页面
-   */
+  /** `prop=linkshere`获取的所有链接至指定页面的页面 */
   linkshere?: Linkshere[];
 
   [key: string]: any;
@@ -332,38 +222,24 @@ export interface ApiQueryResponse extends ApiResponse {
    */
   batchcomplete?: '';
 
-  /**
-   * 用于继续请求
-   */
+  /** 用于继续请求 */
   continue?: ApiContinue;
 
-  /**
-   * 请求结果
-   */
+  /** 请求结果 */
   query: {
-    /**
-     * `prop=xxx`获取到的数据
-     */
+    /** `prop=xxx`获取到的数据 */
     pages?: Record<number, ApiQueryPageInfo>;
 
-    /**
-     * `list=categorymembers`获取到的分类成员信息
-     */
+    /** `list=categorymembers`获取到的分类成员信息 */
     categorymembers?: Categorymembers[];
 
-    /**
-     * 搜索信息
-     */
+    /** 搜索信息 */
     searchinfo?: {
-      /**
-       * 结果总数
-       */
+      /** 结果总数 */
       totalhits: number;
     }
 
-    /**
-     * 搜索结果
-     */
+    /** 搜索结果 */
     search?: Search[];
 
     [key: string]: any;

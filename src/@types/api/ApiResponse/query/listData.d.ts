@@ -8,24 +8,16 @@ import type { PageProps, Cmtype } from '../../utils';
  * `list=categorymembers`获取到的分类信息
  */
 export interface Categorymembers extends PageProps {
-  /**
-   * 添加用于分类中排序的关键字（十六进制字符串）
-   */
+  /** 添加用于分类中排序的关键字（十六进制字符串） */
   sortkey?: string;
 
-  /**
-   * 添加用于分类中排序的关键字前缀（关键字的人类可读部分）
-   */
+  /** 添加用于分类中排序的关键字前缀（关键字的人类可读部分） */
   sortkeyprefix?: string;
 
-  /**
-   * 添加页面被分类的类型
-   */
+  /** 添加页面被分类的类型 */
   type: Cmtype;
 
-  /**
-   * 页面被包括时的时间戳
-   */
+  /** 页面被包括时的时间戳 */
   timestamp?: string;
 }
 
@@ -37,33 +29,21 @@ export interface Search extends PageProps {
   ns: number;
   title: string;
 
-  /**
-   * 页面大小（字节）
-   */
+  /** 页面大小（字节） */
   size: number,
 
-  /**
-   * 词数
-   */
+  /** 词数 */
   wordcount: number,
 
-  /**
-   * 上次编辑时的时间戳
-   */
+  /** 上次编辑时的时间戳 */
   timestamp: string;
 
-  /**
-   * 已解析的页面片段HTML
-   */
+  /** 已解析的页面片段HTML */
   snippet: string;
 
-  /**
-   * 已解析的页面标题片段
-   */
+  /** 已解析的页面标题片段 */
   titlesnippet: string;
 
-  /**
-   * 已解析的匹配分类片段
-   */
+  /** 已解析的匹配分类片段 */
   categorysnippet: string;
 }
