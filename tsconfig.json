@@ -12,9 +12,7 @@
     "moduleResolution": "node10",
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "allowJs": true,
     "outDir": "dist",
