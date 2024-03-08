@@ -20,7 +20,7 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
     }
     clearInterval(itv);
     const $WSList = $('<div></div>', { id: 'ws-buttons' }).css('margin-top', '0.2em');
-    const $WSButtons = WPSummary.reduce((acc, val, index, arr) => {
+    const $WSButtons = WPSummary.reduce((acc, val, index, { length }) => {
       let $button: JQuery<HTMLElement>;
       let summaryDetail: string;
       if (typeof val === 'string') {
@@ -34,12 +34,11 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
       }
       $button.on('click', () => {
         const $summary = $('#Wikiplus-Quickedit-Summary-Input') as JQuery<HTMLInputElement>;
-        const summary = $summary.val();
-        $summary.val(summary!.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${summaryDetail} $2`))
-          .trigger('focus');
+        const summary = $summary.val() as string;
+        $summary.val(summary.replace(/(\/\*.+\*\/ ?)?(.+)/, `$1${summaryDetail} $2`)).trigger('focus');
       });
       acc.push($button); // 逐一插入按钮
-      if (index < arr.length - 1) {
+      if (index < length - 1) {
         acc.push($('<span> | </span>')); // 除最后一个外，插入分割线
       }
       return acc;

@@ -33,6 +33,7 @@ const config = {
       'SidebarEnhance',
       'TextDiff',
       'userStatus',
+      'WikiplusSummary',
     ],
   },
 };
