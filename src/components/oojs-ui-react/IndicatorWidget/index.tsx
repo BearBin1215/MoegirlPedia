@@ -1,9 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../Widget';
-
-export type Indicator = 'clear' | 'up' | 'down' | 'required';
+import type { WidgetProps } from '../props';
+import type { Indicator } from '../utils';
 
 export interface IndicatorWidgetProps extends Omit<WidgetProps<HTMLSpanElement>, 'children'> {
   /** 图标 */

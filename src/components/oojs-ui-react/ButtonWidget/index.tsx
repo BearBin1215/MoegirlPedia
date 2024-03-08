@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps, IconWidgetProps, IndicatorWidgetProps } from '../props';
+import type { ButtonFlag } from '../utils';
 
-export type Flag = 'progressive' | 'destructive' | 'primary';
-
-export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, IconWidgetProps, IndicatorWidgetProps {
+export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, Omit<IconWidgetProps, 'flags'>, IndicatorWidgetProps {
   /** 是否为激活状态 */
   active?: boolean;
 
@@ -13,7 +12,7 @@ export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, IconWid
   framed?: boolean;
 
   /** 附加给按钮的标志 */
-  flags?: Flag[];
+  flags?: ButtonFlag | ButtonFlag[];
 
   /** 按钮跳转链接 */
   href?: string;
@@ -57,7 +56,7 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
     icon && 'oo-ui-iconElement',
     children && 'oo-ui-labelElement',
     indicator && 'oo-ui-indicatorElement',
-    ...flags.map((flag) => `oo-ui-flaggedElement-${flag}`),
+    typeof flags === 'string' ? [flags] : flags.map((flag) => `oo-ui-flaggedElement-${flag}`),
     'oo-ui-buttonWidget',
     active && 'oo-ui-buttonElement-active',
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
@@ -72,7 +71,11 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
     'oo-ui-iconElement-icon',
     icon ? `oo-ui-icon-${icon}` : 'oo-ui-iconElement-noIcon',
     (flags.includes('primary') || disabled || active) && 'oo-ui-image-invert',
-    (!flags.includes('primary') && flags.includes('destructive') && !disabled && !active) && 'oo-ui-image-destructive',
+    !flags.includes('primary') &&
+    flags.includes('destructive') &&
+    !disabled &&
+    !active &&
+    'oo-ui-image-destructive',
   );
 
   const anchorRel = rel ? rel.join(' ') : 'nofollow';
