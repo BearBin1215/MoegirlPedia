@@ -4,6 +4,7 @@
  * @todo 标记时跳出窗口可选输入用途
  */
 import { pageSource } from '@/utils/api';
+import type { ApiQueryResponse } from "@/@types/api";
 
 $(() => (async () => {
   // 本来想做一个检测当前页面文件存在不存在的，但想了想没啥必要。
@@ -14,7 +15,7 @@ $(() => (async () => {
     const FILENAME = mw.config.get('wgTitle');
     const PAGENAME = mw.config.get('wgPageName');
 
-    let pageList = [];
+    let pageList: string[] = [];
 
     // 重定向页面和其他页面元素有所区别，分别处理
     const funlNote = '<div id="funl-note">请注意：对过短的文件名使用本工具可能会出现误判，建议手动检查。</div>';
@@ -65,20 +66,21 @@ $(() => (async () => {
      * 最多获取50个，但多于50个的文件根本不需要使用此工具，所以不用考虑这个问题
      * @returns 页面列表
      */
-    const usedLinked = () => $('.mw-gu-onwiki-zh_moegirl_org_cn a').map((_, { text }) => text).get();
+    const usedLinked = () => ($('.mw-gu-onwiki-zh_moegirl_org_cn a') as JQuery<HTMLAnchorElement>).map((_, { text }) => text).get();
 
     /**
      * 搜索
-     * @param {string} srsearch 搜索文本
+     * @param srsearch 搜索文本
      */
-    const search = async (srsearch) => {
+    const search = async (srsearch: string) => {
       return await zhmoeApi.get({
         action: 'query',
         list: 'search',
-        srnamespace: '0|4|10|12|14|274|828',
+        srnamespace: ['0', '4', '10', '12', '14', '274', '828'],
         srwhat: 'text',
+        srprop: 'snippet',
         srsearch,
-      });
+      }) as ApiQueryResponse;
     };
 
     // 搜索
@@ -89,8 +91,8 @@ $(() => (async () => {
         search(`insource:"${encodeURI(FILENAME).replaceAll('"', ' ').replaceAll('%20', ' ')}"`),
       ]);
 
-      const notLinkedList = [];
-      [...encodeSearchResult.query.search, ...decodeSearchResult.query.search].forEach((item) => {
+      const notLinkedList: string[] = [];
+      [...encodeSearchResult.query.search!, ...decodeSearchResult.query.search!].forEach((item) => {
         // 通过搜索结果的快照，检查搜索文本内是否有此文件名，用于解决大小写敏感问题
         // 但文件名中的符号可能会影响<span class="searchmatch">的位置插到文件名中间，因此要去掉这对标签
         const snippetTemp = item.snippet.replaceAll('_', ' ').replaceAll('<span class="searchmatch">', '').replaceAll('</span>', '');
@@ -115,7 +117,7 @@ $(() => (async () => {
 
       pageList = [...new Set(pageList)];
       $('#result-list').append(
-        pageList.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
+        ...pageList.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
       );
       $searchButtonAnchor.removeClass('oo-ui-pendingElement-pending');
       return pageList;
@@ -146,7 +148,7 @@ $(() => (async () => {
           }, 2000);
         });
       } catch (err) {
-        mw.notify(`标记失败：${err}`, 'error');
+        mw.notify(`标记失败：${err}`, { type: 'error' });
       }
     };
 
@@ -158,7 +160,7 @@ $(() => (async () => {
       $removeButtonAnchor.addClass('oo-ui-pendingElement-pending');
       try {
         const source = await pageSource(PAGENAME);
-        const replacedSource = source.replace(/\{\{非链入使用\|[^{}]*\}\}/g, ''); // 移除非链入使用模板
+        const replacedSource = source!.replace(/\{\{非链入使用\|[^{}]*\}\}/g, ''); // 移除非链入使用模板
         await api.postWithToken('csrf', {
           format: 'json',
           action: 'edit',
@@ -177,7 +179,7 @@ $(() => (async () => {
           }, 2000);
         });
       } catch (err) {
-        mw.notify(`移除失败：${err}`, 'error');
+        mw.notify(`移除失败：${err}`, { type: 'error' });
       }
     };
 

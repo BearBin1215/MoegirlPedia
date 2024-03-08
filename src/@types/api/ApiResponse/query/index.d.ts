@@ -1,7 +1,7 @@
 import type {ApiResponse} from '../core';
 import type { ContentModel } from '../../utils';
 import type { Linkshere, Redirects, Revisions, Transcludedin } from './propData';
-import type { Categorymembers } from './listData';
+import type { Categorymembers, Search } from './listData';
 
 /**
  * 一次API查询经常不能获取你想要的所有数据。当这种情况发生时，
@@ -350,6 +350,21 @@ export interface ApiQueryResponse extends ApiResponse {
      * `list=categorymembers`获取到的分类成员信息
      */
     categorymembers?: Categorymembers[];
+
+    /**
+     * 搜索信息
+     */
+    searchinfo?: {
+      /**
+       * 结果总数
+       */
+      totalhits: number;
+    }
+
+    /**
+     * 搜索结果
+     */
+    search?: Search[];
 
     [key: string]: any;
   };

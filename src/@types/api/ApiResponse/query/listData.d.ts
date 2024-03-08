@@ -28,3 +28,42 @@ export interface Categorymembers extends PageProps {
    */
   timestamp?: string;
 }
+
+/**
+ * 搜索结果
+ */
+export interface Search extends PageProps {
+  pageid: number;
+  ns: number;
+  title: string;
+
+  /**
+   * 页面大小（字节）
+   */
+  size: number,
+
+  /**
+   * 词数
+   */
+  wordcount: number,
+
+  /**
+   * 上次编辑时的时间戳
+   */
+  timestamp: string;
+
+  /**
+   * 已解析的页面片段HTML
+   */
+  snippet: string;
+
+  /**
+   * 已解析的页面标题片段
+   */
+  titlesnippet: string;
+
+  /**
+   * 已解析的匹配分类片段
+   */
+  categorysnippet: string;
+}
