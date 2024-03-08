@@ -4,6 +4,7 @@ interface SummaryDetail {
 }
 
 $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, .Wikiplus-Edit-EveryWhereBtn', () => {
+  const si = setInterval;
   const WPSummary: (string | SummaryDetail)[] = (window as any).WPSummary || [
     '修饰语句',
     '修正笔误',
@@ -18,7 +19,7 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
     if (!document.getElementById('Wikiplus-Quickedit-Summary-Input')) {
       return;
     }
-    clearInterval(itv);
+    si(itv);
     const $WSList = $('<div></div>', { id: 'ws-buttons' }).css('margin-top', '0.2em');
     const $WSButtons = WPSummary.reduce((acc, val, index, { length }) => {
       let $button: JQuery<HTMLElement>;
