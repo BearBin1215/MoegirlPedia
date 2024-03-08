@@ -1,0 +1,36 @@
+import React from 'react';
+import classNames from 'classnames';
+import type { FunctionComponent } from 'react';
+import type { WidgetProps } from '../Widget';
+
+export interface IconWidgetProps extends Omit<WidgetProps<HTMLSpanElement>, 'children'> {
+  /** 图标 */
+  icon?: string;
+}
+
+const IconWidget: FunctionComponent<IconWidgetProps> = ({
+  icon,
+  classes,
+  disabled,
+  ...rest
+}) => {
+  const className = classNames(
+    classes,
+    'oo-ui-widget',
+    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
+    'oo-ui-iconElement',
+    'oo-ui-iconElement-icon',
+    icon && `oo-ui-icon-${icon}`,
+    'oo-ui-iconWidget',
+  );
+
+  return (
+    <span
+      className={className}
+      aria-disabled={false}
+      {...rest}
+    />
+  );
+};
+
+export default IconWidget;
