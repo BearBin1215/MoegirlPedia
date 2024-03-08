@@ -1,16 +1,17 @@
 import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
 import { copyText } from '@/utils/clipboard';
+import type { Cmtype } from '@/@types/api';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
-  let cacheText;
+  let cacheText: string;
   /**
    * 执行复制操作
-   * @param {string} content 要复制的内容
-   * @param {JQuery<HTMLElement>} $element 要改变文字的元素
-   * @param {string} successText 复制成功显示的文字
-   * @param {string} errorText 复制失败显示的文字
+   * @param content 要复制的内容
+   * @param $element 要改变文字的元素
+   * @param successText 复制成功显示的文字
+   * @param errorText 复制失败显示的文字
    */
-  const copyAction = (content, $element, successText = '复制成功', errorText = '复制失败') => {
+  const copyAction = (content: string, $element: JQuery<HTMLElement>, successText = '复制成功', errorText = '复制失败') => {
     const buttonText = $element.text();
     copyText(content).then(() => {
       $element.text(successText);
@@ -46,7 +47,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
       }),
       $('#mw-content-text a[href*="&from="]').length
         ? ' | '
-        : null,
+        : '',
       $('#mw-content-text a[href*="&from="]').length
         ? $('<a>复制全部</a>').on('click', async ({ target }) => {
           // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
@@ -59,13 +60,13 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
               search.get('hideredirs') ? Promise.resolve([]) : redirectList(pageName),
             ];
             await Promise.all(promises).then((results) => {
-              const pageList = [].concat(...results); // 二维数组展开为一维
+              const pageList = ([] as string[]).concat(...results); // 二维数组展开为一维
               cacheText = pageList.join('\n');
             });
           }
           copyAction(cacheText, $(target));
         })
-        : null,
+        : '',
       '）',
     ));
 
@@ -73,7 +74,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     const searchEnhance = () => {
       mw.loader.addStyleTag('.search-types{display:flex;float:none;align-items:center;}#bearbintools-listenhancer-search{padding:.5em;user-select:none;}#bearbintools-listenhancer-search a{display:inline;padding:0;}.listenhancer-search-edit{margin-left:.5em;float:right;}');
       let showDetail = true;
-      const linkList = [];
+      const linkList: string[] = [];
 
       // 复制一个按钮插入到多媒体搜索后面，用于搜索要用于替换的页面
       const $searchMedia = $('.search-types li').eq(1);
@@ -85,8 +86,8 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
       $nsToReplace.insertAfter($searchMedia);
 
       // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
-      $('a[data-serp-pos]').each((_, ele) => {
-        linkList.push(decodeURIComponent($(ele).attr('href')).replace('/', '').replace(/_/g, ' '));
+      ($('a[data-serp-pos]') as JQuery<HTMLAnchorElement>).each((_, ele) => {
+        linkList.push(decodeURIComponent(ele.href).replace('/', '').replace(/_/g, ' '));
         $(ele).before(`<a class="listenhancer-search-edit" href="${ele.href}?action=edit">[编辑]</a>`);
       });
 
@@ -133,12 +134,12 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   } else if (ns === 14) {
     /**
      * 给对应的标题加上复制按钮及功能
-     * @param {JQuery<HTMLElement>} $element 元素
-     * @param {('page' | 'subcat' | 'file')} type 类型
-     * @param {string} prefix 页面前缀
-     * @param {string} linkSelector 成员链接选择器
+     * @param $element 元素
+     * @param type 分类成员类型
+     * @param prefix 页面前缀
+     * @param linkSelector 成员链接选择器
      */
-    const addCopyButton = ($element, type, prefix = '', linkSelector = 'li a') => {
+    const addCopyButton = ($element: JQuery<HTMLElement>, type: Cmtype, prefix = '', linkSelector: JQuery.Selector = 'li a') => {
       $element.find('h2').append(
         $(editSection).append(
           bracketStart,
@@ -147,7 +148,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
           }),
           $element.children('a').length
             ? divider
-            : null,
+            : '',
           $element.children('a').length
             ? $('<a>复制全部</a>').on('click', async ({ target }) => {
               if (!cacheText) {
@@ -156,7 +157,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
               }
               copyAction(cacheText, $(target));
             })
-            : null,
+            : '',
           bracketEnd,
         ),
       );

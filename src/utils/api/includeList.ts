@@ -6,7 +6,7 @@ import type { ApiParams, ApiQueryResponse } from "@/@types/api";
  * @param tinamespace 命名空间，格式同api.php中以|分隔
  * @returns 页面列表
  */
-const includeList = async (pagename: string, tinamespace: number[]): Promise<string[]> => {
+const includeList = async (pagename: string, tinamespace?: number[]): Promise<string[]> => {
   const api = new mw.Api();
   let ticontinue: string | undefined = '1';
   const pageList:string[] = [];

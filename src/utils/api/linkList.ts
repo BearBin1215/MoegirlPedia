@@ -5,7 +5,7 @@ import type { ApiParams, ApiQueryResponse } from "@/@types/api";
  * @param lhnamespace 命名空间，格式同api.php中以|分隔
  * @returns 页面列表
  */
-const linkList = async (pagename: string, lhnamespace = ''): Promise<string[]> => {
+const linkList = async (pagename: string, lhnamespace?: number[]): Promise<string[]> => {
   const api = new mw.Api();
   let lhcontinue: string | undefined = '1';
   const pageList: string[] = [];
