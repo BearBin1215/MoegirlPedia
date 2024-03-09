@@ -6,6 +6,7 @@ export type ButtonFlag = 'primary' | IconFlag;
 
 export type Indicator = 'clear' | 'up' | 'down' | 'required';
 
+/** 输入框组件change钩子参数 */
 export interface InputChangeValue<T> {
   value: T;
 

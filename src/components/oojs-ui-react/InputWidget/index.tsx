@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import type { FunctionComponent, ChangeEvent } from 'react';
+import type { FunctionComponent, ChangeEvent, Ref } from 'react';
 import type { InputChangeValue } from '../utils';
 import type { WidgetProps } from '../props';
 
-export interface InputWidgetProps<T> extends Omit<WidgetProps<HTMLInputElement>, 'children'> {
+export interface InputWidgetProps<T extends string | number> extends Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'> {
   name?: string;
 
   /** 默认值 */
@@ -13,10 +13,12 @@ export interface InputWidgetProps<T> extends Omit<WidgetProps<HTMLInputElement>,
   /** 值变化回调函数 */
   onChange?: (data: InputChangeValue<T>) => void;
 
-  /**  */
   placeholder?: string;
 
+  /** 输入框值类型 */
   type?: string;
+
+  ref?: Ref<HTMLDivElement>;
 }
 
 const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
