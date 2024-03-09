@@ -5,6 +5,11 @@ export interface AccessKeyElement {
   accessKey?: string;
 }
 
+export interface LabelElement {
+  /** 标签文字 */
+  label?: string;
+}
+
 export interface IconElement {
   /** 组件图标 */
   icon?: string;

@@ -2,9 +2,24 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputWidgetProps } from '../props';
+import type { LabelElement } from '../mixin';
+import type { LabelPosition } from '../utils';
 
-export type TextInputWidgetProps = InputWidgetProps<string>
+export interface TextInputWidgetProps extends
+  InputWidgetProps<string | undefined>,
+  LabelElement {
 
+  /** 最大长度 */
+  maxLength?: number;
+
+  /** 标签位置 */
+  labelPosition?: LabelPosition;
+}
+
+/**
+ * 文本输入框
+ * @returns
+ */
 const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
   name,
   classes,
@@ -12,6 +27,11 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
   disabled,
   onChange,
   placeholder,
+  maxLength,
+  icon,
+  indicator,
+  label,
+  labelPosition,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -21,10 +41,31 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
+    label && 'oo-ui-labelElement',
+    icon && 'oo-ui-iconElement',
+    indicator && [
+      'oo-ui-indicatorElement',
+      labelPosition === 'before'
+        ? 'oo-ui-textInputWidget-labelPosition-before'
+        : 'oo-ui-textInputWidget-labelPosition-after',
+    ],
     'oo-ui-textInputWidget',
     'oo-ui-textInputWidget-type-text',
   );
 
+  /** 左侧图标类 */
+  const iconClassName = classNames(
+    'oo-ui-iconElement-icon',
+    icon && `oo-ui-icon-${icon}`,
+  );
+
+  /** 右侧指示器类 */
+  const indicatorClassName = classNames(
+    'oo-ui-indicatorElement-indicator',
+    indicator && `oo-ui-indicator-${indicator}`,
+  );
+
+  /** 值输入响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setValue(newValue);
@@ -53,9 +94,13 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
         disabled={disabled}
         value={value}
         placeholder={placeholder}
+        maxLength={maxLength}
       />
-      <span className='oo-ui-iconElement-icon' />
-      <span className='oo-ui-indicatorElement-indicator' />
+      <span className={iconClassName} />
+      <span className={indicatorClassName} />
+      {label && (
+        <span className='oo-ui-labelElement-label'>{label}</span>
+      )}
     </div>
   );
 };

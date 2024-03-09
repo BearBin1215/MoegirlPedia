@@ -1,39 +1,39 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import type { FunctionComponent, ChangeEvent, Ref } from 'react';
-import type { InputChangeValue } from '../utils';
-import type { WidgetProps } from '../props';
-import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
+import type { FunctionComponent, ChangeEvent } from 'react';
+import type { InputWidgetProps } from '../props';
 
-export interface InputWidgetProps<T extends string | number | undefined> extends
-  Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
-  AccessKeyElement,
-  IconElement,
-  IndicatorElement {
+export interface NumberInputWidgetProps extends InputWidgetProps<number | undefined> {
+  /** 是否显示左右按钮 */
+  showButtons?: boolean;
 
-  /** input元素name属性 */
-  name?: string;
+  /** 最小值 */
+  min?: number;
 
-  /** 默认值 */
-  defaultValue?: T;
+  /** 最大值 */
+  max?: number;
 
-  /** 值变化回调函数 */
-  onChange?: (data: InputChangeValue<T>) => void;
+  /** 间距 */
+  step?: number;
 
-  /** 输入提示 */
-  placeholder?: string;
-
-  ref?: Ref<HTMLDivElement>;
+  /** 精度 */
+  precision?: number;
 }
 
-const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
-  accessKey,
+/**
+ * 数字输入框
+ */
+const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
   name,
   classes,
   defaultValue,
   disabled,
   onChange,
   placeholder,
+  min,
+  max,
+  step,
+  // precision,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -43,10 +43,12 @@ const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
+    'oo-ui-textInputWidget',
+    'oo-ui-textInputWidget-type-text',
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
+    const newValue = +event.target.value;
     setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
@@ -64,7 +66,7 @@ const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
       aria-disabled={false}
     >
       <input
-        accessKey={accessKey}
+        type='number'
         name={name}
         onChange={handleChange}
         tabIndex={disabled ? -1 : 0}
@@ -73,9 +75,14 @@ const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
         disabled={disabled}
         value={value}
         placeholder={placeholder}
+        min={min}
+        max={max}
+        step={step}
       />
+      <span className='oo-ui-iconElement-icon' />
+      <span className='oo-ui-indicatorElement-indicator' />
     </div>
   );
 };
 
-export default InputWidget;
+export default NumberInputWidget;

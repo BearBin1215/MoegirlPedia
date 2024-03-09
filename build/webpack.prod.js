@@ -20,7 +20,7 @@ module.exports = merge(common, {
             comments: false,
           },
           compress: {
-            drop_console: true,
+            drop_console: ['log', 'info'],
           },
         },
       }),
