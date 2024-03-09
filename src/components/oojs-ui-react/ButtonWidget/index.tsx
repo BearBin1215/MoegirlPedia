@@ -87,12 +87,12 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
 
   return (
     <span
+      {...rest}
       className={buttonClassName}
       onMouseUp={() => setPressed(false)}
       onMouseDown={() => setPressed(true)}
       onMouseLeave={() => setPressed(false)}
       aria-disabled={false}
-      {...rest}
     >
       {text}
       <a

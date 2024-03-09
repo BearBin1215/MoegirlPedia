@@ -32,9 +32,9 @@ const IconWidget: FunctionComponent<IconWidgetProps> = ({
 
   return (
     <span
+      {...rest}
       className={className}
       aria-disabled={false}
-      {...rest}
     />
   );
 };

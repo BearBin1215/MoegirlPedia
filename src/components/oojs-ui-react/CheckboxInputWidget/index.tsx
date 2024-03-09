@@ -46,9 +46,9 @@ const CheckBoxInputWidget: FunctionComponent<CheckBoxInputWidgetProps> = ({
 
   return (
     <span
+      {...rest}
       className={widgetClassName}
       aria-disabled={disabled}
-      {...rest}
     >
       <input
         name={name}

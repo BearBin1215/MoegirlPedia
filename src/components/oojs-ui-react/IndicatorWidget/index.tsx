@@ -26,9 +26,9 @@ const IndicatorWidget: FunctionComponent<IndicatorWidgetProps> = ({
 
   return (
     <span
+      {...rest}
       className={className}
       aria-disabled
-      {...rest}
     />
   );
 };
