@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import ButtonWiddget from '../ButtonWidget';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputWidgetProps } from '../props';
+import type { LabelElement } from '../mixin';
+import type { LabelPosition } from '../utils';
 
-export interface NumberInputWidgetProps extends InputWidgetProps<number | undefined> {
+export interface NumberInputWidgetProps extends
+  InputWidgetProps<number | undefined>,
+  LabelElement {
+
   /** 是否显示左右按钮 */
   showButtons?: boolean;
 
@@ -18,6 +24,9 @@ export interface NumberInputWidgetProps extends InputWidgetProps<number | undefi
 
   /** 精度 */
   precision?: number;
+
+  /** 标签位置 */
+  labelPosition?: LabelPosition;
 }
 
 /**
@@ -30,10 +39,15 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
   disabled,
   onChange,
   placeholder,
+  icon,
+  indicator,
+  label,
+  labelPosition,
+  showButtons,
   min,
   max,
-  step,
-  // precision,
+  step = 1,
+  precision,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -43,8 +57,27 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
+    icon && 'oo-ui-iconElement',
+    indicator && 'oo-ui-indicatorElement',
+    label && [
+      'oo-ui-labelElement',
+      labelPosition === 'before'
+        ? 'oo-ui-textInputWidget-labelPosition-before'
+        : 'oo-ui-textInputWidget-labelPosition-after',
+    ],
     'oo-ui-textInputWidget',
-    'oo-ui-textInputWidget-type-text',
+    'oo-ui-textInputWidget-type-number',
+    showButtons && 'oo-ui-numberInputWidget-buttoned',
+  );
+
+  const iconClassName = classNames(
+    'oo-ui-iconElement-icon',
+    icon && `oo-ui-icon-${icon}`,
+  );
+
+  const indicatorClassName = classNames(
+    'oo-ui-indicatorElement-indicator',
+    indicator && `oo-ui-indicator-${indicator}`,
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -59,28 +92,65 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
     }
   };
 
+  /** 点击-按钮按照step减少 */
+  const handleMinus = () => {
+    setValue((value || 0) - step);
+  };
+
+  /** 点击+按钮按照step增加 */
+  const handlePlus = () => {
+    setValue((value || 0) + step);
+  };
+
+  /** 取消聚焦，按照精度四舍五入 */
+  const handleBlur = () => {
+    if (precision) {
+      setValue(parseFloat((value || 0).toFixed(precision)));
+    }
+  };
+
   return (
     <div
       {...rest}
       className={className}
       aria-disabled={false}
     >
-      <input
-        type='number'
-        name={name}
-        onChange={handleChange}
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={!!disabled}
-        className='oo-ui-inputWidget-input'
-        disabled={disabled}
-        value={value}
-        placeholder={placeholder}
-        min={min}
-        max={max}
-        step={step}
-      />
-      <span className='oo-ui-iconElement-icon' />
-      <span className='oo-ui-indicatorElement-indicator' />
+      <span className={iconClassName} />
+      <span className={indicatorClassName} />
+      <div className='oo-ui-numberInputWidget-field'>
+        {showButtons && (
+          <ButtonWiddget
+            classes={['oo-ui-numberInputWidget-minusButton']}
+            icon='subtract'
+            onClick={handleMinus}
+          />
+        )}
+        <input
+          type='number'
+          name={name}
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={!!disabled}
+          className='oo-ui-inputWidget-input'
+          disabled={disabled}
+          value={value}
+          placeholder={placeholder}
+          min={min}
+          max={max}
+          step={step}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+        {showButtons && (
+          <ButtonWiddget
+            classes={['oo-ui-numberInputWidget-plusButton']}
+            icon='add'
+            onClick={handlePlus}
+          />
+        )}
+      </div>
+      {label && (
+        <span className='oo-ui-labelElement-label'>{label}</span>
+      )}
     </div>
   );
 };

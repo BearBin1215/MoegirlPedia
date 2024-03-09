@@ -41,10 +41,10 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
-    label && 'oo-ui-labelElement',
     icon && 'oo-ui-iconElement',
-    indicator && [
-      'oo-ui-indicatorElement',
+    indicator && 'oo-ui-indicatorElement',
+    label && [
+      'oo-ui-labelElement',
       labelPosition === 'before'
         ? 'oo-ui-textInputWidget-labelPosition-before'
         : 'oo-ui-textInputWidget-labelPosition-after',
