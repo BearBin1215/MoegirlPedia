@@ -56,7 +56,7 @@ export default class Snake {
    * 创建一个Snake对象
    * @param token 输入参数组成的对象
    */
-  constructor({ hasHead = true, hasHref = true, ...props }: SnakeProps) {
+  constructor({ hasHead = true, hasHref = true, ...props }: SnakeProps = { hasHead: true, hasHref: true }) {
     // 给类的属性赋值
     this.hasHead = hasHead;
     this.hasHref = hasHref;
