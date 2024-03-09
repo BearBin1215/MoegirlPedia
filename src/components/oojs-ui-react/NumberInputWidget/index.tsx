@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import ButtonWiddget from '../ButtonWidget';
+import ButtonWidget from '../ButtonWidget';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputWidgetProps } from '../props';
-import type { LabelElement } from '../mixin';
+import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../mixin';
 import type { LabelPosition } from '../utils';
 
 export interface NumberInputWidgetProps extends
   InputWidgetProps<number | undefined>,
+  AccessKeyElement,
+  IconElement,
+  IndicatorElement,
   LabelElement {
 
   /** 是否显示左右按钮 */
@@ -34,6 +37,7 @@ export interface NumberInputWidgetProps extends
  */
 const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
   name,
+  accessKey,
   classes,
   defaultValue,
   disabled,
@@ -80,6 +84,7 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
     indicator && `oo-ui-indicator-${indicator}`,
   );
 
+  /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = +event.target.value;
     setValue(newValue);
@@ -102,7 +107,7 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
     setValue((value || 0) + step);
   };
 
-  /** 取消聚焦，按照精度四舍五入 */
+  /** 失焦时，按照精度四舍五入 */
   const handleBlur = () => {
     if (precision) {
       setValue(parseFloat((value || 0).toFixed(precision)));
@@ -119,13 +124,14 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
       <span className={indicatorClassName} />
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
-          <ButtonWiddget
+          <ButtonWidget
             classes={['oo-ui-numberInputWidget-minusButton']}
             icon='subtract'
             onClick={handleMinus}
           />
         )}
         <input
+          accessKey={accessKey}
           type='number'
           name={name}
           tabIndex={disabled ? -1 : 0}
@@ -141,7 +147,7 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
           onBlur={handleBlur}
         />
         {showButtons && (
-          <ButtonWiddget
+          <ButtonWidget
             classes={['oo-ui-numberInputWidget-plusButton']}
             icon='add'
             onClick={handlePlus}

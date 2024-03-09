@@ -13,3 +13,4 @@ export { default as ButtonWidget } from './ButtonWidget';
 export { default as InputWidget } from './InputWidget';
 export { default as TextInputWidget } from './TextInputWidget';
 export { default as NumberInputWidget } from './NumberInputWidget';
+export { default as CheckboxInputWidget } from './CheckboxInputWidget';

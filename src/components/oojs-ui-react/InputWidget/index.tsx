@@ -3,25 +3,23 @@ import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent, Ref } from 'react';
 import type { InputChangeValue } from '../utils';
 import type { WidgetProps } from '../props';
-import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
+import type { AccessKeyElement } from '../mixin';
 
-export interface InputWidgetProps<T extends string | number | undefined> extends
+export interface InputWidgetProps<T extends string | number | boolean | undefined> extends
   Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
-  AccessKeyElement,
-  IconElement,
-  IndicatorElement {
+  AccessKeyElement {
 
   /** input元素name属性 */
   name?: string;
+
+  /** 输入提示 */
+  placeholder?: string;
 
   /** 默认值 */
   defaultValue?: T;
 
   /** 值变化回调函数 */
   onChange?: (data: InputChangeValue<T>) => void;
-
-  /** 输入提示 */
-  placeholder?: string;
 
   ref?: Ref<HTMLDivElement>;
 }

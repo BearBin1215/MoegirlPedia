@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputWidgetProps } from '../props';
-import type { LabelElement } from '../mixin';
+import type { LabelElement, IconElement, IndicatorElement } from '../mixin';
 import type { LabelPosition } from '../utils';
 
 export interface TextInputWidgetProps extends
   InputWidgetProps<string | undefined>,
-  LabelElement {
+  LabelElement,
+  IconElement,
+  IndicatorElement {
 
   /** 最大长度 */
   maxLength?: number;
@@ -65,7 +67,7 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
     indicator && `oo-ui-indicator-${indicator}`,
   );
 
-  /** 值输入响应 */
+  /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setValue(newValue);
