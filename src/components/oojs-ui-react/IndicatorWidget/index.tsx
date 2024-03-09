@@ -2,12 +2,11 @@ import React from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
-import type { Indicator } from '../utils';
+import type { IndicatorElement } from '../mixin';
 
-export interface IndicatorWidgetProps extends Omit<WidgetProps<HTMLSpanElement>, 'children'> {
-  /** 图标 */
-  indicator?: Indicator;
-}
+export interface IndicatorWidgetProps extends
+  Omit<WidgetProps<HTMLSpanElement>, 'children'>,
+  IndicatorElement { }
 
 const IndicatorWidget: FunctionComponent<IndicatorWidgetProps> = ({
   indicator,

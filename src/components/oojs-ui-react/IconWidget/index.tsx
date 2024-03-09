@@ -3,10 +3,11 @@ import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { IconFlag } from '../utils';
+import type { IconElement } from '../mixin';
 
-export interface IconWidgetProps extends Omit<WidgetProps<HTMLSpanElement>, 'children'> {
-  /** 图标 */
-  icon?: string;
+export interface IconWidgetProps extends
+  Omit<WidgetProps<HTMLSpanElement>, 'children'>,
+  IconElement {
 
   flags?: IconFlag | IconFlag[];
 }

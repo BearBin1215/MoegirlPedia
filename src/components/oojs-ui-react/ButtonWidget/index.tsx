@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps, IconWidgetProps, IndicatorWidgetProps } from '../props';
+import type { WidgetProps } from '../props';
 import type { ButtonFlag } from '../utils';
+import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
 
-export interface ButtonWidgetProps extends WidgetProps<HTMLSpanElement>, Omit<IconWidgetProps, 'flags'>, IndicatorWidgetProps {
+export interface ButtonWidgetProps extends
+  WidgetProps<HTMLSpanElement>,
+  AccessKeyElement,
+  IconElement,
+  IndicatorElement {
+
   /** 是否为激活状态 */
   active?: boolean;
-
-  accessKey?: string;
 
   /** 是否生成边框 */
   framed?: boolean;

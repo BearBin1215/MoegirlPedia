@@ -3,8 +3,15 @@ import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent, Ref } from 'react';
 import type { InputChangeValue } from '../utils';
 import type { WidgetProps } from '../props';
+import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
 
-export interface InputWidgetProps<T extends string | number> extends Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'> {
+export interface InputWidgetProps<T extends string | number> extends
+  Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
+  AccessKeyElement,
+  IconElement,
+  IndicatorElement {
+
+  /** input元素name属性 */
   name?: string;
 
   /** 默认值 */
@@ -13,6 +20,7 @@ export interface InputWidgetProps<T extends string | number> extends Omit<Widget
   /** 值变化回调函数 */
   onChange?: (data: InputChangeValue<T>) => void;
 
+  /** 输入提示 */
   placeholder?: string;
 
   /** 输入框值类型 */
@@ -22,6 +30,7 @@ export interface InputWidgetProps<T extends string | number> extends Omit<Widget
 }
 
 const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
+  accessKey,
   name,
   classes,
   defaultValue,
@@ -58,6 +67,7 @@ const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
       aria-disabled={false}
     >
       <input
+        accessKey={accessKey}
         name={name}
         onChange={handleChange}
         tabIndex={disabled ? -1 : 0}
