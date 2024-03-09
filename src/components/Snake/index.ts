@@ -7,17 +7,17 @@ export interface SnakeProps {
   /**
    * 决定对象是否有head
    */
-  hasHead: boolean;
+  hasHead?: boolean;
 
   /**
    * 决定对象的项目是否有链接
    */
-  hasHref: boolean;
+  hasHref?: boolean;
 
   /**
    * Snake对象标签的属性值
    */
-  [key: string]: string | boolean;
+  [key: string]: string | boolean | undefined;
 }
 
 export default class Snake {
@@ -56,7 +56,7 @@ export default class Snake {
    * 创建一个Snake对象
    * @param token 输入参数组成的对象
    */
-  constructor({ hasHead = true, hasHref = true, ...props }: SnakeProps = { hasHead: true, hasHref: true }) {
+  constructor({ hasHead = true, hasHref = true, ...props }: SnakeProps = {}) {
     // 给类的属性赋值
     this.hasHead = hasHead;
     this.hasHref = hasHref;
