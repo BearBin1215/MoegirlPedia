@@ -14,3 +14,6 @@ export type { InputWidgetProps } from './InputWidget';
 export type { TextInputWidgetProps } from './TextInputWidget';
 export type { NumberInputWidgetProps } from './NumberInputWidget';
 export type { CheckboxInputWidgetProps } from './CheckboxInputWidget';
+
+// Layout
+export type { FieldLayoutProps } from './FieldLayout';
