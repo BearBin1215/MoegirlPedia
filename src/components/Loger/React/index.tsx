@@ -18,16 +18,21 @@ export interface LogerType extends LogerInfo {
 }
 
 export interface LogerDetail {
+  /** 日志详情类型 */
   type: string;
 
+  /** 日志详情文字 */
   text: ReactNode;
 
+  /** 日志时间 */
   time: string;
 }
 
 export interface LogerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  /** 日志类型定义 */
   logerTypes?: LogerType[];
 
+  /** 日志详情 */
   logerDetails?: LogerDetail[];
 }
 

@@ -9,7 +9,7 @@ export interface CheckBoxInputWidgetProps extends
   Omit<InputWidgetProps<boolean>, 'placeholder' | 'ref'>,
   AccessKeyElement {
 
-  ref: Ref<HTMLSpanElement>;
+  ref?: Ref<HTMLSpanElement>;
 }
 
 const CheckBoxInputWidget: FunctionComponent<CheckBoxInputWidgetProps> = ({
