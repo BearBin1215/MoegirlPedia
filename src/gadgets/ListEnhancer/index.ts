@@ -1,6 +1,7 @@
 import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
 import { copyText } from '@/utils/clipboard';
 import type { Cmtype } from '@/@types/api';
+import './index.less';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   let cacheText: string;
@@ -72,7 +73,6 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
     // Special:搜索
     const searchEnhance = () => {
-      mw.loader.addStyleTag('.search-types{display:flex;float:none;align-items:center;}#bearbintools-listenhancer-search{padding:.5em;user-select:none;}#bearbintools-listenhancer-search a{display:inline;padding:0;}.listenhancer-search-edit{margin-left:.5em;float:right;}');
       let showDetail = true;
       const linkList: string[] = [];
 

@@ -377,56 +377,57 @@ $(() => (async () => {
 
   // 执行体
   submitButton.on('click', async () => {
+    // 检查输入
+    if (!$editFromBox.val()) {
+      loger.record('请输入要替换的原文字。', 'warn');
+      return;
+    } else if (!$pageListBox.val() && !$categoryListBox.val()) {
+      loger.record('请输入要编辑的页面或分类。', 'warn');
+      return;
+    }
     const confirmText = $('<p>请确认您的编辑内容。若因输入不当而产生错误，请自行<ruby><rb>承担后果</rb><rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>');
     const confirm = await OO.ui.confirm(confirmText, {
       title: '提醒',
       size: 'small',
     });
     if (confirm) {
-      // 检查输入
-      if (!$editFromBox.val()) {
-        loger.record('请输入要替换的原文字。', 'warn');
-      } else if (!$pageListBox.val() && !$categoryListBox.val()) {
-        loger.record('请输入要编辑的页面或分类。', 'warn');
-      } else {
-        const additionalSummary = getAdditionalSummary();
-        const interval = getInterval();
-        const changeTo = $changeToBox.val()!;
-        const editFrom = solveRegex($editFromBox.val()!, regexSelect.isSelected());
-        if (!editFrom) {
-          return;
-        }
-        running = true;
-        submitButton.setDisabled(false).$element.hide();
-        stopButton.$element.show();
-        $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
-        window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
-        await getPageList().then(async (result) => {
-          let complete = 0;
-          const { length } = result;
-          loger.record(`共${length}个页面，即将开始编辑……`, 'normal');
-          for (const item of result) {
-            if (!running) {
-              break;
-            }
-            const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
-            complete++;
-            if (editResult === 'success' && interval !== 0 && complete < length) {
-              await waitInterval(interval);
-            }
-          }
-          if (running) {
-            loger.record('编辑完毕。', 'normal');
-            running = false;
-          } else {
-            loger.record('编辑终止。', 'normal');
-          }
-        });
-        submitButton.$element.show();
-        stopButton.$element.hide();
-        $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
-        window.onbeforeunload = () => null;
+      const additionalSummary = getAdditionalSummary();
+      const interval = getInterval();
+      const changeTo = $changeToBox.val()!;
+      const editFrom = solveRegex($editFromBox.val()!, regexSelect.isSelected());
+      if (!editFrom) {
+        return;
       }
+      running = true;
+      submitButton.setDisabled(false).$element.hide();
+      stopButton.$element.show();
+      $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
+      window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
+      await getPageList().then(async (result) => {
+        let complete = 0;
+        const { length } = result;
+        loger.record(`共${length}个页面，即将开始编辑……`, 'normal');
+        for (const item of result) {
+          if (!running) {
+            break;
+          }
+          const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
+          complete++;
+          if (editResult === 'success' && interval !== 0 && complete < length) {
+            await waitInterval(interval);
+          }
+        }
+        if (running) {
+          loger.record('编辑完毕。', 'normal');
+          running = false;
+        } else {
+          loger.record('编辑终止。', 'normal');
+        }
+      });
+      submitButton.$element.show();
+      stopButton.$element.hide();
+      $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
+      window.onbeforeunload = () => null;
     }
   });
 

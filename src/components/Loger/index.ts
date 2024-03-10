@@ -167,7 +167,7 @@ export default class Loger {
 
     // 筛选按钮
     for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-      const button = createTag(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"></div>`);
+      const button = createTag(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"/>`);
 
       const iconElement = createTag(`<span class="loger-filter-icon">${icon}</span>`);
 
