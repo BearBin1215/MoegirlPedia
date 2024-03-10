@@ -16,3 +16,5 @@ export interface InputChangeValue<T> {
 
   event: ChangeEvent<HTMLInputElement>;
 }
+
+export type InputChangeHandler = (change: InputChangeValue) => void;
