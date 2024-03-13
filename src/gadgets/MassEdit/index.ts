@@ -40,7 +40,7 @@ $(() => (async () => {
   ], 'massedit-log', 'h5');
   mw.loader.load('https://mobile.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
   $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
-  const tags = mw.config.get('wgUserGroups').includes('bot') ? 'bot' : 'Automation tool';
+  const tags = mw.config.get('wgUserGroups')!.includes('bot') ? 'bot' : 'Automation tool';
 
   /**
    * 在Special:MassEdit构建页面
