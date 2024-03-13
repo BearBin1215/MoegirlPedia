@@ -58,5 +58,5 @@ if (mw.config.get('skin') === 'vector') {
   li = $('<div id="purge-cache-button"/>').prependTo('#moe-article-header-container #moe-article-header-top .right-block');
   const li2 = $('<li id="purge-cache-button-mobile"/>').appendTo('div.mobile-edit-button');
   li.append(containerNodeDesktop);
-  li2.append(containerNodeMobile);
+  li2.append(containerNodeMobile!);
 }
