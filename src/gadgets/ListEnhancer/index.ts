@@ -87,7 +87,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
       // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
       ($('a[data-serp-pos]') as JQuery<HTMLAnchorElement>).each((_, ele) => {
-        linkList.push(decodeURIComponent(ele.href).replace('/', '').replace(/_/g, ' '));
+        linkList.push(decodeURIComponent(ele.href).replace(/(https:\/\/)?m?zh.moegirl.org.cn\//, '').replace(/_/g, ' '));
         $(ele).before(`<a class="listenhancer-search-edit" href="${ele.href}?action=edit">[编辑]</a>`);
       });
 
