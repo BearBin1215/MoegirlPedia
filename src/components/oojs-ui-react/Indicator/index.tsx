@@ -4,11 +4,11 @@ import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { IndicatorElement } from '../mixin';
 
-export interface IndicatorWidgetProps extends
+export interface IndicatorProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,
   IndicatorElement { }
 
-const IndicatorWidget: FunctionComponent<IndicatorWidgetProps> = ({
+const Indicator: FunctionComponent<IndicatorProps> = ({
   indicator,
   classes,
   disabled,
@@ -33,4 +33,4 @@ const IndicatorWidget: FunctionComponent<IndicatorWidgetProps> = ({
   );
 };
 
-export default IndicatorWidget;
+export default Indicator;

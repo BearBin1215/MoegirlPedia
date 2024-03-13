@@ -5,7 +5,7 @@ import type { WidgetProps } from '../props';
 import type { ButtonFlag } from '../utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
 
-export interface ButtonWidgetProps extends
+export interface ButtonProps extends
   WidgetProps<HTMLSpanElement>,
   AccessKeyElement,
   IconElement,
@@ -33,7 +33,7 @@ export interface ButtonWidgetProps extends
   title?: string;
 }
 
-const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
+const Button: FunctionComponent<ButtonProps> = ({
   active,
   accessKey,
   children,
@@ -112,4 +112,4 @@ const ButtonWidget: FunctionComponent<ButtonWidgetProps> = ({
   );
 };
 
-export default ButtonWidget;
+export default Button;

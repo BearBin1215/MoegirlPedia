@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import ButtonWidget from '../ButtonWidget';
+import ButtonWidget from '../Button';
 import type { FunctionComponent, ChangeEvent } from 'react';
-import type { InputWidgetProps } from '../props';
+import type { InputProps } from '../props';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../mixin';
 import type { LabelPosition } from '../utils';
 
-export interface NumberInputWidgetProps extends
-  InputWidgetProps<number | undefined>,
+export interface NumberInputProps extends
+  InputProps<number | undefined>,
   AccessKeyElement,
   IconElement,
   IndicatorElement,
@@ -35,7 +35,7 @@ export interface NumberInputWidgetProps extends
 /**
  * 数字输入框
  */
-const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
+const NumberInput: FunctionComponent<NumberInputProps> = ({
   name,
   accessKey,
   classes,
@@ -161,4 +161,4 @@ const NumberInputWidget: FunctionComponent<NumberInputWidgetProps> = ({
   );
 };
 
-export default NumberInputWidget;
+export default NumberInput;

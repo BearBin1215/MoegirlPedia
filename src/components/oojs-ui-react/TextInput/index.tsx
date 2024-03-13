@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent } from 'react';
-import type { InputWidgetProps } from '../props';
+import type { InputProps } from '../props';
 import type { LabelElement, IconElement, IndicatorElement } from '../mixin';
 import type { LabelPosition } from '../utils';
 
-export interface TextInputWidgetProps extends
-  InputWidgetProps<string | undefined>,
+export interface TextInputProps extends
+  InputProps<string | undefined>,
   LabelElement,
   IconElement,
   IndicatorElement {
@@ -22,7 +22,7 @@ export interface TextInputWidgetProps extends
  * 文本输入框
  * @returns
  */
-const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
+const TextInput: FunctionComponent<TextInputProps> = ({
   name,
   classes,
   defaultValue,
@@ -107,4 +107,4 @@ const TextInputWidget: FunctionComponent<TextInputWidgetProps> = ({
   );
 };
 
-export default TextInputWidget;
+export default TextInput;

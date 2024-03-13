@@ -5,14 +5,14 @@ import type { WidgetProps } from '../props';
 import type { IconFlag } from '../utils';
 import type { IconElement } from '../mixin';
 
-export interface IconWidgetProps extends
+export interface IconProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,
   IconElement {
 
   flags?: IconFlag | IconFlag[];
 }
 
-const IconWidget: FunctionComponent<IconWidgetProps> = ({
+const Icon: FunctionComponent<IconProps> = ({
   icon,
   classes,
   disabled,
@@ -39,4 +39,4 @@ const IconWidget: FunctionComponent<IconWidgetProps> = ({
   );
 };
 
-export default IconWidget;
+export default Icon;

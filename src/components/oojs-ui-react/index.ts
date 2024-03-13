@@ -8,17 +8,17 @@ export { default as Element } from './Element';
 export { default as Widget } from './Widget';
 
 // 图标
-export { default as IconWidget } from './IconWidget';
-export { default as IndicatorWidget } from './IndicatorWidget';
+export { default as Icon } from './Icon';
+export { default as Indicator } from './Indicator';
 
 // 按钮
-export { default as ButtonWidget } from './ButtonWidget';
+export { default as Button } from './Button';
 
 // 输入框
-export { default as InputWidget } from './InputWidget';
-export { default as TextInputWidget } from './TextInputWidget';
-export { default as NumberInputWidget } from './NumberInputWidget';
-export { default as CheckboxInputWidget } from './CheckboxInputWidget';
+export { default as Input } from './Input';
+export { default as TextInput } from './TextInput';
+export { default as NumberInput } from './NumberInput';
+export { default as CheckboxInput } from './CheckboxInput';
 
 // Layout
 export { default as FieldLayout } from './FieldLayout';

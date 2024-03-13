@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import IconWidget from '../IconWidget';
+import IconWidget from '../Icon';
 import type { Ref, FunctionComponent, ChangeEvent } from 'react';
-import type { InputWidgetProps } from '../props';
+import type { InputProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
-export interface CheckBoxInputWidgetProps extends
-  Omit<InputWidgetProps<boolean>, 'placeholder' | 'ref'>,
+export interface CheckboxInputProps extends
+  Omit<InputProps<boolean>, 'placeholder' | 'ref'>,
   AccessKeyElement {
 
   ref?: Ref<HTMLSpanElement>;
 }
 
-const CheckBoxInputWidget: FunctionComponent<CheckBoxInputWidgetProps> = ({
+const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
   name,
   accessKey,
   classes,
@@ -72,4 +72,4 @@ const CheckBoxInputWidget: FunctionComponent<CheckBoxInputWidgetProps> = ({
   );
 };
 
-export default CheckBoxInputWidget;
+export default CheckboxInput;

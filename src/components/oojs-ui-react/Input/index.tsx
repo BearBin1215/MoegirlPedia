@@ -5,7 +5,7 @@ import type { InputChangeValue } from '../utils';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
-export interface InputWidgetProps<T extends string | number | boolean | undefined> extends
+export interface InputProps<T extends string | number | boolean | undefined> extends
   Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
   AccessKeyElement {
 
@@ -24,7 +24,7 @@ export interface InputWidgetProps<T extends string | number | boolean | undefine
   ref?: Ref<HTMLDivElement>;
 }
 
-const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
+const Input: FunctionComponent<InputProps<string | number>> = ({
   accessKey,
   name,
   classes,
@@ -76,4 +76,4 @@ const InputWidget: FunctionComponent<InputWidgetProps<string | number>> = ({
   );
 };
 
-export default InputWidget;
+export default Input;

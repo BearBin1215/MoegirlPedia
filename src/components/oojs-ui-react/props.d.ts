@@ -3,17 +3,17 @@ export type { ElementProps } from './Element';
 export type { WidgetProps } from './Widget';
 
 // 图标
-export type { IconWidgetProps } from './IconWidget';
-export type { IndicatorWidgetProps } from './IndicatorWidget';
+export type { IconProps } from './Icon';
+export type { IndicatorProps } from './Indicator';
 
 // 按钮
-export type { ButtonWidgetProps } from './Buttonidget';
+export type { ButtonProps } from './Button';
 
 // 输入框
-export type { InputWidgetProps } from './InputWidget';
-export type { TextInputWidgetProps } from './TextInputWidget';
-export type { NumberInputWidgetProps } from './NumberInputWidget';
-export type { CheckboxInputWidgetProps } from './CheckboxInputWidget';
+export type { InputProps } from './Input';
+export type { TextInputProps } from './TextInput';
+export type { NumberInputProps } from './NumberInput';
+export type { CheckboxInputProps } from './CheckboxInput';
 
 // Layout
 export type { FieldLayoutProps } from './FieldLayout';
