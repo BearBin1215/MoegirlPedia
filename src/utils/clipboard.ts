@@ -22,23 +22,25 @@ const copyText = async (text = ''): Promise<void> => {
 /**
  * 从剪贴板读取文本
  */
-const pasteText = (): Promise<string> => new Promise((resolve, reject) => {
-  if (typeof navigator.clipboard?.readText === 'function') {
-    navigator.clipboard.readText()
-      .then((text) => resolve(text))
-      .catch((err) => reject(err));
-  } else {
-    const pasteArea = document.createElement('textarea');
-    document.body.appendChild(pasteArea);
-    pasteArea.style.position = 'absolute';
-    pasteArea.style.top = '0';
-    pasteArea.style.zIndex = '-999';
-    pasteArea.focus();
-    const text = pasteArea.value;
-    document.body.removeChild(pasteArea);
-    resolve(text);
+const pasteText = async (): Promise<string> => {
+  if (navigator.clipboard?.readText) {
+    return await navigator.clipboard.readText();
   }
-});
+  const pasteArea = document.createElement('textarea');
+  document.body.appendChild(pasteArea);
+  pasteArea.style.position = 'absolute';
+  pasteArea.style.top = '0';
+  pasteArea.style.zIndex = '-999';
+  pasteArea.focus();
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const text = pasteArea.value;
+      document.body.removeChild(pasteArea);
+      resolve(text);
+    }, 0);
+  });
+};
 
 export {
   copyText,
