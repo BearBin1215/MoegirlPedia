@@ -185,7 +185,14 @@ $(() => (async () => {
    * @param {number} time 等待时间（ms）
    * @returns {Promise<void>}
    */
-  const waitInterval = (time: number): Promise<void> => new Promise((resolve) => timeout = setTimeout(resolve, time));
+  const waitInterval = (time: number): Promise<void> => Promise.race([
+    new Promise((resolve) => timeout = setTimeout(resolve, time)),
+    new Promise((resolve) => setInterval(() => {
+      if (!running) {
+        resolve();
+      }
+    }, 200))
+  ]);
 
   /**
    * 获取用户输入的页面或分类
@@ -433,7 +440,6 @@ $(() => (async () => {
 
   stopButton.on('click', () => {
     running = false;
-    clearTimeout(timeout);
     stopButton.setDisabled(true);
   });
 
