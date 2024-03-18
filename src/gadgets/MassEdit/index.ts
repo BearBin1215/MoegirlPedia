@@ -10,7 +10,16 @@ $(() => (async () => {
   }
   await mw.loader.using(['mediawiki.api', 'oojs-ui']);
   const api = new mw.Api();
-  let running = false;
+
+  /** 当前状态，等待中、获取源代码中、编辑中 */
+  let action: ('waiting' | 'getting' | 'editing') = 'waiting';
+
+  /** 是否被终止 */
+  let stopped = false;
+
+  /** 定时器id */
+  let timeout: NodeJS.Timeout;
+
   const loger = new Loger([
     {
       name: 'success',
@@ -184,14 +193,27 @@ $(() => (async () => {
    * @param {number} time 等待时间（ms）
    * @returns {Promise<void>}
    */
-  const waitInterval = (time: number): Promise<void> => Promise.race([
-    new Promise<void>((resolve) => setTimeout(resolve, time)),
-    new Promise<void>((resolve) => setInterval(() => {
-      if (!running) {
-        resolve();
-      }
-    }, 200)),
-  ]);
+  const waitInterval = (time: number): Promise<void> => {
+    return new Promise((resolve) => timeout = setTimeout(resolve, time));
+  };
+
+  /** 设置页面不可交互 */
+  const setActionDisabled = () => {
+    submitButton.setDisabled(true).$element.hide();
+    stopButton.setDisabled(false).$element.show();
+    $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
+    window.onbeforeunload = () => true;
+  };
+
+  /** 设置页面可交互 */
+  const setActionEnable = () => {
+    action = 'waiting';
+    clearTimeout(timeout);
+    stopButton.setDisabled(true).$element.hide();
+    submitButton.setDisabled(false).$element.show();
+    $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
+    window.onbeforeunload = () => null;
+  };
 
   /**
    * 获取用户输入的页面或分类
@@ -322,19 +344,24 @@ $(() => (async () => {
    * @param {string} changeTo 替换为
    * @returns {Promise<"nochange"|"success"|"failed">} 编辑结果，success/nochange/failed
    */
-  const editAction = async (title: string, summary: string, editFrom: string | RegExp, changeTo: string): Promise<"nochange" | "success" | "failed"> => {
+  const editAction = async (title: string, summary: string, editFrom: string | RegExp, changeTo: string): Promise<'nochange' | 'success' | 'failed'> => {
     const retry = retrySelect.isSelected();
     let retreyTimes = 0;
     const maxRetryCount = +retryTimesBox.getValue();
     const pageLink = `<a href="/${title}" target="_blank">${title}</a>`;
     do {
       try {
+        action = 'getting';
         const source = await pageSource(title); // 获取源代码并进行替换
         const replacedSource = source!.replaceAll(editFrom, changeTo);
         if (source === replacedSource) {
           loger.record(`【${pageLink}】编辑前后无变化。`, 'nochange');
           return 'nochange';
         }
+        if (stopped) {
+          return 'failed';
+        }
+        action = 'editing';
         const editResult = await api.postWithToken('csrf', {
           format: 'json',
           action: 'edit',
@@ -347,6 +374,7 @@ $(() => (async () => {
           text: replacedSource,
           summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.toString().replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary === '' ? '' : `：${summary}`}`,
         });
+        action = 'waiting';
         if (editResult?.edit?.newrevid) {
           loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, 'success');
           return 'success';
@@ -381,7 +409,7 @@ $(() => (async () => {
     return 'failed';
   };
 
-  // 执行体
+  // 点击提交按钮
   submitButton.on('click', async () => {
     // 检查输入
     if (!$editFromBox.val()) {
@@ -399,50 +427,68 @@ $(() => (async () => {
     if (confirm) {
       const additionalSummary = getAdditionalSummary();
       const interval = getInterval();
-      const changeTo = $changeToBox.val()!;
       const editFrom = solveRegex($editFromBox.val()!, regexSelect.isSelected());
+      const changeTo = $changeToBox.val()!;
       if (!editFrom) {
         return;
       }
-      running = true;
-      submitButton.setDisabled(false).$element.hide();
-      stopButton.setDisabled(false);
-      stopButton.$element.show();
-      $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
-      window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
+      setActionDisabled();
       await getPageList().then(async (result) => {
         let complete = 0;
         const { length } = result;
         loger.record(`共${length}个页面，即将开始编辑……`, 'normal');
         for (const item of result) {
-          if (!running) {
-            break;
-          }
           const editResult = await editAction(item, additionalSummary, editFrom, changeTo);
           complete++;
+          if (stopped) {
+            // 被终止
+            break;
+          }
           if (editResult === 'success' && interval !== 0 && complete < length) {
             await waitInterval(interval);
           }
         }
-        if (running) {
-          loger.record('编辑完毕。', 'normal');
-          running = false;
-        } else {
+        if (stopped) {
+          stopped = false;
           loger.record('编辑终止。', 'normal');
+        } else {
+          loger.record('编辑完毕。', 'normal');
         }
+        setActionEnable();
       });
-      submitButton.$element.show();
-      stopButton.$element.hide();
-      $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
-      window.onbeforeunload = () => null;
+      setActionEnable();
     }
   });
 
+  /**
+   * 点击终止按钮。
+   *
+   * 终止逻辑：
+   * 1. 若处于等待或读取源代码状态，标记终止以使请求循环在下次请求中打断，同时恢复页面可交互。
+   * 2. 若处于等待编辑请求响应状态，标记终止，等待当前请求完毕后恢复页面可交互。
+   */
   stopButton.on('click', () => {
-    running = false;
     stopButton.setDisabled(true);
+    switch (action) {
+      case 'waiting':
+        // 等待中，无需过多操作直接恢复交互
+        stopped = false;
+        setActionEnable();
+        loger.record('编辑终止。', 'normal');
+        break;
+      case 'getting':
+        // 正在获取源代码，标记被终止并回复交互
+        stopped = true;
+        setActionEnable();
+        break;
+      case 'editing':
+        // 正在编辑请求中，等待响应
+        stopped = true;
+        break;
+    }
   });
 
+  // 点击预览按钮
   previewButton.on('click', () => {
     const editFrom = $editFromBox.val();
     if (!editFrom) {
