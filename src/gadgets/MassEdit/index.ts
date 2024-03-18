@@ -11,7 +11,6 @@ $(() => (async () => {
   await mw.loader.using(['mediawiki.api', 'oojs-ui']);
   const api = new mw.Api();
   let running = false;
-  let timeout: NodeJS.Timeout;
   const loger = new Loger([
     {
       name: 'success',
@@ -185,7 +184,14 @@ $(() => (async () => {
    * @param {number} time 等待时间（ms）
    * @returns {Promise<void>}
    */
-  const waitInterval = (time: number): Promise<void> => new Promise((resolve) => timeout = setTimeout(resolve, time));
+  const waitInterval = (time: number): Promise<void> => Promise.race([
+    new Promise<void>((resolve) => setTimeout(resolve, time)),
+    new Promise<void>((resolve) => setInterval(() => {
+      if (!running) {
+        resolve();
+      }
+    }, 200)),
+  ]);
 
   /**
    * 获取用户输入的页面或分类
@@ -400,6 +406,7 @@ $(() => (async () => {
       }
       running = true;
       submitButton.setDisabled(false).$element.hide();
+      stopButton.setDisabled(false);
       stopButton.$element.show();
       $('#mw-content-text input, #mw-content-text textarea').prop('disabled', true);
       window.onbeforeunload = () => true; // 执行过程中关闭标签页，发出提醒
@@ -433,7 +440,6 @@ $(() => (async () => {
 
   stopButton.on('click', () => {
     running = false;
-    clearTimeout(timeout);
     stopButton.setDisabled(true);
   });
 
