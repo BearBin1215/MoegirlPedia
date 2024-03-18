@@ -220,10 +220,10 @@ $(() => (async () => {
    *
    * 经测试postWithToken()会自动去掉title的首尾空格，不需要另外去除。
    *
-   * @param {string} type "page"或"category"
-   * @returns {string[]} 页面列表
+   * @param type 类型
+   * @returns 页面列表
    */
-  const getList = (type: string): string[] => ((type === 'page'
+  const getList = (type: 'page' | 'category'): string[] => ((type === 'page'
     ? $pageListBox.val()
     : $categoryListBox.val()
   )!).split('\n').filter((s) => s && s.trim());
@@ -231,8 +231,8 @@ $(() => (async () => {
   /**
    * 获取分类列表内的页面
    *
-   * @param {string[]} categories 分类列表
-   * @returns {Promise<string[]>} 分类内的页面
+   * @param categories 分类列表
+   * @returns 分类内的页面
    */
   const getPagesFromCats = async (categories: string[]): Promise<string[]> => {
     const pageList: string[] = [];
@@ -265,7 +265,7 @@ $(() => (async () => {
   /**
    * 根据用户输入获取最终要编辑的页面列表
    *
-   * @returns {Promise<string[]>} 得到的页面列表
+   * @returns 得到的页面列表
    */
   const getPageList = async (): Promise<string[]> => {
     const pageSet = new Set([...getList('page'), ...await getPagesFromCats(getList('category'))]);
@@ -338,11 +338,11 @@ $(() => (async () => {
   /**
    * 根据替换规则对指定页面进行编辑
    *
-   * @param {string} title 页面标题
-   * @param {string} summary 编辑摘要
-   * @param {string|RegExp} editFrom 原文字
-   * @param {string} changeTo 替换为
-   * @returns {Promise<"nochange"|"success"|"failed">} 编辑结果，success/nochange/failed
+   * @param title 页面标题
+   * @param summary 编辑摘要
+   * @param editFrom 原文字
+   * @param changeTo 替换为
+   * @returns 编辑结果，success/nochange/failed
    */
   const editAction = async (title: string, summary: string, editFrom: string | RegExp, changeTo: string): Promise<'nochange' | 'success' | 'failed'> => {
     const retry = retrySelect.isSelected();
@@ -372,7 +372,7 @@ $(() => (async () => {
           nocreate: true,
           title,
           text: replacedSource,
-          summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.toString().replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary === '' ? '' : `：${summary}`}`,
+          summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.toString().replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary && `：${summary}`}`,
         });
         action = 'waiting';
         if (editResult?.edit?.newrevid) {
@@ -419,7 +419,7 @@ $(() => (async () => {
       loger.record('请输入要编辑的页面或分类。', 'warn');
       return;
     }
-    const confirmText = $('<p>请确认您的编辑内容。若因输入不当而产生错误，请自行<ruby><rb>承担后果</rb><rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>');
+    const confirmText = $('<p>请确认您的编辑内容。若因输入不当而产生错误，请自行<ruby>承担后果<rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>');
     const confirm = await OO.ui.confirm(confirmText, {
       title: '提醒',
       size: 'small',
