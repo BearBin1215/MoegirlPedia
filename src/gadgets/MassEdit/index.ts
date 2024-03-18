@@ -117,14 +117,14 @@ $(() => (async () => {
     }
   });
 
-  // 重试次数
+  /** 重试次数 */
   const retryTimesBox = new OO.ui.TextInputWidget({
     type: 'number',
     placeholder: '0',
     id: 'me-retry-times',
     disabled: true,
   });
-  // 是否重试
+  /** 是否重试 */
   const retrySelect = new OO.ui.CheckboxInputWidget();
   const retryField = new OO.ui.FieldLayout(retrySelect.on('change', () => {
     retryTimesBox.setDisabled(!retrySelect.isSelected()); // 点击时切换重试次数输入框的可用性
@@ -271,12 +271,6 @@ $(() => (async () => {
     const pageSet = new Set([...getList('page'), ...await getPagesFromCats(getList('category'))]);
     return [...pageSet];
   };
-
-  // 获取间隔
-  const getInterval = () => +(intervalBox.getValue() === '' ? 20 : intervalBox.getValue()) * 1000;
-
-  // 获取附加摘要
-  const getAdditionalSummary = () => summaryBox.getValue();
 
   /**
    * 按照选择情况解析正则表达式或输出原字符串
@@ -425,8 +419,8 @@ $(() => (async () => {
       size: 'small',
     });
     if (confirm) {
-      const additionalSummary = getAdditionalSummary();
-      const interval = getInterval();
+      const additionalSummary = summaryBox.getValue();
+      const interval = +(intervalBox.getValue() === '' ? 20 : intervalBox.getValue()) * 1000;
       const editFrom = solveRegex($editFromBox.val()!, regexSelect.isSelected());
       const changeTo = $changeToBox.val()!;
       if (!editFrom) {
