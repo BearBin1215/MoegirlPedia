@@ -8,8 +8,8 @@
     ],
     "jsx": "react",
     "module": "ESNext",
+    "moduleResolution": "node",
     "rootDir": "./",
-    "moduleResolution": "node10",
     "baseUrl": "./",
     "paths": {
       "@/*": [
