@@ -1,5 +1,6 @@
 const glob = require('glob');
 const path = require('path');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}` : './src/gadgets/**/index.{js,jsx,ts,tsx}', { nocase: true })
   .map((filename) => filename
@@ -50,15 +51,7 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/i,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
+        loader: 'ts-loader',
       },
       {
         test: /\.(js|jsx)$/,
@@ -89,4 +82,5 @@ module.exports = {
       },
     ],
   },
+  plugins: [new ForkTsCheckerWebpackPlugin()],
 };

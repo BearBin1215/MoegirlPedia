@@ -11,7 +11,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
   const api = new mw.Api();
   const pageList: string[] = [];
   // 有api权限的用户通过API获取，无权限用户通过ajax获取
-  if (mw.config.get('wgUserGroups').some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
+  if (mw.config.get('wgUserGroups')!.some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
     let cmcontinue: string | undefined = '';
     while (cmcontinue !== undefined) {
       const result = await api.post({
