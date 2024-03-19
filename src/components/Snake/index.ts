@@ -125,7 +125,7 @@ export default class Snake {
    * @param {string} title 项目元素的title属性；若留空，hasHref为true时会从name继承，为false时不会继承
    * @param {string} href 项目元素的href属性，仅在hasHref为true时有效；若留空则会从name继承
    */
-  addScale(name: string, title: string, href: string) {
+  addScale(name: string, title?: string, href?: string) {
     if (this.blocks[name]) {
       throw new Error(`Snake: 项目${name}已存在。`);
     }

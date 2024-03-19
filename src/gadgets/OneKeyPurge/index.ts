@@ -24,15 +24,25 @@ $(() => (async () => {
   const Noratelimit = UserRights.includes('noratelimit');
 
   class OKPWindow extends OO.ui.Dialog {
-    failList = []; // 记录操作失败的页面
+    failList: string[] = []; // 记录操作失败的页面
 
-    changeList = []; // 记录代码产生意外变化的页面
+    changeList: string[] = []; // 记录代码产生意外变化的页面
 
     complete = 0; // 已完成操作的页面数，成功或发生变化，不含失败
 
     progressBar = new Snake(); // 进度条
 
     running = false;
+
+    $header!: JQuery<HTMLElement>;
+    $body!: JQuery<HTMLElement>;
+    $footer!: JQuery<HTMLElement>;
+    panelLayout!: OO.ui.PanelLayout;
+    closeButton!: OO.ui.ButtonWidget;
+    stopButton!: OO.ui.ButtonWidget;
+    actionButton!: OO.ui.ButtonWidget;
+    typeSelectInput!: OO.ui.CheckboxMultiselectInputWidget;
+    optionRadioSelect!: OO.ui.RadioSelectWidget
 
     static static = {
       ...super.static,
@@ -143,12 +153,12 @@ $(() => (async () => {
        */
       this.$body.append(
         this.$header.append(
-          $('<div class="okp-button okp-cancel-button"></div>').append(
+          $('<div class="okp-button okp-cancel-button"/>').append(
             this.closeButton.$element,
             this.stopButton.$element,
           ),
           $('<div class="okp-header-text">批量清除页面缓存</div>'),
-          $('<div class="okp-button okp-action-button"></div>').append(
+          $('<div class="okp-button okp-action-button"/>').append(
             this.actionButton.$element,
           ),
         ),
@@ -159,14 +169,15 @@ $(() => (async () => {
           $(this.progressBar.element),
         ),
         this.$footer.append(
-          $('<div class="okp-button okp-help-button"></div>').append(helpButton.$element),
+          $('<div class="okp-button okp-help-button"/>').append(helpButton.$element),
         ),
       );
+      return this;
     }
 
     // 根据用户选项获取页面列表
     async getList() {
-      const pageList = [];
+      const pageList: string[] = [];
       try {
         if (this.typeSelectInput.getValue().includes('link')) {
           const result = await linkList(PAGENAME);
@@ -203,7 +214,7 @@ $(() => (async () => {
 
     // 返回用户所选择的操作
     get optionType() {
-      return this.optionRadioSelect.findSelectedItem()?.getData();
+      return (this.optionRadioSelect.findSelectedItem() as OO.ui.OptionWidget)?.getData();
     }
 
     /**
@@ -212,7 +223,7 @@ $(() => (async () => {
      * @param result 操作结果（success/warn/fail，大小写不敏感）
      * @param err （可选）错误/警告消息
      */
-    progressChange(title, result, err = '') {
+    progressChange(title: string, result: 'success' | 'warn' | 'fail', err = '') {
       const optionText = this.optionType === 'nulledit' ? '零编辑' : '清除缓存';
       this.progressBar.crawl(title, result);
       switch (result.toLowerCase()) {
@@ -384,7 +395,7 @@ $(() => (async () => {
   windowManager.addWindows([OKPDialog]);
 
   // 添加入口
-  $(mw.util.addPortletLink('p-cactions', 'javascript:void(0)', '批量清除缓存', 'ca-okp')).on('click', () => {
+  $(mw.util.addPortletLink('p-cactions', 'javascript:void(0)', '批量清除缓存', 'ca-okp')!).on('click', () => {
     $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层
     windowManager.openWindow(OKPDialog);
     $body.css('overflow', 'auto');
