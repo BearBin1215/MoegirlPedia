@@ -7,23 +7,25 @@ import type { ApiParams, ApiQueryResponse } from "@/@types/api";
  */
 const linkList = async (pagename: string, lhnamespace?: number[]): Promise<string[]> => {
   const api = new mw.Api();
-  let lhcontinue: string | undefined = '1';
+  let lhcontinue: string | undefined = undefined;
   const pageList: string[] = [];
-  while (lhcontinue) {
-    const postBody: ApiParams = {
-      action: 'query',
-      prop: 'linkshere',
-      titles: pagename,
-      lhlimit: 'max',
-      lhcontinue,
-    };
-    if (lhnamespace) {
-      postBody.lhnamespace = lhnamespace;
-    }
+  const postBody: ApiParams = {
+    action: 'query',
+    prop: 'linkshere',
+    titles: pagename,
+    lhlimit: 'max',
+  }
+  if (lhnamespace) {
+    postBody.lhnamespace = lhnamespace;
+  }
+  do {
     const res = await api.post(postBody) as ApiQueryResponse;
     pageList.push(...(Object.values(res.query.pages)[0].linkshere || []).map(({ title }) => title));
     lhcontinue = res.continue?.lhcontinue;
-  }
+    if (lhcontinue) {
+      postBody.lhcontinue = lhcontinue;
+    }
+  } while (lhcontinue);
   return pageList;
 };
 
