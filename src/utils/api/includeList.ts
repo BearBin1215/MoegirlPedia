@@ -9,7 +9,7 @@ import type { ApiParams, ApiQueryResponse } from "@/@types/api";
 const includeList = async (pagename: string, tinamespace?: number[]): Promise<string[]> => {
   const api = new mw.Api();
   let ticontinue: string | undefined = '1';
-  const pageList:string[] = [];
+  const pageList: string[] = [];
   while (ticontinue) {
     const postBody: ApiParams = {
       action: 'query',

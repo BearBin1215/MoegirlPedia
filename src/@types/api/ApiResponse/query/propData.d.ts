@@ -19,7 +19,7 @@ export interface Image extends Omit<PageProps, 'pageid'> {
  */
 export interface Linkshere extends PageProps {
   /** 是否为重定向 */
-  redirect?: '';
+  redirect: '';
 }
 
 /**
@@ -27,7 +27,7 @@ export interface Linkshere extends PageProps {
  */
 export interface Redirects extends PageProps {
   /** 每个重定向的碎片（即锚点重定向），如果有。 */
-  fragment?: string;
+  fragment: string;
 }
 
 /**
@@ -35,49 +35,49 @@ export interface Redirects extends PageProps {
  */
 export interface Revisions {
   /** 修订版本的ID */
-  revid?: number;
+  revid: number;
 
   /** 该版本的前一版本id，为0时代表创建新页面 */
-  parentid?: number;
+  parentid: number;
 
   /** 是否为小编辑 */
-  minor?: '';
+  minor: '';
 
   /** 做出修订的用户 */
-  user?: string;
+  user: string;
 
   /** 修订创建者的用户ID */
-  userid?: number;
+  userid: number;
 
   /** 编辑时间 */
-  timestamp?: string;
+  timestamp: string;
 
   /** 编辑摘要 */
-  comment?: string;
+  comment: string;
 
   /** 修订的长度（字节） */
-  size?: number;
+  size: number;
 
   /** 修订的SHA-1（base 16） */
-  sha1?: string;
+  sha1: string;
 
   /** 修订的内容模型ID */
-  contentmodel?: ContentModel;
+  contentmodel: ContentModel;
 
   /** 由用户对修订做出的被解析的摘要 */
-  parsedcomment?: string;
+  parsedcomment: string;
 
   /** 修订标签 */
-  tags?: string[];
+  tags: string[];
 
   /** 修订内容的XML解析树（需要内容模型`wikitext`） */
-  parsetree?: string;
+  parsetree: string;
 
   /** 内容序列化格式 */
-  contentformat?: ContentFormat;
+  contentformat: ContentFormat;
 
   /** 修订文本 */
-  "*"?: string;
+  "*": string;
 }
 
 /**

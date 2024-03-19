@@ -1,4 +1,14 @@
+import type { ApiParams, ApiQueryResponse } from '@/@types/api';
 import './index.less';
+
+type Size = 'small' | 'medium' | 'large' | 'larger' | 'full';
+
+interface UserContribution {
+  user: string;
+  count: number;
+  add: number;
+  remove: number;
+}
 
 $(() => (async () => {
   if (
@@ -14,40 +24,37 @@ $(() => (async () => {
     'jquery.tablesorter', // 提供表格排序功能
   ]);
   class ContributorDialog extends OO.ui.Dialog {
+    $table!: JQuery<HTMLTableElement>;
+    $tbody!: JQuery<HTMLTableSectionElement>;
+    $body!: JQuery<HTMLDivElement>;
+    got = false;
+
     static static = {
       ...super.static,
       name: 'ShowContributor',
-      size: 'large',
+      size: 'large' as Size,
     };
-    got = false;
     initialize() {
       super.initialize();
 
-      // 标题和关闭按钮
-      this.$headline = $('<div id="show-contributor-headline">本页贡献统计</div>');
-      this.closeButton = new OO.ui.IconWidget({
-        icon: 'close',
-        id: 'show-contributor-close',
-      });
-      this.$header = $('<div id="show-contributor-header"></div>').append(
-        this.$headline,
-        this.closeButton.$element,
-      );
-      // 点击关闭
-      this.closeButton.$element.on('click', () => this.close());
+      this.$tbody = $('<tbody/>') as JQuery<HTMLTableSectionElement>;
 
-      // 统计表
-      this.$thead = $('<thead><th>用户</th><th>编辑数</th><th>增加字节数</th><th>删减字节数</th></thead>');
-      this.$tbody = $('<tbody></tbody>');
-      this.$table = $('<table id="show-contributor-table" class="wikitable"></div>').append(
-        this.$thead,
-        this.$tbody,
-      );
+      this.$table = $('<table id="show-contributor-table" class="wikitable"/>') as JQuery<HTMLTableElement>;
 
       this.$body.append(
-        this.$header,
-        this.$table,
+        $('<div id="show-contributor-header"/>').append(
+          $('<div id="show-contributor-headline">本页贡献统计</div>'),
+          new OO.ui.IconWidget({
+            icon: 'close',
+            id: 'show-contributor-close',
+          }).$element.on('click', () => this.close()),
+        ),
+        this.$table.append(
+          $('<thead><th>用户</th><th>编辑数</th><th>增加字节数</th><th>删减字节数</th></thead>'),
+          this.$tbody,
+        ),
       );
+      return this;
     }
 
     /**
@@ -56,10 +63,10 @@ $(() => (async () => {
      */
     getContributors = async () => {
       const api = new mw.Api();
-      const contributors = {};
-      let rvcontinue = undefined;
-      let prevSize = 0; // 用于记录上次编辑的字节数
-      const config = {
+      const contributors: Record<string, number[]> = {};
+      let rvcontinue: string | undefined = '';
+      let prevSize: number | undefined = 0; // 用于记录上次编辑的字节数
+      const config: ApiParams = {
         action: 'query',
         format: 'json',
         prop: 'revisions',
@@ -68,16 +75,14 @@ $(() => (async () => {
         rvlimit: 'max',
         rvdir: 'newer',
       };
-
-      // 循环获取所有编辑记录的用户和字节
-      while (rvcontinue !== false) {
-        if (typeof rvcontinue !== 'undefined') {
-          config[rvcontinue] = rvcontinue;
+      do {
+        if (rvcontinue) {
+          config.rvcontinue = rvcontinue;
         }
         try {
-          const res = await api.get(config);
-          rvcontinue = res.continue?.rvcontinue || false;
-          for (const { user, size } of Object.values(res.query.pages)[0].revisions) {
+          const res = await api.get(config) as ApiQueryResponse;
+          rvcontinue = res.continue?.rvcontinue;
+          for (const { user, size } of Object.values(res.query.pages!)[0].revisions) {
             contributors[user] ||= [];
             contributors[user].push(size - prevSize);
             prevSize = size;
@@ -85,14 +90,19 @@ $(() => (async () => {
         } catch (error) {
           mw.notify(`获取编辑记录失败：${error}`, { type: 'error' });
         }
-      }
+      } while (rvcontinue);
       return contributors;
     };
 
     // 向表格添加一行
-    addRow = ($tbody, { user, count, add, remove }) => {
-      $tbody.append($('<tr></tr>').append(
-        `<td><a href="${mw.config.get('wgArticlePath').replace('$1', `User:${user}`)}"><img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${user}" />${user}</a></td>`,
+    addRow = ($tbody: JQuery<HTMLTableSectionElement>, { user, count, add, remove }: UserContribution) => {
+      $tbody.append($('<tr/>').append(
+        $('<td/>').append(
+          $(`<a href="${mw.config.get('wgArticlePath').replace('$1', `User:${user}`)}"/>`).append(
+            `<img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${user}"/>`,
+            user,
+          ),
+        ),
         `<td>${count}</td>`,
         `<td>${add}</td>`,
         `<td>${remove}</td>`,
@@ -100,7 +110,7 @@ $(() => (async () => {
     };
 
     // 分析数据，展示结果
-    showContributors = (contributors) => {
+    showContributors = (contributors: Record<string, number[]>) => {
       this.$tbody.empty();
       for (const key in contributors) {
         this.addRow(this.$tbody, {
@@ -141,6 +151,7 @@ $(() => (async () => {
     if (!SCDialog.got) {
       contributorButton.setLabel('正在查询');
       const contributors = await SCDialog.getContributors();
+      console.log(contributors);
       SCDialog.showContributors(contributors);
       SCDialog.$table.tablesorter();
       contributorButton.setLabel('本页贡献者');

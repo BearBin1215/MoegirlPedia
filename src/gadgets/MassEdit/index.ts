@@ -216,17 +216,11 @@ $(() => (async () => {
   };
 
   /**
-   * 获取用户输入的页面或分类
-   *
-   * 经测试postWithToken()会自动去掉title的首尾空格，不需要另外去除。
-   *
-   * @param type 类型
+   * 将字符串分割并过滤空行
+   * @param content 要分割的字符串
    * @returns 页面列表
    */
-  const getList = (type: 'page' | 'category'): string[] => ((type === 'page'
-    ? $pageListBox.val()
-    : $categoryListBox.val()
-  )!).split('\n').filter((s) => s && s.trim());
+  const splitList = (content: string): string[] => content.split('\n').filter((s) => s && s.trim());
 
   /**
    * 获取分类列表内的页面
@@ -268,7 +262,10 @@ $(() => (async () => {
    * @returns 得到的页面列表
    */
   const getPageList = async (): Promise<string[]> => {
-    const pageSet = new Set([...getList('page'), ...await getPagesFromCats(getList('category'))]);
+    const pageSet = new Set([
+      ...splitList($pageListBox.val() || ''),
+      ...await getPagesFromCats(splitList($categoryListBox.val() || '')),
+    ]);
     return [...pageSet];
   };
 

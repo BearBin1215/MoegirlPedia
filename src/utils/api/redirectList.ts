@@ -8,7 +8,7 @@ import type { ApiQueryResponse } from '@/@types/api';
 const redirectList = async (pagename: string): Promise<string[]> => {
   const api = new mw.Api();
   let rdcontinue: string | undefined = '';
-  const pageList = [];
+  const pageList: string[] = [];
   while (rdcontinue !== void 0) {
     const res = await api.post({
       action: 'query',

@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 // Edit from [[User:AnnAngela/js/userStatus.js]]
 
 $(() => (async () => {
