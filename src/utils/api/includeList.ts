@@ -22,7 +22,7 @@ const includeList = async (pagename: string, tinamespace?: number[]): Promise<st
       postBody.tinamespace = tinamespace;
     }
     const res = await api.post(postBody) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages!)[0].transcludedin || []).map(({ title }) => title!));
+    pageList.push(...(Object.values(res.query.pages)[0].transcludedin || []).map(({ title }) => title));
     ticontinue = res.continue?.ticontinue;
   }
   return pageList;

@@ -21,7 +21,7 @@ const linkList = async (pagename: string, lhnamespace?: number[]): Promise<strin
       postBody.lhnamespace = lhnamespace;
     }
     const res = await api.post(postBody) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages!)[0].linkshere || []).map(({ title }) => title!));
+    pageList.push(...(Object.values(res.query.pages)[0].linkshere || []).map(({ title }) => title));
     lhcontinue = res.continue?.lhcontinue;
   }
   return pageList;

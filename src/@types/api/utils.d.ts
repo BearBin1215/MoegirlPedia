@@ -40,11 +40,11 @@ export type Cmtype = 'page' | 'subcat' | 'file';
  */
 export interface PageProps {
   /** 页面id */
-  pageid?: number;
+  pageid: number;
 
   /** 名字空间 */
-  ns?: number;
+  ns: number;
 
   /** 页面标题 */
-  title?: string;
+  title: string;
 }

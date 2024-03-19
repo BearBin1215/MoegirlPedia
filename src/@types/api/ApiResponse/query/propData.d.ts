@@ -19,7 +19,7 @@ export interface Image extends Omit<PageProps, 'pageid'> {
  */
 export interface Linkshere extends PageProps {
   /** 是否为重定向 */
-  redirect: '';
+  redirect?: '';
 }
 
 /**
@@ -41,7 +41,7 @@ export interface Revisions {
   parentid: number;
 
   /** 是否为小编辑 */
-  minor: '';
+  minor?: '';
 
   /** 做出修订的用户 */
   user: string;

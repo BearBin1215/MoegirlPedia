@@ -22,9 +22,9 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         cmtype,
         cmcontinue,
       }) as ApiQueryResponse;
-      if (result.query.categorymembers![0]) {
+      if (result.query.categorymembers[0]) {
         for (const page of result.query.categorymembers!) {
-          pageList.push(page.title!);
+          pageList.push(page.title);
         }
       }
       cmcontinue = result.continue?.cmcontinue;

@@ -18,7 +18,7 @@ export interface Categorymembers extends PageProps {
   type: Cmtype;
 
   /** 页面被包括时的时间戳 */
-  timestamp?: string;
+  timestamp: string;
 }
 
 /**

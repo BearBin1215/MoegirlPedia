@@ -22,7 +22,7 @@ export interface ApiEditSuccess {
  */
 export interface ApiEditNochange extends ApiEditSuccess {
   /** 无变化 */
-  nochange: '';
+  nochange?: '';
 }
 
 /**

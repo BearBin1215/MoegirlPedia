@@ -17,7 +17,7 @@ const redirectList = async (pagename: string): Promise<string[]> => {
       rdlimit: 'max',
       rdcontinue,
     }) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages!)[0].redirects || []).map(({ title }) => title!));
+    pageList.push(...(Object.values(res.query.pages)[0].redirects || []).map(({ title }) => title));
     rdcontinue = res.continue?.rdcontinue;
   }
   return pageList;

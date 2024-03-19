@@ -151,87 +151,87 @@ export interface ApiParseResult {
   pageid: number;
 
   /** 被解析页面的修订ID */
-  revid?: number;
+  revid: number;
 
   /** 标题 */
-  displaytitle?: string;
+  displaytitle: string;
 
   /** 解析得到的HTML文本 */
-  text?: TextResponse;
+  text: TextResponse;
 
   /** 摘要 */
-  parsedsummary?: TextResponse;
+  parsedsummary: TextResponse;
 
   /** 跨语言链接 */
-  langlinks?: ApiParseLangLink[];
+  langlinks: ApiParseLangLink[];
 
   /** 所属分类 */
-  categories?: ApiParseCategory[];
+  categories: ApiParseCategory[];
 
   /** 分类条HTML */
-  categorieshtml?: TextResponse;
+  categorieshtml: TextResponse;
 
   /** 内部链接 */
-  links?: ApiParseLink[];
+  links: ApiParseLink[];
 
   /** 嵌入的页面 */
-  templates?: ApiParseTemplate[];
+  templates: ApiParseTemplate[];
 
   /** 使用的图片 */
-  images?: [];
+  images: [];
 
   /** 外部链接 */
-  externallinks?: string[];
+  externallinks: string[];
 
   /** 段落 */
-  sections?: ApiParseSection[];
+  sections: ApiParseSection[];
 
   /**
    * 解析内容时发生的警告
    * @todo 不确定格式
    */
-  parsewarnings?: any[];
+  parsewarnings: any[];
 
   /** 跨wiki链接 */
-  iwlinks?: ApiParseIWLink[];
+  iwlinks: ApiParseIWLink[];
 
   /** 多种定义在被解析的wiki文本中的属性 */
-  properties?: ApiParseProperty[];
+  properties: ApiParseProperty[];
 
-  headitems?: any[];
+  headitems: any[];
 
   /** `<head>`标签内容 */
-  headhtml?: TextResponse;
+  headhtml: TextResponse;
 
   /** 使用到的模块 */
-  modules?: string[];
+  modules: string[];
 
   /** 使用到的扩展脚本 */
-  modulescripts?: string[];
+  modulescripts: string[];
 
   /** 使用到的扩展样式表 */
-  modulestyles?: string[];
+  modulestyles: string[];
 
   /** @todo 确定格式 */
-  jsconfigvars?: object;
+  jsconfigvars: object;
 
   /** @todo 确定格式 */
-  encodedjsconfigvars?: any[];
+  encodedjsconfigvars: any[];
 
   /** 页面状态指示器 */
-  indicators?: ApiParseIndicator[]
+  indicators: ApiParseIndicator[]
 
   /** 被解析的wiki文本 */
-  wikitext?: TextResponse;
+  wikitext: TextResponse;
 
   /** 解析器限制报告数据 */
-  limitreportdata?: ApiParseLimitReportData[];
+  limitreportdata: ApiParseLimitReportData[];
 
   /** HTML格式的解析器限制报告 */
-  limitreporthtml?: TextResponse;
+  limitreporthtml: TextResponse;
 
   /** 修订内容的XML解析树 */
-  parsetree?: TextResponse;
+  parsetree: TextResponse;
 }
 
 /**

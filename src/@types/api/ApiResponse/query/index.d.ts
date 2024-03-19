@@ -23,79 +23,79 @@ import type { Categorymembers, Search } from './listData';
  * @see https://www.mediawiki.org/wiki/API:Continue
  */
 export interface ApiContinue {
-  continue: string;
+  continue?: string;
 
   /** prop=categories */
-  clcontinue: string;
+  clcontinue?: string;
 
   /** prop=categoryinfo */
-  cicontinue: string;
+  cicontinue?: string;
 
   /** prop=contributors */
-  pccontinue: string;
+  pccontinue?: string;
 
   /** prop=deletedrevisions */
-  drvcontinue: string;
+  drvcontinue?: string;
 
   /** prop=duplicatefiles */
-  dfcontinue: string;
+  dfcontinue?: string;
 
   /** prop=extlinks */
-  eloffset: string;
+  eloffset?: string;
 
   /** prop=extracts */
-  excontinue: string;
+  excontinue?: string;
 
   /** prop=fileusage */
-  fucontinue: string;
+  fucontinue?: string;
 
   /** prop=globalusage */
-  gucontinue: string;
+  gucontinue?: string;
 
   /** prop=imageinfo */
-  iicontinue: string;
+  iicontinue?: string;
 
   /** prop=images */
-  imcontinue: string;
+  imcontinue?: string;
 
   /** prop=info */
-  incontinue: string;
+  incontinue?: string;
 
   /** prop=iwlinks */
-  iwcontinue: string;
+  iwcontinue?: string;
 
   /** prop=langlinks */
-  llcontinue: string;
+  llcontinue?: string;
 
   /** prop=links */
-  plcontinue: string;
+  plcontinue?: string;
 
   /** prop=linkshere */
-  lhcontinue: string;
+  lhcontinue?: string;
 
   /** prop=pageimages */
-  picontinue: string;
+  picontinue?: string;
 
   /** prop=pageprops */
-  ppcontinue: string;
+  ppcontinue?: string;
 
   /** prop=redirects */
-  rdcontinue: string;
+  rdcontinue?: string;
 
   /** prop=references */
-  rfcontinue: string;
+  rfcontinue?: string;
 
   /** prop=revisions */
-  rvcontinue: string;
+  rvcontinue?: string;
 
   /** prop=templates */
-  tlcontinue: string;
+  tlcontinue?: string;
 
   /** prop=transcludedin */
-  ticontinue: string;
+  ticontinue?: string;
 
   /** prop=videoinfo */
-  vicontinue: string;
+  vicontinue?: string;
 
   [key: string]: string | undefined;
 }
@@ -128,7 +128,7 @@ export interface ApiQueryPageInfo {
   title: string,
 
   /** 页面是否存在 */
-  missing: '',
+  missing?: '',
 
   /** 页面内容模型 */
   contentmodel: ContentModel,
@@ -155,7 +155,7 @@ export interface ApiQueryPageInfo {
   restrictiontypes: string[],
 
   /** 是否监视 */
-  watched: '',
+  watched?: '',
 
   /** 监视用户数量 */
   watchers: number,
@@ -164,7 +164,7 @@ export interface ApiQueryPageInfo {
   visitingwatchers: number,
 
   /** 监视列表通知时间戳 */
-  notificationtimestamp: '',
+  notificationtimestamp: string,
 
   /** 每个非讨论页面的讨论页的页面ID。 */
   talkid: number,
@@ -182,7 +182,7 @@ export interface ApiQueryPageInfo {
   canonicalurl: string,
 
   /** 用户是否可以阅读此页面 */
-  readable: '',
+  readable?: '',
 
   /** 提供由EditFormPreloadText返回的文本 */
   preload: string | null,
@@ -220,10 +220,10 @@ export interface ApiQueryResponse extends ApiResponse {
    * 所有页面数据已经返回，而`continue`元素不包含属性的继续数据，
    * 而可能包含生成器的继续数据。
    */
-  batchcomplete: '';
+  batchcomplete?: '';
 
   /** 用于继续请求 */
-  continue: ApiContinue;
+  continue?: ApiContinue;
 
   /** 请求结果 */
   query: {

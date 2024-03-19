@@ -6,66 +6,66 @@ import { ApiResponse } from "./core";
 export interface ApiCompareResponse extends ApiResponse {
   compare: {
     /** `from`页面ID */
-    fromid?: number;
+    fromid: number;
 
     /** `from`修订版本ID */
-    fromrevid?: number;
+    fromrevid: number;
 
     /** `from`页面所在名字空间 */
-    fromns?: number;
+    fromns: number;
 
     /** `from`页面标题 */
-    fromtitle?: string;
+    fromtitle: string;
 
     /** `from`修订版本的大小（字节） */
-    fromsize?: number;
+    fromsize: number;
 
     /** `from`页面所属用户名 */
-    fromuser?: string;
+    fromuser: string;
 
     /** `from`页面所属用户ID */
-    fromuserid?: number;
+    fromuserid: number;
 
     /** `from`修订版本注释 */
-    fromcomment?: string;
+    fromcomment: string;
 
     /** 解析后的`from`修订版本注释 */
-    fromparsedcomment?: string;
+    fromparsedcomment: string;
 
     /** `to`页面ID */
-    toid?: number;
+    toid: number;
 
     /** `to`修订版本ID */
-    torevid?: number;
+    torevid: number;
 
     /** `to`页面所属用户名 */
-    tons?: number;
+    tons: number;
 
     /** `to`页面标题 */
-    totitle?: string;
+    totitle: string;
 
     /** `to`修订版本的大小（字节） */
-    tosize?: number;
+    tosize: number;
 
     /** `to`页面所属用户名 */
-    touser?: string;
+    touser: string;
 
     /** `to`页面所属用户ID */
-    touserid?: number;
+    touserid: number;
 
     /** `to`修订版本注释 */
-    tocomment?: string;
+    tocomment: string;
 
     /** 解析后的`to`修订版本注释 */
-    toparsedcomment?: string;
+    toparsedcomment: string;
 
     /** `from`修订版本的前一个版本ID */
-    prev?: number;
+    prev: number;
 
     /** 差异HTML的大小（字节） */
-    diffsize?: number;
+    diffsize: number;
 
     /** 差异HTML */
-    '*'?: string;
+    '*': string;
   }
 }

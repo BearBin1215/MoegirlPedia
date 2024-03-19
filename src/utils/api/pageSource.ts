@@ -13,7 +13,7 @@ const pageSource = async (title: string): Promise<string | undefined> => {
     titles: title,
     rvprop: 'content',
   }) as ApiQueryResponse;
-  const [pageData] = Object.values(res.query.pages!);
+  const [pageData] = Object.values(res.query.pages);
   if ('revisions' in pageData) {
     return pageData.revisions?.[0]['*'];
   }
