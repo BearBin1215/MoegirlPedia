@@ -81,6 +81,7 @@ module.exports = {
     'no-magic-numbers': 0,
     'no-param-reassign': 2,
     'no-empty': [2, { allowEmptyCatch: true }],
+    'no-useless-return': 2,
     'no-use-before-define': 2,
     'object-shorthand': 2,
     'prefer-const': 2,
