@@ -42,7 +42,7 @@ $(() => (async () => {
     stopButton!: OO.ui.ButtonWidget;
     actionButton!: OO.ui.ButtonWidget;
     typeSelectInput!: OO.ui.CheckboxMultiselectInputWidget;
-    optionRadioSelect!: OO.ui.RadioSelectWidget
+    optionRadioSelect!: OO.ui.RadioSelectWidget;
 
     static static = {
       ...super.static,
