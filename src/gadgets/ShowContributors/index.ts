@@ -1,8 +1,6 @@
 import type { ApiParams, ApiQueryResponse } from '@/@types/api';
 import './index.less';
 
-type Size = 'small' | 'medium' | 'large' | 'larger' | 'full';
-
 interface UserContribution {
   user: string;
   count: number;
@@ -32,7 +30,6 @@ $(() => (async () => {
     static static = {
       ...super.static,
       name: 'ShowContributor',
-      size: 'large' as Size,
     };
     initialize() {
       super.initialize();
@@ -128,7 +125,9 @@ $(() => (async () => {
     id: 'show-contributor',
   });
   $(document.body).append(windowManager.$element);
-  const SCDialog = new ContributorDialog();
+  const SCDialog = new ContributorDialog({
+    size: 'large',
+  });
   windowManager.addWindows([SCDialog]);
 
   const contributorButton = new OO.ui.ButtonWidget({
