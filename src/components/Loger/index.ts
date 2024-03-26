@@ -1,3 +1,4 @@
+import createElement from '@/utils/dom';
 import './index.less';
 
 /**
@@ -58,17 +59,6 @@ export interface LogDetail {
    */
   type: string,
 }
-
-/**
- * 根据html字符串创建节点
- * @param {string} html
- * @returns {Element} 节点
- */
-const createTag = (html: string): HTMLElement => {
-  const template: HTMLTemplateElement = document.createElement('template');
-  template.innerHTML = html.trim();
-  return template.content.children[0] as HTMLElement;
-};
 
 export default class Loger {
   _logTypes: LogTypes = {
@@ -144,16 +134,16 @@ export default class Loger {
     }
 
     // 标题
-    this.headline = createTag(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
+    this.headline = createElement(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
 
     // 日志主体
-    this.body = createTag('<div class="loger-body"></div>');
+    this.body = createElement('<div class="loger-body"></div>');
 
     // 日志行
-    this.logerLines = createTag('<ul class="loger-lines"></ul>');
+    this.logerLines = createElement('<ul class="loger-lines"></ul>');
 
     // 清空按钮
-    const clearButton = createTag('<a class="loger-clear">[清空]</a>');
+    const clearButton = createElement('<a class="loger-clear">[清空]</a>');
     clearButton.addEventListener('click', () => {
       this.logDetails.length = 0;
       this.logerLines.innerHTML = '';
@@ -163,15 +153,15 @@ export default class Loger {
     });
 
     // 日志筛选区
-    const logerFilter = createTag('<nav class="loger-filter"></nav>');
+    const logerFilter = createElement('<nav class="loger-filter"></nav>');
 
     // 筛选按钮
     for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-      const button = createTag(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"/>`);
+      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"/>`);
 
-      const iconElement = createTag(`<span class="loger-filter-icon">${icon}</span>`);
+      const iconElement = createElement(`<span class="loger-filter-icon">${icon}</span>`);
 
-      const countElement = createTag('<span class="loger-filter-count">0</span>');
+      const countElement = createElement('<span class="loger-filter-count">0</span>');
 
       button.append(iconElement, countElement, ` ${text}`);
 
@@ -203,7 +193,7 @@ export default class Loger {
     }
 
     // 创建日志元素
-    this.element = createTag(`<div class="bearbintools-loger" id="${id || ''}"></div>`);
+    this.element = createElement(`<div class="bearbintools-loger" id="${id || ''}"></div>`);
 
     this.headline.append('日志', clearButton);
     this.body.append(logerFilter, this.logerLines);

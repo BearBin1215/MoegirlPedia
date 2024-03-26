@@ -1,6 +1,7 @@
 /**
  * @author BearBin, 鬼影233
  */
+import createElement from '@/utils/dom';
 import './index.less';
 
 export interface SnakeProps {
@@ -61,30 +62,19 @@ export default class Snake {
     this.hasHead = hasHead;
     this.hasHref = hasHref;
 
-    /**
-     * 根据html字符串创建节点
-     * @param html
-     * @returns 节点
-     */
-    const createTag = (html: string) => {
-      const template = document.createElement('template');
-      template.innerHTML = html.trim();
-      return template.content.children[0] as HTMLElement;
-    };
-
     // 创建element，并加上.snake
-    this.element = createTag('<div class="snake"></div>');
+    this.element = createElement('<div class="snake"></div>');
     for (const key in props) {
       this.element.setAttribute(key, props[key] as string);
     }
 
     // 根据hasHead判断是否创建head
     if (this.hasHead) {
-      this.head = createTag('<div class="snake-head"></div>');
+      this.head = createElement('<div class="snake-head"></div>');
 
       // head中的状态显示
-      this.headComplete = createTag('<span class="snake-head-complete">0</div>');
-      this.headLength = createTag('<span class="snake-head-all">0</div>');
+      this.headComplete = createElement('<span class="snake-head-complete">0</div>');
+      this.headLength = createElement('<span class="snake-head-all">0</div>');
       this.head.append('已完成：', this.headComplete, '/', this.headLength);
 
       // 添加到element
@@ -92,7 +82,7 @@ export default class Snake {
     }
 
     // 创建body
-    this.body = createTag('<div class="snake-body"></div>');
+    this.body = createElement('<div class="snake-body"></div>');
     this.element.append(this.body);
   }
 
