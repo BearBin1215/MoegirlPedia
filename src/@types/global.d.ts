@@ -1,3 +1,13 @@
+declare module "*.css" {
+  const value: string;
+  export default value;
+}
+
+declare module "*.less" {
+  const value: string;
+  export default value;
+}
+
 /** 在页面右下方插入按钮 */
 declare function insertToBottomRightCorner(text: string): JQuery<HTMLDivElement>;
 

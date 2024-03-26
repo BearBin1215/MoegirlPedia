@@ -65,19 +65,40 @@ module.exports = {
       },
       {
         test: /\.less$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          postCssLoader,
-          'less-loader',
+        oneOf: [
+          {
+            assert: {
+              type: 'string',
+            },
+            type: 'asset/source',
+            use: ['less-loader'],
+          },
+          {
+            use: [
+              'style-loader',
+              'css-loader',
+              postCssLoader,
+              'less-loader',
+            ],
+          },
         ],
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          postCssLoader,
+        oneOf: [
+          {
+            assert: {
+              type: 'string',
+            },
+            type: 'asset/source', // css文件作为文本导入
+          },
+          {
+            use: [
+              'style-loader',
+              'css-loader',
+              postCssLoader,
+            ],
+          },
         ],
       },
     ],
