@@ -205,6 +205,9 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 项目使用[pnpm](https://pnpm.io/)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`pnpm`指令安装依赖。
 
 - 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js和ts编写都可以。通过webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js或ts文件中调用。
+- 样式表有两种导入方式：
+  1. 使用`import './foo.less'`，这种情况下样式表经过webpack的处理会自动加载到`<head>`中。
+  2. 使用`import styles from './foo.less' assert { type: 'string' }`，该情况下会将css文件的内容作为字符串导入，less则会在编译后作为字符串导入。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
 
 ### 指令

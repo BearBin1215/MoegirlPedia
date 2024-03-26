@@ -71,7 +71,7 @@ module.exports = {
               type: 'string',
             },
             type: 'asset/source',
-            use: ['less-loader'],
+            use: [postCssLoader, 'less-loader'],
           },
           {
             use: [

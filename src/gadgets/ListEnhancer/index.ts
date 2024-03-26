@@ -1,7 +1,7 @@
 import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
 import { copyText } from '@/utils/clipboard';
 import type { Cmtype } from '@/@types/api';
-import './index.less';
+import styles from './index.less' assert { type: 'string' };
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   let cacheText: string;
@@ -73,6 +73,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
     // Special:搜索
     const searchEnhance = () => {
+      $(document.head).append($(`<style>${styles}</style>`));
       let showDetail = true;
       const linkList: string[] = [];
 
