@@ -1,6 +1,8 @@
+import stretchStyle from './stretchStyle.less' assert { type: 'string' };
+
 if (mw.config.get('skin') === 'moeskin') {
   $('main.moe-flexible-container').css('transition', 'width .24s ease');
-  const $stretchStyle = $('<style>@media screen and (min-width:768px){#moe-main-container .moe-flexible-container{width:calc(100% - 2rem);margin:1rem 1rem 0}}</style>');
+  const $stretchStyle = $(`<style>${stretchStyle}</style>`);
   const $stretchButton = ($('#moe-sidenav-toggle-btn') as JQuery<HTMLAnchorElement>).clone().attr('id', 'bearbin-moe-stretch').removeAttr('href');
   if (localStorage.getItem('moeStretch') === null) {
     localStorage.setItem('moeStretch', '0');

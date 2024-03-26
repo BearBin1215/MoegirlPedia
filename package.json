@@ -69,6 +69,7 @@
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "glob": "9.3.5",
     "less-loader": "11.1.4",
+    "mini-svg-data-uri": "^1.4.4",
     "postcss": "^8.4.35",
     "postcss-less": "^6.0.0",
     "postcss-loader": "7.3.4",

@@ -21,6 +21,7 @@
     "selector-class-pattern": null,
     "comment-empty-line-before": null,
     "no-descending-specificity": null,
-    "at-rule-no-unknown": null
+    "at-rule-no-unknown": null,
+    "media-feature-range-notation": null
   }
 }

@@ -8,6 +8,11 @@ declare module "*.less" {
   export default value;
 }
 
+declare module "*.svg" {
+  const value: string;
+  export default value;
+}
+
 /** 在页面右下方插入按钮 */
 declare function insertToBottomRightCorner(text: string): JQuery<HTMLDivElement>;
 
