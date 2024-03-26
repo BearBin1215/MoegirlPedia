@@ -149,10 +149,10 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 ```
 主要文件
 │  .eslintrc.js  # eslint配置
-│  .stylelintrc.json  #stylelint配置
+│  .stylelintrc.js  #stylelint配置
 │  package.json  # nodejs配置
 │  tsconfig.json  # typescript配置
-│  yarn.lock  # lockfile
+│  pnpm-lock.yaml  # lockfile
 |
 ├─.github
 │  └─workflows  # GitHub Actions配置
@@ -183,7 +183,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
     |
     ├─gadgets  # 工具源代码
     │  ├─BatchSend
-    │  │      index.js  # 脚本代码
+    │  │      index.ts  # 脚本代码
     │  │      index.less  # 样式表（不一定有）
     │  |
     │  ├─BulkMove
@@ -202,7 +202,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 非常欢迎各路萌百人参与本项目的完善。如果您不懂代码，可以[提出建议](https://github.com/BearBin1215/MoegirlPedia/issues)。如果您希望亲自参与完善，可以提出[Pull request](https://github.com/BearBin1215/MoegirlPedia/pulls)。
 
-项目使用[yarn](https://github.com/yarnpkg/yarn)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`yarn`指令安装依赖。
+项目使用[pnpm](https://pnpm.io/)管理依赖，因此需在安装（node<18）或启用（node>=18）后通过`pnpm`指令安装依赖。
 
 - 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js和ts编写都可以。通过webpack处理依赖。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js或ts文件中调用。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
@@ -211,13 +211,12 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 
 - 开发
   ```shell
-  yarn start
+  pnpm start
   ```
   开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
 - 打包
   ```shell
-  yarn build <gadget names>
+  pnpm build <gadget names>
   ```
   `<gadget names>`为小工具名，可输入多个，例如`yarn build MassEdit BulkMove`会打包[src/gadgets/MassEdit](/src/gadgets/MassEdit/)和[src/gadgets/BulkMove](/src/gadgets/BulkMove/)，直接执行`yarn build`则打包全部小工具。
   输出文件位于[dist](/dist/)目录下。
-  
