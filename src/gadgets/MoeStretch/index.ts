@@ -1,9 +1,14 @@
 import stretchStyle from './stretchStyle.less' assert { type: 'string' };
+import markupIcon from './markup.svg' assert { type: 'xml' };
 
 if (mw.config.get('skin') === 'moeskin') {
   $('main.moe-flexible-container').css('transition', 'width .24s ease');
+  console.log(stretchStyle);
   const $stretchStyle = $(`<style>${stretchStyle}</style>`);
-  const $stretchButton = ($('#moe-sidenav-toggle-btn') as JQuery<HTMLAnchorElement>).clone().attr('id', 'bearbin-moe-stretch').removeAttr('href');
+  const $stretchButton = ($('#moe-sidenav-toggle-btn') as JQuery<HTMLAnchorElement>)
+    .clone()
+    .attr('id', 'bearbin-moe-stretch')
+    .removeAttr('href');
   if (localStorage.getItem('moeStretch') === null) {
     localStorage.setItem('moeStretch', '0');
   }
@@ -19,7 +24,7 @@ if (mw.config.get('skin') === 'moeskin') {
       localStorage.setItem('moeStretch', '0');
     }
   });
-  $stretchButton.children('.xicon').html('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M6.5 3.5 0 10l1.5 1.5 5 5L8 15l-5-5 5-5zm7 0L12 5l5 5-5 5 1.5 1.5L20 10z"/></svg>');
+  $stretchButton.children('.xicon').html(markupIcon);
   $stretchButton.children('.tooltip').text('清空边距');
   $('.btn-group.tools-extra').prepend($stretchButton);
 }

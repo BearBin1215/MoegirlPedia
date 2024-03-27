@@ -23,8 +23,8 @@ $(() => (async () => {
     'jquery.tablesorter', // 提供表格排序功能
   ]);
   class ContributorDialog extends OO.ui.Dialog {
-    $table!: JQuery<HTMLTableElement>;
-    $tbody!: JQuery<HTMLTableSectionElement>;
+    $table = $('<table id="show-contributor-table" class="wikitable"/>') as JQuery<HTMLTableElement>;
+    $tbody = $('<tbody/>') as JQuery<HTMLTableSectionElement>;
     $body!: JQuery<HTMLDivElement>;
     got = false;
 
@@ -34,10 +34,6 @@ $(() => (async () => {
     };
     initialize() {
       super.initialize();
-
-      this.$tbody = $('<tbody/>') as JQuery<HTMLTableSectionElement>;
-
-      this.$table = $('<table id="show-contributor-table" class="wikitable"/>') as JQuery<HTMLTableElement>;
 
       this.$body.append(
         $('<div id="show-contributor-header"/>').append(

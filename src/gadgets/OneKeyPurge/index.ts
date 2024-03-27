@@ -24,19 +24,25 @@ $(() => (async () => {
   const Noratelimit = UserRights.includes('noratelimit');
 
   class OKPWindow extends OO.ui.Dialog {
-    failList: string[] = []; // 记录操作失败的页面
+    /** 操作失败的页面 */
+    failList: string[] = [];
 
-    changeList: string[] = []; // 记录代码产生意外变化的页面
+    /** 代码产生意外变化的页面 */
+    changeList: string[] = [];
 
-    complete = 0; // 已完成操作的页面数，成功或发生变化，不含失败
+    /** 已完成操作的页面数，成功或发生变化，不含失败 */
+    complete = 0;
 
-    progressBar = new Snake(); // 进度条
+    /** 进度条 */
+    progressBar = new Snake();
 
+    /** 是否正在运行 */
     running = false;
 
-    $header!: JQuery<HTMLElement>;
+    /** 顶部按钮和标题 */
+    $header = $('<header class="okp-header"></header>');
+    $footer = $('<footer class="okp-footer"></footer>');
     $body!: JQuery<HTMLElement>;
-    $footer!: JQuery<HTMLElement>;
     panelLayout!: OO.ui.PanelLayout;
     closeButton!: OO.ui.ButtonWidget;
     stopButton!: OO.ui.ButtonWidget;
@@ -53,16 +59,12 @@ $(() => (async () => {
     initialize() {
       super.initialize();
 
-      // 顶部按钮和标题
-      this.$header = $('<header class="okp-header"></header>');
       // 主体选择区
       this.panelLayout = new OO.ui.PanelLayout({
         scrollable: false,
         expanded: false,
         padded: true,
       });
-      // 底部帮助
-      this.$footer = $('<footer class="okp-footer"></footer>');
 
       this.closeButton = new OO.ui.ButtonWidget({
         label: '取消',
@@ -129,7 +131,7 @@ $(() => (async () => {
       /**
        * 添加事件
        */
-      this.closeButton.on('click', () => this.close());
+      this.closeButton.on('click', this.close.bind(this));
 
       this.stopButton.on('click', () => {
         this.stopButton.setDisabled(true);
@@ -146,7 +148,7 @@ $(() => (async () => {
         });
       });
 
-      this.actionButton.on('click', () => this.action());
+      this.actionButton.on('click', this.action.bind(this));
 
       /**
        * 将元素添加到窗口
@@ -166,10 +168,12 @@ $(() => (async () => {
           `<div class="okp-note">${noteText}</div>`,
           typeFiled.$element,
           optionFiled.$element,
-          $(this.progressBar.element),
+          this.progressBar.element,
         ),
         this.$footer.append(
-          $('<div class="okp-button okp-help-button"/>').append(helpButton.$element),
+          $('<div class="okp-button okp-help-button"/>').append(
+            helpButton.$element,
+          ),
         ),
       );
       return this;
@@ -242,7 +246,7 @@ $(() => (async () => {
     }
 
     // 零编辑
-    async nullEdit(titles) {
+    async nullEdit(titles: string[]) {
       for (let index = 0; index < titles.length; index++) {
         if (!this.running) {
           break;
@@ -282,9 +286,9 @@ $(() => (async () => {
 
     /**
      * 清除缓存（action=purge）
-     * @param {string[]} pageList 页面列表
+     * @param pageList 页面列表
      */
-    async purge(pageList) {
+    async purge(pageList: string[]) {
       // 分割为5个一批，执行purge
       for (let i = 0; i < pageList.length; i += 5) {
         if (!this.running) {

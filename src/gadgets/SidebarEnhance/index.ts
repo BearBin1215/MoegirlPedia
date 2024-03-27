@@ -1,5 +1,6 @@
 import { throttle } from 'lodash-es';
 import styles from './index.less' assert { type: 'string' };
+import folderSvg from './folderIcon.svg' assert { type: 'xml' };
 
 $(() => {
   mw.loader.addStyleTag(styles);
@@ -49,7 +50,7 @@ $(() => {
   /**
    * 折叠图标
    */
-  let folderIcon: string | JQuery<HTMLElement> = '<svg class="folder-icon" fill="#666" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 16L6 10H18L12 16Z"></path></svg>';
+  let folderIcon: string | JQuery<HTMLElement> = folderSvg;
 
   switch (mw.config.get('skin')) {
     case 'moeskin':
