@@ -15,7 +15,7 @@ const copyText = async (text = ''): Promise<void> => {
     input.focus();
     input.select();
     document.execCommand('copy');
-    document.body.removeChild(input);
+    input.remove();
   }
 };
 
@@ -35,7 +35,7 @@ const pasteText = async (): Promise<string> => {
     pasteArea.focus();
     setTimeout(() => {
       const text = pasteArea.value;
-      document.body.removeChild(pasteArea);
+      pasteArea.remove();
       resolve(text);
     }, 0);
   });

@@ -52,7 +52,7 @@ export interface LogDetail {
   /**
    * 日志行对应的HTML元素
    */
-  node: HTMLElement,
+  element: HTMLElement,
 
   /**
    * 日志类型
@@ -137,7 +137,7 @@ export default class Loger {
 
     // 筛选按钮
     for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color:${color}"/>`);
+      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color:${color}"></div>`);
 
       const iconElement = createElement('<span class="loger-filter-icon"></span>');
       iconElement.append(icon);
@@ -152,14 +152,14 @@ export default class Loger {
           button.classList.remove('loger-filter-selected'); // 按钮添加对应类
           this.logerLines.classList.add(`loger-${type}-hidden`); // 日志行元素添加隐藏类
           this.logDetails.filter((detail) => detail.type === type).forEach((detail) => {
-            detail.node.style.display = 'none';
+            detail.element.style.display = 'none';
           });
           this._logTypes[type].show = false; // 设置显示状态为false
         } else {
           button.classList.add('loger-filter-selected');
           this.logerLines.classList.remove(`loger-${type}-hidden`);
           this.logDetails.filter((detail) => detail.type === type).forEach((detail) => {
-            detail.node.style.display = '';
+            detail.element.style.display = '';
           });
           this._logTypes[type].show = true;
         }
@@ -201,7 +201,7 @@ export default class Loger {
     this.logerLines.appendChild(record);
     this.logerLines.scrollTop = this.logerLines.scrollHeight; // 日志滚动至底部
     this.logDetails.push({
-      node: record,
+      element: record,
       type,
     });
     if (this.filterButtons[type]) {
