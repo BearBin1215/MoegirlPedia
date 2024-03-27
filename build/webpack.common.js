@@ -18,15 +18,8 @@ const postCssLoader = {
   options: {
     postcssOptions: {
       plugins: [
-        [
-          'autoprefixer',
-        ],
-        [
-          'cssnano',
-          {
-            preset: 'default',
-          },
-        ],
+        ['autoprefixer'],
+        ['cssnano', { preset: 'default' }],
       ],
     },
   },
@@ -68,14 +61,9 @@ module.exports = {
         test: /\.less$/,
         oneOf: [
           {
-            assert: {
-              type: 'string',
-            },
+            assert: { type: 'string' },
             type: 'asset/source',
-            use: [
-              postCssLoader,
-              'less-loader',
-            ],
+            use: [postCssLoader, 'less-loader'],
           },
           {
             use: [
@@ -91,9 +79,7 @@ module.exports = {
         test: /\.css$/,
         oneOf: [
           {
-            assert: {
-              type: 'string',
-            },
+            assert: { type: 'string' },
             type: 'asset/source', // css文件经过post-css处理后作为文本导入
             use: [postCssLoader],
           },
@@ -111,9 +97,7 @@ module.exports = {
         oneOf: [
           // `import svg from 'foo.svg' assert { type: 'xml' }`时作为完整的XML字符串导入
           {
-            assert: {
-              type: 'xml',
-            },
+            assert: { type: 'xml' },
             type: 'asset/source',
           },
           {

@@ -23,8 +23,8 @@ $(() => (async () => {
     'jquery.tablesorter', // 提供表格排序功能
   ]);
   class ContributorDialog extends OO.ui.Dialog {
-    $table = $('<table id="show-contributor-table" class="wikitable"/>') as JQuery<HTMLTableElement>;
-    $tbody = $('<tbody/>') as JQuery<HTMLTableSectionElement>;
+    $table = $('<table id="show-contributor-table" class="wikitable" />') as JQuery<HTMLTableElement>;
+    $tbody = $('<tbody />') as JQuery<HTMLTableSectionElement>;
     $body!: JQuery<HTMLDivElement>;
     got = false;
 
@@ -36,7 +36,7 @@ $(() => (async () => {
       super.initialize();
 
       this.$body.append(
-        $('<div id="show-contributor-header"/>').append(
+        $('<div id="show-contributor-header" />').append(
           $('<div id="show-contributor-headline">本页贡献统计</div>'),
           new OO.ui.IconWidget({
             icon: 'close',
@@ -90,10 +90,10 @@ $(() => (async () => {
 
     // 向表格添加一行
     addRow = ($tbody: JQuery<HTMLTableSectionElement>, { user, count, add, remove }: UserContribution) => {
-      $tbody.append($('<tr/>').append(
-        $('<td/>').append(
-          $(`<a href="${mw.config.get('wgArticlePath').replace('$1', `User:${user}`)}"/>`).append(
-            `<img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${user}"/>`,
+      $tbody.append($('<tr />').append(
+        $('<td />').append(
+          $(`<a href="${mw.config.get('wgArticlePath').replace('$1', `User:${user}`)}" />`).append(
+            `<img class="user-avatar" src="https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${user}" />`,
             user,
           ),
         ),

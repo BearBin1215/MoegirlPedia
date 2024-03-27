@@ -1,5 +1,6 @@
 import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
 import { copyText } from '@/utils/clipboard';
+import { editSection, bracketStart, bracketEnd, divider } from '@/utils/mwElements';
 import type { Cmtype } from '@/@types/api';
 import styles from './index.less' assert { type: 'string' };
 
@@ -27,20 +28,11 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     });
   };
 
-  /**
-   * 按钮html
-   */
-  const
-    editSection = '<span class="mw-editsection"></span>',
-    bracketStart = '<span class="mw-editsection-bracket">[</span>',
-    bracketEnd = '<span class="mw-editsection-bracket">]</span>',
-    divider = '<span class="mw-editsection-divider"> | </span>';
-
   const ns = mw.config.get('wgNamespaceNumber');
 
   if (ns === -1) {
     // Special:链入页面
-    const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere"></span>').append(
+    const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere" />').append(
       '（',
       $('<a>复制本页</a>').on('click', ({ target }) => {
         const linkList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
@@ -111,7 +103,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
       });
 
       // 把按钮放到输入条下方的名字空间选择右侧
-      $('#search .search-types, #powersearch .search-types').append($('<div id="bearbintools-listenhancer-search"></div>').append(
+      $('#search .search-types, #powersearch .search-types').append($('<div id="bearbintools-listenhancer-search" />').append(
         bracketStart,
         $detailToggle,
         divider,
