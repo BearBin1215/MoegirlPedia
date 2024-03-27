@@ -1,7 +1,9 @@
 import { throttle } from 'lodash-es';
-import './index.less';
+import styles from './index.less' assert { type: 'string' };
 
 $(() => {
+  mw.loader.addStyleTag(styles);
+
   /**
    * 使$title点击时控制$body的缩放
    * @param {JQuery<HTMLElement>} $title 侧栏块标题

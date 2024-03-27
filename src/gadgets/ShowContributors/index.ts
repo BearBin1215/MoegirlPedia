@@ -1,5 +1,5 @@
 import type { ApiParams, ApiQueryResponse } from '@/@types/api';
-import './index.less';
+import styles from './index.less' assert { type: 'string' };
 
 interface UserContribution {
   user: string;
@@ -14,6 +14,7 @@ $(() => (async () => {
     mw.config.get('wgArticleId') === 0 ||
     !['view', 'history'].includes(mw.config.get('wgAction'))
   ) { return; }
+  mw.loader.addStyleTag(styles);
   await mw.loader.using([
     'mediawiki.api',
     'mediawiki.notification',
