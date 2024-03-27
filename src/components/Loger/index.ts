@@ -79,25 +79,17 @@ export default class Loger {
     },
   };
 
-  /**
-   * Loger对应的HTML元素
-   */
-  element: HTMLElement;
+  /** Loger对象的HTML元素 */
+  element: HTMLDivElement;
 
-  /**
-   * 标题对应的HTML元素
-   */
+  /** 标题HTML元素 */
   headline: HTMLElement;
 
-  /**
-   * 日志主体对应的HTML元素
-   */
-  body: HTMLElement;
+  /** 日志主体HTML元素 */
+  body = createElement('<div class="loger-body"></div>') as HTMLDivElement;
 
-  /**
-   * 日志详情列表HTML元素
-   */
-  logerLines: HTMLElement;
+  /** 日志详情列表HTML元素 */
+  logerLines = createElement('<ul class="loger-lines"></ul>') as HTMLUListElement;
 
   /**
    * 记录日志详情
@@ -136,30 +128,19 @@ export default class Loger {
     // 标题
     this.headline = createElement(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
 
-    // 日志主体
-    this.body = createElement('<div class="loger-body"></div>');
-
-    // 日志行
-    this.logerLines = createElement('<ul class="loger-lines"></ul>');
-
     // 清空按钮
-    const clearButton = createElement('<a class="loger-clear">[清空]</a>');
-    clearButton.addEventListener('click', () => {
-      this.logDetails.length = 0;
-      this.logerLines.innerHTML = '';
-      for (const key in this.filterButtons) {
-        this.filterButtons[key].countElement.innerText = '0';
-      }
-    });
+    const clearButton = createElement('<a class="loger-clear">[清空]</a>') as HTMLAnchorElement;
+    clearButton.addEventListener('click', this.clear.bind(this));
 
     // 日志筛选区
     const logerFilter = createElement('<nav class="loger-filter"></nav>');
 
     // 筛选按钮
     for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color: ${color}"/>`);
+      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color:${color}"/>`);
 
-      const iconElement = createElement(`<span class="loger-filter-icon">${icon}</span>`);
+      const iconElement = createElement('<span class="loger-filter-icon"></span>');
+      iconElement.append(icon);
 
       const countElement = createElement('<span class="loger-filter-count">0</span>');
 
@@ -193,7 +174,7 @@ export default class Loger {
     }
 
     // 创建日志元素
-    this.element = createElement(`<div class="bearbintools-loger" id="${id || ''}"></div>`);
+    this.element = createElement(`<div class="bearbintools-loger" id="${id || ''}"></div>`) as HTMLDivElement;
 
     this.headline.append('日志', clearButton);
     this.body.append(logerFilter, this.logerLines);
@@ -206,7 +187,7 @@ export default class Loger {
    * @param type 日志，接受HTML形式的字符串
    * @param time 时间
    */
-  record(text: string, type = 'normal', time = new Date().toLocaleTimeString()) {
+  record(text: string, type = 'normal', time = new Date().toLocaleTimeString()): number {
     const record = document.createElement('li');
     record.classList.add('loger-record', `loger-${type}`);
     record.innerHTML = `${time} - ${text}`;
@@ -225,6 +206,16 @@ export default class Loger {
     });
     if (this.filterButtons[type]) {
       this.filterButtons[type].countElement.innerText = String(+this.filterButtons[type].countElement.innerText + 1);
+    }
+    return this.logDetails.length;
+  }
+
+  /** 清空日志 */
+  clear() {
+    this.logDetails.length = 0;
+    this.logerLines.innerHTML = '';
+    for (const key in this.filterButtons) {
+      this.filterButtons[key].countElement.innerText = '0';
     }
   }
 }
