@@ -17,6 +17,9 @@ dependencies:
   dotenv:
     specifier: ^16.3.1
     version: 16.4.5
+  jstoxml:
+    specifier: ^5.0.1
+    version: 5.0.1
   less:
     specifier: ^4.2.0
     version: 4.2.0
@@ -61,6 +64,9 @@ devDependencies:
   '@types/dom-to-image':
     specifier: ^2.6.7
     version: 2.6.7
+  '@types/jstoxml':
+    specifier: ^2.0.4
+    version: 2.0.4
   '@types/less':
     specifier: ^3.0.6
     version: 3.0.6
@@ -1702,6 +1708,10 @@ packages:
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+    dev: true
+
+  /@types/jstoxml@2.0.4:
+    resolution: {integrity: sha512-XHUMp2t8CfJUsKt8qjlspZWlkVeveFg2eF/kRV8CKiNQ+Fd3mJkfexIDXtZEnG/4aJZRCVNNn46zNddSVIUN0w==}
     dev: true
 
   /@types/less@3.0.6:
@@ -4183,6 +4193,10 @@ packages:
       extsprintf: 1.3.0
       json-schema: 0.4.0
       verror: 1.10.0
+    dev: false
+
+  /jstoxml@5.0.1:
+    resolution: {integrity: sha512-90mR0XwLzdbRr06IGsEf67Apac2ImjRbfWTVBYP7juSnnXHlW6H70b9sHGnIn5QEvXZvXxi6IXIoflzmMlRV5A==}
     dev: false
 
   /jsx-ast-utils@3.3.5:

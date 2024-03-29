@@ -1,5 +1,6 @@
 import Loger from '@/components/Loger';
 import { categoryMembers, pageSource, compare } from '@/utils/api';
+import { splitList } from '@/utils/string';
 import './index.less';
 
 $(() => (async () => {
@@ -214,13 +215,6 @@ $(() => (async () => {
     $('#mw-content-text input, #mw-content-text textarea').prop('disabled', false);
     window.onbeforeunload = () => null;
   };
-
-  /**
-   * 将字符串分割并过滤空行
-   * @param content 要分割的字符串
-   * @returns 页面列表
-   */
-  const splitList = (content: string): string[] => content.split('\n').filter((s) => s && s.trim());
 
   /**
    * 获取分类列表内的页面
