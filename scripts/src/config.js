@@ -34,6 +34,7 @@ const config = {
       'TextDiff',
       'userStatus',
       'WikiplusSummary',
+      'ExportXML',
     ],
   },
 };

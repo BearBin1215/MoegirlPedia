@@ -129,6 +129,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['src/@types/**/*.d.ts'],
+      rules: {
+        '@stylistic/quote-props': 0,
+      },
+    },
+    {
       files: ['src/oddments/**/*.js'],
       env: {
         browser: true,

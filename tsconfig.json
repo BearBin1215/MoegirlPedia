@@ -31,8 +31,12 @@
     "skipLibCheck": true,
     "sourceMap": true
   },
+  "exclude": [
+    "dist"
+  ],
   "include": [
     "src",
+    "node_modules/moment/index.d.ts",
     "node_modules/types-mediawiki"
   ]
 }

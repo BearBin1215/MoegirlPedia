@@ -187,7 +187,7 @@ export default class Loger {
    * @param type 日志，接受HTML形式的字符串
    * @param time 时间
    */
-  record(text: string, type = 'normal', time = new Date().toLocaleTimeString()): number {
+  record(text: string, type = 'normal', time = new Date().toLocaleTimeString()) {
     const record = document.createElement('li');
     record.classList.add('loger-record', `loger-${type}`);
     record.innerHTML = `${time} - ${text}`;
@@ -207,7 +207,7 @@ export default class Loger {
     if (this.filterButtons[type]) {
       this.filterButtons[type].countElement.innerText = String(+this.filterButtons[type].countElement.innerText + 1);
     }
-    return this.logDetails.length;
+    return record;
   }
 
   /** 清空日志 */

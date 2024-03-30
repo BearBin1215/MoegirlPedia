@@ -1,5 +1,6 @@
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
+import { formatNS3 } from '@/utils/formatNS';
 import type { ApiEditResponse, ApiParseResponse } from '@/@types/api';
 import './index.less';
 
@@ -190,7 +191,7 @@ $(() => (async () => {
       }
 
       for (const item of pageList) {
-        const title = item.replace(/^ *(?:User[_ ]talk:|用[户戶][讨討][论論]:|使用者[讨討][论論]:|U:|User:|用[户戶]:)?(.*)$/i, 'User_talk:$1');
+        const title = formatNS3(item);
         try {
           const sendResult = await send(title, sectiontitle, text, summary);
           const userLink = `<a href="/${title}" target="_blank">${title}</a>`;
