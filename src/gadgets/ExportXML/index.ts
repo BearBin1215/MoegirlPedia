@@ -144,20 +144,33 @@ $(() => (async () => {
       { parentid: rev.parentid },
       { timestamp: rev.timestamp },
       ...('contributorhidden' in rev ? [{
-        contributor: {
-          username: rev.user,
-          id: rev.userid,
-        },
-      }] : [{
         _name: 'contributor',
         _attrs: {
           deleted: 'deleted',
+        },
+      }] : [{
+        contributor: {
+          username: rev.user,
+          id: rev.userid,
         },
       }]),
       ...('minor' in rev ? [{ minor: rev.minor }] : []),
       ...('bot' in rev ? [{ bot: rev.bot }] : []),
       ...('sha1hidden' in rev ? [{ sha1hidden: rev.sha1hidden }] : []),
-      ...('texthidden' in rev ? [{ texthidden: rev.texthidden }] : []),
+      ...('texthidden' in rev ? [{ texthidden: rev.texthidden }, {
+        _name: 'text',
+        _attrs: {
+          deleted: 'deleted',
+        },
+      }] : [{
+        _name: 'text',
+        _attrs: {
+          bytes: rev.size,
+          sha1: rev.sha1,
+          'xml:space': 'preserve',
+        },
+        _content: rev['*'],
+      }]),
       ...('commenthidden' in rev ? [{
         commenthidden: rev.commenthidden,
       }, {
@@ -169,16 +182,6 @@ $(() => (async () => {
       { origin },
       { model: rev.contentmodel },
       { format: rev.contentformat },
-      {
-        _name: 'text',
-        _attrs: {
-          bytes: rev.size,
-          sha1: rev.sha1,
-          'xml:space': 'preserve',
-          deleted: 'deleted',
-        },
-        _content: rev['*'],
-      },
     ],
   });
 
