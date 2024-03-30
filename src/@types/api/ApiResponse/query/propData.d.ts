@@ -76,6 +76,18 @@ export interface Revisions {
   /** 内容序列化格式 */
   contentformat: ContentFormat;
 
+  /** 摘要是否被隐藏 */
+  commenthidden?: '';
+
+  /** sha1是否被隐藏 */
+  sha1hidden?: '';
+
+  /** 内容是否被隐藏 */
+  texthidden?: '';
+
+  /** 编辑者是否被隐藏 */
+  contributorhidden?: '';
+
   /** 修订文本 */
   "*": string;
 }

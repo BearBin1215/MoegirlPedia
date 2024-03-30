@@ -49,6 +49,7 @@ $(() => (async () => {
    */
   mw.config.set('wgCanonicalSpecialPageName', 'ExportXML');
   document.title = '导出页面 - 萌娘百科_万物皆可萌的百科全书';
+  $(document.body).addClass('bearbingadget-exportxml');
   $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
   $('#firstHeading').html('导出页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
@@ -138,16 +139,31 @@ $(() => (async () => {
   const formatRevision = (rev: Revisions, origin?: string | number): XmlElement => ({
     revision: [
       { id: rev.revid },
+      { parentid: rev.parentid },
       { timestamp: rev.timestamp },
-      {
+      ...('contributorhidden' in rev ? [{
         contributor: {
           username: rev.user,
           id: rev.userid,
         },
-      },
+      }] : [{
+        _name: 'contributor',
+        _attrs: {
+          deleted: 'deleted',
+        },
+      }]),
       ...('minor' in rev ? [{ minor: rev.minor }] : []),
       ...('bot' in rev ? [{ bot: rev.bot }] : []),
-      { comment: rev.comment },
+      ...('sha1hidden' in rev ? [{ sha1hidden: rev.sha1hidden }] : []),
+      ...('texthidden' in rev ? [{ texthidden: rev.texthidden }] : []),
+      ...('commenthidden' in rev ? [{
+        commenthidden: rev.commenthidden,
+      }, {
+        _name: 'comment',
+        _attrs: { deleted: 'deleted' },
+      }] : [{
+        comment: rev.comment,
+      }]),
       { origin },
       { model: rev.contentmodel },
       { format: rev.contentformat },
@@ -157,6 +173,7 @@ $(() => (async () => {
           bytes: rev.size,
           sha1: rev.sha1,
           'xml:space': 'preserve',
+          deleted: 'deleted',
         },
         _content: rev['*'],
       },
