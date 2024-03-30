@@ -98,7 +98,9 @@ $(() => (async () => {
   const getFullList = async () => {
     const pageList = splitList(pagesInput.getValue());
     for (const category of splitList(categoriesInput.getValue())) {
-      pageList.push(...await categoryMembers(formatNS14(category), ['page', 'file']));
+      const pagesInCat = await categoryMembers(formatNS14(category), ['page', 'file']);
+      loger.record(`分类${category}下获取到${pagesInCat.length}个页面。`);
+      pageList.push(...pagesInCat);
     }
     return pageList;
   };
@@ -182,24 +184,29 @@ $(() => (async () => {
 
   submitButton.on('click', async () => {
     submitButton.setDisabled(true);
+    const pageList = await getFullList();
+    if (!pageList.length) {
+      submitButton.setDisabled(false);
+      return;
+    }
     let exportData: XmlElement;
     /** 是否仅导出当前版本 */
     const getCurrentOnly = onlyCurrent.isSelected();
-    const baseinfoRecord = loger.record('正在读取站点基本信息……', 'success');
+    const baseinfoRecord = loger.record('正在读取站点基本信息……');
     try {
       exportData = await generateBaseinfo();
       baseinfoRecord.remove();
-      loger.record(`正在读取站点基本信息……成功。`, 'success');
+      loger.record(`正在读取站点基本信息……成功。`);
     } catch (err) {
       baseinfoRecord.remove();
       loger.record(`读取站点基本信息失败：${err}`, 'error');
+      submitButton.setDisabled(false);
       return;
     }
-    const pageList = await getFullList();
     for (const page of pageList) {
       await waitInterval(interval);
       try {
-        loger.record(`正在读取页面${page}历史……`, 'success');
+        loger.record(`正在读取页面${page}历史……`);
         const { title, ns, id, revisions } = await getPageHistory(page, getCurrentOnly);
         if (id) {
           (exportData._content as XmlElement[]).push({
@@ -217,7 +224,7 @@ $(() => (async () => {
         loger.record(`读取页面${page}历史失败：${err}，已跳过。`, 'error');
       }
     }
-    loger.record('数据获取完毕，正在保存。', 'success');
+    loger.record('数据获取完毕，正在保存。');
     downloadStringAsFile(
       `${mw.config.get('wgSiteName')}-${moment().format('YYYYMMDDHHmmss')}.xml`,
       toXML(exportData, { indent: '  ' }),
