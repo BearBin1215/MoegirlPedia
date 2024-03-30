@@ -24,7 +24,7 @@ interface Page {
 const interval = 4000;
 
 $(() => (async () => {
-  if (mw.config.get('wgPageName') !== 'Special:ExportXML') {
+  if (!['Special:ExportXML', 'Special:Export', 'Special:导出页面'].includes(mw.config.get('wgPageName'))) {
     return;
   }
   await mw.loader.using(['mediawiki.api', 'oojs-ui', 'moment']);
