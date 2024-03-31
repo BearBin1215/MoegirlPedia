@@ -58,7 +58,10 @@ $(() => {
           torev: diff as string,
           prop: ['diff', 'user', 'parsedcomment', 'ids', 'title'],
         }) as ApiCompareResponse;
-        const { fromtitle, fromrevid, fromuser, fromuserid, totitle, torevid, touser, touserid } = response.compare;
+        const {
+          fromtitle, fromrevid, fromparsedcomment, fromuser, fromuserid,
+          totitle, torevid, toparsedcomment, touser, touserid,
+        } = response.compare;
         const $diff = $(formatDiff(
           response.compare['*'],
           true,
@@ -77,6 +80,7 @@ $(() => {
               $userLink(fromuser, fromuserid),
               $userToolLinks(fromuser),
             ),
+            fromparsedcomment && $(`<div id="mw-diff-otitle3"><span class="comment">（${fromparsedcomment}）</span></div>`),
           ],
           $('<div id="mw-diff-ntitle1" />').append(
             $('<strong />').append(
@@ -88,6 +92,7 @@ $(() => {
               $userLink(touser, touserid),
               $userToolLinks(touser),
             ),
+            toparsedcomment && $(`<div id="mw-diff-otitle3"><span class="comment">（${toparsedcomment}）</span></div>`),
           ),
         ));
         $gadgetZone.text('加载成功！您现在可以正常查看版本差异。').append($diff);
