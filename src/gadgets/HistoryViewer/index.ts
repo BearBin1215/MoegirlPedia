@@ -114,7 +114,7 @@ $(() => {
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
-    const $loadHTMLButton = $('<a>加载当前差异</a>') as JQuery<HTMLAnchorElement>;
+    const $loadHTMLButton = $('<a>加载当前版本</a>') as JQuery<HTMLAnchorElement>;
 
     $loadHTMLButton.on('click', async (e) => {
       e.preventDefault();
