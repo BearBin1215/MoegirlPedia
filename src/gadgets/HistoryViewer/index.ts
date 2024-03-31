@@ -69,31 +69,29 @@ $(() => {
             $('<div id="mw-diff-otitle1" />').append(
               $('<strong />').append(
                 $(`<a href="/index.php?title=${fromtitle}&oldid=${fromrevid}">版本${fromrevid}</a>`),
-                $(`<span class="mw-diff-edit" />`).append(
-                  '（',
-                  `<a href="/index.php?title=${fromtitle}action=edit&oldid=${fromrevid}">编辑</a>`,
-                  '）',
-                ),
+                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${fromtitle}action=edit&oldid=${fromrevid}">编辑</a>）</span>`),
               ),
             ),
             $('<div id="mw-diff-otitle2" />').append(
               $userLink(fromuser, fromuserid),
               $userToolLinks(fromuser),
             ),
-            fromparsedcomment && $(`<div id="mw-diff-otitle3"><span class="comment">（${fromparsedcomment}）</span></div>`),
+            fromparsedcomment ? $(`<div id="mw-diff-otitle3"><span class="comment">（${fromparsedcomment}）</span></div>`) : '',
           ],
-          $('<div id="mw-diff-ntitle1" />').append(
-            $('<strong />').append(
-              $(`<a href="/index.php?title=${totitle}&oldid=${torevid}">版本${torevid}</a>`),
-              $(`<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&undoafter=${fromtitle}action=edit&oldid=${torevid}">编辑</a></span>）`),
-              $(`<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}action=edit&undo=${torevid}">撤销</a>）</span>`),
+          [
+            $('<div id="mw-diff-ntitle1" />').append(
+              $('<strong />').append(
+                $(`<a href="/index.php?title=${totitle}&oldid=${torevid}">版本${torevid}</a>`),
+                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&undoafter=${fromtitle}action=edit&oldid=${torevid}">编辑</a>）</span>`),
+                $(`<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}action=edit&undo=${torevid}">撤销</a>）</span>`),
+              ),
             ),
             $('<div id="mw-diff-ntitle2" />').append(
               $userLink(touser, touserid),
               $userToolLinks(touser),
             ),
-            toparsedcomment && $(`<div id="mw-diff-otitle3"><span class="comment">（${toparsedcomment}）</span></div>`),
-          ),
+            toparsedcomment ? $(`<div id="mw-diff-otitle3"><span class="comment">（${toparsedcomment}）</span></div>`) : '',
+          ],
         ));
         $gadgetZone.text('加载成功！您现在可以正常查看版本差异。').append($diff);
       } catch (error) {
