@@ -25,6 +25,10 @@ const interval = 4000;
 
 $(() => (async () => {
   if (!['Special:ExportXML', 'Special:Export', 'Special:导出页面'].includes(mw.config.get('wgPageName'))) {
+    if ('ExportXML' in window) {
+      await mw.loader.using('mediawiki.util');
+      mw.util.addPortletLink('p-tb', '/Special:ExportXML', '导出页面', 't-exportxml');
+    }
     return;
   }
   await mw.loader.using(['mediawiki.api', 'oojs-ui', 'moment']);
