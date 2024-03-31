@@ -109,7 +109,11 @@ $(() => (async () => {
     return pageList;
   };
 
-  /** 获取一个页面的历史 */
+  /**
+   * 获取一个页面的历史
+   * @param title 页面标题
+   * @param getCurrentOnly 是否仅获取当前版本
+   */
   const getPageHistory = async (title: string, getCurrentOnly: boolean) => {
     let rvcontinue: string | undefined;
     const pageData: Page = {

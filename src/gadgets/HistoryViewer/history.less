@@ -1,35 +1,9 @@
 #pagehistory {
     li {
-        &.before {
-            input {
-                &[name="oldid"] {
-                    visibility: hidden;
-                }
-
-                &[name="diff"] {
-                    visibility: unset;
-                }
-            }
-        }
-
-        &.between {
-            input {
-                &[type="radio"] {
-                    visibility: unset;
-                }
-            }
-        }
-
-        &.after {
-            input {
-                &[name="oldid"] {
-                    visibility: unset;
-                }
-
-                &[name="diff"] {
-                    visibility: hidden;
-                }
-            }
+        &.before input[name="diff"],
+        &.between input[type="radio"],
+        &.after input[name="oldid"] {
+            visibility: unset;
         }
     }
 }

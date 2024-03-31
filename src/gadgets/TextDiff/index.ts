@@ -170,7 +170,7 @@ $(() => (async () => {
     try {
       const result = await textCompare(fromTextBox.getValue(), toTextBox.getValue());
       if (result) {
-        $result.html(result);
+        $result.empty().append(result);
         $resultAction.show();
       }
     } catch (error) {
