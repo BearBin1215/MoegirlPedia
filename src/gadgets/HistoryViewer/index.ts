@@ -1,4 +1,5 @@
 import queryString from 'query-string';
+import historyStyles from './history.less' assert { type: 'string' };
 import type { ApiParseResponse } from '@/@types/api';
 
 $(() => {
@@ -17,6 +18,7 @@ $(() => {
 
   if (action === 'history') {
     // 页面历史处调整
+    mw.loader.addStyleTag(historyStyles);
   } else if (diff) {
     // 查看差异
   } else if (oldid) {
