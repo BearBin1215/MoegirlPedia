@@ -21,6 +21,7 @@ const config = {
       'CtrlS',
       'Excel2Wiki',
       'FileUsedNotLinked',
+      'HistoryViewer',
       'ListEnhancer',
       'LyricStyleToggle',
       'MassEdit',

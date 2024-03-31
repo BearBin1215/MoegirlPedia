@@ -1,16 +1,26 @@
 import type { ApiCompareResponse } from '@/@types/api';
 
-/** 将比较结果转化为JQuery对象 */
+type $orString = JQuery<HTMLElement> | Element | string;
+
+/** 将比较结果生成为JQuery对象 */
 export function formatDiff(
   diffResult: string,
   showTitle = false,
-  $otitleContent?: JQuery<HTMLElement> | Element | string,
-  $ntitleContent?: JQuery<HTMLElement> | Element | string,
+  $otitleContent?: $orString | $orString[],
+  $ntitleContent?: $orString | $orString[],
 ) {
   const $otitle = $(`<td colspan="${diffResult ? 2 : 1}" class="diff-otitle" />`);
   const $ntitle = $(`<td colspan="${diffResult ? 2 : 1}" class="diff-ntitle" />`);
-  $otitle.append($otitleContent || '旧版本');
-  $ntitle.append($ntitleContent || '新版本');
+  if (Array.isArray($otitleContent)) {
+    $otitle.append(...$otitleContent);
+  } else {
+    $otitle.append($otitleContent || '旧版本');
+  }
+  if (Array.isArray($ntitleContent)) {
+    $ntitle.append(...$ntitleContent);
+  } else {
+    $ntitle.append($ntitleContent || '新版本');
+  }
   const diffTitle = $('<tr class="diff-title" />').append($otitle, $ntitle);
   const diffMarker = '<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>';
   return $(`<table class="diff diff-contentalign-left" data-mw="interface" />`).append(
