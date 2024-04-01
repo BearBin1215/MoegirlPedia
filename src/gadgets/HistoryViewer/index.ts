@@ -25,7 +25,7 @@ $(() => {
       ' | ',
       `<a href="/Special:用户贡献/${user}" class="mw-usertoollinks-contribs">贡献</a>`,
       '）',
-    );
+    ) as JQuery<HTMLSpanElement>;
   };
 
   /** 生成用户链接 */
@@ -39,9 +39,8 @@ $(() => {
   };
 
   if (diff && oldid) {
-    // 查看差异
+    // 查看差异，仅在有显示“返回最后的版本 ↺”按钮时加载
     if (!($('.permissions-errors a[href]').text().includes('↺'))) {
-      // 仅在有显示“返回最后的版本 ↺”按钮时加载
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
@@ -62,6 +61,7 @@ $(() => {
           fromtitle, fromrevid, fromparsedcomment, fromuser, fromuserid,
           totitle, torevid, toparsedcomment, touser, touserid,
         } = response.compare;
+        // 按照正常差异格式生成元素。目前仅通过compare api无法获取到时间戳，可能要通过revisions，但会增加额外的请求因此暂不考虑。
         const $diff = $(formatDiff(
           response.compare['*'],
           true,
@@ -76,7 +76,9 @@ $(() => {
               $userLink(fromuser, fromuserid),
               $userToolLinks(fromuser),
             ),
-            fromparsedcomment ? $(`<div id="mw-diff-otitle3"><span class="comment">（${fromparsedcomment}）</span></div>`) : '',
+            $(`<div id="mw-diff-otitle3" />`).append(
+              fromparsedcomment ? `<span class="comment">（${fromparsedcomment}）</span>` : '',
+            ),
           ],
           [
             $('<div id="mw-diff-ntitle1" />').append(
@@ -90,16 +92,14 @@ $(() => {
               $userLink(touser, touserid),
               $userToolLinks(touser),
             ),
-            toparsedcomment ? $(`<div id="mw-diff-otitle3"><span class="comment">（${toparsedcomment}）</span></div>`) : '',
+            $(`<div id="mw-diff-ntitle3" />`).append(
+              toparsedcomment ? `<span class="comment">（${toparsedcomment}）</span>` : '',
+            ),
           ],
         ));
         $gadgetZone.text('加载成功！您现在可以正常查看版本差异。').append($diff);
       } catch (error) {
-        $gadgetZone.empty().append(
-          `加载失败：${error}。您可以尝试重新`,
-          $loadDiffButton,
-          '。',
-        );
+        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadDiffButton, '。');
       }
       try {
         const currentHTML = await parsePage({ oldid } as ApiParams);
@@ -113,13 +113,7 @@ $(() => {
       }
     });
 
-    $('#mw-content-text').append(
-      $gadgetZone.append(
-        '或 ',
-        $loadDiffButton,
-        '。',
-      ),
-    );
+    $('#mw-content-text').append($gadgetZone.append('或 ', $loadDiffButton, '。'));
   } else if (oldid) {
     // 查看旧版本
     if (!($('.permissions-errors a[href]').text().includes('↺'))) {
@@ -137,21 +131,11 @@ $(() => {
         $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
-        $gadgetZone.empty().append(
-          `加载失败：${error}。您可以尝试重新`,
-          $loadHTMLButton,
-          '。',
-        );
+        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadHTMLButton, '。');
       }
     });
 
-    $('#mw-content-text').append(
-      $gadgetZone.append(
-        '或 ',
-        $loadHTMLButton,
-        '。',
-      ),
-    );
+    $('#mw-content-text').append($gadgetZone.append('或 ', $loadHTMLButton, '。'));
   } else if ($moderationNotice.get(0) && !$moderationNotice.children('a[href*="Special:Moderation"]').length) {
     // 有提示当前版本未通过审核，且不是自己的编辑时
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
@@ -165,20 +149,10 @@ $(() => {
         $('#mw-content-text>.mw-parser-output').html(currentHTML);
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
-        $gadgetZone.empty().append(
-          `加载失败：${error}。您可以尝试重新`,
-          $showCurrentButton,
-          '。',
-        );
+        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showCurrentButton, '。');
       }
     });
 
-    $moderationNotice.append(
-      $gadgetZone.append(
-        '您也可以 ',
-        $showCurrentButton,
-        '。',
-      ),
-    );
+    $moderationNotice.append($gadgetZone.append('您也可以 ', $showCurrentButton, '。'));
   }
 });
