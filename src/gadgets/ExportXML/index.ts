@@ -86,6 +86,7 @@ $(() => (async () => {
     ),
     '<p>为了避免WAF，部分导出步骤已被刻意放缓，每两个页面需要等待约5s，在导出时请耐心等待，并请尽量避免额外的访问（如边导出边浏览或编辑）</p>',
     '<p>在下方的分类列表或页面列表输入，一行一个。对于每个分类，会获取其各自的分类和文件，不含子分类。</p>',
+    '<p>由机器人等持有“在API查询中使用更高的上限”<code>(apihighlimits)</code>权限的账号执行可以获得更快的导出速度。</p>',
     '<h3>指定分类内的页面</h3>',
     categoriesInput.$element,
     '<h3>手动输入页面</h3>',
@@ -151,45 +152,37 @@ $(() => (async () => {
       { id: rev.revid },
       { parentid: rev.parentid },
       { timestamp: rev.timestamp },
-      ...('contributorhidden' in rev ? [{
+      {
         _name: 'contributor',
-        _attrs: {
-          deleted: 'deleted',
-        },
-      }] : [{
-        contributor: {
-          username: rev.user,
-          id: rev.userid,
-        },
-      }]),
+        _attrs: 'contributorhidden' in rev ? { deleted: 'deleted' } : {},
+        _content: 'contributorhidden' in rev ? {} : { username: rev.user, id: rev.userid },
+      },
       ...('minor' in rev ? [{ minor: rev.minor }] : []),
       ...('bot' in rev ? [{ bot: rev.bot }] : []),
       ...('sha1hidden' in rev ? [{ sha1hidden: rev.sha1hidden }] : []),
-      ...('texthidden' in rev ? [{ texthidden: rev.texthidden }, {
+      ...('texthidden' in rev ? [{ texthidden: rev.texthidden }] : []),
+      ...('commenthidden' in rev ? [{ commenthidden: rev.commenthidden }] : []),
+      {
+        _name: 'comment',
+        _attrs: 'commenthidden' in rev ? { deleted: 'deleted' } : {},
+        _content: rev.comment,
+      },
+      { origin },
+      { model: rev.contentmodel },
+      { format: rev.contentformat },
+      {
         _name: 'text',
-        _attrs: {
+        _attrs: 'texthidden' in rev ? {
+          bytes: rev.size,
+          sha1: rev.sha1,
           deleted: 'deleted',
-        },
-      }] : [{
-        _name: 'text',
-        _attrs: {
+        } : {
           bytes: rev.size,
           sha1: rev.sha1,
           'xml:space': 'preserve',
         },
         _content: rev['*'],
-      }]),
-      ...('commenthidden' in rev ? [{
-        commenthidden: rev.commenthidden,
-      }, {
-        _name: 'comment',
-        _attrs: { deleted: 'deleted' },
-      }] : [{
-        comment: rev.comment,
-      }]),
-      { origin },
-      { model: rev.contentmodel },
-      { format: rev.contentformat },
+      },
     ],
   });
 
