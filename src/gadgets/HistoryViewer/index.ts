@@ -82,8 +82,8 @@ $(() => {
             $('<div id="mw-diff-ntitle1" />').append(
               $('<strong />').append(
                 $(`<a href="/index.php?title=${totitle}&oldid=${torevid}">版本${torevid}</a>`),
-                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&undoafter=${fromtitle}action=edit&oldid=${torevid}">编辑</a>）</span>`),
-                $(`<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}action=edit&undo=${torevid}">撤销</a>）</span>`),
+                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&action=edit&oldid=${torevid}">编辑</a>）</span>`),
+                $(`<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}&action=edit&undoafter=${fromrevid}&undo=${torevid}">撤销</a>）</span>`),
               ),
             ),
             $('<div id="mw-diff-ntitle2" />').append(
