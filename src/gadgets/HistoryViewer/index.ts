@@ -17,6 +17,16 @@ $(() => {
     return response.parse.text['*'];
   };
 
+  /** 生成用户链接 */
+  const $userLink = (user: string, userid: number) => {
+    return $(`<a href="/User:${user}" class="mw-userlink" />`).append(
+      $('<span class="userlink-avatar" />').append(
+        `<img class="userlink-avatar-small" src="https://img.moegirl.org.cn/common/avatars/${userid}/128.png" />`,
+      ),
+      `<bdi>${user}</bdi>`,
+    );
+  };
+
   /** 生成用户讨论和贡献链接 */
   const $userToolLinks = (user: string) => {
     return $('<span class="mw-usertoollinks" />').append(
@@ -26,16 +36,6 @@ $(() => {
       `<a href="/Special:用户贡献/${user}" class="mw-usertoollinks-contribs">贡献</a>`,
       '）',
     ) as JQuery<HTMLSpanElement>;
-  };
-
-  /** 生成用户链接 */
-  const $userLink = (user: string, userid: number) => {
-    return $(`<a href="/User:${user}" class="mw-userlink" />`).append(
-      $('<span class="userlink-avatar" />').append(
-        `<img class="userlink-avatar-small" src="https://img.moegirl.org.cn/common/avatars/${userid}/128.png" />`,
-      ),
-      `<bdi>${user}</bdi>`,
-    );
   };
 
   if (diff && oldid) {
@@ -68,8 +68,8 @@ $(() => {
           [
             $('<div id="mw-diff-otitle1" />').append(
               $('<strong />').append(
-                $(`<a href="/index.php?title=${fromtitle}&oldid=${fromrevid}">版本${fromrevid}</a>`),
-                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${fromtitle}action=edit&oldid=${fromrevid}">编辑</a>）</span>`),
+                `<a href="/index.php?title=${fromtitle}&oldid=${fromrevid}">版本${fromrevid}</a>`,
+                `<span class="mw-diff-edit">（<a href="/index.php?title=${fromtitle}action=edit&oldid=${fromrevid}">编辑</a>）</span>`,
               ),
             ),
             $('<div id="mw-diff-otitle2" />').append(
@@ -83,9 +83,9 @@ $(() => {
           [
             $('<div id="mw-diff-ntitle1" />').append(
               $('<strong />').append(
-                $(`<a href="/index.php?title=${totitle}&oldid=${torevid}">版本${torevid}</a>`),
-                $(`<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&action=edit&oldid=${torevid}">编辑</a>）</span>`),
-                $(`<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}&action=edit&undoafter=${fromrevid}&undo=${torevid}">撤销</a>）</span>`),
+                `<a href="/index.php?title=${totitle}&oldid=${torevid}">版本${torevid}</a>`,
+                `<span class="mw-diff-edit">（<a href="/index.php?title=${totitle}&action=edit&oldid=${torevid}">编辑</a>）</span>`,
+                `<span class="mw-diff-undo">（<a href="/index.php?title=${totitle}&action=edit&undoafter=${fromrevid}&undo=${torevid}">撤销</a>）</span>`,
               ),
             ),
             $('<div id="mw-diff-ntitle2" />').append(
@@ -97,7 +97,7 @@ $(() => {
             ),
           ],
         ));
-        $gadgetZone.text('加载成功！您现在可以正常查看版本差异。').append($diff);
+        $gadgetZone.text('加载成功！您现在可以查看版本差异。因compare api不支持，编辑时间戳和标记（如小编辑、机器人）不会显示。').append($diff);
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadDiffButton, '。');
       }
@@ -129,7 +129,7 @@ $(() => {
       try {
         const currentHTML = await parsePage({ oldid } as ApiParams);
         $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
-        $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
+        $gadgetZone.text('加载成功，您现在看到的是最新版本。部分依赖于js的功能（如折叠、tabs模板）可能无法正常工作。');
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadHTMLButton, '。');
       }
