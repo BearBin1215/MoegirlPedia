@@ -103,8 +103,9 @@ $(() => (async () => {
   const getFullList = async () => {
     const pageList = splitList(pagesInput.getValue());
     for (const category of splitList(categoriesInput.getValue())) {
-      const pagesInCat = await categoryMembers(formatNS14(category), ['page', 'file']);
-      loger.record(`分类${category}下获取到${pagesInCat.length}个页面。`);
+      const categoryTitle = formatNS14(category);
+      const pagesInCat = await categoryMembers(categoryTitle, ['page', 'file']);
+      loger.record(`分类【<a href="/${categoryTitle}">${category}</a>】下获取到${pagesInCat.length}个页面。`);
       pageList.push(...pagesInCat);
     }
     return [...new Set(pageList)];
@@ -210,7 +211,7 @@ $(() => (async () => {
     for (const page of pageList) {
       await waitInterval(interval);
       try {
-        loger.record(`正在读取页面${page}历史……`);
+        loger.record(`正在读取页面<a href="/${page}">${page}</a>历史……`);
         const { title, ns, id, revisions } = await getPageHistory(page, getCurrentOnly);
         if (id) {
           (exportData._content as XmlElement[]).push({
