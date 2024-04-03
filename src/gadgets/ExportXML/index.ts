@@ -107,7 +107,7 @@ $(() => (async () => {
       loger.record(`分类${category}下获取到${pagesInCat.length}个页面。`);
       pageList.push(...pagesInCat);
     }
-    return pageList;
+    return [...new Set(pageList)];
   };
 
   /**

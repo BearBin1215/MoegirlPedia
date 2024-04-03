@@ -1,4 +1,30 @@
 {
   "name": "bearbin-mgp-sync",
-  "type": "module"
+  "type": "module",
+  "syncConfig": {
+    "localPath": "dist/gadgets/",
+    "pagePath": "User:BearBin/js/",
+    "list": [
+      "BatchSend",
+      "BulkMove",
+      "CtrlS",
+      "Excel2Wiki",
+      "FileUsedNotLinked",
+      "HistoryViewer",
+      "ListEnhancer",
+      "LyricStyleToggle",
+      "MassEdit",
+      "MoeStretch",
+      "NewpagesCat",
+      "OneKeyPurge",
+      "purgecache",
+      "QuickThank",
+      "ShowContributors",
+      "SidebarEnhance",
+      "TextDiff",
+      "userStatus",
+      "WikiplusSummary",
+      "ExportXML"
+    ]
+  }
 }

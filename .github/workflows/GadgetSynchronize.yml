@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - dist/gadgets/**/*.js
+      - scripts/package.json
   workflow_dispatch:
 
 jobs:
