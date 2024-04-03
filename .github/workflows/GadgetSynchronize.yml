@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: "20.x"
       - name: 安装依赖
-        run: corepack enable && yarn
+        run: corepack enable pnpm && pnpm install
       - name: 同步页面
         env:
           MW_USERNAME: BearBin
