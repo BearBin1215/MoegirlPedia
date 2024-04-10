@@ -5,6 +5,3 @@ updates:
     schedule:
       interval: "daily"
     versioning-strategy: "auto"
-    allow:
-      dependency-type: "all"
-      node-version: "16.x"
