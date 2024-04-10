@@ -1,10 +1,10 @@
-import { parse } from 'query-string';
+import queryString from 'query-string';
 import { formatDiff } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
 
 $(() => {
-  const { oldid, diff } = parse(location.search);
+  const { oldid, diff } = queryString.parse(location.search);
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
 
