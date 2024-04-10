@@ -1,5 +1,5 @@
 import queryString from 'query-string';
-import { formatDiff } from '@/utils/api';
+import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
 
@@ -8,7 +8,7 @@ $(() => {
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
 
-  /** 根据解析页面HTML */
+  /** 根据输入参数解析页面HTML */
   const parsePage = async (parseConfig: ApiParams) => {
     const response = await api.post({
       action: 'parse',
@@ -154,5 +154,23 @@ $(() => {
     });
 
     $moderationNotice.append($gadgetZone.append('您也可以 ', $showCurrentButton, '。'));
+  } else if (document.querySelector('.permissions-errors a[href*="action=edit"]')) {
+    const $gadgetZone = $('<div class="history-revert-showcurrent" />');
+    const $showPageButton = $('<a>查看待审核内容</a>') as JQuery<HTMLAnchorElement>;
+
+    $showPageButton.on('click', async (e) => {
+      e.preventDefault();
+      $gadgetZone.text('加载中……');
+      try {
+        const text = await pageSource(mw.config.get('wgPageName'));
+        const currentHTML = await parsePage({ text } as ApiParams);
+        $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
+      } catch (error) {
+        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showPageButton, '。');
+      }
+    });
+
+    $('.permissions-errors').append($gadgetZone.append('您也可以', $showPageButton, '。'));
   }
 });
