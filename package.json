@@ -28,7 +28,7 @@
     "*.less"
   ],
   "engines": {
-    "node": "^16.x"
+    "node": "16.x"
   },
   "dependencies": {
     "@types/jquery": "^3.5.29",
