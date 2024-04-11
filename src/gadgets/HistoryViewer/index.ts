@@ -3,7 +3,7 @@ import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
 
-$(() => {
+mw.loader.using('mediawiki.api').then(() => {
   const { oldid, diff } = queryString.parse(location.search);
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
