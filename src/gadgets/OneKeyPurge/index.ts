@@ -127,9 +127,7 @@ $(() => (async () => {
         :
         '<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。';
 
-      /**
-       * 添加事件
-       */
+      /** 添加事件 */
       this.closeButton.on('click', this.close.bind(this));
 
       this.stopButton.on('click', () => {
@@ -149,9 +147,7 @@ $(() => (async () => {
 
       this.actionButton.on('click', this.action.bind(this));
 
-      /**
-       * 将元素添加到窗口
-       */
+      /** 将元素添加到窗口 */
       this.$body.append(
         this.$header.append(
           $('<div class="okp-button okp-cancel-button"/>').append(
@@ -324,9 +320,7 @@ $(() => (async () => {
       }
     }
 
-    /**
-     * 执行
-     */
+    /** 执行 */
     async action() {
       this.progressBar.clear();
       if (this.typeSelectInput.getValue().length === 0) {

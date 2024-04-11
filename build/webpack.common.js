@@ -26,9 +26,7 @@ const postCssLoader = {
   },
 };
 
-/**
- * @type {(import('webpack').Configuration)}
- */
+/** @type {(import('webpack').Configuration)} */
 module.exports = {
   entry,
   resolve: {

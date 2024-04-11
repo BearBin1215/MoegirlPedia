@@ -123,9 +123,7 @@ $(() => (async () => {
       return pageList;
     };
 
-    /**
-     * 添加[[T:非链入使用]]
-     */
+    /** 添加[[T:非链入使用]] */
     const addMark = async () => {
       mw.notify('正在标记……');
       $markButtonLink.addClass('oo-ui-pendingElement-pending');
@@ -152,9 +150,7 @@ $(() => (async () => {
       }
     };
 
-    /**
-     * 移除[[T:非链入使用]]
-     */
+    /** 移除[[T:非链入使用]] */
     const removeMark = async () => {
       mw.notify('正在移除标记……');
       $removeButtonAnchor.addClass('oo-ui-pendingElement-pending');

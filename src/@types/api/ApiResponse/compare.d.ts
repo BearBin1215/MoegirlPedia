@@ -1,8 +1,6 @@
 import { ApiResponse } from "./core";
 
-/**
- * `action=compare`请求响应数据接口
- */
+/** `action=compare`请求响应数据接口 */
 export interface ApiCompareResponse extends ApiResponse {
   compare: {
     /** `from`页面ID */

@@ -1,6 +1,4 @@
-/**
- * 页面内容模型
- */
+/** 页面内容模型 */
 export type ContentModel =
   'GadgetDefinition' |
   'sanitized-css' |
@@ -11,18 +9,14 @@ export type ContentModel =
   'css' |
   'text';
 
-/**
- * 设置是否监视
- */
+/** 设置是否监视 */
 export type Watchlist =
   'watch' |
   'unwatch' |
   'preferences' |
   'nochange';
 
-/**
- * 内容序列化格式
- */
+/** 内容序列化格式 */
 export type ContentFormat =
   'application/json' |
   'text/css' |
@@ -30,14 +24,10 @@ export type ContentFormat =
   'text/x-wiki' |
   'text/javascript';
 
-/**
- * 页面被分类的类型
- */
+/** 页面被分类的类型 */
 export type Cmtype = 'page' | 'subcat' | 'file';
 
-/**
- * 页面信息
- */
+/** 页面信息 */
 export interface PageProps {
   /** 页面id */
   pageid: number;

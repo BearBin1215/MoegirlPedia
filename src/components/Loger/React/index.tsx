@@ -36,15 +36,11 @@ export interface LogerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'childr
   logerDetails?: LogerDetail[];
 }
 
-/**
- * 日志组件
- */
+/** 日志组件 */
 const Loger: FunctionComponent<LogerProps> = ({ logerTypes, logerDetails = [], ...props }) => {
   const [showTypes, setShowTypes] = useState((logerTypes?.map(({ name }) => name) || ['success', 'warn', 'error']));
 
-  /**
-   * 定义筛选按钮
-   */
+  /** 定义筛选按钮 */
   const filterButtons = logerTypes ? logerTypes.reduce((acc, { name, ...rest }) => {
     acc[name] = rest;
     return acc;
@@ -66,9 +62,7 @@ const Loger: FunctionComponent<LogerProps> = ({ logerTypes, logerDetails = [], .
     },
   };
 
-  /**
-   * 控制日志筛选
-   */
+  /** 控制日志筛选 */
   const filtLogs = (typeName: string): void => {
     if (showTypes.includes(typeName)) {
       setShowTypes(showTypes.filter((type) => type !== typeName));

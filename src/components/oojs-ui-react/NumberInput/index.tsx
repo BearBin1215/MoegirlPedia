@@ -32,9 +32,7 @@ export interface NumberInputProps extends
   labelPosition?: LabelPosition;
 }
 
-/**
- * 数字输入框
- */
+/** 数字输入框 */
 const NumberInput: FunctionComponent<NumberInputProps> = ({
   name,
   accessKey,

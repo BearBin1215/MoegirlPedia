@@ -30,16 +30,12 @@ $(() => {
     });
   };
 
-  /**
-   * vector将侧栏高度设为body高度
-   */
+  /** vector将侧栏高度设为body高度 */
   const setPanelHeight = () => {
     document.getElementById('mw-panel')!.style.height = `${document.body.scrollHeight}px`;
   };
 
-  /**
-   * moeskin将自定义工具栏移到sticky块
-   */
+  /** moeskin将自定义工具栏移到sticky块 */
   const moveToSticky = () => {
     if (document.getElementById('#moe-custom-sidenav-block')) {
       $('.moe-siderail-sticky').prepend($('#moe-custom-sidenav-block'));
@@ -47,9 +43,7 @@ $(() => {
     }
   };
 
-  /**
-   * 折叠图标
-   */
+  /** 折叠图标 */
   let folderIcon: string | JQuery<HTMLElement> = folderSvg;
 
   switch (mw.config.get('skin')) {

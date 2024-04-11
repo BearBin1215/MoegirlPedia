@@ -1,9 +1,7 @@
 import { createElement, FunctionComponent } from 'react';
 import type { ReactNode, Ref, MouseEventHandler, CSSProperties } from 'react';
 
-/**
- * 组件基础属性
- */
+/** 组件基础属性 */
 export interface ElementProps<T> {
   id?: string;
 

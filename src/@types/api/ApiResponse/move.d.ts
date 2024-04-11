@@ -1,8 +1,6 @@
 import type { ApiResponse } from './core';
 
-/**
- * 移动报错
- */
+/** 移动报错 */
 export interface ApiMoveError {
   message: string;
 

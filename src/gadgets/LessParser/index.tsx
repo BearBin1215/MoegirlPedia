@@ -17,39 +17,29 @@ const ParserModal = () => {
     inputRef.current!.value = fileReader.result as string;
   });
 
-  /**
-   * 关闭弹窗
-   */
+  /** 关闭弹窗 */
   const closeModal = () => setOpen(false);
 
-  /**
-   * 点击上传
-   */
+  /** 点击上传 */
   const upload = () => {
     uploadRef.current!.click();
   };
 
-  /**
-   * 上传完毕读取内容
-   */
+  /** 上传完毕读取内容 */
   const onUpload: ChangeEventHandler<HTMLInputElement> = ({ target: { files } }) => {
     if (files?.length) {
       fileReader.readAsText(files[0]);
     }
   };
 
-  /**
-   * 执行解析
-   */
+  /** 执行解析 */
   const parseLess = () => {
     render(inputRef.current!.value, (err, output) => {
       outputRef.current!.value = err ? err.message : output!.css;
     });
   };
 
-  /**
-   * 清空输入输出
-   */
+  /** 清空输入输出 */
   const clear = () => {
     uploadRef.current!.value = '';
     inputRef.current!.value = '';
@@ -58,9 +48,7 @@ const ParserModal = () => {
 
   const copy = () => copyText(outputRef.current!.value);
 
-  /**
-   * 渲染
-   */
+  /** 渲染 */
   if (isOpen) {
     return (
       <>
@@ -101,9 +89,7 @@ const ParserModal = () => {
   return null;
 };
 
-/**
- * 添加入口
- */
+/** 添加入口 */
 mw.loader.using('mediawiki.util').then(() => {
   mw.util.addPortletLink('p-tb', 'javascript:void(0)', 'Less解析器', 't-lessparser')!.addEventListener('click', () => {
     if (!document.getElementById('less-parser')) {

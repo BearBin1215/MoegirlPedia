@@ -39,9 +39,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
         })
         .children('.oo-ui-icon-table').removeClass('oo-ui-icon-table').addClass('oo-ui-icon-tableCaption');
 
-      /**
-       * 读取表格并解析
-       */
+      /** 读取表格并解析 */
       const parseTable = () => {
         const table = $e2wInput.get(0)!.firstElementChild;
         if (table?.tagName === 'TABLE') { // 判断粘贴的内容是否为table标签
