@@ -30,6 +30,18 @@ export interface Redirects extends PageProps {
   fragment: string;
 }
 
+/** 版本审核信息 */
+export interface Moderation {
+  /** 审核id */
+  id: number;
+
+  /** 审核状态，`0`和`4`为未审核，`1`为审核通过，`2`为未通过 */
+  status_code: 0 | 1 | 2 | 4;
+
+  /** 用户是否可见 */
+  user_can_view?: '';
+}
+
 /**
  * `prop=revisions` 获取修订版本信息
  */
@@ -87,6 +99,9 @@ export interface Revisions {
 
   /** 编辑者是否被隐藏 */
   contributorhidden?: '';
+
+  /** 审核信息 */
+  moderation?: Moderation;
 
   /** 修订文本 */
   "*": string;
