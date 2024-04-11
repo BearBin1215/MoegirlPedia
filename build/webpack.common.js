@@ -2,6 +2,7 @@ const glob = require('glob');
 const path = require('path');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
+const { VueLoaderPlugin } = require('vue-loader');
 
 const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}` : './src/gadgets/**/index.{js,jsx,ts,tsx}', { nocase: true })
   .map((filename) => filename
@@ -44,8 +45,15 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.vue$/,
+        use: 'vue-loader',
+      },
+      {
         test: /\.(ts|tsx)$/i,
         loader: 'ts-loader',
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        },
       },
       {
         test: /\.(js|jsx)$/,
@@ -68,6 +76,7 @@ module.exports = {
           {
             use: [
               'style-loader',
+              'vue-style-loader',
               'css-loader',
               postCssLoader,
               'less-loader',
@@ -86,6 +95,7 @@ module.exports = {
           {
             use: [
               'style-loader',
+              'vue-style-loader',
               'css-loader',
               postCssLoader,
             ],
@@ -114,5 +124,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [new ForkTsCheckerWebpackPlugin()],
+  plugins: [new ForkTsCheckerWebpackPlugin(), new VueLoaderPlugin()],
 };

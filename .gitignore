@@ -5,7 +5,9 @@ node_modules
 
 test
 src/gadgets/test
+src/gadgets/*test*
 dist/**/test.*
+dist/**/*test.*
 
 dist/dev
 .env
