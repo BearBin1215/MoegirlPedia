@@ -1,6 +1,4 @@
-/**
- * @type {import('eslint').ESLint.ConfigData}
- */
+/** @type {import('eslint').ESLint.ConfigData} */
 module.exports = {
   root: true,
   env: {
@@ -16,6 +14,7 @@ module.exports = {
     '@stylistic',
     '@typescript-eslint',
     'react',
+    'vue',
   ],
   parser: '@typescript-eslint/parser',
   'extends': [
@@ -23,6 +22,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
     'plugin:react/recommended',
+    'plugin:vue/vue3-recommended',
   ],
   parserOptions: {
     ecmaVersion: 'latest',
@@ -130,9 +130,25 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['src/gadgets/**/*.vue'],
+      parser: "vue-eslint-parser",
+      parserOptions: {
+        parser: "@typescript-eslint/parser",
+      },
+      'extends': [
+        'eslint:recommended',
+        'plugin:vue/vue3-recommended',
+      ],
+      rules: {
+        'vue/multi-word-component-names': 0,
+      },
+    },
+
+    {
       files: ['src/@types/**/*.d.ts'],
       rules: {
         '@stylistic/quote-props': 0,
+        '@typescript-eslint/ban-types': 0,
       },
     },
     {

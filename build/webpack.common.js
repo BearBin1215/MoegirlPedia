@@ -76,7 +76,6 @@ module.exports = {
           {
             use: [
               'style-loader',
-              'vue-style-loader',
               'css-loader',
               postCssLoader,
               'less-loader',
@@ -95,7 +94,6 @@ module.exports = {
           {
             use: [
               'style-loader',
-              'vue-style-loader',
               'css-loader',
               postCssLoader,
             ],
