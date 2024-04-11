@@ -24,9 +24,6 @@
     "url": "https://github.com/BearBin1215/MoegirlPedia/issues"
   },
   "homepage": "https://github.com/BearBin1215/MoegirlPedia#readme",
-  "sideEffects": [
-    "*.less"
-  ],
   "engines": {
     "node": "16.x"
   },
