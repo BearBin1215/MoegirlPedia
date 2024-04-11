@@ -182,7 +182,7 @@ $(() => (async () => {
           sha1: rev.sha1,
           'xml:space': 'preserve',
         },
-        _content: rev['*'],
+        _content: rev['*']?.replace(/&/g, '&amp;'),
       },
     ],
   });
