@@ -4,8 +4,10 @@
 
 - [工具介绍](#工具介绍)
   - [一键更新页面缓存](#一键更新页面缓存)
-  - [共享站查询文件非链入使用](#共享站查询文件非链入使用)
   - [批量编辑](#批量编辑)
+  - [页面导出](#页面导出)
+  - [共享站查询文件非链入使用](#共享站查询文件非链入使用)
+  - [侧边栏优化](#侧边栏优化)
   - [歌词样式开关](#歌词样式开关)
   - [批量发送讨论页提醒](#批量发送讨论页提醒)
   - [批量移动页面](#批量移动页面)
@@ -34,6 +36,31 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/OneKeyPurge.js&action=raw&ctype=text/javascript");
 ```
 
+### 批量编辑
+
+- 将[Special:MassEdit](https://zh.moegirl.org.cn/Special:MassEdit)页面改为批量编辑页面，可以输入页面列表或分类列表，按照指定的规则对页面进行批量替换。
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/MassEdit.min.js");
+// 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/MassEdit.js&action=raw&ctype=text/javascript");
+```
+
+### 页面导出
+
+- 从萌娘百科导出指定的页面，将页面及其历史导出为可以在其他MediaWiki站点直接导入的XML文件。在个人js页添加后，前往[Special:ExportXML](https://zh.moegirl.org.cn/Special:ExportXML)或[Special:Export](https://zh.moegirl.org.cn/Special:Export)执行导出操作。
+- 支持从分类获取页面。
+- 目前支持导出历史，暂不支持递归导出模板。
+- 由于缺少测试，导出的历史有被删除版本时可能和标准导出功能有一点偏差，欢迎反馈。
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/ExportXML.min.js");
+// 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/ExportXML.js&action=raw&ctype=text/javascript");
+```
+
 ### 共享站查询文件非链入使用
 
 - 一键查询共享站的非链入使用，避免文件被误判为无使用。
@@ -45,15 +72,17 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 // 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/FileUsedNotLinked.js&action=raw&ctype=text/javascript");
 ```
 
-### 批量编辑
+### 侧边栏优化
 
-- 将[Special:MassEdit](https://zh.moegirl.org.cn/Special:MassEdit)页面改为批量编辑页面，可以输入页面列表或分类列表，按照指定的规则对页面进行批量替换。
+- 给vector和moeskin的侧边栏区域各自加一个折叠按钮，折叠对应的内容。
+
+![侧边栏优化演示](/img/SidebarEnhance.gif)
 
 使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
 
 ```JavaScript
-mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/MassEdit.min.js");
-// 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/MassEdit.js&action=raw&ctype=text/javascript");
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/SidebarEnhance.min.js");
+// 或 mw.loader.load("/index.php?title=User:BearBin/js/SidebarEnhance.js&action=raw&ctype=text/javascript");
 ```
 
 ### 歌词样式开关
