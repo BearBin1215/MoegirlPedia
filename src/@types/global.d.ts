@@ -13,6 +13,11 @@ declare module "*.svg" {
   export default value;
 }
 
+declare module "*.html" {
+  const value: string;
+  export default value;
+}
+
 declare const moment: import('moment');
 
 /** 在页面右下方插入按钮 */

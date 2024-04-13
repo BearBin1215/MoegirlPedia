@@ -99,6 +99,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.html$/i,
+        loader: 'html-loader',
+      },
+      {
         test: /\.svg$/,
         oneOf: [
           // `import svg from 'foo.svg' assert { type: 'xml' }`时作为完整的XML字符串导入
