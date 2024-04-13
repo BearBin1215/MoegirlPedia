@@ -20,7 +20,7 @@ $(document.body).on('click', '#Wikiplus-Edit-TopBtn, .Wikiplus-Edit-SectionBtn, 
       return;
     }
     clearInterval(itv);
-    const $WSList = $('<div></div>', { id: 'ws-buttons' }).css('margin-top', '0.2em');
+    const $WSList = $('<div id="ws-buttons" style="margin-top:0.2em;font-size:0.875em"></div>');
     const $WSButtons = WPSummary.reduce((acc, val, index, { length }) => {
       let $button: JQuery<HTMLElement>;
       let summaryDetail: string;
