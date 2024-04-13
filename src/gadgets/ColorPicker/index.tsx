@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { SketchPicker } from 'react-color';
@@ -11,49 +11,41 @@ interface ColorPickerProps {
   open: boolean;
 }
 
-class PickerModal extends Component<ColorPickerProps> {
-  state = {
-    displayPicker: true,
-    color: '#222',
+const PickerModal: React.FC<ColorPickerProps> = (props) => {
+  const [displayPicker, setDisplayPicker] = useState(props.open);
+  const [color, setColor] = useState('#222');
+
+  const handleChange = (colorResult: ColorResult) => {
+    setColor(colorResult.hex);
   };
 
-  constructor(props: ColorPickerProps) {
-    super(props);
-    this.setState({ displayPicker: props.open });
-  }
-
-  handleChange = (color: ColorResult) => {
-    this.setState({ color: color.hex });
+  const handleClose = () => {
+    setDisplayPicker(false);
   };
 
-  handleClose = () => {
-    this.setState({ displayPicker: false });
+  const handleCopy = () => {
+    copyText(color);
   };
 
-  handleCopy = () => {
-    copyText(this.state.color);
-  };
-
-  render() {
-    return (
-      <>
-        {createPortal(
-          this.state.displayPicker ? <div id='color-picker'>
-            <SketchPicker
-              color={this.state.color}
-              onChange={this.handleChange}
-            />
-            <div className='button-zone'>
-              <Button onClick={this.handleCopy}>复制</Button>
-              <Button buttonType='danger' onClick={this.handleClose}>关闭</Button>
+  return (
+    <>
+      {createPortal(
+        displayPicker ? (
+          <div id="color-picker">
+            <SketchPicker color={color} onChange={handleChange} />
+            <div className="button-zone">
+              <Button onClick={handleCopy}>复制</Button>
+              <Button buttonType="danger" onClick={handleClose}>
+                关闭
+              </Button>
             </div>
-          </div> : null,
-          document.body,
-        )}
-      </>
-    );
-  }
-}
+          </div>
+        ) : null,
+        document.body,
+      )}
+    </>
+  );
+};
 
 mw.loader.using('mediawiki.util').then(() => {
   mw.util.addPortletLink('p-tb', 'javascript:void(0)', '颜色选择器', 't-colorpicker')!
