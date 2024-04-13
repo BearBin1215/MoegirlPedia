@@ -1,5 +1,5 @@
 /**
- * @description 使用Vue开发小工具实例
+ * @description 使用Vue开发小工具示例
  */
 
 import { createApp } from 'vue';

@@ -14,7 +14,7 @@ const linkList = async (pagename: string, lhnamespace?: number[]): Promise<strin
     prop: 'linkshere',
     titles: pagename,
     lhlimit: 'max',
-  }
+  };
   if (lhnamespace) {
     postBody.lhnamespace = lhnamespace;
   }

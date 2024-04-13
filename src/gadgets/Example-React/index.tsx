@@ -1,5 +1,5 @@
 /**
- * @description 使用React开发小工具实例
+ * @description 使用React开发小工具示例
  */
 
 import React from 'react';

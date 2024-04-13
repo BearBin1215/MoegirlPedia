@@ -95,7 +95,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-vars': [2, { varsIgnorePattern: '^_' }],
     '@typescript-eslint/ban-ts-comment': 0,
-    'react/destructuring-assignment': 2,
     'react/jsx-indent': [2, 2],
     'react/jsx-indent-props': [2, 2],
     'react/jsx-tag-spacing': [2, {
@@ -116,7 +115,7 @@ module.exports = {
     '@stylistic/arrow-spacing': [2, { before: true, after: true }],
     '@stylistic/comma-dangle': [1, 'always-multiline'],
     '@stylistic/indent': [2, 2, { SwitchCase: 1 }],
-    '@stylistic/linebreak-style': [0, 'unix'],
+    '@stylistic/linebreak-style': [2, 'unix'],
     '@stylistic/no-floating-decimal': 2,
     '@stylistic/no-multi-spaces': 2,
     '@stylistic/no-trailing-spaces': 2,
