@@ -3,6 +3,12 @@ import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
 
+declare global {
+  interface Window {
+    prettyPrint?: (opt_whenDone?: any, opt_root?: any) => void;
+  }
+}
+
 mw.loader.using('mediawiki.api').then(() => {
   const { oldid, diff } = queryString.parse(location.search);
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
@@ -146,7 +152,24 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const currentHTML = await parsePage({ page: mw.config.get('wgPageName') });
-        $('#mw-content-text>.mw-parser-output').html(currentHTML);
+        if (document.getElementById('mw-clearyourcache')) {
+          const $mwcode = $('#mw-content-text>.mw-code');
+          const $currentContent = $(currentHTML);
+          $mwcode.replaceWith($currentContent);
+          if (typeof window.prettyPrint === 'function') {
+            const acceptsLangs = {
+              javascript: "js",
+              json: "json",
+              css: "css",
+              "sanitized-css": "css",
+              Scribunto: "lua",
+            };
+            $currentContent.addClass(`prettyprint lang-${acceptsLangs[mw.config.get('wgPageContentModel')]} linenums`);
+            window.prettyPrint();
+          }
+        } else {
+          $('#mw-content-text>.mw-parser-output').html(currentHTML);
+        }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showCurrentButton, '。');
