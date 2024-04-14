@@ -5,7 +5,7 @@ import './index.less';
 
 declare global {
   interface Window {
-    prettyPrint: (opt_whenDone?: any, opt_root?: any) => void;
+    prettyPrint?: (opt_whenDone?: () => void, opt_root?: HTMLElement) => void;
   }
 }
 
