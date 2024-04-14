@@ -5,7 +5,7 @@ import './index.less';
 
 declare global {
   interface Window {
-    prettyPrint?: (opt_whenDone?: any, opt_root?: any) => void;
+    prettyPrint: (opt_whenDone?: any, opt_root?: any) => void;
   }
 }
 
@@ -13,6 +13,25 @@ mw.loader.using('mediawiki.api').then(() => {
   const { oldid, diff } = queryString.parse(location.search);
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
+  const pageContentModel = mw.config.get('wgPageContentModel');
+
+  /** 页面模型语言映射 */
+  const acceptsLangs = {
+    javascript: "js",
+    json: "json",
+    css: "css",
+    "sanitized-css": "css",
+    Scribunto: "lua",
+  };
+
+  const pretty = ($codeContent: JQuery<HTMLElement>) => {
+    $codeContent.addClass(`prettyprint lang-${acceptsLangs[pageContentModel]} linenums`);
+    if (typeof window.prettyPrint === 'function') {
+      window.prettyPrint();
+    } else {
+      mw.loader.load('/index.php?title=MediaWiki:Gadget-code-prettify.js&action=raw&ctype=text/javascript');
+    }
+  };
 
   /** 根据输入参数解析页面HTML */
   const parsePage = async (parseConfig: ApiParams) => {
@@ -134,7 +153,15 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const currentHTML = await parsePage({ oldid } as ApiParams);
-        $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        if (pageContentModel in acceptsLangs) {
+          const $currentContent = $(currentHTML);
+          $('#mw-content-text').append($currentContent);
+          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+            pretty($currentContent);
+          }
+        } else {
+          $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        }
         $gadgetZone.text('加载成功，您现在看到的是最新版本。部分依赖于js的功能（如折叠、tabs模板）可能无法正常工作。');
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadHTMLButton, '。');
@@ -152,20 +179,12 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const currentHTML = await parsePage({ page: mw.config.get('wgPageName') });
-        if (document.getElementById('mw-clearyourcache')) {
+        if (pageContentModel in acceptsLangs) {
           const $mwcode = $('#mw-content-text>.mw-code');
           const $currentContent = $(currentHTML);
           $mwcode.replaceWith($currentContent);
-          if (typeof window.prettyPrint === 'function') {
-            const acceptsLangs = {
-              javascript: "js",
-              json: "json",
-              css: "css",
-              "sanitized-css": "css",
-              Scribunto: "lua",
-            };
-            $currentContent.addClass(`prettyprint lang-${acceptsLangs[mw.config.get('wgPageContentModel')]} linenums`);
-            window.prettyPrint();
+          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+            pretty($currentContent);
           }
         } else {
           $('#mw-content-text>.mw-parser-output').html(currentHTML);
@@ -178,6 +197,7 @@ mw.loader.using('mediawiki.api').then(() => {
 
     $moderationNotice.append($gadgetZone.append('您也可以 ', $showCurrentButton, '。'));
   } else if (document.querySelector('.permissions-errors a[href*="action=edit"]')) {
+    // 新页面
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
     const $showPageButton = $('<a>查看待审核内容</a>') as JQuery<HTMLAnchorElement>;
 
@@ -187,7 +207,15 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         const text = await pageSource(mw.config.get('wgPageName'));
         const currentHTML = await parsePage({ text } as ApiParams);
-        $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        if (pageContentModel in acceptsLangs) {
+          const $currentContent = $(currentHTML);
+          $('#mw-content-text').append($currentContent);
+          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+            pretty($currentContent);
+          }
+        } else {
+          $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showPageButton, '。');
