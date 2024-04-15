@@ -91,9 +91,16 @@ module.exports = {
     'prefer-exponentiation-operator': 2,
     'prefer-destructuring': 2,
     'require-await': 2,
+    '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/naming-convention': [
+      2,
+      {
+        selector: ["interface", "typeAlias"],
+        format: ["PascalCase"],
+      },
+    ],
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-vars': [2, { varsIgnorePattern: '^_' }],
-    '@typescript-eslint/ban-ts-comment': 0,
     'react/jsx-indent': [2, 2],
     'react/jsx-indent-props': [2, 2],
     'react/jsx-tag-spacing': [2, {

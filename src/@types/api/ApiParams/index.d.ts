@@ -7,7 +7,7 @@
 /**
  * 要执行的操作类型
  */
-export type action =
+export type Action =
   'abusefiltercheckmatch' |
   'abusefilterchecksyntax' |
   'abusefilterevalexpression' |
@@ -84,7 +84,7 @@ export interface ApiParams {
   /**
    * 要执行的操作
    */
-  action?: action;
+  action?: Action;
 
   /**
    * 输出的格式
