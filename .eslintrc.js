@@ -121,7 +121,7 @@ module.exports = {
     '@stylistic/arrow-spacing': [2, { before: true, after: true }],
     '@stylistic/comma-dangle': [1, 'always-multiline'],
     '@stylistic/indent': [2, 2, { SwitchCase: 1 }],
-    '@stylistic/linebreak-style': [2, 'unix'],
+    '@stylistic/linebreak-style': 0,
     '@stylistic/no-floating-decimal': 2,
     '@stylistic/no-multi-spaces': 2,
     '@stylistic/no-trailing-spaces': 2,
