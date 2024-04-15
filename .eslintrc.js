@@ -53,6 +53,7 @@ module.exports = {
     AsyncLock: 'readonly',
     MOE_SKIN_GLOBAL_DATA_REF: 'readonly',
     libCachedCode: 'readonly',
+    html2canvas: 'readonly',
   },
   rules: {
     curly: 2,
