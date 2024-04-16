@@ -26,6 +26,15 @@ const postCssLoader = {
   },
 };
 
+const cssModuleLoader = {
+  loader: 'css-loader',
+  options: {
+    modules: {
+      localIdentName: 'beartools__[local]--[hash:base64:5]',
+    },
+  },
+};
+
 /** @type {(import('webpack').Configuration)} */
 module.exports = {
   entry,
@@ -72,6 +81,15 @@ module.exports = {
             use: [postCssLoader, 'less-loader'],
           },
           {
+            resourceQuery: /module/,
+            use: [
+              'style-loader',
+              cssModuleLoader,
+              postCssLoader,
+              'less-loader',
+            ],
+          },
+          {
             use: [
               'style-loader',
               'css-loader',
@@ -88,6 +106,14 @@ module.exports = {
             assert: { type: 'string' },
             type: 'asset/source', // css文件经过post-css处理后作为文本导入
             use: [postCssLoader],
+          },
+          {
+            resourceQuery: /module/,
+            use: [
+              'style-loader',
+              cssModuleLoader,
+              postCssLoader,
+            ],
           },
           {
             use: [

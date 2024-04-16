@@ -1,23 +1,3 @@
-declare module "*.css" {
-  const value: string;
-  export default value;
-}
-
-declare module "*.less" {
-  const value: string;
-  export default value;
-}
-
-declare module "*.svg" {
-  const value: string;
-  export default value;
-}
-
-declare module "*.html" {
-  const value: string;
-  export default value;
-}
-
 declare const moment: import('moment');
 
 /** 在页面右下方插入按钮 */
