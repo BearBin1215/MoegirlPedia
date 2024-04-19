@@ -4,7 +4,11 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
 const { VueLoaderPlugin } = require('vue-loader');
 
-const entry = glob.sync(process.env.gadgetname ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}` : './src/gadgets/**/index.{js,jsx,ts,tsx}', { nocase: true })
+const entry = glob.sync(
+  process.env.gadgetname
+    ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}`
+    : './src/gadgets/**/index.{js,jsx,ts,tsx}',
+  { nocase: true })
   .map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'))
