@@ -20,5 +20,11 @@ export { default as TextInput } from './TextInput';
 export { default as NumberInput } from './NumberInput';
 export { default as CheckboxInput } from './CheckboxInput';
 
+// 下拉选择框
+export { default as Option } from './Option';
+export { default as MenuOption } from './MenuOption';
+export { default as Select } from './Select';
+export { default as Dropdown } from './Dropdown';
+
 // Layout
 export { default as FieldLayout } from './FieldLayout';

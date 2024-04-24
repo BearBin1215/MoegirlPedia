@@ -15,5 +15,11 @@ export type { TextInputProps } from './TextInput';
 export type { NumberInputProps } from './NumberInput';
 export type { CheckboxInputProps } from './CheckboxInput';
 
+// 下拉选择框
+export type { OptionProps } from './Option';
+export type { MenuOptionProps } from './MenuOption';
+export type { SelectProps } from './Select';
+export type { DropdownProps } from './Dropdown';
+
 // Layout
 export type { FieldLayoutProps } from './FieldLayout';

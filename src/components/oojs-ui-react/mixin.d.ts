@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Indicator } from './utils';
 
 export interface AccessKeyElement {
@@ -7,7 +8,7 @@ export interface AccessKeyElement {
 
 export interface LabelElement {
   /** 标签文字 */
-  label?: string;
+  label?: ReactNode;
 }
 
 export interface IconElement {
