@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
@@ -37,6 +37,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue || '');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const labelRef = useRef<HTMLSpanElement>(null);
 
   const className = classNames(
     classes,
@@ -80,6 +82,13 @@ const TextInput: FunctionComponent<TextInputProps> = ({
     }
   };
 
+  useEffect(() => {
+    // ooui意义不明的设置，标签位置为before的时候input的内边距是用内联样式控制的
+    if (labelPosition === 'before' && inputRef.current && labelRef.current) {
+      inputRef.current.style.paddingLeft = `${labelRef.current.offsetWidth}px`;
+    }
+  }, [labelPosition]);
+
   return (
     <div
       {...rest}
@@ -97,11 +106,12 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         value={value}
         placeholder={placeholder}
         maxLength={maxLength}
+        ref={inputRef}
       />
       <span className={iconClassName} />
       <span className={indicatorClassName} />
       {label && (
-        <span className='oo-ui-labelElement-label'>{label}</span>
+        <span className='oo-ui-labelElement-label' ref={labelRef}>{label}</span>
       )}
     </div>
   );
