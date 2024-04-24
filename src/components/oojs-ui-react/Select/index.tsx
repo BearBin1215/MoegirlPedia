@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 
-export type SelectProps = Omit<WidgetProps<HTMLInputElement>, 'ref'>;
+export type SelectProps = Omit<WidgetProps<HTMLDivElement>, 'ref'>;
 
 const Select: FunctionComponent<SelectProps> = ({
   children,

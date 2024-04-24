@@ -5,10 +5,14 @@ import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
 export interface OptionProps extends
-  Omit<WidgetProps<HTMLInputElement>, 'ref'>,
+  Omit<WidgetProps<HTMLDivElement>, 'ref'>,
   AccessKeyElement {
 
+  /** 选项对应的数据 */
   data?: any;
+
+  /** 是否为已选中项 */
+  selected?: boolean;
 }
 
 const Option: FunctionComponent<OptionProps> = ({
@@ -16,6 +20,7 @@ const Option: FunctionComponent<OptionProps> = ({
   children,
   classes,
   disabled,
+  selected,
 }) => {
   const optionClassName = classNames(
     classes,
@@ -23,6 +28,7 @@ const Option: FunctionComponent<OptionProps> = ({
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     children && 'oo-ui-labelElement',
     'oo-ui-optionWidget',
+    selected && 'oo-ui-optionWidget-selected',
   );
 
   return (

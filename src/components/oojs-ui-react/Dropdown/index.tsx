@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
 import type { FunctionComponent } from 'react';
@@ -6,7 +6,7 @@ import type { WidgetProps, MenuOptionProps } from '../props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../mixin';
 
 export interface DropdownProps extends
-  WidgetProps<HTMLInputElement>,
+  WidgetProps<HTMLDivElement>,
   AccessKeyElement,
   IconElement,
   LabelElement {
@@ -20,9 +20,11 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   disabled,
   icon,
   label,
+  ref,
   ...rest
 }) => {
   const [optionsHidden, setOptionsHidden] = useState(true);
+  const dropdownRef = ref || useRef<HTMLDivElement>(null);
 
   const dropdownClassName = classNames(
     classes,
@@ -46,8 +48,27 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     optionsHidden && 'oo-ui-element-hidden',
   );
 
+  /** 点击页面其他地方时关闭下拉菜单 */
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setOptionsHidden(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className={dropdownClassName} {...rest}>
+    <div
+      {...rest}
+      className={dropdownClassName}
+      ref={dropdownRef}
+    >
       <span
         aria-expanded={false}
         className='oo-ui-dropdownWidget-handle'
