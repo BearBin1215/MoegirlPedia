@@ -37,6 +37,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   indicator,
   label,
   labelPosition,
+  readOnly,
+  required,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -95,6 +97,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         className='oo-ui-inputWidget-input'
         disabled={disabled}
         value={value}
+        readOnly={readOnly}
+        required={required}
         placeholder={placeholder}
         maxLength={maxLength}
         ref={inputRef}

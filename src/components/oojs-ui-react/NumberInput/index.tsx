@@ -43,16 +43,18 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   defaultValue,
   disabled,
   onChange,
-  placeholder,
   icon,
   indicator,
   label,
   labelPosition,
-  showButtons,
   min,
   max,
-  step = 1,
+  placeholder,
   precision,
+  readOnly,
+  required,
+  showButtons,
+  step = 1,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -129,6 +131,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           aria-disabled={!!disabled}
           className='oo-ui-inputWidget-input'
           disabled={disabled}
+          readOnly={readOnly}
+          required={required}
           value={value}
           placeholder={placeholder}
           min={min}

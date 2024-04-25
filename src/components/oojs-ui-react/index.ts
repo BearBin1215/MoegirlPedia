@@ -1,8 +1,3 @@
-/**
- * @author BearBin <https://github.com/BearBin1215>
- * @todo 改造各个输入框组件的ref
- */
-
 // 基础
 export { default as Element } from './Element';
 export { default as Widget } from './Widget';
@@ -24,6 +19,7 @@ export { default as CheckboxInput } from './CheckboxInput';
 // 下拉选择框
 export { default as Option } from './Option';
 export { default as MenuOption } from './MenuOption';
+export { default as MenuSectionOption } from './MenuSectionOption';
 export { default as Select } from './Select';
 export { default as Dropdown } from './Dropdown';
 

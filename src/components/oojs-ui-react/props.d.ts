@@ -19,6 +19,7 @@ export type { CheckboxInputProps } from './CheckboxInput';
 // 下拉选择框
 export type { OptionProps } from './Option';
 export type { MenuOptionProps } from './MenuOption';
+export type { MenuSectionOptionProps } from './MenuSectionOption';
 export type { SelectProps } from './Select';
 export type { DropdownProps } from './Dropdown';
 

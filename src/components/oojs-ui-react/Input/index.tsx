@@ -21,7 +21,13 @@ export interface InputProps<T extends string | number | boolean | undefined> ext
   /** 值变化回调函数 */
   onChange?: (data: InputChangeValue<T>) => void;
 
+  /** 是否只读 */
+  readOnly?: boolean;
+
   ref?: Ref<HTMLDivElement>;
+
+  /** 是否必填 */
+  required?: boolean;
 }
 
 const Input: FunctionComponent<InputProps<string | number>> = ({
@@ -32,6 +38,8 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
   disabled,
   onChange,
   placeholder,
+  readOnly,
+  required,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -69,6 +77,8 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
         disabled={disabled}
+        readOnly={readOnly}
+        required={required}
         value={value}
         placeholder={placeholder}
       />
