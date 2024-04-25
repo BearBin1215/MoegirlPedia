@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
 import type { LabelElement, IconElement, IndicatorElement } from '../mixin';
@@ -57,18 +59,6 @@ const TextInput: FunctionComponent<TextInputProps> = ({
     'oo-ui-textInputWidget-type-text',
   );
 
-  /** 左侧图标类 */
-  const iconClassName = classNames(
-    'oo-ui-iconElement-icon',
-    icon && `oo-ui-icon-${icon}`,
-  );
-
-  /** 右侧指示器类 */
-  const indicatorClassName = classNames(
-    'oo-ui-indicatorElement-indicator',
-    indicator && `oo-ui-indicator-${indicator}`,
-  );
-
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -108,8 +98,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         maxLength={maxLength}
         ref={inputRef}
       />
-      <span className={iconClassName} />
-      <span className={indicatorClassName} />
+      <IconBase icon={icon} />
+      <IndicatorBase indicator={indicator} />
       {label && (
         <span className='oo-ui-labelElement-label' ref={labelRef}>{label}</span>
       )}

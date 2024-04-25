@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import ButtonWidget from '../Button';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../mixin';
@@ -72,16 +74,6 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );
 
-  const iconClassName = classNames(
-    'oo-ui-iconElement-icon',
-    icon && `oo-ui-icon-${icon}`,
-  );
-
-  const indicatorClassName = classNames(
-    'oo-ui-indicatorElement-indicator',
-    indicator && `oo-ui-indicator-${indicator}`,
-  );
-
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = +event.target.value;
@@ -118,8 +110,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       className={className}
       aria-disabled={false}
     >
-      <span className={iconClassName} />
-      <span className={indicatorClassName} />
+      <IconBase icon={icon} />
+      <IndicatorBase indicator={indicator} />
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
           <ButtonWidget

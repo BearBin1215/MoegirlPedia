@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps, MenuOptionProps } from '../props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../mixin';
@@ -34,11 +36,6 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     'oo-ui-indicatorElement',
     label && 'oo-ui-labelElement',
     'oo-ui-dropdownWidget',
-  );
-
-  const iconClassName = classNames(
-    'oo-ui-iconElement-icon',
-    icon ? `oo-ui-icon-${icon}` : 'oo-ui-iconElement-noIcon',
   );
 
   const selectClasses = classNames(
@@ -77,7 +74,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         aria-haspopup
         onClick={() => setOptionsHidden(!optionsHidden)}
       >
-        <span className={iconClassName} />
+        <IconBase icon={icon} />
         <span
           className='oo-ui-labelElement-label'
           role='textbox'
@@ -85,7 +82,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         >
           {label}
         </span>
-        <span className='oo-ui-indicatorElement-indicator oo-ui-indicator-down' />
+        <IndicatorBase indicator='down' />
       </span>
       <Select classes={[selectClasses]}>
         {children}

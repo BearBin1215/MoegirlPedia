@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import type { FunctionComponent } from 'react';
 import type { OptionProps } from '../props';
 import type { IconElement, IndicatorElement } from '../mixin';
@@ -32,18 +34,6 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
     selected && 'oo-ui-optionWidget-selected',
   );
 
-  /** 左侧图标类 */
-  const iconClassName = classNames(
-    'oo-ui-iconElement-icon',
-    icon && `oo-ui-icon-${icon}`,
-  );
-
-  /** 右侧指示器类 */
-  const indicatorClassName = classNames(
-    'oo-ui-indicatorElement-indicator',
-    indicator && `oo-ui-indicator-${indicator}`,
-  );
-
   return (
     <div
       className={menuOptionClassName}
@@ -57,7 +47,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
       onMouseOver={() => setHighlighted(true)}
       onMouseOut={() => setHighlighted(false)}
     >
-      <span className={iconClassName} />
+      <IconBase icon={icon} />
       <span
         className='oo-ui-labelElement-label'
         role='textbox'
@@ -65,7 +55,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
       >
         {children}
       </span>
-      <span className={indicatorClassName} />
+      <IndicatorBase indicator={indicator} />
     </div>
   );
 };

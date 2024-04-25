@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import IconBase from './Base';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { IconFlag } from '../utils';
@@ -24,16 +25,15 @@ const Icon: FunctionComponent<IconProps> = ({
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-iconElement',
-    'oo-ui-iconElement-icon',
-    icon && `oo-ui-icon-${icon}`,
     (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag} oo-ui-image-${flag}`),
     'oo-ui-iconWidget',
   );
 
   return (
-    <span
+    <IconBase
       {...rest}
-      className={className}
+      classes={className}
+      icon={icon}
       aria-disabled={false}
     />
   );

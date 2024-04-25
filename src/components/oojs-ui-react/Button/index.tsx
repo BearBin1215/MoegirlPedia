@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { ButtonFlag } from '../utils';
@@ -51,6 +53,12 @@ const Button: FunctionComponent<ButtonProps> = ({
 }) => {
   const [pressed, setPressed] = useState(false);
 
+  const iconInvert = flags.includes('primary') || disabled || active;
+  const iconDestructive = !flags.includes('primary')
+    && flags.includes('destructive')
+    && !disabled
+    && !active;
+
   /** 根据参数生成按钮类 */
   const buttonClassName = classNames(
     classes,
@@ -67,20 +75,14 @@ const Button: FunctionComponent<ButtonProps> = ({
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  const indicatorClassName = classNames(
-    'oo-ui-indicatorElement-indicator',
-    indicator ? `oo-ui-indicator-${indicator}` : 'oo-ui-indicatorElement-noIndicator',
+  const indicatorClasses = classNames(
+    iconInvert && 'oo-ui-image-invert',
+    iconDestructive && 'oo-ui-image-destructive',
   );
 
-  const iconClassName = classNames(
-    'oo-ui-iconElement-icon',
-    icon ? `oo-ui-icon-${icon}` : 'oo-ui-iconElement-noIcon',
-    (flags.includes('primary') || disabled || active) && 'oo-ui-image-invert',
-    !flags.includes('primary') &&
-    flags.includes('destructive') &&
-    !disabled &&
-    !active &&
-    'oo-ui-image-destructive',
+  const iconClasses = classNames(
+    iconInvert && 'oo-ui-image-invert',
+    iconDestructive && 'oo-ui-image-destructive',
   );
 
   const anchorRel = rel ? rel.join(' ') : 'nofollow';
@@ -104,9 +106,9 @@ const Button: FunctionComponent<ButtonProps> = ({
         title={title}
         accessKey={accessKey}
       >
-        <span className={iconClassName} />
+        <IconBase icon={icon} classes={iconClasses} />
         <span className='oo-ui-labelElement-label'>{children}</span>
-        <span className={indicatorClassName} />
+        <IndicatorBase indicator={indicator} classes={indicatorClasses} />
       </a>
     </span>
   );
