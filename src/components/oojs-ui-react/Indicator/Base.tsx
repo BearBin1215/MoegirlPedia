@@ -3,7 +3,9 @@ import classNames from 'classnames';
 import type { HTMLAttributes, FunctionComponent } from 'react';
 import type { IndicatorElement } from '../mixin';
 
-export interface IndicatorBaseProps extends HTMLAttributes<HTMLDivElement>, IndicatorElement {
+export interface IndicatorBaseProps extends
+  Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
+  IndicatorElement {
   classes?: string | string[];
 }
 
@@ -18,7 +20,7 @@ const IndicatorBase: FunctionComponent<IndicatorBaseProps> = ({
     classes,
   );
 
-  return <span className={IndicatorClassName} {...rest} />;
+  return <span {...rest} className={IndicatorClassName} />;
 };
 
 export default IndicatorBase;

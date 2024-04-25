@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import Select from '../Select';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
-import type { FunctionComponent } from 'react';
-import type { WidgetProps, MenuOptionProps } from '../props';
+import type { FunctionComponent, MouseEventHandler } from 'react';
+import type { WidgetProps } from '../props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../mixin';
 
 export interface DropdownProps extends
@@ -12,8 +12,6 @@ export interface DropdownProps extends
   AccessKeyElement,
   IconElement,
   LabelElement {
-
-  items?: MenuOptionProps[];
 }
 
 const Dropdown: FunctionComponent<DropdownProps> = ({
@@ -52,6 +50,10 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     }
   }, []);
 
+  const handleSelect: MouseEventHandler<HTMLDivElement> = () => {
+    setOptionsHidden(true);
+  };
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
 
@@ -84,7 +86,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         </span>
         <IndicatorBase indicator='down' />
       </span>
-      <Select classes={[selectClasses]}>
+      <Select classes={[selectClasses]} onClick={handleSelect}>
         {children}
       </Select>
     </div>

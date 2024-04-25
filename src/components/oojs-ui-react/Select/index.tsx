@@ -9,6 +9,7 @@ const Select: FunctionComponent<SelectProps> = ({
   children,
   classes,
   disabled,
+  ...rest
 }) => {
   const [pressed, setPressed] = useState(false);
 
@@ -24,6 +25,7 @@ const Select: FunctionComponent<SelectProps> = ({
 
   return (
     <div
+      {...rest}
       className={selectClassName}
       aria-disabled={false}
       tabIndex={-1}
