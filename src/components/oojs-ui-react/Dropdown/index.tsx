@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import Select from '../Select';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent, MouseEventHandler } from 'react';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../mixin';
@@ -79,13 +80,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         onClick={() => setOpen(!open)}
       >
         <IconBase icon={icon} />
-        <span
-          className='oo-ui-labelElement-label'
-          role='textbox'
-          aria-readonly
-        >
-          {label}
-        </span>
+        <LabelBase role='textbox' aria-readonly>{label}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
       <Select classes={[selectClasses]} onClick={handleSelect}>

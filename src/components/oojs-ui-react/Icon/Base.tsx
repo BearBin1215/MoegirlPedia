@@ -6,6 +6,7 @@ import type { IconElement } from '../mixin';
 export interface IconBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
   IconElement {
+
   classes?: string | string[];
 }
 

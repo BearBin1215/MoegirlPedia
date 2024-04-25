@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
 import type { LabelElement, IconElement, IndicatorElement } from '../mixin';
@@ -101,7 +102,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator} />
       {label && (
-        <span className='oo-ui-labelElement-label' ref={labelRef}>{label}</span>
+        <LabelBase ref={labelRef}>{label}</LabelBase>
       )}
     </div>
   );

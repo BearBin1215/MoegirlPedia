@@ -1,6 +1,7 @@
 // 基础
 export type { ElementProps } from './Element';
 export type { WidgetProps } from './Widget';
+export type { LabelProps } from './Label';
 
 // 图标
 export type { IconProps } from './Icon';
@@ -21,5 +22,5 @@ export type { MenuOptionProps } from './MenuOption';
 export type { SelectProps } from './Select';
 export type { DropdownProps } from './Dropdown';
 
-// Layout
+// 布局
 export type { FieldLayoutProps } from './FieldLayout';

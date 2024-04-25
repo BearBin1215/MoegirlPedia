@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
@@ -42,7 +43,7 @@ const Option: FunctionComponent<OptionProps> = ({
       role='option'
       aria-selected={false}
     >
-      <span className='oo-ui-labelElement-label'>{children}</span>
+      <LabelBase>{children}</LabelBase>
     </div>
   );
 };

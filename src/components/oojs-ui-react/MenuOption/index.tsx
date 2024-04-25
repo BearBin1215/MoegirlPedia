@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent } from 'react';
 import type { OptionProps } from '../props';
 import type { IconElement, IndicatorElement } from '../mixin';
@@ -77,13 +78,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
       onMouseOut={handleMouseOut}
     >
       <IconBase icon={icon} />
-      <span
-        className='oo-ui-labelElement-label'
-        role='textbox'
-        aria-readonly
-      >
-        {children}
-      </span>
+      <LabelBase role='textbox' aria-readonly>{children}</LabelBase>
       <IndicatorBase indicator={indicator} />
     </div>
   );

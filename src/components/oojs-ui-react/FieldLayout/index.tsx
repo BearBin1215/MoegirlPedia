@@ -4,6 +4,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import LabelBase from '../Label/Base';
 import type { ReactNode, FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { LabelElement } from '../mixin';
@@ -35,7 +36,7 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
 
   const layoutHeader = (
     <span className='oo-ui-fieldLayout-header'>
-      <label className='oo-ui-labelElement-label'>{label}</label>
+      <LabelBase>{label}</LabelBase>
     </span>
   );
 

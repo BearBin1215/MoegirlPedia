@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { ButtonFlag } from '../utils';
@@ -121,7 +122,7 @@ const Button: FunctionComponent<ButtonProps> = ({
         accessKey={accessKey}
       >
         <IconBase icon={icon} classes={iconClasses} />
-        <span className='oo-ui-labelElement-label'>{children}</span>
+        <LabelBase>{children}</LabelBase>
         <IndicatorBase indicator={indicator} classes={indicatorClasses} />
       </a>
     </span>

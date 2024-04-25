@@ -6,6 +6,7 @@
 // 基础
 export { default as Element } from './Element';
 export { default as Widget } from './Widget';
+export { default as Label } from './Label';
 
 // 图标
 export { default as Icon } from './Icon';
@@ -26,5 +27,5 @@ export { default as MenuOption } from './MenuOption';
 export { default as Select } from './Select';
 export { default as Dropdown } from './Dropdown';
 
-// Layout
+// 布局
 export { default as FieldLayout } from './FieldLayout';

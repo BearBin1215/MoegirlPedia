@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import ButtonWidget from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
+import LabelBase from '../Label/Base';
 import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../mixin';
@@ -144,9 +145,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           />
         )}
       </div>
-      {label && (
-        <span className='oo-ui-labelElement-label'>{label}</span>
-      )}
+      {label && <LabelBase>{label}</LabelBase>}
     </div>
   );
 };
