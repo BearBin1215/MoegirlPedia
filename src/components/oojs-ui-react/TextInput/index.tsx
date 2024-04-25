@@ -19,6 +19,9 @@ export interface TextInputProps extends
 
   /** 标签位置 */
   labelPosition?: LabelPosition;
+
+  /** 是否只读 */
+  readOnly?: boolean;
 }
 
 /**

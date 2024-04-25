@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import IconWidget from '../Icon';
-import type { Ref, FunctionComponent, ChangeEvent } from 'react';
+import type { RefObject, FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
@@ -9,7 +9,7 @@ export interface CheckboxInputProps extends
   Omit<InputProps<boolean>, 'placeholder' | 'ref'>,
   AccessKeyElement {
 
-  ref?: Ref<HTMLSpanElement>;
+  ref?: RefObject<HTMLSpanElement>;
 }
 
 const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
