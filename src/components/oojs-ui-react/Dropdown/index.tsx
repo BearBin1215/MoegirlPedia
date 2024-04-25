@@ -23,7 +23,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   ref,
   ...rest
 }) => {
-  const [optionsHidden, setOptionsHidden] = useState(true);
+  const [open, setOpen] = useState(false);
   const dropdownRef = ref || useRef<HTMLDivElement>(null);
 
   const dropdownClassName = classNames(
@@ -34,24 +34,25 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     'oo-ui-indicatorElement',
     label && 'oo-ui-labelElement',
     'oo-ui-dropdownWidget',
+    open && 'oo-ui-dropdownWidget-open',
   );
 
   const selectClasses = classNames(
     'oo-ui-clippableElement-clippable',
     'oo-ui-floatableElement-floatable',
     'oo-ui-menuSelectWidget',
-    optionsHidden && 'oo-ui-element-hidden',
+    !open && 'oo-ui-element-hidden',
   );
 
   /** 点击页面其他地方时关闭下拉菜单 */
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setOptionsHidden(true);
+      setOpen(false);
     }
   }, []);
 
   const handleSelect: MouseEventHandler<HTMLDivElement> = () => {
-    setOptionsHidden(true);
+    setOpen(true);
   };
 
   useEffect(() => {
@@ -69,12 +70,13 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       ref={dropdownRef}
     >
       <span
-        aria-expanded={false}
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
         className='oo-ui-dropdownWidget-handle'
         role='combobox'
         aria-autocomplete='list'
-        aria-haspopup
-        onClick={() => setOptionsHidden(!optionsHidden)}
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
       >
         <IconBase icon={icon} />
         <span

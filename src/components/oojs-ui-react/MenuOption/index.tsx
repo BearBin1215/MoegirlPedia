@@ -34,6 +34,35 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
     selected && 'oo-ui-optionWidget-selected',
   );
 
+  /** 按住鼠标 */
+  const handlePress = () => {
+    if (!disabled) {
+      setPressed(true);
+    }
+  };
+
+  /** 松开或移出 */
+  const handleUnpress = () => {
+    if (!disabled) {
+      setPressed(false);
+    }
+  };
+
+  /** 鼠标悬浮 */
+  const handleMouseOver = () => {
+    if (!disabled) {
+      setHighlighted(true);
+    }
+  };
+
+  /** 鼠标移出 */
+  const handleMouseOut = () => {
+    if (!disabled) {
+      setHighlighted(false);
+      setPressed(false);
+    }
+  };
+
   return (
     <div
       className={menuOptionClassName}
@@ -41,11 +70,11 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
       tabIndex={-1}
       role='option'
       aria-selected={false}
-      onMouseUp={() => setPressed(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseLeave={() => setPressed(false)}
-      onMouseOver={() => setHighlighted(true)}
-      onMouseOut={() => setHighlighted(false)}
+      onMouseUp={handleUnpress}
+      onMouseDown={handlePress}
+      onMouseLeave={handleUnpress}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
     >
       <IconBase icon={icon} />
       <span

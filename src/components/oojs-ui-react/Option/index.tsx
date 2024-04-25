@@ -4,16 +4,18 @@ import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
-export interface OptionProps extends
-  Omit<WidgetProps<HTMLDivElement>, 'ref'>,
-  AccessKeyElement {
-
+export interface OptionData {
   /** 选项对应的数据 */
   data?: any;
 
   /** 是否为已选中项 */
   selected?: boolean;
 }
+
+export interface OptionProps extends
+  Omit<WidgetProps<HTMLDivElement>, 'ref'>,
+  AccessKeyElement,
+  OptionData { }
 
 const Option: FunctionComponent<OptionProps> = ({
   accessKey,

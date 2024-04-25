@@ -87,13 +87,27 @@ const Button: FunctionComponent<ButtonProps> = ({
 
   const anchorRel = rel ? rel.join(' ') : 'nofollow';
 
+  /** 按住鼠标 */
+  const handlePress = () => {
+    if (!disabled) {
+      setPressed(true);
+    }
+  };
+
+  /** 松开或移出 */
+  const handleUnpress = () => {
+    if (!disabled) {
+      setPressed(false);
+    }
+  };
+
   return (
     <span
       {...rest}
       className={buttonClassName}
-      onMouseUp={() => setPressed(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseLeave={() => setPressed(false)}
+      onMouseUp={handleUnpress}
+      onMouseDown={handlePress}
+      onMouseLeave={handleUnpress}
       aria-disabled={false}
     >
       {text}
