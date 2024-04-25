@@ -17,10 +17,7 @@ const LabelBase: FunctionComponent<LabelBaseProps> = ({
   children,
   ...rest
 }) => {
-  const className = classNames(
-    'oo-ui-labelElement-label',
-    classes,
-  );
+  const className = classNames('oo-ui-labelElement-label', classes);
 
   return (
     <span

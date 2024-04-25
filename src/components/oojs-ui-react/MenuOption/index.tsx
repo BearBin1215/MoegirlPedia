@@ -67,7 +67,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
   return (
     <div
       className={menuOptionClassName}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'
       aria-selected={false}

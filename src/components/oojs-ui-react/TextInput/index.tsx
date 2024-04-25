@@ -84,7 +84,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
     <div
       {...rest}
       className={className}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
     >
       <input
         type='text'
@@ -101,9 +101,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
       />
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator} />
-      {label && (
-        <LabelBase ref={labelRef}>{label}</LabelBase>
-      )}
+      {label && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );
 };

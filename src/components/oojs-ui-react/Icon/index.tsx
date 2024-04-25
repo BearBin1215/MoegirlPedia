@@ -34,7 +34,7 @@ const Icon: FunctionComponent<IconProps> = ({
       {...rest}
       classes={className}
       icon={icon}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
     />
   );
 };

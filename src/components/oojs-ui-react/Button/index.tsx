@@ -109,7 +109,7 @@ const Button: FunctionComponent<ButtonProps> = ({
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
     >
       {text}
       <a

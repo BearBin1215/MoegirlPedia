@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import ButtonWidget from '../Button';
+import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -109,14 +109,14 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     <div
       {...rest}
       className={className}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
     >
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator} />
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
-          <ButtonWidget
-            classes={['oo-ui-numberInputWidget-minusButton']}
+          <Button
+            classes='oo-ui-numberInputWidget-minusButton'
             icon='subtract'
             onClick={handleMinus}
           />
@@ -138,8 +138,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           onBlur={handleBlur}
         />
         {showButtons && (
-          <ButtonWidget
-            classes={['oo-ui-numberInputWidget-plusButton']}
+          <Button
+            classes='oo-ui-numberInputWidget-plusButton'
             icon='add'
             onClick={handlePlus}
           />

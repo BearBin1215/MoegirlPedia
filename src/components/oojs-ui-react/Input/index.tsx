@@ -59,7 +59,7 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
     <div
       {...rest}
       className={className}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
     >
       <input
         accessKey={accessKey}

@@ -72,7 +72,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     >
       <span
         tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled}
+        aria-disabled={!!disabled}
         className='oo-ui-dropdownWidget-handle'
         role='combobox'
         aria-autocomplete='list'
@@ -83,7 +83,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         <LabelBase role='textbox' aria-readonly>{label}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <Select classes={[selectClasses]} onClick={handleSelect}>
+      <Select classes={selectClasses} onClick={handleSelect}>
         {children}
       </Select>
     </div>

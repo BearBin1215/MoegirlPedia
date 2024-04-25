@@ -27,7 +27,7 @@ const Select: FunctionComponent<SelectProps> = ({
     <div
       {...rest}
       className={selectClassName}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'
       aria-selected={false}

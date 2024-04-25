@@ -48,14 +48,14 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
     <span
       {...rest}
       className={widgetClassName}
-      aria-disabled={disabled}
+      aria-disabled={!!disabled}
     >
       <input
         name={name}
         type='checkbox'
         tabIndex={disabled ? -1 : 0}
         accessKey={accessKey}
-        aria-disabled={disabled}
+        aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
         checked={value}
         disabled={disabled}

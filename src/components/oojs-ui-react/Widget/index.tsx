@@ -22,6 +22,7 @@ const Widget: FunctionComponent<WidgetProps<HTMLDivElement>> = ({
     <div
       {...rest}
       className={className}
+      aria-disabled={!!disabled}
     >
       {children}
     </div>

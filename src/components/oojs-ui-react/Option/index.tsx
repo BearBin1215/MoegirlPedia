@@ -37,7 +37,7 @@ const Option: FunctionComponent<OptionProps> = ({
   return (
     <div
       className={optionClassName}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
       accessKey={accessKey}
       tabIndex={-1}
       role='option'
