@@ -4,11 +4,8 @@ import type { HTMLAttributes, FunctionComponent } from 'react';
 import type { IconElement } from '../mixin';
 
 export interface IconBaseProps extends
-  Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
-  IconElement {
-
-  className?: string;
-}
+  HTMLAttributes<HTMLSpanElement>,
+  IconElement { }
 
 const IconBase: FunctionComponent<IconBaseProps> = ({
   className,

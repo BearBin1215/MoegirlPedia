@@ -25,7 +25,7 @@ export interface DropdownProps extends
 }
 
 const Dropdown: FunctionComponent<DropdownProps> = ({
-  className: className,
+  className,
   children,
   defaultValue,
   disabled,

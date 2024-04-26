@@ -4,10 +4,8 @@ import type { HTMLAttributes, FunctionComponent } from 'react';
 import type { IndicatorElement } from '../mixin';
 
 export interface IndicatorBaseProps extends
-  Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
-  IndicatorElement {
-  className?: string;
-}
+  HTMLAttributes<HTMLSpanElement>,
+  IndicatorElement { }
 
 const IndicatorBase: FunctionComponent<IndicatorBaseProps> = ({
   className,

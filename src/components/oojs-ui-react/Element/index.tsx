@@ -11,7 +11,6 @@ export interface ElementProps<T> {
 
   onClick?: MouseEventHandler<T>;
 
-  /** 要加入到组件class属性后的其他属性 */
   className?: string;
 
   style?: CSSProperties;
