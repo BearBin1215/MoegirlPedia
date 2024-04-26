@@ -28,7 +28,7 @@ const Indicator: FunctionComponent<IndicatorProps> = ({
     <span
       {...rest}
       className={classes}
-      aria-disabled
+      aria-disabled={!!disabled}
     />
   );
 };

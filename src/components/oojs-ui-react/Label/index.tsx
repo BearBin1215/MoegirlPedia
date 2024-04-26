@@ -26,7 +26,7 @@ const Label: FunctionComponent<LabelProps> = ({
   return (
     <LabelBase
       className={classes}
-      aria-disabled={disabled}
+      aria-disabled={!!disabled}
       {...rest}
     >
       {children}

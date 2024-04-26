@@ -36,7 +36,7 @@ const MenuSectionOption: FunctionComponent<MenuSectionOptionProps> = ({
     <div
       {...rest}
       className={classes}
-      aria-disabled={false}
+      aria-disabled={!!disabled}
       tabIndex={-1}
     >
       <IconBase icon={icon} />

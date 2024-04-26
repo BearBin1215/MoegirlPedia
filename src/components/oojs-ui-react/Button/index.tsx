@@ -27,7 +27,7 @@ export interface ButtonProps extends
   href?: string;
 
   /** 内部<a>标签的rel属性列表 */
-  rel?: string[];
+  rel?: string;
 
   /** 要插入文本 */
   text?: string;
@@ -47,7 +47,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   href,
   icon,
   indicator,
-  rel = [],
+  rel = 'nofollow',
   text,
   title,
   ...rest
@@ -86,8 +86,6 @@ const Button: FunctionComponent<ButtonProps> = ({
     iconDestructive && 'oo-ui-image-destructive',
   );
 
-  const anchorRel = rel ? rel.join(' ') : 'nofollow';
-
   /** 按住鼠标 */
   const handlePress = () => {
     if (!disabled) {
@@ -117,7 +115,7 @@ const Button: FunctionComponent<ButtonProps> = ({
         role='button'
         tabIndex={0}
         href={href}
-        rel={anchorRel}
+        rel={rel}
         title={title}
         accessKey={accessKey}
       >
