@@ -8,13 +8,14 @@ export type LabelPosition = 'before' | 'after';
 
 export type Indicator = 'clear' | 'up' | 'down' | 'required';
 
-/** 输入框组件change钩子参数 */
-export interface InputChangeValue<T> {
+/** 组件change钩子参数 */
+export interface ChangeValue<T = any, P = HTMLElement> {
   value: T;
 
   oldValue?: T;
 
-  event: ChangeEvent<HTMLInputElement>;
+  event?: ChangeEvent<P>;
 }
 
-export type InputChangeHandler = (change: InputChangeValue) => void;
+/** 组件值变化钩子函数 */
+export type ChangeHandler<T = any, P = HTMLElement> = (change: ChangeValue<T, P>) => void;

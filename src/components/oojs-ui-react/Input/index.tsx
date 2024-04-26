@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import type { FunctionComponent, ChangeEvent, Ref } from 'react';
-import type { InputChangeValue } from '../utils';
+import type { ChangeHandler } from '../utils';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
@@ -19,7 +19,7 @@ export interface InputProps<T extends string | number | boolean | undefined> ext
   defaultValue?: T;
 
   /** 值变化回调函数 */
-  onChange?: (data: InputChangeValue<T>) => void;
+  onChange?: ChangeHandler<T, HTMLInputElement>;
 
   ref?: Ref<HTMLDivElement>;
 

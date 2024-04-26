@@ -18,6 +18,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
   icon,
   indicator,
   selected,
+  ...rest
 }) => {
   const [pressed, setPressed] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
@@ -66,6 +67,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
 
   return (
     <div
+      {...rest}
       className={menuOptionClassName}
       aria-disabled={!!disabled}
       tabIndex={-1}

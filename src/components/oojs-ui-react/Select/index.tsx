@@ -1,20 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
-import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
+import MenuOption from '../MenuOption';
+import type { FunctionComponent, MouseEventHandler, ReactElement } from 'react';
+import type { WidgetProps, MenuOptionProps, MenuSectionOptionProps } from '../props';
+import type { OptionData } from '../Option';
 
-export type SelectProps = Omit<WidgetProps<HTMLDivElement>, 'ref'>;
+export type OptionElement = ReactElement<MenuOptionProps | MenuSectionOptionProps>;
+
+export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'ref'> {
+  /** 选中选项回调函数 */
+  onSelect?: (option: OptionData) => void;
+
+  /** 当前值 */
+  value?: any;
+
+  /** 由`MenuOption`或`MenuSectionOption`组成的子元素 */
+  children?: OptionElement | OptionElement[];
+}
 
 const Select: FunctionComponent<SelectProps> = ({
   children,
   classes,
   disabled,
+  onSelect,
+  value,
   ...rest
 }) => {
   const [pressed, setPressed] = useState(false);
 
-  const childrens = Array.isArray(children) ? children : [children]; // 确保子组件为数组
-  const selectClassName = classNames(
+  const options = useMemo(() => {
+    let optionElements: OptionElement[] = [];
+    if (children) {
+      optionElements = Array.isArray(children) ? children : [children]; // 确保子组件为数组
+    }
+    return optionElements;
+  }, [children, value]);
+
+  const className = classNames(
     classes,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
@@ -22,11 +44,10 @@ const Select: FunctionComponent<SelectProps> = ({
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-depressed',
   );
 
-
   return (
     <div
       {...rest}
-      className={selectClassName}
+      className={className}
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'
@@ -35,7 +56,26 @@ const Select: FunctionComponent<SelectProps> = ({
       onMouseDown={() => setPressed(true)}
       onMouseLeave={() => setPressed(false)}
     >
-      {childrens}
+      {options.map((option) => {
+        if (!('data' in option.props)) {
+          return option;
+        }
+        const handleClick: MouseEventHandler<HTMLDivElement> = () => {
+          if (onSelect && !option.props.disabled) {
+            onSelect(option.props as OptionData);
+          }
+        };
+        return (
+          <MenuOption
+            {...option.props}
+            key={option.props.data}
+            onClick={handleClick}
+            selected={value === option.props.data}
+          >
+            {option.props.children}
+          </MenuOption>
+        );
+      })}
     </div>
   );
 };

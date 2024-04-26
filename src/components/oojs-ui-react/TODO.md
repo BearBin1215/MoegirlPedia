@@ -6,13 +6,20 @@
 
 ## 优先实现
 
-- [ ] 下拉框选择（Dropdown）
+- [x] 图标（Icon、Indicator）
+- [x] 按钮（Button）
+- [x] 文本输入框（TextInput）
+- [x] 数字输入框（NumberInput）
+- [x] 勾选框（CheckboxInput）
+- [x] 下拉框选择（Dropdown）
 - [ ] 多行输入框（MultilineTextInputWidget）
 - [ ] 单选框（RadioSelect）
-- [ ] 滑动（ToggleSwitch）
 - [ ] 弹窗（Dialog）
 
 ## 低优先度实现
 
+- [ ] 滑动（ToggleSwitch）
 - [ ] Tab
 - [ ] 备选项输入框（ComboBox）
+
+其他布局类组件

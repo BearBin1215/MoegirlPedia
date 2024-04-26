@@ -1,13 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
-import type { FunctionComponent } from 'react';
+import type { ReactNode, FunctionComponent } from 'react';
 import type { WidgetProps } from '../props';
 import type { AccessKeyElement } from '../mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
-  data?: any;
+  data: any;
+
+  /** 选项文本 */
+  children?: ReactNode;
 
   /** 是否为已选中项 */
   selected?: boolean;
