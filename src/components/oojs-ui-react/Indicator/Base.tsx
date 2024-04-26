@@ -6,18 +6,18 @@ import type { IndicatorElement } from '../mixin';
 export interface IndicatorBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
   IndicatorElement {
-  classes?: string | string[];
+  className?: string;
 }
 
 const IndicatorBase: FunctionComponent<IndicatorBaseProps> = ({
-  classes,
+  className,
   indicator,
   ...rest
 }) => {
   const IndicatorClassName = classNames(
     'oo-ui-indicatorElement-indicator',
     indicator && `oo-ui-indicator-${indicator}`,
-    classes,
+    className,
   );
 
   return <span {...rest} className={IndicatorClassName} />;

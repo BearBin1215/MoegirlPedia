@@ -9,19 +9,19 @@ export interface WidgetProps<T> extends ElementProps<T> {
 
 const Widget: FunctionComponent<WidgetProps<HTMLDivElement>> = ({
   children,
-  classes,
+  className,
   disabled,
   ...rest
 }) => {
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
   );
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={!!disabled}
     >
       {children}

@@ -30,7 +30,7 @@ export interface TextInputProps extends
  */
 const TextInput: FunctionComponent<TextInputProps> = ({
   name,
-  classes,
+  className,
   defaultValue,
   disabled,
   onChange,
@@ -48,8 +48,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
 
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
@@ -88,7 +88,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={!!disabled}
     >
       <input

@@ -22,12 +22,12 @@ export interface FieldLayoutProps extends
 const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
   align = 'left',
   children,
-  classes,
+  className,
   label,
   ...rest
 }) => {
   const layoutClassName = classNames(
-    classes,
+    className,
     'oo-ui-layout',
     label && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',

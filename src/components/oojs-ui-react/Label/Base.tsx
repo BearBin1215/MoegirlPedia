@@ -7,21 +7,21 @@ export interface LabelBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
   LabelElement {
 
-  classes?: string | string[];
+  className?: string;
 
   ref?: RefObject<HTMLSpanElement>;
 }
 
 const LabelBase: FunctionComponent<LabelBaseProps> = ({
-  classes,
+  className,
   children,
   ...rest
 }) => {
-  const className = classNames('oo-ui-labelElement-label', classes);
+  const classes = classNames('oo-ui-labelElement-label', className);
 
   return (
     <span
-      className={className}
+      className={classes}
       {...rest}
     >
       {children}

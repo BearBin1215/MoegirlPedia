@@ -15,13 +15,13 @@ export interface IconProps extends
 
 const Icon: FunctionComponent<IconProps> = ({
   icon,
-  classes,
+  className,
   disabled,
   flags = [],
   ...rest
 }) => {
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-iconElement',
@@ -32,7 +32,7 @@ const Icon: FunctionComponent<IconProps> = ({
   return (
     <IconBase
       {...rest}
-      classes={className}
+      className={classes}
       icon={icon}
       aria-disabled={!!disabled}
     />

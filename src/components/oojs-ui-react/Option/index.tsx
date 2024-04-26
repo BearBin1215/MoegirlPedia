@@ -24,12 +24,12 @@ export interface OptionProps extends
 const Option: FunctionComponent<OptionProps> = ({
   accessKey,
   children,
-  classes,
+  className,
   disabled,
   selected,
 }) => {
   const optionClassName = classNames(
-    classes,
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     children && 'oo-ui-labelElement',

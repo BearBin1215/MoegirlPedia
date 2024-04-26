@@ -10,12 +10,12 @@ export interface IndicatorProps extends
 
 const Indicator: FunctionComponent<IndicatorProps> = ({
   indicator,
-  classes,
+  className,
   disabled,
   ...rest
 }) => {
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-indicatorElement',
@@ -27,7 +27,7 @@ const Indicator: FunctionComponent<IndicatorProps> = ({
   return (
     <span
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled
     />
   );

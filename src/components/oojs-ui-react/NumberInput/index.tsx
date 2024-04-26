@@ -42,7 +42,7 @@ export interface NumberInputProps extends
 const NumberInput: FunctionComponent<NumberInputProps> = ({
   name,
   accessKey,
-  classes,
+  className,
   defaultValue,
   disabled,
   onChange,
@@ -62,8 +62,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
 
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
@@ -113,7 +113,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={!!disabled}
     >
       <IconBase icon={icon} />
@@ -121,7 +121,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
           <Button
-            classes='oo-ui-numberInputWidget-minusButton'
+            className='oo-ui-numberInputWidget-minusButton'
             icon='subtract'
             onClick={handleMinus}
           />
@@ -146,7 +146,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
         />
         {showButtons && (
           <Button
-            classes='oo-ui-numberInputWidget-plusButton'
+            className='oo-ui-numberInputWidget-plusButton'
             icon='add'
             onClick={handlePlus}
           />

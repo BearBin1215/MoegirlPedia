@@ -15,7 +15,7 @@ export interface CheckboxInputProps extends
 const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
   name,
   accessKey,
-  classes,
+  className,
   defaultValue = false,
   disabled,
   onChange,
@@ -24,7 +24,7 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
   const [value, setValue] = useState(defaultValue);
 
   const widgetClassName = classNames(
-    classes,
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
@@ -63,10 +63,7 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
       />
       <IconWidget
         icon='check'
-        classes={[
-          'oo-ui-labelElement-invisible',
-          'oo-ui-image-invert',
-        ]}
+        className='oo-ui-labelElement-invisible oo-ui-image-invert'
       />
     </span>
   );

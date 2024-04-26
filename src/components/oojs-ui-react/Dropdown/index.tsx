@@ -25,7 +25,7 @@ export interface DropdownProps extends
 }
 
 const Dropdown: FunctionComponent<DropdownProps> = ({
-  classes,
+  className: className,
   children,
   defaultValue,
   disabled,
@@ -48,7 +48,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   }, [children, value]);
 
   const dropdownClassName = classNames(
-    classes,
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     icon && 'oo-ui-iconElement',
@@ -58,7 +58,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     open && 'oo-ui-dropdownWidget-open',
   );
 
-  const selectClasses = classNames(
+  const selectClassName = classNames(
     'oo-ui-clippableElement-clippable',
     'oo-ui-floatableElement-floatable',
     'oo-ui-menuSelectWidget',
@@ -118,7 +118,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <Select classes={selectClasses} onSelect={handleSelect} value={value}>
+      <Select className={selectClassName} onSelect={handleSelect} value={value}>
         {children}
       </Select>
     </div>

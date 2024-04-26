@@ -14,14 +14,14 @@ export interface MenuSectionOptionProps extends
 
 const MenuSectionOption: FunctionComponent<MenuSectionOptionProps> = ({
   children,
-  classes,
+  className,
   disabled,
   icon,
   indicator,
   ...rest
 }) => {
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     children && 'oo-ui-labelElement',
@@ -35,7 +35,7 @@ const MenuSectionOption: FunctionComponent<MenuSectionOptionProps> = ({
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={false}
       tabIndex={-1}
     >

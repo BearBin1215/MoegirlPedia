@@ -20,7 +20,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'ref'> {
 
 const Select: FunctionComponent<SelectProps> = ({
   children,
-  classes,
+  className,
   disabled,
   onSelect,
   value,
@@ -36,8 +36,8 @@ const Select: FunctionComponent<SelectProps> = ({
     return optionElements;
   }, [children, value]);
 
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-selectWidget',
@@ -47,7 +47,7 @@ const Select: FunctionComponent<SelectProps> = ({
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'

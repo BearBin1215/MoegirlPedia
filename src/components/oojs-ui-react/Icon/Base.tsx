@@ -7,18 +7,18 @@ export interface IconBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
   IconElement {
 
-  classes?: string | string[];
+  className?: string;
 }
 
 const IconBase: FunctionComponent<IconBaseProps> = ({
-  classes,
+  className,
   icon,
   ...rest
 }) => {
   const iconClassName = classNames(
     'oo-ui-iconElement-icon',
     icon && `oo-ui-icon-${icon}`,
-    classes,
+    className,
   );
 
   return <span {...rest} className={iconClassName} />;

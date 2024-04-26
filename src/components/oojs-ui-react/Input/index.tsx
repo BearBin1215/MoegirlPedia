@@ -30,7 +30,7 @@ export interface InputProps<T extends string | number | boolean | undefined> ext
 const Input: FunctionComponent<InputProps<string | number>> = ({
   accessKey,
   name,
-  classes,
+  className,
   defaultValue,
   disabled,
   onChange,
@@ -40,8 +40,8 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
 
-  const className = classNames(
-    classes,
+  const classes = classNames(
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-inputWidget',
@@ -62,7 +62,7 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
   return (
     <div
       {...rest}
-      className={className}
+      className={classes}
       aria-disabled={!!disabled}
     >
       <input

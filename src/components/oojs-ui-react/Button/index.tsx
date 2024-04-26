@@ -40,7 +40,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   active,
   accessKey,
   children,
-  classes,
+  className,
   disabled,
   framed = true,
   flags = [],
@@ -62,7 +62,7 @@ const Button: FunctionComponent<ButtonProps> = ({
 
   /** 根据参数生成按钮类 */
   const buttonClassName = classNames(
-    classes,
+    className,
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-buttonElement',
@@ -76,12 +76,12 @@ const Button: FunctionComponent<ButtonProps> = ({
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  const indicatorClasses = classNames(
+  const indicatorClassName = classNames(
     iconInvert && 'oo-ui-image-invert',
     iconDestructive && 'oo-ui-image-destructive',
   );
 
-  const iconClasses = classNames(
+  const iconClassName = classNames(
     iconInvert && 'oo-ui-image-invert',
     iconDestructive && 'oo-ui-image-destructive',
   );
@@ -121,9 +121,9 @@ const Button: FunctionComponent<ButtonProps> = ({
         title={title}
         accessKey={accessKey}
       >
-        <IconBase icon={icon} classes={iconClasses} />
+        <IconBase icon={icon} className={iconClassName} />
         <LabelBase>{children}</LabelBase>
-        <IndicatorBase indicator={indicator} classes={indicatorClasses} />
+        <IndicatorBase indicator={indicator} className={indicatorClassName} />
       </a>
     </span>
   );

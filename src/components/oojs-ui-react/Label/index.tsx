@@ -10,22 +10,22 @@ export interface LabelProps extends
   LabelElement { }
 
 const Label: FunctionComponent<LabelProps> = ({
-  classes,
+  className,
   children,
   disabled,
   ...rest
 }) => {
-  const className = classNames(
+  const classes = classNames(
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     'oo-ui-labelElement',
     'oo-ui-labelWidget',
-    classes,
+    className,
   );
 
   return (
     <LabelBase
-      classes={className}
+      className={classes}
       aria-disabled={disabled}
       {...rest}
     >
