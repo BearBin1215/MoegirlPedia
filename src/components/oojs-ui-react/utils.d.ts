@@ -18,4 +18,4 @@ export interface ChangeValue<T = any, P = HTMLElement> {
 }
 
 /** 组件值变化钩子函数 */
-export type ChangeHandler<T = any, P = HTMLElement> = (change: ChangeValue<T, P>) => void;
+export type ChangeHandler<T = any, P = HTMLElement> = (change?: ChangeValue<T, P>) => void;
