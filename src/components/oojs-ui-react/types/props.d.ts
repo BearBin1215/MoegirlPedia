@@ -15,6 +15,12 @@ export type { InputProps } from '../Input';
 export type { TextInputProps } from '../TextInput';
 export type { NumberInputProps } from '../NumberInput';
 export type { MultilineTextInputProps } from './MultilineTextInput';
+
+// 单选框
+export type { RadioInputProps } from './RadioInput';
+export type { RadioOptionProps } from './RadioOption';
+
+// 复选框
 export type { CheckboxInputProps } from '../CheckboxInput';
 
 // 下拉选择框

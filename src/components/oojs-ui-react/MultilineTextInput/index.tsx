@@ -92,7 +92,7 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
 
     /** 最小高度 */
     const minRows = rows === undefined ? '' : String(rows);
-    /** 调整输入框高度 */
+    /** 动态调整输入框高度 */
     const adjustSize = () => {
       if (inputRef.current && hiddenInputRef.current) {
         hiddenInputRef.current.classList.remove('oo-ui-element-hidden');

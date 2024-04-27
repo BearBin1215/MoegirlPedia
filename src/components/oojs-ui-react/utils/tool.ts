@@ -17,7 +17,11 @@ interface ComponentProps extends
   IconElement,
   IndicatorElement { }
 
-/** 生成常用类 */
+/**
+ * 生成常用类
+ * @param props 组件属性
+ * @param widgetNames 组件名称，用于生成`oo-ui-{widgetName}Widget`
+ */
 export function processClassNames(
   { disabled, label, icon, indicator }: ComponentProps,
   ...widgetNames: string[]

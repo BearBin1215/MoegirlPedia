@@ -15,6 +15,12 @@ export { default as Input } from './Input';
 export { default as TextInput } from './TextInput';
 export { default as NumberInput } from './NumberInput';
 export { default as MultilineTextInput } from './MultilineTextInput';
+
+// 单选框
+export { default as RadioInput } from './RadioInput';
+export { default as RadioOption } from './RadioOption';
+
+// 复选框
 export { default as CheckboxInput } from './CheckboxInput';
 
 // 下拉选择框

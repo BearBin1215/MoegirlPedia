@@ -8,7 +8,7 @@ import type { AccessKeyElement } from '../types/mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
-  data: any;
+  data?: any;
 
   /** 选项文本 */
   children?: ReactNode;

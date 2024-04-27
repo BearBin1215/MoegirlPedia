@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../utils/tool';
-import type { FunctionComponent, ChangeEvent, Ref } from 'react';
+import type { FunctionComponent, ChangeEvent, RefObject } from 'react';
 import type { ChangeHandler } from '../types/utils';
 import type { WidgetProps } from '../types/props';
 import type { AccessKeyElement } from '../types/mixin';
@@ -22,7 +22,7 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   /** 值变化回调函数 */
   onChange?: ChangeHandler<T, P>;
 
-  ref?: Ref<HTMLDivElement>;
+  ref?: RefObject<HTMLDivElement>;
 
   /** 是否必填 */
   required?: boolean;
