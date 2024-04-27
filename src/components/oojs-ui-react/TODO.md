@@ -12,7 +12,7 @@
 - [x] 数字输入框（NumberInput）
 - [x] 勾选框（CheckboxInput）
 - [x] 下拉框选择（Dropdown）
-- [ ] 多行输入框（MultilineTextInput）
+- [x] 多行输入框（MultilineTextInput）
 - [ ] 单选框（RadioSelect）
 - [ ] 弹窗（Dialog）
 

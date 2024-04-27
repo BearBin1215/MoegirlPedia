@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
@@ -38,11 +38,13 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
   required,
   autosize,
   rows,
-  maxRows,
+  maxRows = 10,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
 
   const classes = classNames(
     className,
@@ -83,6 +85,46 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
     return style;
   }, [label, labelPosition]);
 
+  useEffect(() => {
+    if (!autosize) {
+      return;
+    }
+
+    /** 最小高度 */
+    const minRows = rows === undefined ? '' : String(rows);
+    /** 调整输入框高度 */
+    const adjustSize = () => {
+      if (inputRef.current && hiddenInputRef.current) {
+        hiddenInputRef.current.classList.remove('oo-ui-element-hidden');
+
+        // 将副输入框高度设为0以获取内容高度
+        hiddenInputRef.current.style.height = '0';
+        hiddenInputRef.current.setAttribute('rows', minRows);
+        hiddenInputRef.current.value = inputRef.current.value;
+        const { scrollHeight } = hiddenInputRef.current;
+
+        // 将副输入框行数设为maxRows获取最大高度
+        hiddenInputRef.current.style.height = 'auto';
+        hiddenInputRef.current.setAttribute('rows', String(maxRows));
+        hiddenInputRef.current.value = '';
+        const { clientHeight } = hiddenInputRef.current;
+
+        inputRef.current.style.height = `${Math.min(scrollHeight, clientHeight)}px`;
+
+        hiddenInputRef.current.classList.add('oo-ui-element-hidden');
+      }
+    };
+
+    if (inputRef.current && hiddenInputRef.current) {
+      inputRef.current.removeEventListener('input', adjustSize);
+      inputRef.current.addEventListener('input', adjustSize);
+    }
+
+    return () => {
+      inputRef.current?.removeEventListener('input', adjustSize);
+    };
+  }, [autosize, maxRows]);
+
   return (
     <div
       {...rest}
@@ -104,6 +146,7 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
         maxLength={maxLength}
         style={inputStyle}
         rows={rows}
+        ref={inputRef}
       />
       {autosize && (
         <textarea
@@ -115,6 +158,7 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
           style={{ paddingRight: '0px', height: 'auto' }}
           aria-hidden='true'
           rows={maxRows}
+          ref={hiddenInputRef}
         />
       )}
       <IconBase icon={icon} />

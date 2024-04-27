@@ -97,7 +97,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   /** 失焦时，按照精度四舍五入 */
   const handleBlur = () => {
     if (precision) {
-      setValue(parseFloat((value || 0).toFixed(precision)));
+      setValue(Math.round((value || 0) * 10 ** precision) / 10 ** precision);
     }
   };
 
