@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import IconWidget from '../Icon';
+import { processClassNames } from '../utils/tool';
 import type { RefObject, FunctionComponent, ChangeEvent } from 'react';
-import type { InputProps } from '../props';
-import type { AccessKeyElement } from '../mixin';
+import type { InputProps } from '../types/props';
+import type { AccessKeyElement } from '../types/mixin';
 
 export interface CheckboxInputProps extends
   Omit<InputProps<boolean>, 'placeholder' | 'ref'>,
@@ -25,10 +26,7 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
 
   const widgetClassName = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-inputWidget',
-    'oo-ui-checkboxInputWidget',
+    processClassNames({ disabled }, 'input', 'checkboxInput'),
   );
 
   /** 值变更响应 */

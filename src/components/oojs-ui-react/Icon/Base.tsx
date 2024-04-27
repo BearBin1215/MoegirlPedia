@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import type { HTMLAttributes, FunctionComponent } from 'react';
-import type { IconElement } from '../mixin';
+import type { IconElement } from '../types/mixin';
 
 export interface IconBaseProps extends
   HTMLAttributes<HTMLSpanElement>,

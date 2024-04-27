@@ -3,9 +3,10 @@ import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { OptionProps } from '../props';
-import type { IconElement, IndicatorElement } from '../mixin';
+import type { OptionProps } from '../types/props';
+import type { IconElement, IndicatorElement } from '../types/mixin';
 
 export interface MenuOptionProps extends
   OptionProps,
@@ -24,13 +25,13 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
   const [highlighted, setHighlighted] = useState(false);
 
   const menuOptionClassName = classNames(
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-optionWidget',
-    icon && 'oo-ui-iconElement',
-    indicator && 'oo-ui-indicatorElement',
-    'oo-ui-decoratedOptionWidget',
-    'oo-ui-menuOptionWidget',
+    processClassNames({
+      children,
+      disabled,
+      label: children,
+      icon,
+      indicator,
+    }, 'option', 'decoratedOption', 'menuOption'),
     pressed && 'oo-ui-optionWidget-pressed',
     highlighted && 'oo-ui-optionWidget-highlighted',
     selected && 'oo-ui-optionWidget-selected',

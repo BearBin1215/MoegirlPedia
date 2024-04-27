@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import type { HTMLAttributes, FunctionComponent } from 'react';
-import type { IndicatorElement } from '../mixin';
+import type { IndicatorElement } from '../types/mixin';
 
 export interface IndicatorBaseProps extends
   HTMLAttributes<HTMLSpanElement>,

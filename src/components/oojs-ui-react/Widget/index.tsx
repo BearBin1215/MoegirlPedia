@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import classNames from 'classnames';
+import { processClassNames } from '../utils/tool';
 import type { ElementProps } from '../Element';
 
-export interface WidgetProps<T> extends ElementProps<T> {
+export interface WidgetProps<T = HTMLDivElement> extends ElementProps<T> {
   /** 是否禁用 */
   disabled?: boolean;
 }
@@ -15,8 +16,7 @@ const Widget: FunctionComponent<WidgetProps<HTMLDivElement>> = ({
 }) => {
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
+    processClassNames({ disabled }),
   );
   return (
     <div

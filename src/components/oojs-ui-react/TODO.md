@@ -1,7 +1,7 @@
 ## 底层
 
 - [x] 将Icon、Indictor等常见复用元素封装
-- [ ] 复用组件类生成逻辑（比如根据disabled生成`oo-ui-widget-disabled`或`oo-ui-widget-enabled`类
+- [x] 复用组件类生成逻辑（比如根据disabled生成`oo-ui-widget-disabled`或`oo-ui-widget-enabled`类
 - [ ] 改造组件ref，改为类似ooui组件对象的api
 
 ## 优先实现

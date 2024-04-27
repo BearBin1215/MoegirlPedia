@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
+import { processClassNames } from '../utils/tool';
 import type { ReactNode, FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { AccessKeyElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { AccessKeyElement } from '../types/mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
@@ -30,10 +31,7 @@ const Option: FunctionComponent<OptionProps> = ({
 }) => {
   const optionClassName = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    children && 'oo-ui-labelElement',
-    'oo-ui-optionWidget',
+    processClassNames({ disabled, label: children }, 'option'),
     selected && 'oo-ui-optionWidget-selected',
   );
 

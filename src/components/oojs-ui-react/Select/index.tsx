@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
 import MenuOption from '../MenuOption';
+import { processArray, processClassNames } from '../utils/tool';
 import type { FunctionComponent, MouseEventHandler, ReactElement } from 'react';
-import type { WidgetProps, MenuOptionProps, MenuSectionOptionProps } from '../props';
+import type { WidgetProps, MenuOptionProps, MenuSectionOptionProps } from '../types/props';
 import type { OptionData } from '../Option';
 
 export type OptionElement = ReactElement<MenuOptionProps | MenuSectionOptionProps>;
@@ -28,19 +29,11 @@ const Select: FunctionComponent<SelectProps> = ({
 }) => {
   const [pressed, setPressed] = useState(false);
 
-  const options = useMemo(() => {
-    let optionElements: OptionElement[] = [];
-    if (children) {
-      optionElements = Array.isArray(children) ? children : [children]; // 确保子组件为数组
-    }
-    return optionElements;
-  }, [children, value]);
+  const options = useMemo(() => processArray(children), [children, value]);
 
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-selectWidget',
+    processClassNames({ disabled }, 'select'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-depressed',
   );
 

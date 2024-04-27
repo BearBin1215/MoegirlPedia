@@ -3,10 +3,11 @@ import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { ButtonFlag } from '../utils';
-import type { AccessKeyElement, IconElement, IndicatorElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { ButtonFlag } from '../types/utils';
+import type { AccessKeyElement, IconElement, IndicatorElement } from '../types/mixin';
 
 export interface ButtonProps extends
   WidgetProps<HTMLSpanElement>,
@@ -63,15 +64,15 @@ const Button: FunctionComponent<ButtonProps> = ({
   /** 根据参数生成按钮类 */
   const buttonClassName = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
+    processClassNames({
+      disabled,
+      icon,
+      label: children,
+      indicator,
+    }, 'button'),
     'oo-ui-buttonElement',
     framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    icon && 'oo-ui-iconElement',
-    children && 'oo-ui-labelElement',
-    indicator && 'oo-ui-indicatorElement',
     typeof flags === 'string' ? [flags] : flags.map((flag) => `oo-ui-flaggedElement-${flag}`),
-    'oo-ui-buttonWidget',
     active && 'oo-ui-buttonElement-active',
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );

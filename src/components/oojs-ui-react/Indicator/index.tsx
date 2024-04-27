@@ -1,8 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import IndicatorBase from './Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { IndicatorElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { IndicatorElement } from '../types/mixin';
 
 export interface IndicatorProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,
@@ -16,18 +18,14 @@ const Indicator: FunctionComponent<IndicatorProps> = ({
 }) => {
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-indicatorElement',
-    'oo-ui-indicatorElement-indicator',
-    indicator && `oo-ui-indicator-${indicator}`,
-    'oo-ui-indicatorWidget',
+    processClassNames({ disabled, indicator }, 'indicator'),
   );
 
   return (
-    <span
+    <IndicatorBase
       {...rest}
       className={classes}
+      indicator={indicator}
       aria-disabled={!!disabled}
     />
   );

@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 import LabelBase from './Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { LabelElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { LabelElement } from '../types/mixin';
 
 export interface LabelProps extends
   WidgetProps<HTMLSpanElement>,
@@ -16,11 +17,8 @@ const Label: FunctionComponent<LabelProps> = ({
   ...rest
 }) => {
   const classes = classNames(
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-labelElement',
-    'oo-ui-labelWidget',
     className,
+    processClassNames({ disabled, label: children }, 'label'),
   );
 
   return (

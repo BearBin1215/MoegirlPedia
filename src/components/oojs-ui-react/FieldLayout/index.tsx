@@ -6,8 +6,8 @@ import React from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import type { ReactNode, FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { LabelElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { LabelElement } from '../types/mixin';
 
 export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,

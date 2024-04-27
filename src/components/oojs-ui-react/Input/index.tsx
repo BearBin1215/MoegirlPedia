@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent, ChangeEvent, Ref } from 'react';
-import type { ChangeHandler } from '../utils';
-import type { WidgetProps } from '../props';
-import type { AccessKeyElement } from '../mixin';
+import type { ChangeHandler } from '../types/utils';
+import type { WidgetProps } from '../types/props';
+import type { AccessKeyElement } from '../types/mixin';
 
 export interface InputProps<T extends string | number | boolean | undefined> extends
   Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
@@ -42,9 +43,7 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
 
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-inputWidget',
+    processClassNames({ disabled }, 'input'),
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

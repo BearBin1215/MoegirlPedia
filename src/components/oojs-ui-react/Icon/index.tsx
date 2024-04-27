@@ -1,10 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 import IconBase from './Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { IconFlag } from '../utils';
-import type { IconElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { IconFlag } from '../types/utils';
+import type { IconElement } from '../types/mixin';
 
 export interface IconProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,
@@ -22,11 +23,8 @@ const Icon: FunctionComponent<IconProps> = ({
 }) => {
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-iconElement',
+    processClassNames({ disabled, icon }, 'icon'),
     (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag} oo-ui-image-${flag}`),
-    'oo-ui-iconWidget',
   );
 
   return (

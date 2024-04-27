@@ -3,10 +3,11 @@ import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent, ChangeEvent } from 'react';
-import type { InputProps } from '../props';
-import type { LabelElement, IconElement, IndicatorElement } from '../mixin';
-import type { LabelPosition } from '../utils';
+import type { InputProps } from '../types/props';
+import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
+import type { LabelPosition } from '../types/utils';
 
 export interface TextInputProps extends
   InputProps<string | undefined>,
@@ -50,18 +51,11 @@ const TextInput: FunctionComponent<TextInputProps> = ({
 
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    'oo-ui-inputWidget',
-    icon && 'oo-ui-iconElement',
-    indicator && 'oo-ui-indicatorElement',
-    label && [
-      'oo-ui-labelElement',
-      labelPosition === 'before'
-        ? 'oo-ui-textInputWidget-labelPosition-before'
-        : 'oo-ui-textInputWidget-labelPosition-after',
-    ],
-    'oo-ui-textInputWidget',
+    processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    label && (labelPosition === 'before'
+      ? 'oo-ui-textInputWidget-labelPosition-before'
+      : 'oo-ui-textInputWidget-labelPosition-after'
+    ),
     'oo-ui-textInputWidget-type-text',
   );
 

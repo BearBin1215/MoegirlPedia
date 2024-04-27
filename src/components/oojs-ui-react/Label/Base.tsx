@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import type { RefObject, HTMLAttributes, FunctionComponent } from 'react';
-import type { LabelElement } from '../mixin';
+import type { LabelElement } from '../types/mixin';
 
 export interface LabelBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,

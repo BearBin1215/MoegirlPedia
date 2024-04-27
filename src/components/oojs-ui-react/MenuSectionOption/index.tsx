@@ -3,9 +3,10 @@ import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
-import type { WidgetProps } from '../props';
-import type { IconElement, IndicatorElement } from '../mixin';
+import type { WidgetProps } from '../types/props';
+import type { IconElement, IndicatorElement } from '../types/mixin';
 
 export interface MenuSectionOptionProps extends
   WidgetProps<HTMLDivElement>,
@@ -22,14 +23,12 @@ const MenuSectionOption: FunctionComponent<MenuSectionOptionProps> = ({
 }) => {
   const classes = classNames(
     className,
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    children && 'oo-ui-labelElement',
-    'oo-ui-optionWidget',
-    icon && 'oo-ui-iconElement',
-    indicator && 'oo-ui-indicatorElement',
-    'oo-ui-decoratedOptionWidget',
-    'oo-ui-menuSectionOptionWidget',
+    processClassNames({
+      disabled,
+      label: children,
+      icon,
+      indicator,
+    }, 'option', 'decoratedOption', 'menuSectionOption'),
   );
 
   return (
