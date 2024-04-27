@@ -50,7 +50,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   icon,
   indicator,
   label,
-  labelPosition,
+  labelPosition = 'after',
   min,
   max,
   placeholder,
@@ -66,10 +66,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   const classes = classNames(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
-    label && (labelPosition === 'before'
-      ? 'oo-ui-textInputWidget-labelPosition-before'
-      : 'oo-ui-textInputWidget-labelPosition-after'
-    ),
+    label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );

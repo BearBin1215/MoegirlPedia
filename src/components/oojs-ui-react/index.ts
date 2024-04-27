@@ -14,6 +14,7 @@ export { default as Button } from './Button';
 export { default as Input } from './Input';
 export { default as TextInput } from './TextInput';
 export { default as NumberInput } from './NumberInput';
+export { default as MultilineTextInput } from './MultilineTextInput';
 export { default as CheckboxInput } from './CheckboxInput';
 
 // 下拉选择框

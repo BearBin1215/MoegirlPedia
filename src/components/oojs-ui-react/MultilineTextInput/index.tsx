@@ -1,35 +1,27 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../utils/tool';
 import type { CSSProperties, FunctionComponent, ChangeEvent } from 'react';
-import type { InputProps } from '../types/props';
-import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
-import type { LabelPosition } from '../types/utils';
+import type { TextInputProps } from '../types/props';
 
-export interface TextInputProps<T = HTMLInputElement> extends
-  InputProps<string | undefined, T>,
-  LabelElement,
-  IconElement,
-  IndicatorElement {
+export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
+  /** 行数 */
+  rows?: number;
 
-  /** 最大长度 */
-  maxLength?: number;
+  /** 最大行数 */
+  maxRows?: number;
 
-  /** 标签位置 */
-  labelPosition?: LabelPosition;
-
-  /** 是否只读 */
-  readOnly?: boolean;
+  /** 是否自动高度 */
+  autosize?: boolean;
 }
 
 /**
- * 文本输入框
- * @returns
+ * @todo autosize功能
  */
-const TextInput: FunctionComponent<TextInputProps> = ({
+const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
   accessKey,
   name,
   className,
@@ -44,6 +36,9 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   labelPosition = 'after',
   readOnly,
   required,
+  autosize,
+  rows,
+  maxRows,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -56,8 +51,13 @@ const TextInput: FunctionComponent<TextInputProps> = ({
     'oo-ui-textInputWidget-type-text',
   );
 
+  const inputClasses = classNames(
+    'oo-ui-inputWidget-input',
+    autosize && 'oo-ui-textInputWidget-autosized',
+  );
+
   /** 值变更响应 */
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = event.target.value;
     setValue(newValue);
     if (typeof onChange === 'function') {
@@ -73,7 +73,7 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   const inputStyle = useMemo(() => {
     const style: CSSProperties = {};
     if (labelRef.current) {
-      const paddingWidth = `${labelRef.current.offsetWidth}px`;
+      const paddingWidth = `${labelRef.current.offsetWidth + 2}px`;
       if (labelPosition === 'before') {
         style.paddingLeft = paddingWidth;
       } else {
@@ -89,14 +89,13 @@ const TextInput: FunctionComponent<TextInputProps> = ({
       className={classes}
       aria-disabled={!!disabled}
     >
-      <input
+      <textarea
         accessKey={accessKey}
-        type='text'
         name={name}
         onChange={handleChange}
         tabIndex={disabled ? -1 : 0}
         aria-disabled={!!disabled}
-        className='oo-ui-inputWidget-input'
+        className={inputClasses}
         disabled={disabled}
         value={value}
         readOnly={readOnly}
@@ -104,12 +103,25 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         placeholder={placeholder}
         maxLength={maxLength}
         style={inputStyle}
+        rows={rows}
       />
+      {autosize && (
+        <textarea
+          accessKey={accessKey}
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={!!disabled}
+          className='oo-ui-inputWidget-input oo-ui-element-hidden'
+          readOnly={readOnly}
+          style={{ paddingRight: '0px', height: 'auto' }}
+          aria-hidden='true'
+          rows={maxRows}
+        />
+      )}
       <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator} />
-      {label && <LabelBase ref={labelRef}>{label}</LabelBase>}
+      <IndicatorBase indicator={indicator} style={{ right: '2px' }} />
+      {label && <LabelBase>{label}</LabelBase>}
     </div>
   );
 };
 
-export default TextInput;
+export default MultilineTextInput;

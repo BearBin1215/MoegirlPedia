@@ -6,7 +6,7 @@ import type { ChangeHandler } from '../types/utils';
 import type { WidgetProps } from '../types/props';
 import type { AccessKeyElement } from '../types/mixin';
 
-export interface InputProps<T extends string | number | boolean | undefined> extends
+export interface InputProps<T extends string | number | boolean | undefined, P = HTMLInputElement> extends
   Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
   AccessKeyElement {
 
@@ -20,7 +20,7 @@ export interface InputProps<T extends string | number | boolean | undefined> ext
   defaultValue?: T;
 
   /** 值变化回调函数 */
-  onChange?: ChangeHandler<T, HTMLInputElement>;
+  onChange?: ChangeHandler<T, P>;
 
   ref?: Ref<HTMLDivElement>;
 

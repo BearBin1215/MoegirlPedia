@@ -14,6 +14,7 @@ export type { ButtonProps } from '../Button';
 export type { InputProps } from '../Input';
 export type { TextInputProps } from '../TextInput';
 export type { NumberInputProps } from '../NumberInput';
+export type { MultilineTextInputProps } from './MultilineTextInput';
 export type { CheckboxInputProps } from '../CheckboxInput';
 
 // 下拉选择框
