@@ -4,7 +4,7 @@
 
 ## 基本类型
 
-- ChangeValue<T, P>: `{ value: T, oldValue: T | undefined, event: React.ChangeEvent<P> }`
+- ChangeValue<T, P>: `{ value: T, oldValue: T | undefined, event?: React.ChangeEvent<P> }`
 - ChangeHandler<T, P>: `(change?: ChangeValue<T, P>) => void;`
 - Indicator: `'clear' | 'up' | 'down' | 'required'`
 - LabelPosition: `'before' | 'after'`
