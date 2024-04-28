@@ -8,7 +8,7 @@ import type { AccessKeyElement } from '../types/mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
-  data?: string | number;
+  data?: string | number | boolean;
 
   /** 选项文本 */
   children?: ReactNode;
@@ -20,7 +20,7 @@ export interface OptionData {
 export interface OptionProps extends
   Omit<WidgetProps<HTMLDivElement>, 'ref'>,
   AccessKeyElement,
-  OptionData { }
+  Omit<OptionData, 'data'> { }
 
 const Option: FunctionComponent<OptionProps> = ({
   accessKey,
@@ -28,6 +28,7 @@ const Option: FunctionComponent<OptionProps> = ({
   className,
   disabled,
   selected,
+  ...rest
 }) => {
   const classes = classNames(
     className,
@@ -37,6 +38,7 @@ const Option: FunctionComponent<OptionProps> = ({
 
   return (
     <div
+      {...rest}
       className={classes}
       aria-disabled={!!disabled}
       accessKey={accessKey}

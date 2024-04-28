@@ -1,5 +1,7 @@
 # oojs-ui-react
 
+[oojs-ui](https://github.com/wikimedia/oojs-ui)部分组件的React实现，施工中。
+
 基本上都支持常见标准属性，如`id`、`className`、`ref`、`onClick`等。
 
 ## 基本类型
@@ -12,7 +14,7 @@
 
 ## Icon
 
-```tsx
+```jsx
 import React from 'react';
 import { Icon } from 'oojs-ui-react';
 
@@ -40,7 +42,7 @@ export default App;
 
 ## Indicator
 
-```tsx
+```jsx
 import React from 'react';
 import { Indicator } from 'oojs-ui-react';
 
@@ -66,7 +68,7 @@ export default App;
 
 ## Button
 
-```tsx
+```jsx
 import React from 'react';
 import { Button } from 'oojs-ui-react';
 
@@ -100,33 +102,33 @@ export default App;
 | title     | 内部<a>标签的title属性                 | `string`                                                                                         |
 
 
-### TextInput
+## TextInput
 
 
 
-### MultilineTextInput
+## MultilineTextInput
 
 
 
-### NumberInput
+## NumberInput
 
 
 
-### CheckboxInput
+## CheckboxInput
 
 
 
-### Dropdown
+## Dropdown
 
 
 
-### RadioInput
+## RadioInput
 
 
 
-### RadioSelect
+## RadioSelect
 
-```tsx
+```jsx
 import React from 'react';
 import { RadioOption, RadioSelect } from 'oojs-ui-react';
 
@@ -145,22 +147,22 @@ export default App;
 
 由多个[`RadioOption`](#RadioOption)作为子组件，其中`data`参数必须且不应重复。
 
-#### API
+### API
 
-##### RadioSelect
+#### RadioSelect
 
 | 参数         | 说明                                                     | 类型                                                             |
 | ------------ | -------------------------------------------------------- | ---------------------------------------------------------------- |
-| defaultValue | 默认值，组件会查找子组件中`data`参数相同的作为默认勾选项 | `string \| number`                                               |
+| defaultValue | 默认值，组件会查找子组件中`data`参数相同的作为默认勾选项 | `string \| number \| boolean`                                               |
 | disabled     | 是否禁用                                                 | `boolean`                                                        |
 | name         | 参数名                                                   | `string`                                                         |
-| onChange     | 值变化钩子                                               | [`ChangeHandler<string \| number, HTMLInputElement>`](#基本类型) |
+| onChange     | 值变化钩子                                               | [`ChangeHandler<string \| number \| boolean, HTMLInputElement>`](#基本类型) |
 
-##### RadioOption
+#### RadioOption
 
 | 参数      | 说明       | 类型                                                    |
 | --------- | ---------- | ------------------------------------------------------- |
 | accessKey | 快捷键     | `string`                                                |
-| data      | 选项值     | `string \| number`                                      |
+| data      | 选项值     | `string \| number \| boolean`                                      |
 | disabled  | 是否禁用   | `boolean`                                               |
 | onChange  | 值变化钩子 | [`ChangeHandler<boolean, HTMLInputElement>`](#基本类型) |
