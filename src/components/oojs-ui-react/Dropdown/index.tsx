@@ -42,7 +42,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
   const options = useMemo(() => processArray(children), [children, value]);
 
-  const dropdownClassName = classNames(
+  const classes = classNames(
     className,
     processClassNames({
       disabled,
@@ -53,7 +53,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     open && 'oo-ui-dropdownWidget-open',
   );
 
-  const selectClassName = classNames(
+  const selectClasses = classNames(
     'oo-ui-clippableElement-clippable',
     'oo-ui-floatableElement-floatable',
     'oo-ui-menuSelectWidget',
@@ -99,7 +99,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   return (
     <div
       {...rest}
-      className={dropdownClassName}
+      className={classes}
       ref={dropdownRef}
     >
       <span
@@ -115,7 +115,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <Select className={selectClassName} onSelect={handleSelect} value={value}>
+      <Select className={selectClasses} onSelect={handleSelect} value={value}>
         {children}
       </Select>
     </div>

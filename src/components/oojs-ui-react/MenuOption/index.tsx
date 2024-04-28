@@ -24,7 +24,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
   const [pressed, setPressed] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
 
-  const menuOptionClassName = classNames(
+  const classes = classNames(
     processClassNames({
       children,
       disabled,
@@ -69,7 +69,7 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
   return (
     <div
       {...rest}
-      className={menuOptionClassName}
+      className={classes}
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'

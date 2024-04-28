@@ -12,13 +12,13 @@ const IconBase: FunctionComponent<IconBaseProps> = ({
   icon,
   ...rest
 }) => {
-  const iconClassName = classNames(
+  const classes = classNames(
     'oo-ui-iconElement-icon',
     icon && `oo-ui-icon-${icon}`,
     className,
   );
 
-  return <span {...rest} className={iconClassName} />;
+  return <span {...rest} className={classes} />;
 };
 
 export default IconBase;

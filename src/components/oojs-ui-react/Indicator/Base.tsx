@@ -12,13 +12,13 @@ const IndicatorBase: FunctionComponent<IndicatorBaseProps> = ({
   indicator,
   ...rest
 }) => {
-  const IndicatorClassName = classNames(
+  const classes = classNames(
     'oo-ui-indicatorElement-indicator',
     indicator && `oo-ui-indicator-${indicator}`,
     className,
   );
 
-  return <span {...rest} className={IndicatorClassName} />;
+  return <span {...rest} className={classes} />;
 };
 
 export default IndicatorBase;

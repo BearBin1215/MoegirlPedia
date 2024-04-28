@@ -16,7 +16,7 @@ export interface ElementProps<T = HTMLDivElement> {
   style?: CSSProperties;
 }
 
-const Element: FunctionComponent<ElementProps<HTMLDivElement>> = (props) => {
+const Element: FunctionComponent<ElementProps> = (props) => {
   return createElement('div', props);
 };
 

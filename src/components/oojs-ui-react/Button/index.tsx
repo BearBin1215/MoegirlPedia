@@ -62,7 +62,7 @@ const Button: FunctionComponent<ButtonProps> = ({
     && !active;
 
   /** 根据参数生成按钮类 */
-  const buttonClassName = classNames(
+  const classes = classNames(
     className,
     processClassNames({
       disabled,
@@ -72,17 +72,12 @@ const Button: FunctionComponent<ButtonProps> = ({
     }, 'button'),
     'oo-ui-buttonElement',
     framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    typeof flags === 'string' ? [flags] : flags.map((flag) => `oo-ui-flaggedElement-${flag}`),
+    (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag}`),
     active && 'oo-ui-buttonElement-active',
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  const indicatorClassName = classNames(
-    iconInvert && 'oo-ui-image-invert',
-    iconDestructive && 'oo-ui-image-destructive',
-  );
-
-  const iconClassName = classNames(
+  const imageClasses = classNames(
     iconInvert && 'oo-ui-image-invert',
     iconDestructive && 'oo-ui-image-destructive',
   );
@@ -104,7 +99,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   return (
     <span
       {...rest}
-      className={buttonClassName}
+      className={classes}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
@@ -120,9 +115,9 @@ const Button: FunctionComponent<ButtonProps> = ({
         title={title}
         accessKey={accessKey}
       >
-        <IconBase icon={icon} className={iconClassName} />
+        <IconBase icon={icon} className={imageClasses} />
         <LabelBase>{children}</LabelBase>
-        <IndicatorBase indicator={indicator} className={indicatorClassName} />
+        <IndicatorBase indicator={indicator} className={imageClasses} />
       </a>
     </span>
   );

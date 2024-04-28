@@ -13,6 +13,7 @@ export interface RadioOptionProps extends Omit<OptionProps, 'onClick' | 'selecte
   onChange?: ChangeHandler<boolean, HTMLInputElement>;
   selected?: boolean;
   ref?: RefObject<HTMLLabelElement>;
+  data: number | string;
 }
 
 const RadioOption: FunctionComponent<RadioOptionProps> = ({
@@ -25,7 +26,7 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
   selected,
   ...rest
 }) => {
-  const optionClassName = classNames(
+  const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'option', 'radioOption'),
     selected && 'oo-ui-optionWidget-selected',
@@ -34,7 +35,7 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
   return (
     <label
       {...rest}
-      className={optionClassName}
+      className={classes}
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='radio'

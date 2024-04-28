@@ -8,7 +8,7 @@ import type { AccessKeyElement } from '../types/mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
-  data?: any;
+  data?: string | number;
 
   /** 选项文本 */
   children?: ReactNode;
@@ -29,7 +29,7 @@ const Option: FunctionComponent<OptionProps> = ({
   disabled,
   selected,
 }) => {
-  const optionClassName = classNames(
+  const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'option'),
     selected && 'oo-ui-optionWidget-selected',
@@ -37,7 +37,7 @@ const Option: FunctionComponent<OptionProps> = ({
 
   return (
     <div
-      className={optionClassName}
+      className={classes}
       aria-disabled={!!disabled}
       accessKey={accessKey}
       tabIndex={-1}

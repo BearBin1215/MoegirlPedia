@@ -26,7 +26,7 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
   label,
   ...rest
 }) => {
-  const layoutClassName = classNames(
+  const classes = classNames(
     className,
     'oo-ui-layout',
     label && 'oo-ui-labelElement',
@@ -48,7 +48,7 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
 
   return (
     <div
-      className={layoutClassName}
+      className={classes}
       {...rest}
     >
       <div className='oo-ui-fieldLayout-body'>

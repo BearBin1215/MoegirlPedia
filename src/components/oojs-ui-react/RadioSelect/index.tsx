@@ -13,7 +13,9 @@ export interface RadioSelectProps extends WidgetProps {
   children: OptionElement | OptionElement[];
 
   /** 默认要勾选的选项 */
-  defaultValue?: any,
+  defaultValue?: string | number,
+
+  onChange?: ChangeHandler<string | number | undefined, HTMLInputElement>,
 }
 
 const RadioSelect: FunctionComponent<RadioSelectProps> = ({
@@ -21,6 +23,7 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
   className,
   defaultValue,
   disabled,
+  onChange,
   ...rest
 }) => {
   const [value, setValue] = useState(defaultValue);
@@ -53,9 +56,17 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
       onMouseLeave={handleUnpress}
     >
       {options.map((option) => {
-        const handleChange: ChangeHandler<boolean, HTMLInputElement> = (event) => {
+        const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {
+          const newValue = option.props.data;
           if (typeof option.props.onChange === 'function') {
-            option.props.onChange(event);
+            option.props.onChange(changeEvent);
+          }
+          if(typeof onChange === 'function') {
+            onChange({
+              oldValue: value,
+              value: newValue,
+              event: changeEvent?.event,
+            });
           }
           setValue(option.props.data);
         };

@@ -24,7 +24,7 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
 }) => {
   const [value, setValue] = useState(defaultValue);
 
-  const widgetClassName = classNames(
+  const classes = classNames(
     className,
     processClassNames({ disabled }, 'input', 'checkboxInput'),
   );
@@ -45,7 +45,7 @@ const CheckboxInput: FunctionComponent<CheckboxInputProps> = ({
   return (
     <span
       {...rest}
-      className={widgetClassName}
+      className={classes}
       aria-disabled={!!disabled}
     >
       <input
