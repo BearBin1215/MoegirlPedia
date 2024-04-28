@@ -30,9 +30,6 @@ export interface ButtonProps extends
   /** 内部<a>标签的rel属性列表 */
   rel?: string;
 
-  /** 要插入文本 */
-  text?: string;
-
   /** 内部<a>标签的title */
   title?: string;
 }
@@ -49,7 +46,6 @@ const Button: FunctionComponent<ButtonProps> = ({
   icon,
   indicator,
   rel = 'nofollow',
-  text,
   title,
   ...rest
 }) => {
@@ -105,7 +101,6 @@ const Button: FunctionComponent<ButtonProps> = ({
       onMouseLeave={handleUnpress}
       aria-disabled={!!disabled}
     >
-      {text}
       <a
         className='oo-ui-buttonElement-button'
         role='button'
