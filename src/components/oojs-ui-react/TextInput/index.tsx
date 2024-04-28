@@ -9,8 +9,8 @@ import type { InputProps } from '../types/props';
 import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
 import type { LabelPosition } from '../types/utils';
 
-export interface TextInputProps<T = HTMLInputElement> extends
-  InputProps<string | undefined, T>,
+export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extends
+  InputProps<string | undefined, T, P>,
   LabelElement,
   IconElement,
   IndicatorElement {

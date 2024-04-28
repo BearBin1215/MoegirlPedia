@@ -19,6 +19,7 @@ export { default as MultilineTextInput } from './MultilineTextInput';
 // 单选框
 export { default as RadioInput } from './RadioInput';
 export { default as RadioOption } from './RadioOption';
+export { default as RadioSelect } from './RadioSelect';
 
 // 复选框
 export { default as CheckboxInput } from './CheckboxInput';

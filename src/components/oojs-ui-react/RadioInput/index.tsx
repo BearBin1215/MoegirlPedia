@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../utils/tool';
-import type { FunctionComponent, ChangeEvent, RefObject } from 'react';
+import type { FunctionComponent, ChangeEvent } from 'react';
 import type { InputProps } from '../types/props';
 
-export interface RadioInputProps extends Omit<InputProps<any>, 'defaultValue' | 'ref' | 'placeholder'> {
-  ref?: RefObject<HTMLSpanElement>;
+export interface RadioInputProps extends Omit<InputProps<boolean, HTMLInputElement, HTMLSpanElement>, 'defaultValue' | 'placeholder'> {
   selected?: boolean;
 }
 
@@ -49,7 +48,8 @@ const RadioInput: FunctionComponent<RadioInputProps> = ({
         type='radio'
         className='oo-ui-inputWidget-input'
         accessKey={accessKey}
-        checked={checked}
+        disabled={disabled}
+        checked={selected}
         name={name}
         onChange={handleChange}
         required={required}

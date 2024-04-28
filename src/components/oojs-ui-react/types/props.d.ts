@@ -19,6 +19,7 @@ export type { MultilineTextInputProps } from './MultilineTextInput';
 // 单选框
 export type { RadioInputProps } from './RadioInput';
 export type { RadioOptionProps } from './RadioOption';
+export type { RadioSelectProps } from './RadioSelect';
 
 // 复选框
 export type { CheckboxInputProps } from '../CheckboxInput';

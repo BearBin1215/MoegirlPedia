@@ -37,6 +37,14 @@ const Select: FunctionComponent<SelectProps> = ({
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-depressed',
   );
 
+  const handlePress: MouseEventHandler<HTMLDivElement> = () => {
+    setPressed(true);
+  };
+
+  const handleUnpress: MouseEventHandler<HTMLDivElement> = () => {
+    setPressed(false);
+  };
+
   return (
     <div
       {...rest}
@@ -45,9 +53,9 @@ const Select: FunctionComponent<SelectProps> = ({
       tabIndex={-1}
       role='option'
       aria-selected={false}
-      onMouseUp={() => setPressed(false)}
-      onMouseDown={() => setPressed(true)}
-      onMouseLeave={() => setPressed(false)}
+      onMouseUp={handleUnpress}
+      onMouseDown={handlePress}
+      onMouseLeave={handleUnpress}
     >
       {options.map((option) => {
         if (!('data' in option.props)) {
@@ -61,7 +69,7 @@ const Select: FunctionComponent<SelectProps> = ({
         return (
           <MenuOption
             {...option.props}
-            key={option.props.data}
+            key={option.key}
             onClick={handleClick}
             selected={value === option.props.data}
           >

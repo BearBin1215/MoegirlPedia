@@ -6,7 +6,10 @@ import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin
 export function processArray<T>(elements?: T | T[]) {
   let processedElements: T[] = [];
   if (elements) {
-    processedElements = Array.isArray(elements) ? elements : [elements]; // 确保子组件为数组
+    processedElements = Array.isArray(elements) ? elements.map((element, index) => ({
+      ...element,
+      key: index,
+    })) : [{ ...elements, key: 1 }]; // 确保子组件为数组
   }
   return processedElements;
 }

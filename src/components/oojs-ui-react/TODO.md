@@ -13,7 +13,7 @@
 - [x] 勾选框（CheckboxInput）
 - [x] 下拉框选择（Dropdown）
 - [x] 多行输入框（MultilineTextInput）
-- [ ] 单选框（RadioSelect）
+- [x] 单选框（RadioSelect）
 - [ ] 弹窗（Dialog）
 
 ## 低优先度实现

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../utils/tool';
-import type { FunctionComponent, ChangeEvent, RefObject } from 'react';
+import type { FunctionComponent, ChangeEvent } from 'react';
 import type { ChangeHandler } from '../types/utils';
 import type { WidgetProps } from '../types/props';
 import type { AccessKeyElement } from '../types/mixin';
 
-export interface InputProps<T extends string | number | boolean | undefined, P = HTMLInputElement> extends
-  Omit<WidgetProps<HTMLInputElement>, 'children' | 'ref'>,
+/**
+ * @template T 输入值类型
+ * @template P 输入框类型
+ * @template S 组件最外层元素类型
+ */
+export interface InputProps<T extends string | number | boolean | undefined, P = HTMLInputElement, S = P> extends
+  Omit<WidgetProps<S>, 'children'>,
   AccessKeyElement {
 
   /** input元素name属性 */
@@ -21,8 +26,6 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
 
   /** 值变化回调函数 */
   onChange?: ChangeHandler<T, P>;
-
-  ref?: RefObject<HTMLDivElement>;
 
   /** 是否必填 */
   required?: boolean;
