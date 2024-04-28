@@ -63,7 +63,7 @@ export default App;
 | 参数 | 说明 | 类型 |
 | ---- | ---- | ---- |
 | disabled | 是否禁用 | `boolean` |
-| indicator | 图标 | [`Indicator`](#Types) |
+| indicator | 图标 | [`Indicator`](#基本类型) |
 
 
 ## Button
@@ -97,7 +97,7 @@ export default App;
 | framed | 是否生成边框| `boolean` |
 | href | 按钮跳转链接 | `string` |
 | icon | 图标 | `string` |
-| indicator | 右侧指示器 | [`Indicator`](#Types) |
+| indicator | 右侧指示器 | [`Indicator`](#基本类型) |
 | rel | 内部<a>标签的rel属性，默认为`nofollow` | `string` |
 | title | 内部<a>标签的title属性 | `string` |
 
@@ -124,3 +124,20 @@ export default App;
 
 ### RadioSelect
 
+```tsx
+import React from 'react';
+import { RadioOption, RadioSelect } from 'oojs-ui-react';
+import { createRoot } from 'react-dom/client';
+
+const App = () => {
+  return (
+    <RadioSelect>
+      <RadioOption data='a'>A</RadioOption>
+      <RadioOption data='b'>B</RadioOption>
+      <RadioOption data='c' disabled>C</RadioOption>
+    </RadioSelect>
+  );
+};
+
+export default App;
+```
