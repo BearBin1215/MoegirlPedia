@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { SketchPicker } from 'react-color';
-import { Button } from '@/components';
+import { Button } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import './index.less';
 import type { ColorResult } from 'react-color';
@@ -31,11 +31,11 @@ const PickerModal: React.FC<ColorPickerProps> = (props) => {
     <>
       {createPortal(
         displayPicker ? (
-          <div id="color-picker">
+          <div id='color-picker'>
             <SketchPicker color={color} onChange={handleChange} />
-            <div className="button-zone">
+            <div className='button-zone'>
               <Button onClick={handleCopy}>复制</Button>
-              <Button buttonType="danger" onClick={handleClose}>
+              <Button flags='destructive' onClick={handleClose}>
                 关闭
               </Button>
             </div>

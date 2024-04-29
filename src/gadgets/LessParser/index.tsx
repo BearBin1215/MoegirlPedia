@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'less';
 import { copyText } from '@/utils/clipboard';
-import { Button } from '@/components';
+import { Button } from 'oojs-ui-react';
 import type { ChangeEventHandler } from 'react';
 import './index.less';
 
@@ -74,8 +74,8 @@ const ParserModal = () => {
                   hidden
                 />
                 <Button onClick={upload}>上传</Button>
-                <Button onClick={parseLess} buttonType='primary'>解析</Button>
-                <Button onClick={clear} buttonType='danger'>清空</Button>
+                <Button onClick={parseLess} flags={['primary', 'progressive']}>解析</Button>
+                <Button onClick={clear} flags='destructive'>清空</Button>
                 <Button onClick={copy}>复制</Button>
               </div>
               <textarea name='css-output' ref={outputRef} readOnly />
