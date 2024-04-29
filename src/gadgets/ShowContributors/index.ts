@@ -31,6 +31,7 @@ $(() => (async () => {
     static static = {
       ...super.static,
       name: 'ShowContributor',
+      tagName: 'div',
     };
     initialize() {
       super.initialize();

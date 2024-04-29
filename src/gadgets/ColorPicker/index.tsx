@@ -5,13 +5,14 @@ import { SketchPicker } from 'react-color';
 import { Button } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import './index.less';
+import type { FunctionComponent } from 'react';
 import type { ColorResult } from 'react-color';
 
 interface ColorPickerProps {
   open: boolean;
 }
 
-const PickerModal: React.FC<ColorPickerProps> = (props) => {
+const PickerModal: FunctionComponent<ColorPickerProps> = (props) => {
   const [displayPicker, setDisplayPicker] = useState(props.open);
   const [color, setColor] = useState('#222');
 

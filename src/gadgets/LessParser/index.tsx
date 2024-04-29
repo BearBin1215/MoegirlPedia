@@ -1,36 +1,42 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'less';
 import { copyText } from '@/utils/clipboard';
 import { Button } from 'oojs-ui-react';
-import type { ChangeEventHandler } from 'react';
+import type { FunctionComponent, ChangeEvent } from 'react';
 import './index.less';
 
-const ParserModal = () => {
+const ParserModal: FunctionComponent = () => {
   const [isOpen, setOpen] = useState(true); // 显示状态
   const uploadRef = useRef<HTMLInputElement>(null); // 上传框（隐藏）
   const inputRef = useRef<HTMLTextAreaElement>(null); // 输入框
   const outputRef = useRef<HTMLTextAreaElement>(null); // 输出框
   const fileReader = new FileReader();
-  fileReader.addEventListener('loadend', () => {
-    inputRef.current!.value = fileReader.result as string;
-  });
+
+  // 初始化fileReader和事件监听
+  useEffect(() => {
+    const onReaderLoadend = () => {
+      inputRef.current!.value = fileReader.result as string;
+    };
+    fileReader.addEventListener('loadend', onReaderLoadend);
+    return () => {
+      fileReader.removeEventListener('loadend', onReaderLoadend);
+    };
+  }, []);
 
   /** 关闭弹窗 */
   const closeModal = () => setOpen(false);
 
   /** 点击上传 */
-  const upload = () => {
-    uploadRef.current!.click();
-  };
+  const upload = () => uploadRef.current!.click();
 
   /** 上传完毕读取内容 */
-  const onUpload: ChangeEventHandler<HTMLInputElement> = ({ target: { files } }) => {
+  const onUpload = useCallback(({ target: { files } }: ChangeEvent<HTMLInputElement>) => {
     if (files?.length) {
       fileReader.readAsText(files[0]);
     }
-  };
+  }, []);
 
   /** 执行解析 */
   const parseLess = () => {
