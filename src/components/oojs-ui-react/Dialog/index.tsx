@@ -1,5 +1,6 @@
-import React, { useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
+import { throttle } from 'lodash-es';
 import WindowManager from '../WindowManager';
 import type { ElementProps } from '../Element';
 import type { ReactNode, FunctionComponent } from 'react';
@@ -24,6 +25,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
   foot,
   ...rest
 }) => {
+  const [full, setFull] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -49,54 +51,57 @@ const Dialog: FunctionComponent<DialogProps> = ({
 
   const frameWidth = useMemo(() => {
     switch (size) {
-      case 'large':
-        return '700px';
-      case 'larger':
-        return '900px';
       case 'full':
-        return '100%';
+        return false;
+      case 'large':
+        return 700;
+      case 'larger':
+        return 900;
       case 'small':
-        return '300px';
+        return 300;
       case 'medium':
       default:
-        return '500px';
+        return 500;
     }
   }, [size]);
 
   useEffect(() => {
-    /**
-     * 更新弹窗高度
-     * @ps 你*的为什么用这么难受的手段，用top: 50%; left: 50%; transform: translate(-50%, -50%);不好吗
-     */
-    const calculateHeight = () => {
-      if (open && frameRef.current && headRef.current && bodyRef.current && footRef.current) {
-        bodyRef.current.classList.remove('oo-ui-window-body');
-        const totalHeight =
-          headRef.current.scrollHeight +
-          bodyRef.current.scrollHeight +
-          footRef.current.scrollHeight +
-          frameRef.current.offsetHeight - frameRef.current.clientHeight;
-        bodyRef.current.classList.add('oo-ui-window-body');
+    const updateSize = throttle(() => {
+      if (frameRef.current) {
+        if (frameWidth && frameWidth > window.innerWidth) {
+          // 窄屏下将高度、宽度设为100%
+          frameRef.current.style.height = `100%`;
+          setFull(true);
+        } else {
+          // 宽屏下根据内容动态调整高度
+          setFull(false);
+          if (open && headRef.current && bodyRef.current && footRef.current) {
+            bodyRef.current.classList.remove('oo-ui-window-body');
+            const totalHeight =
+              headRef.current.scrollHeight +
+              bodyRef.current.scrollHeight +
+              footRef.current.scrollHeight +
+              frameRef.current.offsetHeight - frameRef.current.clientHeight;
+            bodyRef.current.classList.add('oo-ui-window-body');
 
-        // 更新frame的高度
-        frameRef.current.style.height = `${totalHeight}px`;
+            // 更新frame的高度
+            frameRef.current.style.height = `${totalHeight}px`;
+          }
+        }
       }
-    };
+    }, 200);
 
-    setTimeout(() => {
-      calculateHeight();
-    });
-    window.addEventListener('resize', calculateHeight);
+    updateSize();
+    window.addEventListener('resize', updateSize);
 
-    // 清理函数
     return () => {
-      window.removeEventListener('resize', calculateHeight);
+      window.removeEventListener('resize', updateSize);
     };
 
   }, [open, headRef, bodyRef, footRef]);
 
   return (
-    <WindowManager>
+    <WindowManager full={full}>
       <div
         {...rest}
         className={classes}
@@ -104,7 +109,10 @@ const Dialog: FunctionComponent<DialogProps> = ({
         <div
           className='oo-ui-window-frame'
           role='dialog'
-          style={{ transition: 'all 0.25s ease 0s', width: frameWidth }}
+          style={{
+            transition: 'all 0.25s ease 0s',
+            width: full ? '100%' : `${frameWidth}px`,
+          }}
           ref={frameRef}
         >
           <div tabIndex={0} />

@@ -5,11 +5,14 @@ import { processArray } from '../utils/tool';
 import type { FunctionComponent } from 'react';
 import type { ElementProps } from '../Element';
 
-export type WindowManagerProps = ElementProps<HTMLDivElement>;
+export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
+  full?: boolean;
+}
 
 const WindowManager: FunctionComponent<WindowManagerProps> = ({
   className,
   children,
+  full,
   ...rest
 }) => {
   const classes = classNames(
@@ -17,6 +20,7 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
     'oo-ui-windowManager',
     'oo-ui-windowManager-modal',
     'oo-ui-windowManager-floating',
+    full && 'oo-ui-windowManager-fullscreen',
   );
 
   const hasOpen = processArray(children).some((child) => {
