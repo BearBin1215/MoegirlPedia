@@ -1,8 +1,9 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import type { ElementProps } from '../Element';
+import { processArray } from '../utils/tool';
 import type { FunctionComponent } from 'react';
+import type { ElementProps } from '../Element';
 
 export type WindowManagerProps = ElementProps<HTMLDivElement>;
 
@@ -18,12 +19,17 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
     'oo-ui-windowManager-floating',
   );
 
+  const hasOpen = processArray(children).some((child) => {
+    return child && typeof child === 'object' && 'props' in child && child?.props.open;
+  });
+
   return (
     <>
       {createPortal(
         <div
           className={classes}
           {...rest}
+          aria-hidden={hasOpen ? void 0 : true}
         >
           {children}
         </div>,

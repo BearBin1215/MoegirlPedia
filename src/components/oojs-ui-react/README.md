@@ -4,6 +4,8 @@
 
 基本上都支持常见标准属性，如`id`、`className`、`ref`、`onClick`等。
 
+主要用于生成oojs-ui的元素，api、使用逻辑可能有很大出入。
+
 ## 基本类型
 
 - ChangeValue<T, P>: `{ value: T, oldValue: T | undefined, event?: React.ChangeEvent<P> }`
@@ -147,10 +149,10 @@ import { Dropdown, MenuOption, MenuSectionOption } from 'oojs-ui-react';
 const App = () => {
   return (
     <Dropdown label='please select'>
-      <MenuSectionOption icon='add'>group1</MenuSectionOption>
+      <MenuSectionOption icon='check'>group1</MenuSectionOption>
       <MenuOption data='a'>foo</MenuOption>
       <MenuOption data='b'>bar</MenuOption>
-      <MenuSectionOption icon='subtract'>group2</MenuSectionOption>
+      <MenuSectionOption icon='cancel'>group2</MenuSectionOption>
       <MenuOption data='c' disabled>disabled</MenuOption>
     </Dropdown>
   );
