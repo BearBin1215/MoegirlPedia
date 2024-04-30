@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect, useMemo, useCallback } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processArray, processClassNames } from '../utils/tool';
-import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../types/props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../types/mixin';
 import type { ChangeHandler } from '../types/utils';
@@ -25,7 +24,7 @@ export interface DropdownProps extends
   onChange?: ChangeHandler<any>;
 }
 
-const Dropdown: FunctionComponent<DropdownProps> = ({
+const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   className,
   children,
   defaultValue,
@@ -33,12 +32,21 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
   icon,
   label,
   onChange,
-  ref,
   ...rest
-}) => {
+}, externalRef) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue);
-  const dropdownRef = ref || useRef<HTMLDivElement>(null);
+  const internalRef = useRef<HTMLDivElement>(null);
+
+  function getNonNullRef(): HTMLDivElement {
+    const node = internalRef.current;
+    if (!node) {
+      throw new Error('Component not yet mounted.');
+    }
+    return node;
+  }
+
+  useImperativeHandle(externalRef, () => getNonNullRef(), [internalRef.current]);
 
   const options = useMemo(() => processArray(children), [children, value]);
 
@@ -76,7 +84,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
 
   /** 点击页面其他地方时关闭下拉菜单 */
   const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (internalRef.current && !internalRef.current.contains(event.target as Node)) {
       setOpen(false);
     }
   }, []);
@@ -100,7 +108,7 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
     <div
       {...rest}
       className={classes}
-      ref={dropdownRef}
+      ref={internalRef}
     >
       <span
         tabIndex={disabled ? -1 : 0}
@@ -120,6 +128,8 @@ const Dropdown: FunctionComponent<DropdownProps> = ({
       </Select>
     </div>
   );
-};
+});
+
+Dropdown.displayName = 'Dropdown';
 
 export default Dropdown;

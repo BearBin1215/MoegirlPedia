@@ -1,11 +1,10 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import type { ElementProps } from '../Element';
-import type { ReactNode, FunctionComponent } from 'react';
+import type { FunctionComponent } from 'react';
 
-export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
-
-}
+export type WindowManagerProps = ElementProps<HTMLDivElement>;
 
 const WindowManager: FunctionComponent<WindowManagerProps> = ({
   className,
@@ -16,15 +15,21 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
     className,
     'oo-ui-windowManager',
     'oo-ui-windowManager-modal',
+    'oo-ui-windowManager-floating',
   );
 
   return (
-    <div
-      className={classes}
-      {...rest}
-    >
-      {children}
-    </div>
+    <>
+      {createPortal(
+        <div
+          className={classes}
+          {...rest}
+        >
+          {children}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 };
 

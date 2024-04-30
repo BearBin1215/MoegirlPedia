@@ -20,7 +20,7 @@ export interface OptionData {
 export interface OptionProps extends
   Omit<WidgetProps<HTMLDivElement>, 'ref'>,
   AccessKeyElement,
-  Omit<OptionData, 'data'> { }
+  OptionData { }
 
 const Option: FunctionComponent<OptionProps> = ({
   accessKey,

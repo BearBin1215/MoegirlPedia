@@ -120,6 +120,24 @@ export default App;
 
 ## Dropdown
 
+```jsx
+import React from 'react';
+import { Dropdown, MenuOption } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <Dropdown label='please select'>
+      <MenuOption data='a'>foo</MenuOption>
+      <MenuOption data='b' icon='check'>bar</MenuOption>
+      <MenuOption data='c' disabled>disabled</MenuOption>
+    </Dropdown>
+  );
+};
+
+export default App;
+```
+
+### API
 
 
 ## RadioInput

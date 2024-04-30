@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import type { ElementProps } from '../Element';
 import type { ReactNode, FunctionComponent } from 'react';
@@ -23,6 +23,11 @@ const Dialog: FunctionComponent<DialogProps> = ({
   foot,
   ...rest
 }) => {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLDivElement>(null);
+
   const classes = classNames(
     className,
     'oo-ui-window',
@@ -57,6 +62,36 @@ const Dialog: FunctionComponent<DialogProps> = ({
     }
   }, [size]);
 
+  useEffect(() => {
+    /**
+     * 更新弹窗高度
+     * @ps 你*的为什么用这么难受的手段，用top: 50%; left: 50%; transform: translate(-50%, -50%);不好吗
+     */
+    const calculateHeight = () => {
+      if (frameRef.current && headRef.current && bodyRef.current && footRef.current) {
+        bodyRef.current.classList.remove('oo-ui-window-body');
+        const totalHeight =
+          headRef.current.scrollHeight +
+          bodyRef.current.scrollHeight +
+          footRef.current.scrollHeight +
+          frameRef.current.offsetHeight - frameRef.current.clientHeight;
+        bodyRef.current.classList.add('oo-ui-window-body');
+
+        // 更新frame的高度
+        frameRef.current.style.height = `${totalHeight}px`;
+      }
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+
+    // 清理函数
+    return () => {
+      window.removeEventListener('resize', calculateHeight);
+    };
+
+  }, [headRef, bodyRef, footRef]);
+
   return (
     <div
       {...rest}
@@ -64,13 +99,15 @@ const Dialog: FunctionComponent<DialogProps> = ({
     >
       <div
         className='oo-ui-window-frame'
+        role='dialog'
         style={{ transition: 'all 0.25s ease 0s', width: frameWidth }}
+        ref={frameRef}
       >
         <div tabIndex={0} />
         <div className={contentClasses} tabIndex={0}>
-          <div className='oo-ui-window-head'>{head}</div>
-          <div className='oo-ui-window-body'>{children}</div>
-          <div className='oo-ui-window-foot'>{foot}</div>
+          <div className='oo-ui-window-head' ref={headRef}>{head}</div>
+          <div className='oo-ui-window-body' ref={bodyRef}>{children}</div>
+          <div className='oo-ui-window-foot' ref={footRef}>{foot}</div>
         </div>
         <div tabIndex={0} />
       </div>
