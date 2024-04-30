@@ -120,6 +120,7 @@ export default App;
 
 ## Dropdown
 
+### 基本用法
 ```jsx
 import React from 'react';
 import { Dropdown, MenuOption } from 'oojs-ui-react';
@@ -129,6 +130,27 @@ const App = () => {
     <Dropdown label='please select'>
       <MenuOption data='a'>foo</MenuOption>
       <MenuOption data='b' icon='check'>bar</MenuOption>
+      <MenuOption data='c' disabled>disabled</MenuOption>
+    </Dropdown>
+  );
+};
+
+export default App;
+```
+
+### 分组
+
+```jsx
+import React from 'react';
+import { Dropdown, MenuOption, MenuSectionOption } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <Dropdown label='please select'>
+      <MenuSectionOption icon='add'>group1</MenuSectionOption>
+      <MenuOption data='a'>foo</MenuOption>
+      <MenuOption data='b'>bar</MenuOption>
+      <MenuSectionOption icon='subtract'>group2</MenuSectionOption>
       <MenuOption data='c' disabled>disabled</MenuOption>
     </Dropdown>
   );
