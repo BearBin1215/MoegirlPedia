@@ -101,6 +101,7 @@ module.exports = {
     ],
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-vars': [2, { varsIgnorePattern: '^_' }],
+    'react/jsx-curly-brace-presence': 2,
     'react/jsx-indent': [2, 2],
     'react/jsx-indent-props': [2, 2],
     'react/jsx-tag-spacing': [2, {

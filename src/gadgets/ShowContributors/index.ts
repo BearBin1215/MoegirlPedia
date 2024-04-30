@@ -25,6 +25,7 @@ $(() => (async () => {
   class ContributorDialog extends OO.ui.Dialog {
     $table = $('<table id="show-contributor-table" class="wikitable" />') as JQuery<HTMLTableElement>;
     $tbody = $('<tbody />') as JQuery<HTMLTableSectionElement>;
+    $head!: JQuery<HTMLDivElement>;
     $body!: JQuery<HTMLDivElement>;
     got = false;
 
@@ -35,6 +36,8 @@ $(() => (async () => {
     };
     initialize() {
       super.initialize();
+
+      this.$head.append('1');
 
       this.$body.append(
         $('<div id="show-contributor-header" />').append(
