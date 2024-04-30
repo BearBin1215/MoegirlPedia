@@ -208,3 +208,37 @@ export default App;
 | data      | 选项值     | `string \| number \| boolean`                                      |
 | disabled  | 是否禁用   | `boolean`                                               |
 | onChange  | 值变化钩子 | [`ChangeHandler<boolean, HTMLInputElement>`](#基本类型) |
+
+
+## Dialog
+
+```jsx
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Button, Dialog } from 'oojs-ui-react';
+
+const App = () => {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Button onClick={handleClick}>Open</Button>
+      <Dialog open={open}>
+        <Button onClick={handleClose}>close</Button>
+        <hr />
+        content
+      </Dialog>
+    </>
+  );
+};
+
+export default App;
+```

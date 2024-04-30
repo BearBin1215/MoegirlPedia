@@ -1,4 +1,12 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
 import IconBase from '../Icon/Base';
