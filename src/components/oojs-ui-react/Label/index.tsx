@@ -4,11 +4,8 @@ import LabelBase from './Base';
 import { processClassNames } from '../utils/tool';
 import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../types/props';
-import type { LabelElement } from '../types/mixin';
 
-export interface LabelProps extends
-  WidgetProps<HTMLSpanElement>,
-  LabelElement { }
+export type LabelProps = WidgetProps<HTMLSpanElement>;
 
 const Label: FunctionComponent<LabelProps> = ({
   className,
@@ -19,6 +16,7 @@ const Label: FunctionComponent<LabelProps> = ({
   const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'label'),
+    'oo-ui-labelElement',
   );
 
   return (

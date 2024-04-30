@@ -31,5 +31,8 @@ export type { MenuSectionOptionProps } from '../MenuSectionOption';
 export type { SelectProps } from '../Select';
 export type { DropdownProps } from '../Dropdown';
 
+// 弹窗
+export type { DialogProps } from '../Dialog/Dialog';
+
 // 布局
 export type { FieldLayoutProps } from '../FieldLayout';

@@ -33,8 +33,7 @@ export { default as Dropdown } from './Dropdown';
 
 // 弹窗
 export { default as WindowManager } from './WindowManager';
-export { default as Dialog } from './Dialog';
-
+export { default as Dialog } from './Dialog/Dialog';
 
 // 布局
 export { default as FieldLayout } from './FieldLayout';
