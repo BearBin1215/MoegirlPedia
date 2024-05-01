@@ -1,11 +1,22 @@
-import OriginDialog from './Dialog';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import MessageDialog from './MessageDialog';
+import type { ReactNode } from 'react';
 
-interface DialogStatics {
-  confirm: () => Promise<boolean>;
+interface ConfirmProps {
+  title: ReactNode;
+  content: ReactNode;
 }
 
-type DialogType = typeof OriginDialog & DialogStatics;
+const ConfirmDialog = () => {
 
-const Dialog = OriginDialog as DialogType;
+};
 
-export default Dialog;
+const confirm: (props: ConfirmProps) => Promise<boolean> = ({
+  title,
+  content,
+}) => new Promise((resolve) => {
+  const root = createRoot(document.createDocumentFragment());
+});
+
+export default confirm;

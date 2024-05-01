@@ -32,7 +32,6 @@ export { default as Select } from './Select';
 export { default as Dropdown } from './Dropdown';
 
 // 弹窗
-export { default as WindowManager } from './WindowManager';
 export { default as Dialog } from './Dialog/Dialog';
 
 // 布局

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { throttle } from 'lodash-es';
-import WindowManager from '../WindowManager';
+import WindowManager from './WindowManager';
 import type { ElementProps } from '../Element';
 import type { ReactNode, FunctionComponent } from 'react';
 
@@ -104,7 +104,10 @@ const Dialog: FunctionComponent<DialogProps> = ({
   }, [open, headRef, bodyRef, footRef]);
 
   return (
-    <WindowManager full={full}>
+    <WindowManager
+      full={full}
+      aria-hidden={!open}
+    >
       <div
         {...rest}
         className={classes}
