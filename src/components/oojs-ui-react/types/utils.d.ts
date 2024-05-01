@@ -2,7 +2,7 @@ import type { ChangeEvent } from 'react';
 
 export type IconFlag = 'progressive' | 'destructive';
 
-export type ButtonFlag = 'primary' | IconFlag;
+export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close';
 
 export type LabelPosition = 'before' | 'after';
 

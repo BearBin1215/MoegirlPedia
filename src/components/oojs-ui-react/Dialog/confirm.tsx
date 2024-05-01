@@ -3,9 +3,9 @@ import { createRoot } from 'react-dom/client';
 import MessageDialog from './MessageDialog';
 import type { ReactNode } from 'react';
 
-interface ConfirmProps {
-  title: ReactNode;
-  content: ReactNode;
+export interface ConfirmProps {
+  title?: ReactNode;
+  content?: ReactNode;
 }
 
 const ConfirmDialog = () => {

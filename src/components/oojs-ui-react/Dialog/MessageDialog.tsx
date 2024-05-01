@@ -2,11 +2,17 @@ import React, { FunctionComponent } from 'react';
 import classNames from 'classnames';
 import Dialog from './Dialog';
 import Label from '../Label';
+import Button from '../Button';
 import type { ReactNode } from 'react';
 import type { DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends DialogProps {
-  title?: ReactNode,
+  title?: ReactNode;
+
+  /** 点击确定回调 */
+  onOk?: () => void;
+  /** 点击取消回调 */
+  onCancel?: () => void;
 }
 
 const MessageDialog: FunctionComponent<MessageDialogProps> = ({
@@ -14,6 +20,8 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
   className,
   title,
   foot,
+  onOk,
+  onCancel,
   ...rest
 }) => {
   const classes = classNames(
@@ -23,12 +31,17 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
 
   return (
     <Dialog
+      {...rest}
       className={classes}
       contentClassName='oo-ui-messageDialog-content'
-      {...rest}
       foot={
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
-          {foot}
+          {foot || (
+            <>
+              <Button framed={false} flags='safe' onClick={onCancel}>取消</Button>
+              <Button framed={false} flags='primary' onClick={onOk}>确定</Button>
+            </>
+          )}
         </div>
       }
     >
