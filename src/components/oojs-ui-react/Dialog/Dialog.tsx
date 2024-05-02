@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { throttle } from 'lodash-es';
 import WindowManager from './WindowManager';
-import type { ElementProps } from '../Element';
+import type { ElementProps } from '../widgets/Element';
 import type { ReactNode, FunctionComponent } from 'react';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {

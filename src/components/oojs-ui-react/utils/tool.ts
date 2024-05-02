@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import type { WidgetProps } from '../Widget';
+import type { WidgetProps } from '../widgets/Widget';
 import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
 
 /** 确保参数为数组，通常用来处理children */

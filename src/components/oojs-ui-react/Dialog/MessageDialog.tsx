@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import classNames from 'classnames';
 import Dialog from './Dialog';
-import Label from '../Label';
-import Button from '../Button';
+import Label from '../widgets/Label';
+import Button from '../widgets/Button';
+import PanelLayout from '../layouts/PanelLayout';
 import type { ReactNode } from 'react';
 import type { DialogProps } from './Dialog';
 
@@ -45,12 +46,12 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
         </div>
       }
     >
-      <div className='oo-ui-messageDialog-container oo-ui-layout oo-ui-panelLayout oo-ui-panelLayout-scrollable oo-ui-panelLayout-expanded'>
-        <div className='oo-ui-messageDialog-text oo-ui-layout oo-ui-panelLayout oo-ui-panelLayout-padded'>
+      <PanelLayout className='oo-ui-messageDialog-container' scrollable expanded>
+        <PanelLayout className='oo-ui-messageDialog-text' padded>
           <Label className='oo-ui-messageDialog-title'>{title}</Label>
           <Label>{children}</Label>
-        </div>
-      </div>
+        </PanelLayout>
+      </PanelLayout>
     </Dialog>
   );
 };
