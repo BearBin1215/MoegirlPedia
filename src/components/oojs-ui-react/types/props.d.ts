@@ -17,9 +17,9 @@ export type { NumberInputProps } from '../widgets/NumberInput';
 export type { MultilineTextInputProps } from './MultilineTextInput';
 
 // 单选框
-export type { RadioInputProps } from './RadioInput';
-export type { RadioOptionProps } from './RadioOption';
-export type { RadioSelectProps } from './RadioSelect';
+export type { RadioInputProps } from '../widgets/RadioInput';
+export type { RadioOptionProps } from '../widgets/RadioOption';
+export type { RadioSelectProps } from '../widgets/RadioSelect';
 
 // 复选框
 export type { CheckboxInputProps } from '../widgets/CheckboxInput';
@@ -32,8 +32,8 @@ export type { SelectProps } from '../widgets/Select';
 export type { DropdownProps } from '../widgets/Dropdown';
 
 // 弹窗
-export type { DialogProps } from '../Dialog/Dialog';
-export type { MessageDialogProps } from './Dialog/MessageDialog';
+export type { DialogProps } from '../dialogs/Dialog';
+export type { MessageDialogProps } from '../dialogs/MessageDialog';
 
 // 布局
 export type { LayoutProps } from '../layouts/Layout';

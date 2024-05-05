@@ -32,8 +32,8 @@ export { default as Select } from './widgets/Select';
 export { default as Dropdown } from './widgets/Dropdown';
 
 // 弹窗
-export { default as Dialog } from './Dialog/Dialog';
-export { default as MessageDialog } from './Dialog/MessageDialog';
+export { default as Dialog } from './dialogs/Dialog';
+export { default as MessageDialog } from './dialogs/MessageDialog';
 
 // 布局
 export { default as Layout } from './layouts/Layout';
