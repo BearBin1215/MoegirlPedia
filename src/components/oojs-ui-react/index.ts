@@ -31,11 +31,11 @@ export { default as MenuSectionOption } from './widgets/MenuSectionOption';
 export { default as Select } from './widgets/Select';
 export { default as Dropdown } from './widgets/Dropdown';
 
-// 弹窗
-export { default as Dialog } from './dialogs/Dialog';
-export { default as MessageDialog } from './dialogs/MessageDialog';
-
 // 布局
 export { default as Layout } from './layouts/Layout';
 export { default as PanelLayout } from './layouts/PanelLayout';
 export { default as FieldLayout } from './layouts/FieldLayout';
+
+// 弹窗
+export { default as Dialog } from './dialogs/Dialog';
+export { default as MessageDialog } from './dialogs/MessageDialog';
