@@ -73,7 +73,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
       if (frameRef.current) {
         if (frameWidth && frameWidth > window.innerWidth) {
           // 窄屏下将高度、宽度设为100%
-          frameRef.current.style.height = `100%`;
+          frameRef.current.style.height = '100%';
           setFull(true);
         } else {
           // 宽屏下根据内容动态调整高度
@@ -92,7 +92,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
           }
         }
       }
-    }, 200);
+    }, 300);
 
     updateSize();
     window.addEventListener('resize', updateSize);
