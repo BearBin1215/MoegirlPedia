@@ -2,7 +2,7 @@ import OriginDialog from './Dialog';
 import MessageDialog from './MessageDialog';
 
 interface DialogStatics {
-  confirm: () => Promise<boolean>;
+  // confirm: () => Promise<boolean>;
 }
 
 type DialogType = typeof OriginDialog & DialogStatics;

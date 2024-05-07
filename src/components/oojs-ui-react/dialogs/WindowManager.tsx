@@ -19,22 +19,17 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
     className,
     'oo-ui-windowManager',
     'oo-ui-windowManager-modal',
-    'oo-ui-windowManager-floating',
-    full && 'oo-ui-windowManager-fullscreen',
+    full ? 'oo-ui-windowManager-fullscreen' : 'oo-ui-windowManager-floating',
   );
 
-  return (
-    <>
-      {createPortal(
-        <div
-          className={classes}
-          {...rest}
-        >
-          {children}
-        </div>,
-        document.body,
-      )}
-    </>
+  return createPortal(
+    <div
+      className={classes}
+      {...rest}
+    >
+      {children}
+    </div>,
+    document.body,
   );
 };
 
