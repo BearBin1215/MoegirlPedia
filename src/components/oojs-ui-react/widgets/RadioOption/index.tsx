@@ -40,7 +40,6 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
       tabIndex={-1}
       role='radio'
       aria-checked={!!selected}
-      onSelect={(e) => console.log(e)}
     >
       <RadioInput
         accessKey={accessKey}

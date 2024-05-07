@@ -75,7 +75,6 @@ $(() => (async () => {
   const getNewPages = async (rclimit, period) => {
     const rcstart = new Date().getTime();
     const rcend = rcstart - period * 24 * 3600000;
-    console.log(`统计时间：${Date()}`);
     const pages = await api.post({
       action: 'query',
       list: 'recentchanges',
@@ -153,7 +152,7 @@ $(() => (async () => {
       }
       return await pageInCat(categories, category);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -208,9 +207,6 @@ $(() => (async () => {
     for (const item of pageFiltered) {
       if (await pageInCat([item], `Category:${category}`)) {
         pageCount++;
-        console.log(`${item}：属于`);
-      } else {
-        console.log(`${item}：不属于`);
       }
     }
     $resultPanel.append($(`<div>其中${pageCount}个属于<a href="/Category:${category}">分类:${category}</a>或其子分类。</div>`));

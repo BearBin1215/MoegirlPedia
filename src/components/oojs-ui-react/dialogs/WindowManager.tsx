@@ -6,19 +6,21 @@ import type { ElementProps } from '../widgets/Element';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;
+  modal?: boolean;
   'aria-hidden'?: boolean | 'true' | 'false';
 }
 
 const WindowManager: FunctionComponent<WindowManagerProps> = ({
   className,
   children,
+  modal = true,
   full,
   ...rest
 }) => {
   const classes = classNames(
     className,
     'oo-ui-windowManager',
-    'oo-ui-windowManager-modal',
+    modal && 'oo-ui-windowManager-modal',
     full ? 'oo-ui-windowManager-fullscreen' : 'oo-ui-windowManager-floating',
   );
 

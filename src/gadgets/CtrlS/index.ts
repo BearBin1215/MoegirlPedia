@@ -2,7 +2,6 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   const si = setInterval;
   // 编辑页Ctrl+S保存，Ctrl+Shift+S小编辑保存
   window.addEventListener('keydown', (event) => {
-    console.log(event);
     if (event.ctrlKey) {
       if (event.key.toLowerCase() === 's') {
         // Ctrl+S保存

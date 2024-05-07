@@ -69,7 +69,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
   }, [size]);
 
   useEffect(() => {
-    const updateSize = throttle(() => {
+    const updateSize = () => {
       if (frameRef.current) {
         if (frameWidth && frameWidth > window.innerWidth) {
           // 窄屏下将高度、宽度设为100%
@@ -77,28 +77,30 @@ const Dialog: FunctionComponent<DialogProps> = ({
           setFull(true);
         } else {
           // 宽屏下根据内容动态调整高度
-          setFull(false);
           if (open && headRef.current && bodyRef.current && footRef.current) {
-            bodyRef.current.classList.remove('oo-ui-window-body');
+            frameRef.current.style.height = '1px';
+            bodyRef.current.style.position = 'relative';
             const totalHeight =
               headRef.current.scrollHeight +
               bodyRef.current.scrollHeight +
               footRef.current.scrollHeight +
               frameRef.current.offsetHeight - frameRef.current.clientHeight;
-            bodyRef.current.classList.add('oo-ui-window-body');
-
             // 更新frame的高度
             frameRef.current.style.height = `${totalHeight}px`;
+            bodyRef.current.style.position = '';
+            setFull(false);
           }
         }
       }
-    }, 300);
+    };
 
     updateSize();
-    window.addEventListener('resize', updateSize);
+
+    const onResize = throttle(updateSize, 300);
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', updateSize);
+      window.removeEventListener('resize', onResize);
     };
 
   }, [open, headRef, bodyRef, footRef]);

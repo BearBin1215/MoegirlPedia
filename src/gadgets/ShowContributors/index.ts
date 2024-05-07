@@ -151,7 +151,6 @@ $(() => (async () => {
     if (!SCDialog.got) {
       contributorButton.setLabel('正在查询');
       const contributors = await SCDialog.getContributors();
-      console.log(contributors);
       SCDialog.showContributors(contributors);
       SCDialog.$table.tablesorter();
       contributorButton.setLabel('本页贡献者');

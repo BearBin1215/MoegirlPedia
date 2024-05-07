@@ -3,7 +3,6 @@ import markupIcon from './markup.svg' assert { type: 'xml' };
 
 if (mw.config.get('skin') === 'moeskin') {
   $('main.moe-flexible-container').css('transition', 'width .24s ease');
-  console.log(stretchStyle);
   const $stretchStyle = $(`<style>${stretchStyle}</style>`);
   const $stretchButton = ($('#moe-sidenav-toggle-btn') as JQuery<HTMLAnchorElement>)
     .clone()

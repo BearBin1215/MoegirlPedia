@@ -4,16 +4,16 @@ import Dialog from './Dialog';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
-import type { ReactNode } from 'react';
+import type { ReactNode, MouseEventHandler } from 'react';
 import type { DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends DialogProps {
   title?: ReactNode;
 
   /** 点击确定回调 */
-  onOk?: () => void;
+  onOk?: MouseEventHandler<HTMLSpanElement>;
   /** 点击取消回调 */
-  onCancel?: () => void;
+  onCancel?: MouseEventHandler<HTMLSpanElement>;
 }
 
 const MessageDialog: FunctionComponent<MessageDialogProps> = ({
