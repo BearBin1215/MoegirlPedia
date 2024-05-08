@@ -25,10 +25,7 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
   onCancel,
   ...rest
 }) => {
-  const classes = classNames(
-    className,
-    'oo-ui-messageDialog',
-  );
+  const classes = classNames(className, 'oo-ui-messageDialog');
 
   return (
     <Dialog
@@ -37,7 +34,7 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
       contentClassName='oo-ui-messageDialog-content'
       foot={
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
-          {foot || (
+          {foot ?? (
             <>
               <Button framed={false} flags='safe' onClick={onCancel}>取消</Button>
               <Button framed={false} flags='primary' onClick={onOk}>确定</Button>

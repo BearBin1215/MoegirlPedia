@@ -5,6 +5,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import LabelBase from '../../widgets/Label/Base';
+import Layout from '../Layout';
 import type { ReactNode, FunctionComponent } from 'react';
 import type { WidgetProps } from '../../types/props';
 import type { LabelElement } from '../../types/mixin';
@@ -28,7 +29,6 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
 }) => {
   const classes = classNames(
     className,
-    'oo-ui-layout',
     label && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',
     `oo-ui-fieldLayout-align-${align}`,
@@ -47,7 +47,7 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
   );
 
   return (
-    <div
+    <Layout
       className={classes}
       {...rest}
     >
@@ -60,7 +60,7 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
           layoutField,
         ]}
       </div>
-    </div>
+    </Layout>
   );
 };
 
