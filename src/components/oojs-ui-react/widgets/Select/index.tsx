@@ -61,7 +61,10 @@ const Select: FunctionComponent<SelectProps> = ({
         if (!('data' in option.props)) {
           return option;
         }
-        const handleClick: MouseEventHandler<HTMLDivElement> = () => {
+        const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+          if (option.props.onClick) {
+            option.props.onClick(e);
+          }
           if (onSelect && !option.props.disabled) {
             onSelect(option.props as OptionData);
           }

@@ -25,12 +25,7 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
   );
 
   return createPortal(
-    <div
-      className={classes}
-      {...rest}
-    >
-      {children}
-    </div>,
+    <div className={classes} {...rest}>{children}</div>,
     document.body,
   );
 };

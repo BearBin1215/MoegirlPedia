@@ -12,7 +12,10 @@ export interface LabelElement {
 }
 
 export interface IconElement {
-  /** 组件图标 */
+  /**
+   * 组件图标
+   * @see https://doc.wikimedia.org/oojs-ui/master/demos/?page=icons
+   */
   icon?: string;
 }
 

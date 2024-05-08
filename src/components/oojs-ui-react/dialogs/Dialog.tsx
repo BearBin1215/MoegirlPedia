@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
-import { throttle } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
 import type { ElementProps } from '../widgets/Element';
 import type { ReactNode, FunctionComponent } from 'react';
@@ -72,10 +72,11 @@ const Dialog: FunctionComponent<DialogProps> = ({
     const updateSize = () => {
       if (frameRef.current) {
         if (frameWidth && frameWidth > window.innerWidth) {
+          setFull(true);
           // 窄屏下将高度、宽度设为100%
           frameRef.current.style.height = '100%';
-          setFull(true);
         } else {
+          setFull(false);
           // 宽屏下根据内容动态调整高度
           if (open && headRef.current && bodyRef.current && footRef.current) {
             frameRef.current.style.height = '1px';
@@ -85,10 +86,8 @@ const Dialog: FunctionComponent<DialogProps> = ({
               bodyRef.current.scrollHeight +
               footRef.current.scrollHeight +
               frameRef.current.offsetHeight - frameRef.current.clientHeight;
-            // 更新frame的高度
             frameRef.current.style.height = `${totalHeight}px`;
             bodyRef.current.style.position = '';
-            setFull(false);
           }
         }
       }
@@ -96,7 +95,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
 
     updateSize();
 
-    const onResize = throttle(updateSize, 300);
+    const onResize = debounce(updateSize, 200);
     window.addEventListener('resize', onResize);
 
     return () => {
@@ -120,6 +119,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
           style={{
             transition: 'all 0.25s ease 0s',
             width: full ? '100%' : `${frameWidth}px`,
+            height: '1px',
           }}
           ref={frameRef}
         >
