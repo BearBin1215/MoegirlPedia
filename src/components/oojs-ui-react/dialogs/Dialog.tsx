@@ -1,3 +1,6 @@
+/**
+ * @todo 打开、关闭动画
+ */
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
@@ -29,6 +32,9 @@ const Dialog: FunctionComponent<DialogProps> = ({
   ...rest
 }) => {
   const [full, setFull] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [setup, setSetup] = useState(false);
+  const [active, setActive] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -38,18 +44,17 @@ const Dialog: FunctionComponent<DialogProps> = ({
     className,
     'oo-ui-window',
     'oo-ui-dialog',
-    open ? [
-      'oo-ui-window-active',
-      'oo-ui-window-setup',
-      'oo-ui-window-ready',
-    ] : 'oo-ui-element-hidden',
+    setup && 'oo-ui-window-setup',
+    ready && 'oo-ui-window-ready',
+    active ? 'oo-ui-window-active' : 'oo-ui-element-hidden',
   );
 
   const contentClasses = classNames(
     'oo-ui-window-content',
     'oo-ui-dialog-content',
     contentClassName,
-    open && ['oo-ui-window-content-setup', 'oo-ui-window-content-ready'],
+    ready && 'oo-ui-window-content-ready',
+    setup && 'oo-ui-window-content-setup',
   );
 
   const frameWidth = useMemo(() => {
@@ -68,46 +73,69 @@ const Dialog: FunctionComponent<DialogProps> = ({
     }
   }, [size]);
 
-  useEffect(() => {
-    const updateSize = () => {
-      if (frameRef.current) {
-        if (frameWidth && frameWidth > window.innerWidth) {
-          setFull(true);
-          // 窄屏下将高度、宽度设为100%
-          frameRef.current.style.height = '100%';
-        } else {
-          setFull(false);
-          // 宽屏下根据内容动态调整高度
-          if (open && headRef.current && bodyRef.current && footRef.current) {
-            frameRef.current.style.height = '1px';
-            bodyRef.current.style.position = 'relative';
-            const totalHeight =
-              headRef.current.scrollHeight +
-              bodyRef.current.scrollHeight +
-              footRef.current.scrollHeight +
-              frameRef.current.offsetHeight - frameRef.current.clientHeight;
-            frameRef.current.style.height = `${totalHeight}px`;
-            bodyRef.current.style.position = '';
-          }
+  // 更新弹窗尺寸
+  const updateSize = () => {
+    if (frameRef.current) {
+      if (frameWidth && frameWidth > window.innerWidth) {
+        setFull(true);
+        // 窄屏下将高度、宽度设为100%
+        frameRef.current.style.height = '100%';
+      } else {
+        setFull(false);
+        // 宽屏下根据内容动态调整高度
+        if (active && headRef.current && bodyRef.current && footRef.current) {
+          frameRef.current.style.height = '1px';
+          bodyRef.current.style.position = 'relative';
+          const totalHeight =
+            headRef.current.scrollHeight +
+            bodyRef.current.scrollHeight +
+            footRef.current.scrollHeight +
+            frameRef.current.offsetHeight - frameRef.current.clientHeight;
+          frameRef.current.style.height = `${totalHeight}px`;
+          bodyRef.current.style.position = '';
         }
       }
-    };
+    }
+  };
 
-    updateSize();
-
+  // 监听视窗宽度变化
+  useEffect(() => {
     const onResize = debounce(updateSize, 200);
     window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('resize', onResize);
     };
+  }, [headRef, bodyRef, footRef]);
 
-  }, [open, headRef, bodyRef, footRef]);
+  // 打开弹窗时初始化弹窗尺寸
+  useEffect(() => {
+    updateSize();
+  }, [active]);
+
+  // 开关动画控制
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        setActive(true);
+        setSetup(true);
+        setTimeout(() => setReady(true));
+      });
+    } else {
+      setTimeout(() => {
+        setReady(false);
+        setTimeout(() => {
+          setSetup(false);
+          setActive(false);
+        }, 250);
+      });
+    }
+  }, [open]);
 
   return (
     <WindowManager
       full={full}
-      aria-hidden={!open}
+      aria-hidden={!active}
     >
       <div
         {...rest}
