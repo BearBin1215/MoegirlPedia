@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import MenuOption from '../MenuOption';
 import { processArray, processClassNames } from '../../utils/tool';
 import type { FunctionComponent, MouseEventHandler, ReactElement } from 'react';
-import type { WidgetProps, MenuOptionProps, MenuSectionOptionProps } from '../../types/props';
+import type { WidgetProps, OptionProps, MenuSectionOptionProps } from '../../types/props';
 import type { OptionData } from '../Option';
 
-export type OptionElement = ReactElement<MenuOptionProps | MenuSectionOptionProps>;
+export type OptionElement = ReactElement<OptionProps | MenuSectionOptionProps>;
 
 export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'ref'> {
   /** 选中选项回调函数 */
