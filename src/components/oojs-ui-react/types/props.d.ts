@@ -9,6 +9,7 @@ export type { IndicatorProps } from '../widgets/Indicator';
 
 // 按钮
 export type { ButtonProps } from '../widgets/Button';
+export type { ButtonGroupProps } from '../widgets/ButtonGroup';
 
 // 输入框
 export type { InputProps } from '../widgets/Input';

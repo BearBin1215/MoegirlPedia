@@ -9,6 +9,7 @@ export { default as Indicator } from './widgets/Indicator';
 
 // 按钮
 export { default as Button } from './widgets/Button';
+export { default as ButtonGroup } from './widgets/ButtonGroup';
 
 // 输入框
 export { default as Input } from './widgets/Input';
@@ -39,3 +40,6 @@ export { default as FieldLayout } from './layouts/FieldLayout';
 // 弹窗
 export { default as Dialog } from './dialogs/Dialog';
 export { default as MessageDialog } from './dialogs/MessageDialog';
+
+// 类型
+export * from './types/props';

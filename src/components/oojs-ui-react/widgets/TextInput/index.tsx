@@ -101,12 +101,13 @@ const TextInput: FunctionComponent<TextInputProps> = ({
         value={value}
         readOnly={readOnly}
         required={required}
+        aria-required={required}
         placeholder={placeholder}
         maxLength={maxLength}
         style={inputStyle}
       />
       <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator} />
+      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
       {label && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );

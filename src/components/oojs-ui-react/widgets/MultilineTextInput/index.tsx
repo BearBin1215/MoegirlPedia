@@ -142,6 +142,7 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
         value={value}
         readOnly={readOnly}
         required={required}
+        aria-required={required}
         placeholder={placeholder}
         maxLength={maxLength}
         style={inputStyle}
@@ -162,7 +163,7 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
         />
       )}
       <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator} style={{ right: '2px' }} />
+      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} style={{ right: '2px' }} />
       {label && <LabelBase>{label}</LabelBase>}
     </div>
   );

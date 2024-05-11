@@ -127,6 +127,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           disabled={disabled}
           readOnly={readOnly}
           required={required}
+          aria-required={required}
           value={value}
           placeholder={placeholder}
           min={min}
