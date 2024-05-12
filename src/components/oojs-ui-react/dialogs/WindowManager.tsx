@@ -8,6 +8,8 @@ export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;
   modal?: boolean;
   'aria-hidden'?: boolean | 'true' | 'false';
+  /** 要渲染的节点 */
+  portal?: Element | DocumentFragment,
 }
 
 const WindowManager: FunctionComponent<WindowManagerProps> = ({
@@ -15,6 +17,7 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
   children,
   modal = true,
   full,
+  portal = document.body,
   ...rest
 }) => {
   const classes = classNames(
@@ -26,7 +29,7 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
 
   return createPortal(
     <div className={classes} {...rest}>{children}</div>,
-    document.body,
+    portal,
   );
 };
 
