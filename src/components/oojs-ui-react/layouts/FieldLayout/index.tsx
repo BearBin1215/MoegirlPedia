@@ -1,7 +1,3 @@
-/**
- * @description 仅有最简单功能的FieldLayout
- */
-
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import LabelBase from '../../widgets/Label/Base';
@@ -35,17 +31,14 @@ const FieldLayout = forwardRef<ElementRef<HTMLDivElement>, FieldLayoutProps>(({
     `oo-ui-fieldLayout-align-${align}`,
   );
 
-  const layoutHeader = (
-    <span className='oo-ui-fieldLayout-header'>
-      <LabelBase>{label}</LabelBase>
-    </span>
-  );
-
-  const layoutField = (
-    <span className='oo-ui-fieldLayout-field'>
+  const child = [
+    <span className='oo-ui-fieldLayout-field' key='field'>
       {children}
-    </span>
-  );
+    </span>,
+    <span className='oo-ui-fieldLayout-header' key='header'>
+      <LabelBase>{label}</LabelBase>
+    </span>,
+  ];
 
   return (
     <Layout
@@ -54,13 +47,7 @@ const FieldLayout = forwardRef<ElementRef<HTMLDivElement>, FieldLayoutProps>(({
       ref={ref}
     >
       <div className='oo-ui-fieldLayout-body'>
-        {align === 'inline' ? [
-          layoutField,
-          layoutHeader,
-        ] : [
-          layoutHeader,
-          layoutField,
-        ]}
+        {align === 'inline' ? child : child.reverse()}
       </div>
     </Layout>
   );

@@ -2,17 +2,14 @@ import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import classNames from 'classnames';
 import IconWidget from '../Icon';
 import { processClassNames } from '../../utils/tool';
-import type { RefObject, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import type { InputProps } from '../../types/props';
 import type { AccessKeyElement } from '../../types/mixin';
 import type { SelectWidgetRef } from '../../types/ref';
 
 export interface CheckboxInputProps extends
   Omit<InputProps<boolean>, 'placeholder' | 'ref'>,
-  AccessKeyElement {
-
-  ref?: RefObject<HTMLSpanElement>;
-}
+  AccessKeyElement { }
 
 const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInputProps>(({
   name,

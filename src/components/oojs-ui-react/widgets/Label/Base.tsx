@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import type { RefObject, HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 import type { LabelElement } from '../../types/mixin';
 
 export interface LabelBaseProps extends
@@ -8,8 +8,6 @@ export interface LabelBaseProps extends
   LabelElement {
 
   className?: string;
-
-  ref?: RefObject<HTMLSpanElement>;
 }
 
 const LabelBase = forwardRef<HTMLSpanElement, LabelBaseProps>(({
