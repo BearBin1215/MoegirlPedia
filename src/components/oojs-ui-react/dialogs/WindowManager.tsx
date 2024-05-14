@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import type { FunctionComponent } from 'react';
 import type { ElementProps } from '../widgets/Element';
+import type { ElementRef } from '../types/ref';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;
@@ -12,14 +12,16 @@ export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   portal?: Element | DocumentFragment,
 }
 
-const WindowManager: FunctionComponent<WindowManagerProps> = ({
+const WindowManager = forwardRef<ElementRef<HTMLDivElement>, WindowManagerProps>(({
   className,
   children,
   modal = true,
   full,
   portal = document.body,
   ...rest
-}) => {
+}, ref) => {
+  const elementRef = useRef<HTMLDivElement>(null);
+
   const classes = classNames(
     className,
     'oo-ui-windowManager',
@@ -27,10 +29,16 @@ const WindowManager: FunctionComponent<WindowManagerProps> = ({
     full ? 'oo-ui-windowManager-fullscreen' : 'oo-ui-windowManager-floating',
   );
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }));
+
   return createPortal(
-    <div className={classes} {...rest}>{children}</div>,
+    <div {...rest} className={classes} ref={elementRef}>{children}</div>,
     portal,
   );
-};
+});
+
+WindowManager.displayName = 'WindowManager';
 
 export default WindowManager;

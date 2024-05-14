@@ -1,28 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { FunctionComponent } from 'react';
 import type { OptionProps } from '../../types/props';
 import type { IconElement, IndicatorElement } from '../../types/mixin';
+import type { ElementRef } from '../../types/ref';
 
 export interface MenuOptionProps extends
   OptionProps,
   IconElement,
   IndicatorElement { }
 
-const MenuOption: FunctionComponent<MenuOptionProps> = ({
+const MenuOption = forwardRef<ElementRef<HTMLDivElement>, MenuOptionProps>(({
   children,
   disabled,
   icon,
   indicator,
   selected,
   ...rest
-}) => {
+}, ref) => {
   const [pressed, setPressed] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     processClassNames({
@@ -66,6 +67,10 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }));
+
   return (
     <div
       {...rest}
@@ -79,12 +84,15 @@ const MenuOption: FunctionComponent<MenuOptionProps> = ({
       onMouseLeave={handleUnpress}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
+      ref={elementRef}
     >
       <IconBase icon={icon} />
       <LabelBase role='textbox' aria-readonly>{children}</LabelBase>
       <IndicatorBase indicator={indicator} />
     </div>
   );
-};
+});
+
+MenuOption.displayName = 'MenuOption';
 
 export default MenuOption;

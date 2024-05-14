@@ -2,13 +2,14 @@
  * @description 仅有最简单功能的FieldLayout
  */
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';
-import type { ReactNode, FunctionComponent } from 'react';
+import type { ReactNode } from 'react';
 import type { WidgetProps } from '../../types/props';
 import type { LabelElement } from '../../types/mixin';
+import type { ElementRef } from '../../types/ref';
 
 export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,
@@ -20,13 +21,13 @@ export interface FieldLayoutProps extends
   help?: ReactNode;
 }
 
-const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
+const FieldLayout = forwardRef<ElementRef<HTMLDivElement>, FieldLayoutProps>(({
   align = 'left',
   children,
   className,
   label,
   ...rest
-}) => {
+}, ref) => {
   const classes = classNames(
     className,
     label && 'oo-ui-labelElement',
@@ -48,8 +49,9 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
 
   return (
     <Layout
-      className={classes}
       {...rest}
+      className={classes}
+      ref={ref}
     >
       <div className='oo-ui-fieldLayout-body'>
         {align === 'inline' ? [
@@ -62,6 +64,8 @@ const FieldLayout: FunctionComponent<FieldLayoutProps> = ({
       </div>
     </Layout>
   );
-};
+});
+
+FieldLayout.displayName = 'FieldLayout';
 
 export default FieldLayout;

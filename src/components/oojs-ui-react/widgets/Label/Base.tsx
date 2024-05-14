@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import type { RefObject, HTMLAttributes, FunctionComponent } from 'react';
+import type { RefObject, HTMLAttributes } from 'react';
 import type { LabelElement } from '../../types/mixin';
 
 export interface LabelBaseProps extends
@@ -12,21 +12,24 @@ export interface LabelBaseProps extends
   ref?: RefObject<HTMLSpanElement>;
 }
 
-const LabelBase: FunctionComponent<LabelBaseProps> = ({
+const LabelBase = forwardRef<HTMLSpanElement, LabelBaseProps>(({
   className,
   children,
   ...rest
-}) => {
+}, ref) => {
   const classes = classNames('oo-ui-labelElement-label', className);
 
   return (
     <span
-      className={classes}
       {...rest}
+      className={classes}
+      ref={ref}
     >
       {children}
     </span>
   );
-};
+});
+
+LabelBase.displayName = 'LabelBase';
 
 export default LabelBase;

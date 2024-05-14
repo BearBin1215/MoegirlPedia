@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import type { HTMLAttributes, FunctionComponent } from 'react';
+import type { HTMLAttributes } from 'react';
 import type { IconElement } from '../../types/mixin';
 
 export interface IconBaseProps extends
   HTMLAttributes<HTMLSpanElement>,
   IconElement { }
 
-const IconBase: FunctionComponent<IconBaseProps> = ({
+const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
   className,
   icon,
   ...rest
-}) => {
+}, ref) => {
   const classes = classNames(
     'oo-ui-iconElement-icon',
     icon && `oo-ui-icon-${icon}`,
     className,
   );
 
-  return <span {...rest} className={classes} />;
-};
+  return <span ref={ref} {...rest} className={classes} />;
+});
+
+IconBase.displayName = 'IconBase';
 
 export default IconBase;

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../utils/tool';
-import type { FunctionComponent, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import type { ChangeHandler } from '../../types/utils';
 import type { WidgetProps } from '../../types/props';
 import type { AccessKeyElement } from '../../types/mixin';
+import type { InputWidgetRef } from '../../types/ref';
 
 /**
  * @template T 输入值类型
@@ -31,7 +32,7 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   required?: boolean;
 }
 
-const Input: FunctionComponent<InputProps<string | number>> = ({
+const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | number>>(({
   accessKey,
   name,
   className,
@@ -41,8 +42,9 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
   placeholder,
   required,
   ...rest
-}) => {
+}, ref) => {
   const [value, setValue] = useState(defaultValue);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -61,11 +63,18 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+    getValue: () => value,
+    setValue,
+  }));
+
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
+      ref={elementRef}
     >
       <input
         accessKey={accessKey}
@@ -81,6 +90,8 @@ const Input: FunctionComponent<InputProps<string | number>> = ({
       />
     </div>
   );
-};
+});
+
+Input.displayName = 'Input';
 
 export default Input;

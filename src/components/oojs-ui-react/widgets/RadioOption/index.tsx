@@ -1,22 +1,22 @@
-import React from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
 import { processClassNames } from '../../utils/tool';
-import type { FunctionComponent, MouseEventHandler, RefObject } from 'react';
+import type { MouseEventHandler } from 'react';
 import type { ChangeHandler } from '../../types/utils';
 import type { OptionProps } from '../../types/props';
+import type { ElementRef } from '../../types/ref';
 
-export interface RadioOptionProps extends Omit<OptionProps, 'onClick' | 'selected'> {
+export interface RadioOptionProps extends Omit<OptionProps, 'onClick'> {
   onClick?: MouseEventHandler<HTMLLabelElement>;
   name?: string;
   onChange?: ChangeHandler<boolean, HTMLInputElement>;
   selected?: boolean;
-  ref?: RefObject<HTMLLabelElement>;
   data: number | string | boolean;
 }
 
-const RadioOption: FunctionComponent<RadioOptionProps> = ({
+const RadioOption = forwardRef<ElementRef<HTMLLabelElement>, RadioOptionProps>(({
   accessKey,
   className,
   disabled,
@@ -25,12 +25,18 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
   onChange,
   selected,
   ...rest
-}) => {
+}, ref) => {
+  const elementRef = useRef<HTMLLabelElement>(null);
+
   const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'option', 'radioOption'),
     selected && 'oo-ui-optionWidget-selected',
   );
+
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }), []);
 
   return (
     <label
@@ -40,6 +46,7 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
       tabIndex={-1}
       role='radio'
       aria-checked={!!selected}
+      ref={elementRef}
     >
       <RadioInput
         accessKey={accessKey}
@@ -51,6 +58,8 @@ const RadioOption: FunctionComponent<RadioOptionProps> = ({
       <LabelBase>{children}</LabelBase>
     </label>
   );
-};
+});
+
+RadioOption.displayName = 'RadioOption';
 
 export default RadioOption;

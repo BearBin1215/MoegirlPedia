@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import RadioOption from '../RadioOption';
 import { processArray, processClassNames } from '../../utils/tool';
-import type { FunctionComponent, MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 import type { WidgetProps } from '../Widget';
 import type { RadioOptionProps } from '../RadioOption';
 import type { ChangeHandler } from '../../types/utils';
+import type { InputWidgetRef } from '../../types/ref';
 
 type OptionElement = ReactElement<RadioOptionProps>;
 
@@ -20,7 +21,7 @@ export interface RadioSelectProps extends WidgetProps {
   onChange?: ChangeHandler<string | number | boolean | undefined, HTMLInputElement>;
 }
 
-const RadioSelect: FunctionComponent<RadioSelectProps> = ({
+const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boolean | undefined>, RadioSelectProps>(({
   children,
   className,
   defaultValue,
@@ -28,11 +29,13 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
   name,
   onChange,
   ...rest
-}) => {
+}, ref) => {
   const [value, setValue] = useState(defaultValue);
+  const [pressed, setPressed] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
   const options = processArray(children);
 
-  const [pressed, setPressed] = useState(false);
   const classes = classNames(
     className,
     processClassNames({ disabled }, 'select', 'radioSelect'),
@@ -47,6 +50,12 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
     setPressed(false);
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+    getValue: () => value,
+    setValue,
+  }), [value]);
+
   return (
     <div
       {...rest}
@@ -57,6 +66,7 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
+      ref={elementRef}
     >
       {options.map((option) => {
         const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {
@@ -86,6 +96,8 @@ const RadioSelect: FunctionComponent<RadioSelectProps> = ({
       })}
     </div>
   );
-};
+});
+
+RadioSelect.displayName = 'RadioSelect';
 
 export default RadioSelect;

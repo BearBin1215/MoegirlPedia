@@ -1,14 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import MenuOption from '../MenuOption';
 import { processArray, processClassNames } from '../../utils/tool';
-import type { FunctionComponent, MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 import type { WidgetProps, OptionProps, MenuSectionOptionProps } from '../../types/props';
 import type { OptionData } from '../Option';
+import type { ElementRef } from '../../types/ref';
 
 export type OptionElement = ReactElement<OptionProps | MenuSectionOptionProps>;
 
-export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'ref'> {
+export interface SelectProps extends WidgetProps<HTMLDivElement> {
   /** 选中选项回调函数 */
   onSelect?: (option: OptionData) => void;
 
@@ -19,15 +20,17 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'ref'> {
   children?: OptionElement | OptionElement[];
 }
 
-const Select: FunctionComponent<SelectProps> = ({
+const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
   children,
   className,
   disabled,
   onSelect,
   value,
   ...rest
-}) => {
+}, ref) => {
   const [pressed, setPressed] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
+
 
   const options = useMemo(() => processArray(children), [children, value]);
 
@@ -45,6 +48,10 @@ const Select: FunctionComponent<SelectProps> = ({
     setPressed(false);
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }), [value]);
+
   return (
     <div
       {...rest}
@@ -56,6 +63,7 @@ const Select: FunctionComponent<SelectProps> = ({
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
+      ref={elementRef}
     >
       {options.map((option) => {
         if (!('data' in option.props)) {
@@ -82,6 +90,8 @@ const Select: FunctionComponent<SelectProps> = ({
       })}
     </div>
   );
-};
+});
+
+Select.displayName = 'Select';
 
 export default Select;

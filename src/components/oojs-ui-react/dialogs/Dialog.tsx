@@ -1,12 +1,10 @@
-/**
- * @todo 打开、关闭动画
- */
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
 import type { ElementProps } from '../widgets/Element';
-import type { ReactNode, FunctionComponent } from 'react';
+import type { ReactNode } from 'react';
+import type { ElementRef } from '../types/ref';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {
   /** 弹窗大小 */
@@ -21,7 +19,7 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
   contentClassName?: string,
 }
 
-const Dialog: FunctionComponent<DialogProps> = ({
+const Dialog = forwardRef<ElementRef<HTMLDivElement>, DialogProps>(({
   className,
   contentClassName,
   size = 'small',
@@ -30,7 +28,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
   children,
   foot,
   ...rest
-}) => {
+}, ref) => {
   const [full, setFull] = useState(false);
   const [ready, setReady] = useState(false);
   const [setup, setSetup] = useState(false);
@@ -39,6 +37,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
   const headRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const footRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -132,6 +131,10 @@ const Dialog: FunctionComponent<DialogProps> = ({
     }
   }, [open]);
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }));
+
   return (
     <WindowManager
       full={full}
@@ -140,6 +143,7 @@ const Dialog: FunctionComponent<DialogProps> = ({
       <div
         {...rest}
         className={classes}
+        ref={elementRef}
       >
         <div
           className='oo-ui-window-frame'
@@ -163,6 +167,8 @@ const Dialog: FunctionComponent<DialogProps> = ({
       </div>
     </WindowManager>
   );
-};
+});
+
+Dialog.displayName = 'Dialog';
 
 export default Dialog;

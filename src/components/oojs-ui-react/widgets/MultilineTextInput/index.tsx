@@ -1,11 +1,12 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { CSSProperties, FunctionComponent, ChangeEvent } from 'react';
+import type { CSSProperties, ChangeEvent } from 'react';
 import type { TextInputProps } from '../../types/props';
+import type { InputWidgetRef } from '../../types/ref';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
   /** 行数 */
@@ -21,7 +22,7 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
 /**
  * @todo autosize功能
  */
-const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
+const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineTextInputProps>(({
   accessKey,
   name,
   className,
@@ -40,8 +41,9 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
   rows,
   maxRows = 10,
   ...rest
-}) => {
+}: MultilineTextInputProps, ref) => {
   const [value, setValue] = useState(defaultValue || '');
+  const elementRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
@@ -125,11 +127,18 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
     };
   }, [autosize, maxRows]);
 
+  useImperativeHandle(ref, () => ({
+    getValue: () => value,
+    setValue,
+    element: elementRef.current,
+  }), [value]);
+
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
+      ref={elementRef}
     >
       <textarea
         accessKey={accessKey}
@@ -167,6 +176,8 @@ const MultilineTextInput: FunctionComponent<MultilineTextInputProps> = ({
       {label && <LabelBase>{label}</LabelBase>}
     </div>
   );
-};
+});
+
+MultilineTextInput.displayName = 'MultilineTextInput';
 
 export default MultilineTextInput;

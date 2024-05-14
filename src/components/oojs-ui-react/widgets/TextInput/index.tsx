@@ -1,13 +1,14 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { CSSProperties, FunctionComponent, ChangeEvent } from 'react';
+import type { CSSProperties, ChangeEvent } from 'react';
 import type { InputProps } from '../../types/props';
 import type { LabelElement, IconElement, IndicatorElement } from '../../types/mixin';
 import type { LabelPosition } from '../../types/utils';
+import type { ElementRef } from '../../types/ref';
 
 export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extends
   InputProps<string | undefined, T, P>,
@@ -29,7 +30,7 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
  * 文本输入框
  * @returns
  */
-const TextInput: FunctionComponent<TextInputProps> = ({
+const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
   accessKey,
   name,
   className,
@@ -45,8 +46,9 @@ const TextInput: FunctionComponent<TextInputProps> = ({
   readOnly,
   required,
   ...rest
-}) => {
+}, ref) => {
   const [value, setValue] = useState(defaultValue || '');
+  const elementRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
 
   const classes = classNames(
@@ -83,11 +85,18 @@ const TextInput: FunctionComponent<TextInputProps> = ({
     return style;
   }, [label, labelPosition]);
 
+  useImperativeHandle(ref, () => ({
+    getValue: () => value,
+    setValue,
+    element: elementRef.current,
+  }), [value]);
+
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
+      ref={elementRef}
     >
       <input
         accessKey={accessKey}
@@ -111,6 +120,8 @@ const TextInput: FunctionComponent<TextInputProps> = ({
       {label && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );
-};
+});
+
+TextInput.displayName = 'TextInput';
 
 export default TextInput;

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Layout from '../Layout';
-import type { FunctionComponent } from 'react';
 import type { LayoutProps } from '../Layout';
+import type { ElementRef } from '../../types/ref';
 
 export interface PanelLayoutProps extends LayoutProps {
   scrollable?: boolean;
@@ -11,7 +11,7 @@ export interface PanelLayoutProps extends LayoutProps {
   framed?: boolean;
 }
 
-const PanelLayout: FunctionComponent<PanelLayoutProps> = ({
+const PanelLayout = forwardRef<ElementRef<HTMLDivElement>, PanelLayoutProps>(({
   className,
   children,
   scrollable,
@@ -19,7 +19,7 @@ const PanelLayout: FunctionComponent<PanelLayoutProps> = ({
   expanded = true,
   framed,
   ...rest
-}) => {
+}, ref) => {
   const classes = classNames(
     className,
     'oo-ui-panelLayout',
@@ -32,10 +32,13 @@ const PanelLayout: FunctionComponent<PanelLayoutProps> = ({
     <Layout
       {...rest}
       className={classes}
+      ref={ref}
     >
       {children}
     </Layout>
   );
-};
+});
+
+PanelLayout.displayName = 'PanelLayout';
 
 export default PanelLayout;

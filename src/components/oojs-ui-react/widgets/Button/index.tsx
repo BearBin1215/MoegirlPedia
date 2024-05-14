@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { FunctionComponent } from 'react';
 import type { WidgetProps } from '../../types/props';
 import type { ButtonFlag } from '../../types/utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../../types/mixin';
+import type { ElementRef } from '../../types/ref';
 
 export interface ButtonProps extends
   WidgetProps<HTMLSpanElement>,
@@ -34,7 +34,7 @@ export interface ButtonProps extends
   title?: string;
 }
 
-const Button: FunctionComponent<ButtonProps> = ({
+const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
   active,
   accessKey,
   children,
@@ -48,8 +48,9 @@ const Button: FunctionComponent<ButtonProps> = ({
   rel = 'nofollow',
   title,
   ...rest
-}) => {
+}, ref) => {
   const [pressed, setPressed] = useState(false);
+  const elementRef = useRef<HTMLSpanElement>(null);
 
   const iconInvert = flags.includes('primary') || disabled || active;
   const iconDestructive = !flags.includes('primary')
@@ -92,9 +93,14 @@ const Button: FunctionComponent<ButtonProps> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }));
+
   return (
     <span
       {...rest}
+      ref={elementRef}
       className={classes}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
@@ -116,6 +122,8 @@ const Button: FunctionComponent<ButtonProps> = ({
       </a>
     </span>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;

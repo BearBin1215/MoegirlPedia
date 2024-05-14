@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { FunctionComponent, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import type { InputProps } from '../../types/props';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../types/mixin';
 import type { LabelPosition } from '../../types/utils';
+import type { InputWidgetRef }from '../../types/ref';
 
 export interface NumberInputProps extends
   InputProps<number | undefined>,
@@ -40,7 +41,7 @@ export interface NumberInputProps extends
 }
 
 /** 数字输入框 */
-const NumberInput: FunctionComponent<NumberInputProps> = ({
+const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
   name,
   accessKey,
   className,
@@ -60,8 +61,9 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   showButtons,
   step = 1,
   ...rest
-}) => {
+}, ref) => {
   const [value, setValue] = useState(defaultValue);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -101,11 +103,18 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+    getValue: () => value,
+    setValue,
+  }), [value]);
+
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
+      ref={elementRef}
     >
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator} />
@@ -147,6 +156,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       {label && <LabelBase>{label}</LabelBase>}
     </div>
   );
-};
+});
+
+NumberInput.displayName = 'NumberInput';
 
 export default NumberInput;

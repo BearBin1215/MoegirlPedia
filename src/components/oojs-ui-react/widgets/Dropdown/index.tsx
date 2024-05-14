@@ -16,6 +16,7 @@ import { processArray, processClassNames } from '../../utils/tool';
 import type { WidgetProps } from '../../types/props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../types/mixin';
 import type { ChangeHandler } from '../../types/utils';
+import type { InputWidgetRef } from '../../types/ref';
 import type { OptionData } from '../Option';
 import type { OptionElement } from '../Select';
 
@@ -25,14 +26,14 @@ export interface DropdownProps extends
   IconElement,
   LabelElement {
 
-  defaultValue?: any;
+  defaultValue?: string | number | boolean;
 
   children?: OptionElement | OptionElement[];
 
   onChange?: ChangeHandler<any>;
 }
 
-const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
+const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boolean | undefined>, DropdownProps>(({
   className,
   children,
   defaultValue,
@@ -41,20 +42,10 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   label,
   onChange,
   ...rest
-}, externalRef) => {
+}, ref) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue);
-  const internalRef = useRef<HTMLDivElement>(null);
-
-  function getNonNullRef(): HTMLDivElement {
-    const node = internalRef.current;
-    if (!node) {
-      throw new Error('Component not yet mounted.');
-    }
-    return node;
-  }
-
-  useImperativeHandle(externalRef, () => getNonNullRef(), [internalRef.current]);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const options = useMemo(() => processArray(children), [children, value]);
 
@@ -92,7 +83,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 
   /** 点击页面其他地方时关闭下拉菜单 */
   const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (internalRef.current && !internalRef.current.contains(event.target as Node)) {
+    if (elementRef.current && !elementRef.current.contains(event.target as Node)) {
       setOpen(false);
     }
   }, []);
@@ -112,11 +103,17 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     };
   }, []);
 
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+    getValue: () => value,
+    setValue,
+  }));
+
   return (
     <div
       {...rest}
       className={classes}
-      ref={internalRef}
+      ref={elementRef}
     >
       <span
         tabIndex={disabled ? -1 : 0}

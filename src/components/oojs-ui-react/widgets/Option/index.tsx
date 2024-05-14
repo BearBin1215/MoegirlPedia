@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { ReactNode, FunctionComponent } from 'react';
+import type { ReactNode } from 'react';
 import type { WidgetProps } from '../../types/props';
 import type { AccessKeyElement } from '../../types/mixin';
+import type { ElementRef } from '../../types/ref';
 
 export interface OptionData {
   /** 选项对应的数据 */
@@ -18,23 +19,29 @@ export interface OptionData {
 }
 
 export interface OptionProps extends
-  Omit<WidgetProps<HTMLDivElement>, 'ref'>,
+  WidgetProps<HTMLDivElement>,
   AccessKeyElement,
   OptionData { }
 
-const Option: FunctionComponent<OptionProps> = ({
+const Option = forwardRef<ElementRef<HTMLDivElement>, OptionProps>(({
   accessKey,
   children,
   className,
   disabled,
   selected,
   ...rest
-}) => {
+}, ref) => {
+  const elementRef = useRef<HTMLDivElement>(null);
+
   const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'option'),
     selected && 'oo-ui-optionWidget-selected',
   );
+
+  useImperativeHandle(ref, () => ({
+    element: elementRef.current,
+  }));
 
   return (
     <div
@@ -45,10 +52,13 @@ const Option: FunctionComponent<OptionProps> = ({
       tabIndex={-1}
       role='option'
       aria-selected={false}
+      ref={elementRef}
     >
       <LabelBase>{children}</LabelBase>
     </div>
   );
-};
+});
+
+Option.displayName = 'Option';
 
 export default Option;

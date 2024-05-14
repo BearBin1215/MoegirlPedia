@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Dialog from './Dialog';
 import Label from '../widgets/Label';
@@ -6,6 +6,7 @@ import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
 import type { ReactNode, MouseEventHandler } from 'react';
 import type { DialogProps } from './Dialog';
+import type { ElementRef } from '../types/ref';
 
 export interface MessageDialogProps extends DialogProps {
   title?: ReactNode;
@@ -16,7 +17,7 @@ export interface MessageDialogProps extends DialogProps {
   onCancel?: MouseEventHandler<HTMLSpanElement>;
 }
 
-const MessageDialog: FunctionComponent<MessageDialogProps> = ({
+const MessageDialog = forwardRef<ElementRef<HTMLDivElement>, MessageDialogProps>(({
   children,
   className,
   title,
@@ -24,7 +25,7 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
   onOk,
   onCancel,
   ...rest
-}) => {
+}, ref) => {
   const classes = classNames(className, 'oo-ui-messageDialog');
 
   return (
@@ -42,6 +43,7 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
           )}
         </div>
       }
+      ref={ref}
     >
       <PanelLayout className='oo-ui-messageDialog-container' scrollable expanded>
         <PanelLayout className='oo-ui-messageDialog-text' padded>
@@ -51,6 +53,8 @@ const MessageDialog: FunctionComponent<MessageDialogProps> = ({
       </PanelLayout>
     </Dialog>
   );
-};
+});
+
+MessageDialog.displayName = 'MessageDialog';
 
 export default MessageDialog;
