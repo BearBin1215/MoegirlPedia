@@ -42,4 +42,4 @@ export { default as Dialog } from './dialogs/Dialog';
 export { default as MessageDialog } from './dialogs/MessageDialog';
 
 // 类型
-export * from './types/props';
+export type * from './types/props';

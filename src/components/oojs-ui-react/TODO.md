@@ -15,7 +15,7 @@
 - [x] 下拉框选择（Dropdown）
 - [x] 多行输入框（MultilineTextInput）
 - [x] 单选框（RadioSelect）
-- [ ] 弹窗（Dialog）
+- [x] 弹窗（Dialog）
 
 ## 低优先度实现
 
