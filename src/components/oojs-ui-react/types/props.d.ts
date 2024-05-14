@@ -36,6 +36,7 @@ export type { DropdownProps } from '../widgets/Dropdown';
 export type { LayoutProps } from '../layouts/Layout';
 export type { PanelLayoutProps } from '../layouts/PanelLayout';
 export type { FieldLayoutProps } from '../layouts/FieldLayout';
+export type { HorizontalLayoutProps } from '../layouts/HorizontalLayout';
 
 // 弹窗
 export type { DialogProps } from '../dialogs/Dialog';

@@ -36,6 +36,7 @@ export { default as Dropdown } from './widgets/Dropdown';
 export { default as Layout } from './layouts/Layout';
 export { default as PanelLayout } from './layouts/PanelLayout';
 export { default as FieldLayout } from './layouts/FieldLayout';
+export { default as HorizontalLayout } from './layouts/HorizontalLayout';
 
 // 弹窗
 export { default as Dialog } from './dialogs/Dialog';

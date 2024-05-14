@@ -28,6 +28,7 @@ const PanelLayout = forwardRef<ElementRef<HTMLDivElement>, PanelLayoutProps>(({
     expanded && 'oo-ui-panelLayout-expanded',
     framed && 'oo-ui-panelLayout-framed',
   );
+
   return (
     <Layout
       {...rest}
