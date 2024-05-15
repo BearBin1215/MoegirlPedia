@@ -4,7 +4,7 @@ import { processClassNames } from '../../utils/tool';
 import type { ElementProps } from '../Element';
 import type { ElementRef } from '../../types/ref';
 
-export interface WidgetProps<T = HTMLDivElement> extends ElementProps<T> {
+export interface WidgetProps<T = HTMLDivElement> extends Omit<ElementProps<T>, 'defaultValue' | 'onChange'> {
   /** 是否禁用 */
   disabled?: boolean;
 }

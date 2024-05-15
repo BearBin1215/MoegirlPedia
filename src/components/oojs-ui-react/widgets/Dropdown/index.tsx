@@ -5,7 +5,6 @@ import React, {
   useImperativeHandle,
   useEffect,
   useMemo,
-  useCallback,
 } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
@@ -67,7 +66,11 @@ const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boo
     !open && 'oo-ui-element-hidden',
   );
 
-  const handleClickLabel = () => setOpen(!open);
+  const handleClickLabel = () => {
+    if (!disabled) {
+      setOpen(!open);
+    }
+  };
 
   /** 选择后回调 */
   const handleSelect = (option: OptionData) => {
@@ -81,13 +84,6 @@ const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boo
     setOpen(false);
   };
 
-  /** 点击页面其他地方时关闭下拉菜单 */
-  const handleClickOutside = useCallback((event: MouseEvent) => {
-    if (elementRef.current && !elementRef.current.contains(event.target as Node)) {
-      setOpen(false);
-    }
-  }, []);
-
   /** 如果有选中的则显示已选，没选则显示label */
   const displayLabel = useMemo(() => {
     return options.find((option) => {
@@ -96,12 +92,27 @@ const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boo
   }, [value, label]);
 
   useEffect(() => {
+    /** 点击页面其他地方时关闭下拉菜单 */
+    const handleClickOutside = (event: MouseEvent) => {
+      if (elementRef.current && !elementRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    /** 按下ESC时关闭下拉菜单 */
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && elementRef.current) {
+        setOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [elementRef]);
 
   useImperativeHandle(ref, () => ({
     element: elementRef.current,

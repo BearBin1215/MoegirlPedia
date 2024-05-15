@@ -8,7 +8,7 @@ import type { ReactNode, MouseEventHandler } from 'react';
 import type { DialogProps } from './Dialog';
 import type { ElementRef } from '../types/ref';
 
-export interface MessageDialogProps extends DialogProps {
+export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;
 
   /** 点击确定回调 */

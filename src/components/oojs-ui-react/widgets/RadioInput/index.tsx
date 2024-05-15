@@ -5,7 +5,11 @@ import type { ChangeEvent } from 'react';
 import type { InputProps } from '../../types/props';
 import type { ElementRef } from '../../types/ref';
 
-export interface RadioInputProps extends Omit<InputProps<boolean, HTMLInputElement, HTMLSpanElement>, 'defaultValue' | 'placeholder'> {
+export interface RadioInputProps extends Omit<InputProps<
+  boolean,
+  HTMLInputElement,
+  HTMLSpanElement
+>, 'defaultValue' | 'placeholder'> {
   selected?: boolean;
 }
 

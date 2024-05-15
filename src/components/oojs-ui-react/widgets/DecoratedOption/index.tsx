@@ -1,42 +1,36 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
+import IconBase from '../Icon/Base';
+import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../utils/tool';
-import type { ReactNode } from 'react';
 import type { WidgetProps } from '../../types/props';
-import type { AccessKeyElement } from '../../types/mixin';
+import type { IconElement, IndicatorElement } from '../../types/mixin';
 import type { ElementRef } from '../../types/ref';
 
-export interface OptionData {
-  /** 选项对应的数据 */
-  data: string | number | boolean;
+export interface DecoratedOptionProps extends
+  WidgetProps<HTMLDivElement>,
+  IconElement,
+  IndicatorElement {}
 
-  /** 选项文本 */
-  children?: ReactNode;
-
-  /** 是否为已选中项 */
-  selected?: boolean;
-}
-
-export interface OptionProps<T = HTMLDivElement> extends
-  WidgetProps<T>,
-  AccessKeyElement,
-  OptionData { }
-
-const Option = forwardRef<ElementRef<HTMLDivElement>, OptionProps>(({
-  accessKey,
+const DecoratedOption = forwardRef<ElementRef<HTMLDivElement>, DecoratedOptionProps>(({
   children,
   className,
   disabled,
-  selected,
+  icon,
+  indicator,
   ...rest
 }, ref) => {
   const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
-    processClassNames({ disabled, label: children }, 'option'),
-    selected && 'oo-ui-optionWidget-selected',
+    processClassNames({
+      disabled,
+      label: children,
+      icon,
+      indicator,
+    }, 'option', 'decoratedOption'),
   );
 
   useImperativeHandle(ref, () => ({
@@ -48,17 +42,17 @@ const Option = forwardRef<ElementRef<HTMLDivElement>, OptionProps>(({
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      accessKey={accessKey}
       tabIndex={-1}
       role='option'
-      aria-selected={false}
       ref={elementRef}
     >
+      <IconBase icon={icon} />
       <LabelBase>{children}</LabelBase>
+      <IndicatorBase indicator={indicator} />
     </div>
   );
 });
 
-Option.displayName = 'Option';
+DecoratedOption.displayName = 'DecoratedOption';
 
-export default Option;
+export default DecoratedOption;

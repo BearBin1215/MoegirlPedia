@@ -1,38 +1,24 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef } from 'react';
 import classNames from 'classnames';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
-import { processClassNames } from '../../utils/tool';
-import type { OptionProps } from '../../types/props';
-import type { IconElement, IndicatorElement } from '../../types/mixin';
+import DecoratedOption from '../DecoratedOption';
+import type { OptionProps } from '../Option';
+import type { DecoratedOptionProps } from '../DecoratedOption';
 import type { ElementRef } from '../../types/ref';
 
 export interface MenuOptionProps extends
-  OptionProps,
-  IconElement,
-  IndicatorElement { }
+  Omit<DecoratedOptionProps, 'labelProps'>,
+  OptionProps { }
 
 const MenuOption = forwardRef<ElementRef<HTMLDivElement>, MenuOptionProps>(({
-  children,
   disabled,
-  icon,
-  indicator,
   selected,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
-    processClassNames({
-      children,
-      disabled,
-      label: children,
-      icon,
-      indicator,
-    }, 'option', 'decoratedOption', 'menuOption'),
+    'oo-ui-menuOptionWidget',
     pressed && 'oo-ui-optionWidget-pressed',
     highlighted && 'oo-ui-optionWidget-highlighted',
     selected && 'oo-ui-optionWidget-selected',
@@ -67,29 +53,19 @@ const MenuOption = forwardRef<ElementRef<HTMLDivElement>, MenuOptionProps>(({
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }));
-
   return (
-    <div
+    <DecoratedOption
       {...rest}
+      disabled={disabled}
       className={classes}
-      aria-disabled={!!disabled}
-      tabIndex={-1}
-      role='option'
       aria-selected={false}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
-      ref={elementRef}
-    >
-      <IconBase icon={icon} />
-      <LabelBase role='textbox' aria-readonly>{children}</LabelBase>
-      <IndicatorBase indicator={indicator} />
-    </div>
+      ref={ref}
+    />
   );
 });
 

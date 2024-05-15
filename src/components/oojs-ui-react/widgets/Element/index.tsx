@@ -1,19 +1,9 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import type { ReactNode, MouseEventHandler, CSSProperties } from 'react';
+import type { HTMLAttributes } from 'react';
 import type { ElementRef } from '../../types/ref';
 
 /** 组件基础属性 */
-export interface ElementProps<T = HTMLDivElement> {
-  id?: string;
-
-  children?: ReactNode;
-
-  onClick?: MouseEventHandler<T>;
-
-  className?: string;
-
-  style?: CSSProperties;
-}
+export type ElementProps<T = HTMLDivElement> = HTMLAttributes<T>;
 
 const Element = forwardRef<ElementRef<HTMLDivElement>, ElementProps>(({
   children,

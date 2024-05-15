@@ -8,7 +8,7 @@ import type { ChangeHandler } from '../../types/utils';
 import type { OptionProps } from '../../types/props';
 import type { ElementRef } from '../../types/ref';
 
-export interface RadioOptionProps extends Omit<OptionProps, 'onClick'> {
+export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'onClick'> {
   onClick?: MouseEventHandler<HTMLLabelElement>;
   name?: string;
   onChange?: ChangeHandler<boolean, HTMLInputElement>;

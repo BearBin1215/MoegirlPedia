@@ -189,7 +189,7 @@ const App = () => {
 export default App;
 ```
 
-由多个[`RadioOption`](#RadioOption)作为子组件，其中`data`参数必须且不应重复。
+由多个[`RadioOption`](#RadioOption)作为子组件，其中`data`参数必须且不重复。
 
 ### API
 

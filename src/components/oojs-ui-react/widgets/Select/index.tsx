@@ -9,7 +9,7 @@ import type { ElementRef } from '../../types/ref';
 
 export type OptionElement = ReactElement<OptionProps | MenuSectionOptionProps>;
 
-export interface SelectProps extends WidgetProps<HTMLDivElement> {
+export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect'> {
   /** 选中选项回调函数 */
   onSelect?: (option: OptionData) => void;
 
