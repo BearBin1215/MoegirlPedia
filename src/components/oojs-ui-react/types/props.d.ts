@@ -29,6 +29,7 @@ export type { CheckboxInputProps } from '../widgets/CheckboxInput';
 export type { OptionProps } from '../widgets/Option';
 export type { MenuOptionProps } from '../widgets/MenuOption';
 export type { DecoratedOptionProps } from '../widgets/DecoratedOption';
+export type { OutlineOptionProps } from '../widgets/OutlineOption';
 export type { MenuSectionOptionProps } from '../widgets/MenuSectionOption';
 export type { SelectProps } from '../widgets/Select';
 export type { DropdownProps } from '../widgets/Dropdown';

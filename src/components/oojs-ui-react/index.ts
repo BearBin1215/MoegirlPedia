@@ -29,6 +29,7 @@ export { default as CheckboxInput } from './widgets/CheckboxInput';
 export { default as Option } from './widgets/Option';
 export { default as MenuOption } from './widgets/MenuOption';
 export { default as DecoratedOption } from './widgets/DecoratedOption';
+export { default as OutlineOption } from './widgets/OutlineOption';
 export { default as MenuSectionOption } from './widgets/MenuSectionOption';
 export { default as Select } from './widgets/Select';
 export { default as Dropdown } from './widgets/Dropdown';
