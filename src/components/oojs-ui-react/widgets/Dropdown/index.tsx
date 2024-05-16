@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import classNames from 'classnames';
-import Select from '../Select';
+import MenuSelect from '../MenuSelect';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -15,9 +15,9 @@ import { processArray, processClassNames } from '../../utils/tool';
 import type { WidgetProps } from '../../types/props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../types/mixin';
 import type { ChangeHandler } from '../../types/utils';
-import type { InputWidgetRef } from '../../types/ref';
 import type { OptionData } from '../Option';
 import type { OptionElement } from '../Select';
+import type { MenuSelectRef } from '../MenuSelect';
 
 export interface DropdownProps extends
   WidgetProps<HTMLDivElement>,
@@ -32,7 +32,12 @@ export interface DropdownProps extends
   onChange?: ChangeHandler<any>;
 }
 
-const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boolean | undefined>, DropdownProps>(({
+type DropdownRef = MenuSelectRef;
+
+const Dropdown = forwardRef<
+  DropdownRef,
+  DropdownProps
+>(({
   className,
   children,
   defaultValue,
@@ -57,13 +62,6 @@ const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boo
       indicator: 'down',
     }, 'dropdown'),
     open && 'oo-ui-dropdownWidget-open',
-  );
-
-  const selectClasses = classNames(
-    'oo-ui-clippableElement-clippable',
-    'oo-ui-floatableElement-floatable',
-    'oo-ui-menuSelectWidget',
-    !open && 'oo-ui-element-hidden',
   );
 
   const handleClickLabel = () => {
@@ -139,9 +137,9 @@ const Dropdown = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boo
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <Select className={selectClasses} onSelect={handleSelect} value={value}>
+      <MenuSelect onSelect={handleSelect} value={value} open={open}>
         {children}
-      </Select>
+      </MenuSelect>
     </div>
   );
 });

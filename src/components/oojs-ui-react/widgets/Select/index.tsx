@@ -57,9 +57,8 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      tabIndex={-1}
-      role='option'
-      aria-selected={false}
+      role='listbox'
+      aria-multiselectable={false}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}

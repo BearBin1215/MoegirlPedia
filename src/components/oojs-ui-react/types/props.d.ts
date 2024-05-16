@@ -32,11 +32,13 @@ export type { DecoratedOptionProps } from '../widgets/DecoratedOption';
 export type { OutlineOptionProps } from '../widgets/OutlineOption';
 export type { MenuSectionOptionProps } from '../widgets/MenuSectionOption';
 export type { SelectProps } from '../widgets/Select';
+export type { MenuSelectProps } from '../widgets/MenuSelect';
 export type { DropdownProps } from '../widgets/Dropdown';
 
 // 布局
 export type { LayoutProps } from '../layouts/Layout';
 export type { PanelLayoutProps } from '../layouts/PanelLayout';
+export type { PageLayoutProps } from '../layouts/PageLayout';
 export type { FieldLayoutProps } from '../layouts/FieldLayout';
 export type { HorizontalLayoutProps } from '../layouts/HorizontalLayout';
 
