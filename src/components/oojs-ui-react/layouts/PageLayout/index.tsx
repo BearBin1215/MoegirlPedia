@@ -1,18 +1,18 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import PanelLayout from '../PanelLayout';
+import type { ReactNode } from 'react';
 import type { PanelLayoutProps } from '../PanelLayout';
 import type { ElementRef } from '../../types/ref';
 
 export interface PageLayoutProps extends PanelLayoutProps {
-  active?: boolean;
-  label?: string;
+  label?: ReactNode;
 }
 
 const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({
-  active,
   className,
   children,
+  hidden,
   expanded = true,
   scrollable = true,
   ...rest
@@ -20,7 +20,7 @@ const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({
   const classes = classNames(
     className,
     'oo-ui-pageLayout',
-    active ? 'oo-ui-pageLayout-active' : 'oo-ui-element-hidden',
+    !hidden && 'oo-ui-pageLayout-active',
   );
 
   return (
@@ -29,7 +29,8 @@ const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({
       expanded={expanded}
       scrollable={scrollable}
       className={classes}
-      aria-hidden={!active}
+      aria-hidden={hidden}
+      hidden={hidden}
       ref={ref}
     >
       {children}

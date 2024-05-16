@@ -31,7 +31,6 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
   const [pressed, setPressed] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
-
   const options = useMemo(() => processArray(children), [children, value]);
 
   const classes = classNames(
