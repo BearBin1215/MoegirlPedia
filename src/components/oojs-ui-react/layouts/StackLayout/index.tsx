@@ -10,7 +10,9 @@ import type { ElementRef } from '../../types/ref';
 export type LayoutElement = ReactElement<PageLayoutProps>;
 
 export interface StackLayoutProps extends PanelLayoutProps {
+  /** 是否全显示。优先级高于activeKey设置的显示 */
   continuous?: boolean;
+  /** 显示的子组件key */
   activeKey?: string | number;
   children?: LayoutElement | LayoutElement[];
 }

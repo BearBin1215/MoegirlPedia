@@ -91,6 +91,7 @@ module.exports = {
     'prefer-exponentiation-operator': 2,
     'prefer-destructuring': 2,
     'require-await': 2,
+    yoda: 2,
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/naming-convention': [
       2,
