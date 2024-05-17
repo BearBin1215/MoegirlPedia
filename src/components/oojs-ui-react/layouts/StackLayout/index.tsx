@@ -1,4 +1,4 @@
-import React, { useMemo, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import PanelLayout from '../PanelLayout';
 import PageLayout from '../PageLayout';
@@ -7,14 +7,14 @@ import type { PageLayoutProps } from '../PageLayout';
 import type { PanelLayoutProps } from '../PanelLayout';
 import type { ElementRef } from '../../types/ref';
 
-export type LayoutElement = ReactElement<PageLayoutProps>;
+export type PageLayoutElement = ReactElement<PageLayoutProps>;
 
 export interface StackLayoutProps extends PanelLayoutProps {
   /** 是否全显示。优先级高于activeKey设置的显示 */
   continuous?: boolean;
   /** 显示的子组件key */
   activeKey?: string | number;
-  children?: LayoutElement | LayoutElement[];
+  children?: PageLayoutElement | PageLayoutElement[];
 }
 
 const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
@@ -32,8 +32,6 @@ const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
     continuous && 'oo-ui-stackLayout-continuous',
   );
 
-  const layouts = useMemo(() => React.Children.toArray(children) as LayoutElement[], [children]);
-
   return (
     <PanelLayout
       {...rest}
@@ -42,7 +40,10 @@ const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {continuous ? children : layouts.map((layout) => {
+      {continuous ? children : React.Children.map(children, (layout) => {
+        if (!layout) {
+          return layout;
+        }
         if (layout.key === activeKey) {
           return layout;
         }

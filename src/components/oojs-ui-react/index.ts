@@ -40,6 +40,7 @@ export { default as Layout } from './layouts/Layout';
 export { default as PanelLayout } from './layouts/PanelLayout';
 export { default as PageLayout } from './layouts/PageLayout';
 export { default as StackLayout } from './layouts/StackLayout';
+export { default as MenuLayout } from './layouts/MenuLayout';
 export { default as FieldLayout } from './layouts/FieldLayout';
 export { default as HorizontalLayout } from './layouts/HorizontalLayout';
 

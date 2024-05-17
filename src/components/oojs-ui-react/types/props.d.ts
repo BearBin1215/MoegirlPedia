@@ -40,6 +40,7 @@ export type { LayoutProps } from '../layouts/Layout';
 export type { PanelLayoutProps } from '../layouts/PanelLayout';
 export type { PageLayoutProps } from '../layouts/PageLayout';
 export type { StackLayoutProps } from '../layouts/StackLayout';
+export type { MenuLayoutProps } from '../layouts/MenuLayout';
 export type { FieldLayoutProps } from '../layouts/FieldLayout';
 export type { HorizontalLayoutProps } from '../layouts/HorizontalLayout';
 
