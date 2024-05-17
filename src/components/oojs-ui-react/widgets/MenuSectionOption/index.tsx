@@ -6,6 +6,7 @@ import type { ElementRef } from '../../types/ref';
 
 export type MenuSectionOptionProps = DecoratedOptionProps;
 
+/** 选项组组件，不可选，用于作为`Dropdown`子组件 */
 const MenuSectionOption = forwardRef<ElementRef<HTMLDivElement>, MenuSectionOptionProps>(({
   className,
   ...rest

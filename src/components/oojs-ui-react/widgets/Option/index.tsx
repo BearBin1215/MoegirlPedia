@@ -23,6 +23,7 @@ export interface OptionProps<T = HTMLDivElement> extends
   AccessKeyElement,
   OptionData { }
 
+/** 基础选项组件 */
 const Option = forwardRef<ElementRef<HTMLDivElement>, OptionProps>(({
   accessKey,
   children,

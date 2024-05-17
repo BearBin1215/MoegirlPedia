@@ -20,6 +20,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
   children?: OptionElement | OptionElement[];
 }
 
+/** @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件 */
 const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
   children,
   className,

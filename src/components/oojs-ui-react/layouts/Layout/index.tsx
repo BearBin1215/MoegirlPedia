@@ -4,9 +4,11 @@ import type { ElementProps } from '../../widgets/Element';
 import type { ElementRef } from '../../types/ref';
 
 export interface LayoutProps extends ElementProps {
+  /** 是否隐藏 */
   hidden?: boolean;
 }
 
+/** @description 布局组件基础 */
 const Layout = forwardRef<ElementRef, LayoutProps>(({
   className,
   children,

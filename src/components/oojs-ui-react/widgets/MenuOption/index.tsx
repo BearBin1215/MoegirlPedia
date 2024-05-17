@@ -9,6 +9,7 @@ export interface MenuOptionProps extends
   Omit<DecoratedOptionProps, 'labelProps'>,
   OptionProps { }
 
+/** 选项组件，用于作为`Dropdown`子组件 */
 const MenuOption = forwardRef<ElementRef<HTMLDivElement>, MenuOptionProps>(({
   disabled,
   selected,

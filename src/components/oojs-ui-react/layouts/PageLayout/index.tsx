@@ -10,6 +10,7 @@ export interface PageLayoutProps extends PanelLayoutProps {
   label?: ReactNode;
 }
 
+/** @description 页组件，用于`BookletLayout`组件的子元素生成分页 */
 const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({
   className,
   children,
