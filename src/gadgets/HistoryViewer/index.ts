@@ -36,6 +36,7 @@ mw.loader.using('mediawiki.api').then(() => {
   /** 根据输入参数解析页面HTML */
   const parsePage = async (parseConfig: ApiParams) => {
     const response = await api.post({
+      title: mw.config.get('wgPageName'),
       action: 'parse',
       ...parseConfig,
     }) as ApiParseResponse;
