@@ -244,3 +244,24 @@ const App = () => {
 
 export default App;
 ```
+
+## BookletLayout (Menu)
+
+子元素由`PageLayout`组成。`PageLayout`的key值必须，会用于切换页签，不填则会导致无法显示。
+
+```jsx
+import React from 'react';
+import { BookletLayout, PageLayout } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <BookletLayout defaultKey='2'>
+      <PageLayout key='1' label='page 1'>content 1</PageLayout>
+      <PageLayout key='2' label='page 2'>content 2</PageLayout>
+      <PageLayout key='3' label={<b>page 3</b>}>content 3</PageLayout>
+    </BookletLayout>
+  );
+};
+
+export default App;
+```
