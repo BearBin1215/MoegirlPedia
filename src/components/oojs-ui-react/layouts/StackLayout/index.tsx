@@ -44,10 +44,9 @@ const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
         if (!layout) {
           return layout;
         }
-        if (layout.key === activeKey) {
-          return layout;
-        }
-        return <PageLayout key={layout.key} {...layout.props} hidden />;
+        // 去掉label参数
+        const { label: _, ...pageProps } = layout.props;
+        return <PageLayout key={layout.key} {...pageProps} hidden={layout.key !== activeKey} />;
       })}
     </PanelLayout>
   );
