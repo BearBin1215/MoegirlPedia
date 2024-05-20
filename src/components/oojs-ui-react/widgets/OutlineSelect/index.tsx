@@ -16,7 +16,6 @@ const OutlineSelect = forwardRef<ElementRef<HTMLDivElement>, OutlineSelectProps>
   className,
   ...rest
 }, ref) => {
-
   const classes = classNames(
     className,
     'oo-ui-outlineSelectWidget',

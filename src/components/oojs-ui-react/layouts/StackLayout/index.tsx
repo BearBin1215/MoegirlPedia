@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, Children } from 'react';
 import classNames from 'classnames';
 import PanelLayout from '../PanelLayout';
 import PageLayout from '../PageLayout';
@@ -13,7 +13,7 @@ export interface StackLayoutProps extends PanelLayoutProps {
   /** 是否全显示。优先级高于activeKey设置的显示 */
   continuous?: boolean;
   /** 显示的子组件key */
-  activeKey?: string | number;
+  activeKey?: string | number | boolean;
   children?: PageLayoutElement | PageLayoutElement[];
 }
 
@@ -40,7 +40,7 @@ const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {continuous ? children : React.Children.map(children, (layout) => {
+      {continuous ? children : Children.map(children, (layout) => {
         if (!layout) {
           return layout;
         }

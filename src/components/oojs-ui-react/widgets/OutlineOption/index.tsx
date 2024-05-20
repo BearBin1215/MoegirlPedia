@@ -1,10 +1,11 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import DecoratedOption from '../DecoratedOption';
+import type { OptionData } from '../Option';
 import type { DecoratedOptionProps } from '../DecoratedOption';
 import type { ElementRef } from '../../types/ref';
 
-export interface OutlineOptionProps extends DecoratedOptionProps {
+export interface OutlineOptionProps extends DecoratedOptionProps, OptionData {
   level?: number;
 }
 

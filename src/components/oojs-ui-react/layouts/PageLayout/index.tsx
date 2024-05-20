@@ -6,7 +6,7 @@ import type { PanelLayoutProps } from '../PanelLayout';
 import type { ElementRef } from '../../types/ref';
 
 export interface PageLayoutProps extends PanelLayoutProps {
-  /** 用于MenuLayout子组件时生成页签 */
+  /** 用于BookletLayout子组件时生成页签 */
   label?: ReactNode;
 }
 

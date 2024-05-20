@@ -42,6 +42,7 @@ export type { PanelLayoutProps } from '../layouts/PanelLayout';
 export type { PageLayoutProps } from '../layouts/PageLayout';
 export type { StackLayoutProps } from '../layouts/StackLayout';
 export type { MenuLayoutProps } from '../layouts/MenuLayout';
+export type { BookletLayoutProps } from '../layouts/BookletLayout';
 export type { FieldLayoutProps } from '../layouts/FieldLayout';
 export type { HorizontalLayoutProps } from '../layouts/HorizontalLayout';
 
