@@ -5,9 +5,13 @@ import type { LayoutProps } from '../Layout';
 import type { ElementRef } from '../../types/ref';
 
 export interface PanelLayoutProps extends LayoutProps {
+  /** 是否可滚动 */
   scrollable?: boolean;
+  /** 是否留出内边距 */
   padded?: boolean;
+  /** 是否铺满父元素 */
   expanded?: boolean;
+  /** 有误边框 */
   framed?: boolean;
 }
 

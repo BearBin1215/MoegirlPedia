@@ -32,6 +32,7 @@ export { default as DecoratedOption } from './widgets/DecoratedOption';
 export { default as OutlineOption } from './widgets/OutlineOption';
 export { default as MenuSectionOption } from './widgets/MenuSectionOption';
 export { default as Select } from './widgets/Select';
+export { default as OutlineSelect } from './widgets/OutlineSelect';
 export { default as MenuSelect } from './widgets/MenuSelect';
 export { default as Dropdown } from './widgets/Dropdown';
 

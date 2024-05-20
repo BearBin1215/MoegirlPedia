@@ -32,6 +32,7 @@ export type { DecoratedOptionProps } from '../widgets/DecoratedOption';
 export type { OutlineOptionProps } from '../widgets/OutlineOption';
 export type { MenuSectionOptionProps } from '../widgets/MenuSectionOption';
 export type { SelectProps } from '../widgets/Select';
+export type { OutlineSelectProps } from '../widgets/OutlineSelect';
 export type { MenuSelectProps } from '../widgets/MenuSelect';
 export type { DropdownProps } from '../widgets/Dropdown';
 
