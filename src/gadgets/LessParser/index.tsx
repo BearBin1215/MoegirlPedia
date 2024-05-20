@@ -56,40 +56,36 @@ const ParserModal: FunctionComponent = () => {
 
   /** 渲染 */
   if (isOpen) {
-    return (
-      <>
-        {createPortal(
-          <div id='less-parser'>
-            <button
-              onClick={closeModal}
-              className='close-button'
-            >
-              ×
-            </button>
-            <header className='modal-header'>
-              Less解析器
-            </header>
-            <div className='modal-body'>
-              <textarea name='less-input' ref={inputRef} />
-              <div className='button-area'>
-                <input
-                  type="file"
-                  ref={uploadRef}
-                  onChange={onUpload}
-                  accept='.less'
-                  hidden
-                />
-                <Button onClick={upload}>上传</Button>
-                <Button onClick={parseLess} flags={['primary', 'progressive']}>解析</Button>
-                <Button onClick={clear} flags='destructive'>清空</Button>
-                <Button onClick={copy}>复制</Button>
-              </div>
-              <textarea name='css-output' ref={outputRef} readOnly />
-            </div>
-          </div>,
-          document.body,
-        )}
-      </>
+    return createPortal(
+      <div id='less-parser'>
+        <button
+          onClick={closeModal}
+          className='close-button'
+        >
+          ×
+        </button>
+        <header className='modal-header'>
+          Less解析器
+        </header>
+        <div className='modal-body'>
+          <textarea name='less-input' ref={inputRef} />
+          <div className='button-area'>
+            <input
+              type="file"
+              ref={uploadRef}
+              onChange={onUpload}
+              accept='.less'
+              hidden
+            />
+            <Button onClick={upload}>上传</Button>
+            <Button onClick={parseLess} flags={['primary', 'progressive']}>解析</Button>
+            <Button onClick={clear} flags='destructive'>清空</Button>
+            <Button onClick={copy}>复制</Button>
+          </div>
+          <textarea name='css-output' ref={outputRef} readOnly />
+        </div>
+      </div>,
+      document.body,
     );
   }
   return null;

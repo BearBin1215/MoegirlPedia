@@ -28,23 +28,19 @@ const PickerModal: FunctionComponent<ColorPickerProps> = (props) => {
     copyText(color);
   };
 
-  return (
-    <>
-      {createPortal(
-        displayPicker ? (
-          <div id='color-picker'>
-            <SketchPicker color={color} onChange={handleChange} />
-            <div className='button-zone'>
-              <Button onClick={handleCopy}>复制</Button>
-              <Button flags='destructive' onClick={handleClose}>
-                关闭
-              </Button>
-            </div>
-          </div>
-        ) : null,
-        document.body,
-      )}
-    </>
+  return createPortal(
+    displayPicker ? (
+      <div id='color-picker'>
+        <SketchPicker color={color} onChange={handleChange} />
+        <div className='button-zone'>
+          <Button onClick={handleCopy}>复制</Button>
+          <Button flags='destructive' onClick={handleClose}>
+            关闭
+          </Button>
+        </div>
+      </div>
+    ) : null,
+    document.body,
   );
 };
 

@@ -16,6 +16,7 @@ type PageElement = ReactElement<PageLayoutProps>;
 
 export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'children' | 'onChange'> {
   defaultKey?: string | number | boolean;
+
   children?: PageElement | PageElement[];
 
   onChange?: ChangeHandler<any>;
@@ -36,7 +37,7 @@ const BookletLayout = forwardRef<ElementRef<HTMLDivElement>, BookletLayoutProps>
   );
 
   const handleSelect = (option: OptionData) => {
-    if (typeof onChange === 'function') {
+    if (typeof onChange === 'function' && option.data !== activeKey) {
       onChange({
         value: option.data,
         oldValue: activeKey,
