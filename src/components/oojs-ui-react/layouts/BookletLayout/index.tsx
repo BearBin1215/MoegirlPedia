@@ -15,10 +15,12 @@ import type { ChangeHandler } from '../../types/utils';
 type PageElement = ReactElement<PageLayoutProps>;
 
 export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'children' | 'onChange'> {
+  /** 默认激活标签 */
   defaultKey?: string | number | boolean;
 
   children?: PageElement | PageElement[];
 
+  /** 页签变化钩子 */
   onChange?: ChangeHandler<any>;
 }
 
