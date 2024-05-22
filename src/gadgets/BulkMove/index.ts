@@ -240,7 +240,7 @@ $(() => (async () => {
           if (e === 'moderation-move-queued') {
             loger.record(`移动【<a href="/${from}${noredirect ? '' : '?redirect=no'}" class="${noredirect ? '' : 'mw-redirect'}">${from}</a>】→【<a href="/${to}">${to}</a>】成功请求已发出，等待审核中。`, 'success');
             await waitInterval(interval);
-            return;
+            continue;
           }
           let errorMessage = '';
           switch (e) {
