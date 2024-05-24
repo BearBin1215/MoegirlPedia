@@ -7,7 +7,7 @@ const ButtonPage = () => {
       <Button>Normal</Button>
       <Button flags={['progressive']}>progressive</Button>
       <Button flags={['primary', 'progressive']}>primary, progressive</Button>
-      <Button flags={['destructive']}>destructive</Button>
+      <Button flags={['destructive']} icon='cancel'>destructive</Button>
     </>
   );
 };
