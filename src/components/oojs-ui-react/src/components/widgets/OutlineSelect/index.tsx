@@ -25,6 +25,7 @@ const OutlineSelect = forwardRef<ElementRef<HTMLDivElement>, OutlineSelectProps>
     <Select
       ref={ref}
       className={classes}
+      outline
       {...rest}
     />
   );

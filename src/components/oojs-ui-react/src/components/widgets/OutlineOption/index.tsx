@@ -12,12 +12,14 @@ export interface OutlineOptionProps extends DecoratedOptionProps, OptionData {
 const OutlineOption = forwardRef<ElementRef<HTMLDivElement>, OutlineOptionProps>(({
   className,
   level = 0,
+  selected,
   ...rest
 }, ref) => {
   const classes = classNames(
     className,
     'oo-ui-outlineOptionWidget',
     `oo-ui-outlineOptionWidget-level-${level}`,
+    selected && 'oo-ui-optionWidget-selected',
   );
 
   return (

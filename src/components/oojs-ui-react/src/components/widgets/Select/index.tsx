@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import MenuOption from '../MenuOption';
+import OutlineOption from '../OutlineOption';
 import { processArray, processClassNames } from '../../../utils/tool';
 import type { MouseEventHandler, ReactElement } from 'react';
 import type { WidgetProps, OptionProps, MenuSectionOptionProps } from '../../../types/props';
@@ -18,6 +19,9 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
 
   /** 由`MenuOption`或`MenuSectionOption`组成的子元素 */
   children?: OptionElement | OptionElement[];
+
+  /** 是否渲染OutlineOption */
+  outline?: boolean;
 }
 
 /** @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件 */
@@ -27,6 +31,7 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
   disabled,
   onSelect,
   value,
+  outline,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
@@ -76,7 +81,16 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
             onSelect(option.props as OptionData);
           }
         };
-        return (
+        return outline ? (
+          <OutlineOption
+            {...option.props}
+            key={option.key}
+            onClick={handleClick}
+            selected={value === option.props.data}
+          >
+            {option.props.children}
+          </OutlineOption>
+        ) : (
           <MenuOption
             {...option.props}
             key={option.key}
