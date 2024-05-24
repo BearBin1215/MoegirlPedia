@@ -28,7 +28,7 @@
   },
   "include": [
     "src",
-    "testPage",
+    "tests",
   ],
   "exclude": [
     "node_modules"
