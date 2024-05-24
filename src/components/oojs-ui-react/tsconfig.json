@@ -1,33 +1,36 @@
 {
   "compilerOptions": {
-      "target": "ESNext",
-      "module": "ESNext",
-      "esModuleInterop": true,
-      "strict": true,
-      "declaration": true,
-      "importHelpers": true,
-      "moduleResolution": "Node10",
-      "experimentalDecorators": true,
-      "allowSyntheticDefaultImports": true,
-      "sourceMap": true,
-      "baseUrl": ".",
-      "paths": {
-          "@/*": [
-              "src/*"
-          ]
-      },
-      "jsx": "react",
-      "lib": [
-          "ESNext",
-          "DOM",
-          "DOM.Iterable"
-      ]
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "declaration": true,
+    "importHelpers": true,
+    "moduleResolution": "Node10",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "oojs-ui-react": [
+        "src/index.ts"
+      ],
+    },
+    "jsx": "react",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ]
   },
   "include": [
-      "src",
-      "testPage",
+    "src",
+    "testPage",
   ],
   "exclude": [
-      "node_modules"
+    "node_modules"
   ]
 }

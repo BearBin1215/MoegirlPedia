@@ -1,0 +1,86 @@
+@import "./sidemenu";
+
+$header-height: 48px;
+$wrapper-gap: 10px;
+
+body {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: #2d8cf0;
+}
+
+.itg-react-layout {
+    background-color: #f5f7f9;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.itg-react-header {
+    flex: 0 0 $header-height;
+    position: relative;
+    box-shadow: 0 1px 4px #ddd;
+    background-color: #fff;
+    z-index: 2;
+
+    @at-root .itg-react-header-content {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 50px;
+
+        .itg-logo,
+        .itg-react-link {
+            flex: 0 0 6.5em;
+        }
+
+        .itg-logo {
+            height: 21px;
+            background-size: auto 21px;
+            background-repeat: no-repeat;
+            background-image: url("../assets/logo.png");
+        }
+
+        .itg-react-title {
+            flex: 1 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .itg-react-link {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+    }
+}
+
+.itg-react-content-base {
+    flex: 1 0;
+    display: flex;
+
+    @at-root .itg-react-content-wrapper {
+        padding: $wrapper-gap;
+        flex: 1 0;
+
+        .itg-react-content-wrapper-inner {
+            background-color: #fff;
+            padding: $wrapper-gap * 2;
+
+            .itg-react-content {
+                height: calc(100vh - $header-height - $wrapper-gap * 6);
+                overflow: auto;
+
+                h1:first-child {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+}
