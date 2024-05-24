@@ -6,7 +6,6 @@ const LazyComponent: FC<{ route: RouterItem }> = ({ route }) => {
 
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <title>{`${route.title} - oojs-ui-react`}</title>
       <Component />
     </React.Suspense>
   );
