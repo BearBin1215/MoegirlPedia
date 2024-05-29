@@ -1,9 +1,9 @@
 import React, {
+  StrictMode,
   Fragment,
   useState,
   useMemo,
   useCallback,
-  StrictMode,
   useRef,
 } from 'react';
 import { chunk } from 'lodash-es';
@@ -46,7 +46,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   const [deleteRecord, setDeleteRecord] = useState<string[]>([]);
   // 复制状态
   const [copyButtonText, setCopyButtonText] = useState('复制文件列表');
-
+  /** 用于记录非链入使用文件 */
   const usedNotLinkdRef = useRef<string[]>([]);
 
   const api = useMemo(() => new mw.Api(), []);
