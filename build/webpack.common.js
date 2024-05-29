@@ -12,9 +12,9 @@ const entry = glob.sync(
   .map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'))
-  .reduce((entries, path) => {
-    const entry = path.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
-    entries[entry] = path;
+  .reduce((entries, filepath) => {
+    const et = filepath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
+    entries[et] = filepath;
     return entries;
   }, {});
 
@@ -72,7 +72,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
-            targets: '> 0.35%, not dead',
+            targets: '> 0.3%, not dead',
           },
         },
       },
