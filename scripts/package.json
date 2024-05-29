@@ -24,7 +24,8 @@
       "TextDiff",
       "userStatus",
       "WikiplusSummary",
-      "ExportXML"
+      "ExportXML",
+      "FileInspector"
     ]
   }
 }

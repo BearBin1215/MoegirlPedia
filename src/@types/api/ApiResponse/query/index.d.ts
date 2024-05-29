@@ -1,7 +1,7 @@
 import type {ApiResponse} from '../core';
 import type { ContentModel } from '../../utils';
 import type { Linkshere, Redirects, Revisions, Transcludedin } from './propData';
-import type { Categorymembers, Search } from './listData';
+import type { Categorymembers, GlobalUsage, Search, Usercontrib } from './listData';
 
 /**
  * 一次API查询经常不能获取你想要的所有数据。当这种情况发生时，
@@ -122,79 +122,85 @@ export interface ApiQueryPageInfo {
   pageid: number;
 
   /** 页面所属命名空间 */
-  ns: number,
+  ns: number;
 
   /** 页面标题 */
-  title: string,
+  title: string;
 
   /** 页面是否存在 */
-  missing?: '',
+  missing?: '';
 
   /** 页面内容模型 */
-  contentmodel: ContentModel,
+  contentmodel: ContentModel;
+
+  /** 文件使用数据 */
+  fileusage: Linkshere[];
+
+  /** 文件全域使用数据 */
+  globalusage: GlobalUsage[];
 
   /** 页面语言 */
-  pagelanguage: string,
+  pagelanguage: string;
 
   /** */
-  pagelanguagehtmlcode: string,
+  pagelanguagehtmlcode: string;
 
-  pagelanguagedir: string,
+  pagelanguagedir: string;
 
-  touched: string,
+  touched: string;
 
-  lastrevid: number,
+  lastrevid: number;
 
   /** 页面长度（字节） */
-  length: string,
+  length: string;
 
   /** 保护信息 */
-  protection: Protection[],
+  protection: Protection[];
 
   /** 可操作类型 */
-  restrictiontypes: string[],
+  restrictiontypes: string[];
 
   /** 是否监视 */
-  watched?: '',
+  watched?: '';
 
   /** 监视用户数量 */
-  watchers: number,
+  watchers: number;
 
   /** 最近编辑的监视者数量 */
-  visitingwatchers: number,
+  visitingwatchers: number;
 
   /** 监视列表通知时间戳 */
-  notificationtimestamp: string,
+  notificationtimestamp: string;
 
   /** 每个非讨论页面的讨论页的页面ID。 */
-  talkid: number,
+  talkid: number;
 
   /** 讨论页的母页面的页面ID */
-  subjectid: number,
+  subjectid: number;
 
   /** 页面的完整URL */
-  fullurl: string,
+  fullurl: string;
 
   /** 页面的编辑URL */
-  editurl: string,
+  editurl: string;
 
   /** 页面的规范URL */
-  canonicalurl: string,
+  canonicalurl: string;
 
   /** 用户是否可以阅读此页面 */
-  readable?: '',
+  readable?: '';
 
   /** 提供由EditFormPreloadText返回的文本 */
-  preload: string | null,
+  preload: string | null;
 
   /** 在页面标题实际显示的地方提供方式 */
-  displaytitle: string,
+  displaytitle: string;
 
   /** 网站内容语言所有变体的显示标题 */
-  varianttitles: Record<string, string>,
+  varianttitles: Record<string, string>;
 
   /** 用户可以在页面上执行的操作 */
-  actions: Record<string, ''>,
+  actions: Record<string, ''>;
 
   /** `prop=redirects`获取的至指定页面的所有重定向 */
   redirects: Redirects[];
@@ -241,6 +247,9 @@ export interface ApiQueryResponse extends ApiResponse {
 
     /** 搜索结果 */
     search: Search[];
+
+    /** 用户贡献 */
+    usercontribs: Usercontrib[];
 
     [key: string]: any;
   };

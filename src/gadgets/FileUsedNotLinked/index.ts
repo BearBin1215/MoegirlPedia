@@ -1,6 +1,5 @@
 /**
  * @description 查询文件非链入使用。
- *
  * @todo 标记时跳出窗口可选输入用途
  */
 import { pageSource } from '@/utils/api';
@@ -107,20 +106,20 @@ $(() => (async () => {
 
       // 排除链入使用的页面
       const used = new Set([...usedLinked()]);
-      let pageList = notLinkedList.filter((x) => !used.has(x));
+      let filtedPages = notLinkedList.filter((x) => !used.has(x));
 
-      if (pageList.length === 0) {
+      if (filtedPages.length === 0) {
         $('#result-overview').text('zh站没有查找到非链入使用此文件的页面。');
         return [];
       }
       $('#result-overview').text('文件在以下页面以非内链形式使用：');
 
-      pageList = [...new Set(pageList)];
+      filtedPages = [...new Set(filtedPages)];
       $('#result-list').append(
-        ...pageList.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
+        ...filtedPages.map((title) => `<li><a href="https://zh.moegirl.org.cn/${title}">zhmoe:${title}</a></li>`),
       );
       $searchButtonAnchor.removeClass('oo-ui-pendingElement-pending');
-      return pageList;
+      return filtedPages;
     };
 
     /** 添加[[T:非链入使用]] */
