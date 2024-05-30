@@ -278,6 +278,8 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
                       <a
                         href={`/${fileName}`}
                         style={{ textDecoration: deleted ? 'line-through' : '' }}
+                        target='_blank'
+                        rel='noreferrer'
                       >
                         {fileName}
                       </a>
