@@ -11,8 +11,7 @@ $(() => (async () => {
   const USERNAME = mw.config.get('wgRelevantUserName');
   if (
     !USERNAME ||
-    !['Listfiles', 'Contributions'].includes(mw.config.get('wgCanonicalSpecialPageName') as string) ||
-    !mw.config.get('wgUserGroups')!.some((group) => ['sysop', 'patroller'].includes(group))
+    !['Listfiles', 'Contributions'].includes(mw.config.get('wgCanonicalSpecialPageName') as string)
   ) {
     return;
   }

@@ -51,6 +51,11 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
 
   const api = useMemo(() => new mw.Api(), []);
 
+  /** 是否为维护人员，用于判定能否执行挂删 */
+  const isMaintainer = useMemo(() => {
+    return mw.config.get('wgUserGroups')!.some((group) => ['sysop', 'patroller'].includes(group));
+  }, []);
+
   /**
    * 获取用户上传的所有文件
    *
@@ -260,14 +265,16 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
                 {fileUsageData.map(({ fileName, usage, selected, deleted, uploadTime }) => (
                   <Fragment key='fileName'>
                     <dt>
-                      <input
-                        type='checkbox'
-                        name={fileName}
-                        defaultChecked
-                        checked={selected && !deleted}
-                        disabled={deleted || deleteStatus === 'deleting'}
-                        onChange={(e) => handleCheck(e, fileName)}
-                      />
+                      {isMaintainer && (
+                        <input
+                          type='checkbox'
+                          name={fileName}
+                          defaultChecked
+                          checked={selected && !deleted}
+                          disabled={deleted || deleteStatus === 'deleting'}
+                          onChange={(e) => handleCheck(e, fileName)}
+                        />
+                      )}
                       <a
                         href={`/${fileName}`}
                         style={{ textDecoration: deleted ? 'line-through' : '' }}
@@ -290,9 +297,11 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
                 ))}
               </dl>
               <hr />
-              <button onClick={handleDelete} disabled={deleteStatus === 'deleting'}>
-                挂删选中的文件
-              </button>
+              {isMaintainer && (
+                <button onClick={handleDelete} disabled={deleteStatus === 'deleting'}>
+                  挂删选中的文件
+                </button>
+              )}
               <button onClick={handleCopy} style={{ marginLeft: '0.3em' }}>
                 {copyButtonText}
               </button>
