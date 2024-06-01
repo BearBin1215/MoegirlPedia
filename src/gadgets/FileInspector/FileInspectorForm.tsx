@@ -192,14 +192,14 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
     setDeleteStatus('deleting');
     let done = 0;
     for (const { fileName, usage: { length } } of fileList) {
+      const reason = length ? '仅用于用户、用户讨论名字空间内的用途不当文件' : '无使用或不再使用的文件';
       try {
         await api.postWithToken('csrf', {
           action: 'edit',
           assertUser: currentUser!,
           title: fileName,
-          text: `<noinclude>{{即将删除|1=test|user=${currentUser}}}</noinclude>`,
-          summary: `[[User:BearBin/js#FileInspector|FileInspector]]: 挂删：${length
-            ? '仅用于用户、用户讨论名字空间内的用途不当文件' : '无使用或不再使用的文件'}`,
+          text: `<noinclude>{{即将删除|1=${reason}|user=${currentUser}}}</noinclude>`,
+          summary: `[[User:BearBin/js#FileInspector|FileInspector]]: 挂删：${reason}`,
           watchlist: 'nochange',
           tags: 'Automation tool',
           bot: true,
