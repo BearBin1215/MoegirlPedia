@@ -14,6 +14,7 @@ mw.loader.using('mediawiki.api').then(() => {
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
   const pageContentModel = mw.config.get('wgPageContentModel');
+  const pageName = mw.config.get('wgPageName');
 
   /** 页面模型语言映射 */
   const acceptsLangs = {
@@ -129,7 +130,7 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         const currentHTML = await parsePage({
           oldid,
-          title: mw.config.get('wgPageName'),
+          title: pageName,
         } as ApiParams);
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
@@ -157,7 +158,7 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         const currentHTML = await parsePage({
           oldid,
-          title: mw.config.get('wgPageName'),
+          title: pageName,
         } as ApiParams);
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
@@ -185,7 +186,7 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const currentHTML = await parsePage({
-          page: mw.config.get('wgPageName'),
+          page: pageName,
         });
         if (pageContentModel in acceptsLangs) {
           const $mwcode = $('#mw-content-text>.mw-code');
@@ -213,10 +214,10 @@ mw.loader.using('mediawiki.api').then(() => {
       e.preventDefault();
       $gadgetZone.text('加载中……');
       try {
-        const text = await pageSource(mw.config.get('wgPageName'));
+        const text = await pageSource(pageName);
         const currentHTML = await parsePage({
           text,
-          title: mw.config.get('wgPageName'),
+          title: pageName,
         } as ApiParams);
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
