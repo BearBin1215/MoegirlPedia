@@ -66,7 +66,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
     const userFileList: BasicFileData[] = [];
     let uccontinue: string | undefined = '|';
     while (uccontinue !== undefined) {
-      const result = await api.get({
+      const result = await api.post({
         format: 'json',
         utf8: true,
         action: 'query',
