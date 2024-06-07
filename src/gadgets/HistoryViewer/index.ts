@@ -36,7 +36,6 @@ mw.loader.using('mediawiki.api').then(() => {
   /** 根据输入参数解析页面HTML */
   const parsePage = async (parseConfig: ApiParams) => {
     const response = await api.post({
-      title: mw.config.get('wgPageName'),
       action: 'parse',
       ...parseConfig,
     }) as ApiParseResponse;
@@ -128,7 +127,10 @@ mw.loader.using('mediawiki.api').then(() => {
         $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadDiffButton, '。');
       }
       try {
-        const currentHTML = await parsePage({ oldid } as ApiParams);
+        const currentHTML = await parsePage({
+          oldid,
+          title: mw.config.get('wgPageName'),
+        } as ApiParams);
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
           `<h2 class="diff-currentversion-title">版本${oldid}</h2>`,
@@ -153,7 +155,10 @@ mw.loader.using('mediawiki.api').then(() => {
       e.preventDefault();
       $gadgetZone.text('加载中……');
       try {
-        const currentHTML = await parsePage({ oldid } as ApiParams);
+        const currentHTML = await parsePage({
+          oldid,
+          title: mw.config.get('wgPageName'),
+        } as ApiParams);
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
           $('#mw-content-text').append($currentContent);
@@ -179,7 +184,9 @@ mw.loader.using('mediawiki.api').then(() => {
       e.preventDefault();
       $gadgetZone.text('加载中……');
       try {
-        const currentHTML = await parsePage({ page: mw.config.get('wgPageName') });
+        const currentHTML = await parsePage({
+          page: mw.config.get('wgPageName'),
+        });
         if (pageContentModel in acceptsLangs) {
           const $mwcode = $('#mw-content-text>.mw-code');
           const $currentContent = $(currentHTML);
@@ -207,7 +214,10 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const text = await pageSource(mw.config.get('wgPageName'));
-        const currentHTML = await parsePage({ text } as ApiParams);
+        const currentHTML = await parsePage({
+          text,
+          title: mw.config.get('wgPageName'),
+        } as ApiParams);
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
           $('#mw-content-text').append($currentContent);
