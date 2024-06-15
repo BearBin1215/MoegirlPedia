@@ -17,6 +17,7 @@
   "files": [
     "src"
   ],
+  "sideEffects": false,
   "peerDependencies": {
     "classnames": "^2.5.1",
     "lodash-es": "^4.0.0",

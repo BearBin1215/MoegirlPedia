@@ -7,10 +7,12 @@ import React, {
   useRef,
 } from 'react';
 import { chunk } from 'lodash-es';
+import { Button, NumberInput } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
 import type { MouseEvent, ChangeEvent, FC } from 'react';
+import type { InputWidgetRef } from 'oojs-ui-react';
 import type { ApiQueryResponse, GlobalUsage } from '@/@types/api';
 
 interface BasicFileData {
@@ -49,7 +51,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   /** 用于记录非链入使用文件 */
   const usedNotLinkdRef = useRef<string[]>([]);
   /** 挂删间隔输入框 */
-  const deleteIntervalInputRef = useRef<HTMLInputElement>(null);
+  const deleteIntervalInputRef = useRef<InputWidgetRef>(null);
 
   const api = useMemo(() => new mw.Api(), []);
 
@@ -185,7 +187,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   }, []);
 
   const handleDelete = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
-    const interval = deleteIntervalInputRef.current!.valueAsNumber * 1000;
+    const interval = deleteIntervalInputRef.current!.getValue() * 1000;
     e.preventDefault(); // 避免触发提交跳转
     const currentUser = mw.config.get('wgUserName');
     const fileList = fileUsageData.filter(({ selected }) => selected);
@@ -250,7 +252,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
             <>
               查询该用户所有未使用的文件信息
               <br />
-              <button onClick={queryUserFilesUsage}>查询</button>
+              <Button onClick={queryUserFilesUsage} flags='progressive'>查询</Button>
             </>
           )}
           {status === 'querying' && '正在查询……'}
@@ -258,7 +260,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
             <>
               查询失败：{failReason}
               <br />
-              <button onClick={queryUserFilesUsage}>重试</button>
+              <Button onClick={queryUserFilesUsage}>重试</Button>
             </>
           )}
           {status === 'acquired' && (
@@ -304,26 +306,18 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
               <hr />
               <div className='file-inspector-panel'>
                 {isMaintainer && (
-                  <button
+                  <Button
                     onClick={handleDelete}
                     disabled={deleteStatus === 'deleting'}
-                    style={{ marginRight: '0.3em' }}
+                    flags='progressive'
                   >
                     挂删选中的文件
-                  </button>
+                  </Button>
                 )}
                 挂删间隔（s）：
-                <input
-                  type='number'
-                  min={0}
-                  defaultValue={6}
-                  ref={deleteIntervalInputRef}
-                  style={{ width: '5em' }}
-                />
+                <NumberInput min={0} defaultValue={6} ref={deleteIntervalInputRef} style={{ width: '5em' }} />
                 <br />
-                <button onClick={handleCopy} style={{ marginTop: '0.4em' }}>
-                  {copyButtonText}
-                </button>
+                <Button onClick={handleCopy} style={{ marginTop: '0.4em' }}>{copyButtonText}</Button>
               </div>
               {deleteStatus !== 'ready' && (
                 <ul className='file-inspector-log'>

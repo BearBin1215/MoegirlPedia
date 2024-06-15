@@ -21,7 +21,7 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
-  const SelectWidgetRef = useRef<HTMLSpanElement>(null);
+  const elementRef = useRef<HTMLSpanElement>(null);
 
   const classes = classNames(
     className,
@@ -42,7 +42,7 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
   };
 
   useImperativeHandle(ref, () => ({
-    element: SelectWidgetRef.current,
+    element: elementRef.current,
     isSelected: () => value,
     setSelected: (newValue: boolean) => setValue(newValue),
   }));
@@ -52,7 +52,7 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={SelectWidgetRef}
+      ref={elementRef}
     >
       <input
         name={name}
