@@ -48,6 +48,8 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   const [copyButtonText, setCopyButtonText] = useState('复制文件列表');
   /** 用于记录非链入使用文件 */
   const usedNotLinkdRef = useRef<string[]>([]);
+  /** 挂删间隔输入框 */
+  const deleteIntervalInputRef = useRef<HTMLInputElement>(null);
 
   const api = useMemo(() => new mw.Api(), []);
 
@@ -183,6 +185,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   }, []);
 
   const handleDelete = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+    const interval = deleteIntervalInputRef.current!.valueAsNumber * 1000;
     e.preventDefault(); // 避免触发提交跳转
     const currentUser = mw.config.get('wgUserName');
     const fileList = fileUsageData.filter(({ selected }) => selected);
@@ -222,7 +225,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
       }
       done++;
       if (done < fileList.length) {
-        await waitInterval(5000);
+        await waitInterval(interval);
       }
     }
     setDeleteStatus('done');
@@ -299,14 +302,29 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
                 ))}
               </dl>
               <hr />
-              {isMaintainer && (
-                <button onClick={handleDelete} disabled={deleteStatus === 'deleting'}>
-                  挂删选中的文件
+              <div className='file-inspector-panel'>
+                {isMaintainer && (
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleteStatus === 'deleting'}
+                    style={{ marginRight: '0.3em' }}
+                  >
+                    挂删选中的文件
+                  </button>
+                )}
+                挂删间隔（s）：
+                <input
+                  type='number'
+                  min={0}
+                  defaultValue={6}
+                  ref={deleteIntervalInputRef}
+                  style={{ width: '5em' }}
+                />
+                <br />
+                <button onClick={handleCopy} style={{ marginTop: '0.4em' }}>
+                  {copyButtonText}
                 </button>
-              )}
-              <button onClick={handleCopy} style={{ marginLeft: '0.3em' }}>
-                {copyButtonText}
-              </button>
+              </div>
               {deleteStatus !== 'ready' && (
                 <ul className='file-inspector-log'>
                   {deleteRecord.map((record) => <li key={record}>{record}</li>)}
