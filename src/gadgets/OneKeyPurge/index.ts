@@ -20,7 +20,6 @@ $(() => (async () => {
   const PAGENAME = mw.config.get('wgNamespaceNumber') === -1
     ? mw.config.get('wgRelevantPageName')
     : mw.config.get('wgPageName');
-  let userRights: string[] = [];
 
   class OKPWindow extends OO.ui.Dialog {
     /** 操作失败的页面 */
@@ -37,6 +36,8 @@ $(() => (async () => {
 
     /** 是否正在运行 */
     running = false;
+
+    noratelimit = mw.config.get('wgUserGroups')?.some((group) => ['sysop', 'bot', 'flood'].includes(group));
 
     /** 顶部按钮和标题 */
     $header = $('<header class="okp-header"></header>');
@@ -122,7 +123,7 @@ $(() => (async () => {
       });
 
       // 根据用户权限提示
-      const noteText = userRights.includes('noratelimit') ?
+      const noteText = this.noratelimit ?
         '<b>提醒</b>：在被大量嵌入/链入的页面此工具将会向服务器发送<b>大量请求</b>，请慎重使用！'
         :
         '<b>提醒</b>：您未持有<code>noratelimit</code>权限，清除缓存和零编辑的速率将被分别限制为<u>30次/min</u>和<u>10次/min</u>，请耐心等待。';
@@ -270,7 +271,7 @@ $(() => (async () => {
           this.progressChange(title, 'fail', error);
         });
         if (index + 1 < titles.length) {
-          if (!userRights.includes('noratelimit')) {
+          if (!this.noratelimit) {
             await waitInterval(6000);
           } else {
             await waitInterval(1000);
@@ -311,7 +312,7 @@ $(() => (async () => {
         });
         // 如果不是最后一批，根据是否拥有noratelimit权限等待间隔
         if (i + 5 < pageList.length) {
-          if (!userRights.includes('noratelimit')) {
+          if (!this.noratelimit) {
             await waitInterval(2000);
           } else {
             await waitInterval(1000);
@@ -392,14 +393,7 @@ $(() => (async () => {
   windowManager.addWindows([OKPDialog]);
 
   // 添加入口
-  $(mw.util.addPortletLink('p-cactions', 'javascript:void(0)', '批量清除缓存', 'ca-okp')!).on('click', async () => {
-    if (!userRights.length) {
-      try {
-        userRights = await mw.user.getRights();
-      } catch (error) {
-        mw.notify(`获取用户信息出错：${error}`, { type: 'error' });
-      }
-    }
+  $(mw.util.addPortletLink('p-cactions', 'javascript:void(0)', '批量清除缓存', 'ca-okp')!).on('click', () => {
     $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层
     windowManager.openWindow(OKPDialog);
     $body.css('overflow', 'auto');
