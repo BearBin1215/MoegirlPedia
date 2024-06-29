@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useCallback,
   useRef,
+  useEffect,
 } from 'react';
 import { chunk } from 'lodash-es';
 import { Button, NumberInput } from 'oojs-ui-react';
@@ -243,6 +244,10 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
     });
   }, [fileUsageData]);
 
+  useEffect(() => {
+    mw.loader.using(['mediawiki.api', 'oojs-ui', 'moment']);
+  }, []);
+
   return (
     <StrictMode>
       <form id='file-inspector'>
@@ -268,7 +273,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
               获取成功！该用户上传的无使用或仅用于用户页的文件如下：
               <dl>
                 {fileUsageData.map(({ fileName, usage, selected, deleted, uploadTime }) => (
-                  <Fragment key='fileName'>
+                  <Fragment key={fileName}>
                     <dt>
                       {isMaintainer && (
                         <input

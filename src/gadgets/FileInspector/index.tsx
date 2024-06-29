@@ -5,7 +5,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import FileInspectorForm from './FileInspectorForm';
 
-$(() => (async () => {
+$(() => {
   const USERNAME = mw.config.get('wgRelevantUserName');
   if (
     !USERNAME ||
@@ -13,9 +13,7 @@ $(() => (async () => {
   ) {
     return;
   }
-  await mw.loader.using(['mediawiki.api', 'oojs-ui', 'moment']);
-
   const rootNode = document.createDocumentFragment();
   createRoot(rootNode).render(<FileInspectorForm username={USERNAME} />);
   document.querySelector('#mw-content-text>.mw-contributions-form, #mw-listfiles-form')!.after(rootNode);
-})());
+});
