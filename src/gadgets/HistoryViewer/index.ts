@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
-import style from './index.less';
+import './index.less';
 
 declare global {
   interface Window {
@@ -63,8 +63,6 @@ mw.loader.using('mediawiki.api').then(() => {
       '）',
     ) as JQuery<HTMLSpanElement>;
   };
-
-  mw.loader.addStyleTag(style);
 
   if (diff && oldid) {
     // 查看差异，仅在有显示“返回最后的版本 ↺”按钮时加载

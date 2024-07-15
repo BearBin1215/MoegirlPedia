@@ -3,6 +3,13 @@ import MWBot from 'mwbot';
 import config from './config.js';
 import { execSync } from 'child_process';
 
+const blackListFunc = [
+  'setInterval',
+  'setTimeout',
+  'unescape',
+];
+
+
 // 获取最近一次提交所修改的页面
 const lastNonMergeCommitHash = execSync('git log -1 --format=format:"%H" --no-merges HEAD')
   .toString()
@@ -44,7 +51,10 @@ if (!list.length) {
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
     const title = `${config.sync.pagePath}${item}.js`;
-    const source = await fs.promises.readFile(`${config.sync.localPath}${item}.min.js`, 'utf-8');
+    const source = await fs.promises.readFile(`${config.sync.localPath}${item}.min.js`, 'utf-8').replace(
+      new RegExp(`\\$(${blackListFunc.join('|')})\\(`, 'g'),
+      (_match, p1) => `window['${p1}'](`,
+    );
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
     for (let j = 0; j <= maxRetry;) {
       try {
