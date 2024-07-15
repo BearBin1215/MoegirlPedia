@@ -130,7 +130,6 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         const currentHTML = await parsePage({
           oldid,
-          title: pageName,
         } as ApiParams);
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
@@ -158,7 +157,6 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         const currentHTML = await parsePage({
           oldid,
-          title: pageName,
         } as ApiParams);
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
@@ -171,7 +169,7 @@ mw.loader.using('mediawiki.api').then(() => {
         }
         $gadgetZone.text('加载成功，您现在看到的是最新版本。部分依赖于js的功能（如折叠、tabs模板）可能无法正常工作。');
       } catch (error) {
-        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadHTMLButton, '。');
+        $gadgetZone.empty().append(`加载失败：${error}。`);
       }
     });
 
@@ -200,7 +198,7 @@ mw.loader.using('mediawiki.api').then(() => {
         }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
-        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showCurrentButton, '。');
+        $gadgetZone.empty().append(`加载失败：${error}。`);
       }
     });
 
@@ -230,7 +228,7 @@ mw.loader.using('mediawiki.api').then(() => {
         }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
-        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $showPageButton, '。');
+        $gadgetZone.empty().append(`加载失败：${error}`);
       }
     });
 
