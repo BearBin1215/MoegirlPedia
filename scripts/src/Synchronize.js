@@ -73,6 +73,7 @@ if (!list.length) {
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
     for (let j = 0; j <= maxRetry;) {
       try {
+        const editToken = await bot.getEditToken();
         const res = await bot.request({
           action: 'edit',
           title,
@@ -80,7 +81,7 @@ if (!list.length) {
           summary: `同步GitHub更改：${lastCommitMessage}`,
           bot: true,
           tags: 'Bot',
-          token: bot.editToken,
+          token: editToken.csrftoken,
         });
         if (res.edit.nochange === '') {
           console.log(`${title}保存前后无变化。`);

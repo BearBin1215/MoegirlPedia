@@ -232,6 +232,6 @@ mw.loader.using('mediawiki.api').then(() => {
       }
     });
 
-    $('.permissions-errors').append($gadgetZone.append('您也可以', $showPageButton, '。'));
+    $('.permissions-errors').append($gadgetZone.append('您也可以 ', $showPageButton, '。'));
   }
 });
