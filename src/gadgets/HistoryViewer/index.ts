@@ -125,7 +125,7 @@ mw.loader.using('mediawiki.api').then(() => {
         ));
         $gadgetZone.text('加载成功！您现在可以查看版本差异。因compare api不支持，编辑时间戳和标记（如小编辑、机器人）不会显示。').append($diff);
       } catch (error) {
-        $gadgetZone.empty().append(`加载失败：${error}。您可以尝试重新`, $loadDiffButton, '。');
+        $gadgetZone.empty().append(`加载失败：${error}。`);
       }
       try {
         const currentHTML = await parsePage({
