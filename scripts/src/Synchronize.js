@@ -51,11 +51,11 @@ if (!list.length) {
   const lastCommitMessage = execSync('git log -1 --pretty=%s').toString();
 
   // 执行同步
-  // await bot.loginGetEditToken({
-  //   username: config.username,
-  //   password: config.password,
-  // });
-  // console.log('登陆成功，开始同步');
+  await bot.loginGetEditToken({
+    username: config.username,
+    password: config.password,
+  });
+  console.log('登陆成功，开始同步');
   const errorList = [];
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
@@ -73,7 +73,6 @@ if (!list.length) {
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
     for (let j = 0; j <= maxRetry;) {
       try {
-        const editToken = await bot.getEditToken();
         const res = await bot.request({
           action: 'edit',
           title,
@@ -81,7 +80,7 @@ if (!list.length) {
           summary: `同步GitHub更改：${lastCommitMessage}`,
           bot: true,
           tags: 'Bot',
-          token: editToken.csrftoken,
+          token: bot.editToken,
         });
         if (res.edit.nochange === '') {
           console.log(`${title}保存前后无变化。`);
