@@ -173,7 +173,7 @@ mw.loader.using('mediawiki.api').then(() => {
       }
     });
 
-    $('#mw-content-text').append($gadgetZone.append('或 ', $loadHTMLButton, '。'));
+    $('#mw-content-text').append($gadgetZone.append('或', $loadHTMLButton, '。'));
   } else if ($moderationNotice.get(0) && !$moderationNotice.children('a[href*="Special:Moderation"]').length) {
     // 有提示当前版本未通过审核，且不是自己的编辑时
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
