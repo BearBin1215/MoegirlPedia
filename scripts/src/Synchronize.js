@@ -3,34 +3,44 @@ import MWBot from 'mwbot';
 import config from './config.js';
 import { execSync } from 'child_process';
 
-const blackListFunc = [
+/** 被WAF禁用的Windows对象下的函数 */
+const blackListWindowsFunc = [
   'setInterval',
   'setTimeout',
   'unescape',
+  'decodeURI',
+  'encodeURI',
   'decodeURIComponent',
   'encodeURIComponent',
+  'alert',
+  'eval',
 ];
 
+/** 被WAF禁用的Document对象下的函数 */
 const blackListDOMFunc = [
   'createElement',
 ];
 
+/** 被关键词禁用的函数 */
 const blackListAllFunc = [
   'charCodeAt',
+  'alert',
 ];
 
-// 获取最近一次提交所修改的页面
+/** 最近一次提交所修改的文件 */
 const lastNonMergeCommitHash = execSync('git log -1 --format=format:"%H" --no-merges HEAD')
   .toString()
   .trim();
 
+/** 最近一次提交修改到的/dist/gadgets文件夹下的文件 */
 const changedGadgets = execSync(`git diff-tree --no-commit-id --name-only -r ${lastNonMergeCommitHash}`)
   .toString()
   .split('\n')
   .filter((fileName) => fileName.includes('dist/gadgets/'))
   .map((fileName) => fileName.replace(/dist\/gadgets\/(.*)\.min\.js/, '$1'));
 
-const list = config.sync.list.filter((gadgetName) => changedGadgets.includes(gadgetName)); // 同步工具列表
+/** 同步工具列表 */
+const list = config.sync.list.filter((gadgetName) => changedGadgets.includes(gadgetName));
 
 const maxRetry = 5; // 最大重试次数
 
@@ -47,7 +57,7 @@ if (!list.length) {
     timeout: 90000,
   });
 
-  // 获取最近一次提交的消息
+  /** 最近一次提交的消息 */
   const lastCommitMessage = execSync('git log -1 --pretty=%s').toString();
 
   // 执行同步
@@ -59,9 +69,11 @@ if (!list.length) {
   const errorList = [];
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
+    /** 萌百页面名 */
     const title = `${config.sync.pagePath}${item}.js`;
+    /** 绕开被WAF的函数 */
     const source = (await fs.promises.readFile(`${config.sync.localPath}${item}.min.js`, 'utf-8')).replace(
-      new RegExp(`(${blackListFunc.join('|')})\\(`, 'g'),
+      new RegExp(`(${blackListWindowsFunc.join('|')})\\(`, 'g'),
       (_match, p1) => `window['${p1}'](`,
     ).replace(
       new RegExp(`document.(${blackListDOMFunc.join('|')})\\(`, 'g'),
@@ -70,6 +82,7 @@ if (!list.length) {
       new RegExp(`.(${blackListAllFunc.join('|')})\\(`, 'g'),
       (_match, p1) => `['${p1}'](`,
     );
+    /** 加上页顶文档文本、nowiki标签，生成最后要提交到页面的源码 */
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
     for (let j = 0; j <= maxRetry;) {
       try {
