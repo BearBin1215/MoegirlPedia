@@ -1,3 +1,7 @@
+/**
+ * 代码块显示语言
+ */
+
 $(function () {
   $('pre').each(function () {
     $(document.head).append('<style>pre::before{content:attr(lang);display:block;text-align:right;font-weight:700;margin-right:.5em;}</style>');

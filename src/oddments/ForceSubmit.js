@@ -1,5 +1,5 @@
 /**
- * @description 编辑css和js页时不弹窗提示语法错误
+ * @description 编辑自己的CSS和JS页时不弹窗提示语法错误
  */
 
 if (

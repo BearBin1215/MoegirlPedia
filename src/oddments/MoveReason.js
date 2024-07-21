@@ -1,3 +1,7 @@
+/**
+ * @description 移动原因快速填充
+ */
+
 if (mw.config.get('wgCanonicalSpecialPageName') === 'Movepage') {
   var reasons = [
     ['无需消歧义', '[[萌娘百科:消歧义方针|一般而言不需要为不在收录范围的内容和百科目前尚未存在的内容进行消歧义行为]]'],

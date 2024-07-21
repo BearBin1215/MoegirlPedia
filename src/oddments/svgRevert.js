@@ -1,3 +1,6 @@
+/**
+ * @description 将页面上被转换成png的svg转换回去
+ */
 $('img[srcset*=".svg.png"]').each(function (_, ele) {
   if ($(ele).attr('srcset').indexOf('img.moegirl.org.cn/') > -1) {
     $(ele).attr('src', $(ele).attr('src').replace(/thumb\//g, '').replace(/\.svg\/.*/g, '.svg'));

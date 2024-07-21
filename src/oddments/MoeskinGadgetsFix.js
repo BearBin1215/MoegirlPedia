@@ -1,3 +1,6 @@
+/**
+ * @description Moeskin的自定义工具栏放到目录上面
+ */
 $(function () {
   setTimeout(function () {
     $('.moe-siderail-sticky').prepend($('#moe-custom-sidenav-block'));
