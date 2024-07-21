@@ -75,14 +75,14 @@ if (!list.length) {
     const title = `${config.sync.pagePath}${item}.js`;
     /** 绕开被WAF的函数 */
     const source = (await fs.promises.readFile(`${config.sync.localPath}${item}.min.js`, 'utf-8')).replace(
-      new RegExp(`.(${blackListAllFunc.join('|')})\\(`, 'g'),
-      (_match, p1) => `['${p1}'](`,
+      new RegExp(`\\.(${blackListAllFunc.join('|')})\\(`, 'g'),
+      (_match, func) => `['${func}'](`,
     ).replace(
-      new RegExp(`(${blackListWindowsFunc.join('|')})\\(`, 'g'),
-      (_match, p1) => `window['${p1}'](`,
+      new RegExp(`([^.])(${blackListWindowsFunc.join('|')})\\(`, 'g'),
+      (_match, prefix, func) => `${prefix}window['${func}'](`,
     ).replace(
       new RegExp(`document.(${blackListDOMFunc.join('|')})\\(`, 'g'),
-      (_match, p1) => `document['${p1}'](`,
+      (_match, func) => `document['${func}'](`,
     );
     /** 加上页顶文档文本、nowiki标签，生成最后要提交到页面的源码 */
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
