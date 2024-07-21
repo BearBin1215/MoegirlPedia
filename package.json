@@ -2,7 +2,7 @@
   "name": "bearbin-moegirlpedia",
   "version": "2.2.0",
   "description": "BearBin's gadgets for MoegirlPedia",
-  "main": "index.js",
+  "main": "build/pack.js",
   "scripts": {
     "watch": "webpack --config build/webpack.dev.js --watch --mode development",
     "start": "yarn run watch",
