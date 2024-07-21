@@ -4,16 +4,14 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
     if (event.ctrlKey) {
       event.preventDefault();
       switch (event.key) {
-        case 's':
-        case 'S':
-          // Ctrl+S保存
-          if (event.shiftKey) {
-            // Ctrl+Shift+S切换小编辑后保存
-            document.getElementById('wpMinoredit')!.click();
-          }
+        case 's': // Ctrl+S保存
           document.getElementById('wpSave')!.click();
           break;
-        case 'V': // Ctrl+Shift+V预览
+        case 'S': // Ctrl+Shift+S 切换小编辑后保存
+          document.getElementById('wpMinoredit')!.click();
+          document.getElementById('wpSave')!.click();
+          break;
+        case 'V': // Ctrl+Shift+V 预览
           event.preventDefault();
           // 模块页“预览使用本模板的页面”
           if (mw.config.get('wgCodeEditorCurrentLanguage') === 'lua') {
@@ -21,7 +19,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
           }
           document.getElementById('wpPreview')!.click();
           break;
-        case 'D': // Ctrl+Shift+D查看差异
+        case 'D': // Ctrl+Shift+D 查看差异
           event.preventDefault();
           document.getElementById('wpDiff')!.click();
       }
