@@ -17,7 +17,7 @@
   - [一键提醒投票](#一键提醒投票)
 - [文件结构](#文件结构)
 - [参与完善](#参与完善)
-  - [指令](#指令)
+  - [开发流程](#开发流程)
 
 ## 工具介绍
 
@@ -246,16 +246,17 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   - 使用`import styles from './foo.less' assert { type: 'string' }`，该情况下会将样式表内容作为字符串导入，less则会在编译后作为字符串导入。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
 
-### 指令
+### 开发流程
 
-- 开发
+- 使用指令进入开发模式：
   ```shell
   pnpm start
   ```
-  开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。
-- 打包
+  开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。调试时打开萌百，从对应的实时输出js文件复制到控制台直接运行。
+- 开发完毕，打包：
   ```shell
   pnpm build <gadget names>
   ```
   `<gadget names>`为小工具名，可输入多个，例如`pnpm build MassEdit BulkMove`会打包[src/gadgets/MassEdit](/src/gadgets/MassEdit/)和[src/gadgets/BulkMove](/src/gadgets/BulkMove/)，直接执行`pnpm build`则打包全部小工具。
   输出文件位于[dist](/dist/)目录下。
+  打包完毕并提交后，Github Action会自动读取dist下发生变动的文件，并将其提交到萌百。
