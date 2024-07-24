@@ -9,8 +9,13 @@ declare global {
   }
 }
 
+interface QueryParams {
+  oldid: string;
+  diff: string;
+}
+
 mw.loader.using('mediawiki.api').then(() => {
-  const { oldid, diff } = queryString.parse(location.search);
+  const { oldid, diff } = queryString.parse(location.search) as unknown as QueryParams;
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
   const pageContentModel = mw.config.get('wgPageContentModel');
@@ -76,11 +81,15 @@ mw.loader.using('mediawiki.api').then(() => {
       e.preventDefault();
       $gadgetZone.text('加载中……');
       try {
-        const response = await api.get({
+        const response = await api.post({
           action: 'compare',
           utf8: true,
-          fromrev: oldid as string,
-          torev: diff as string,
+          fromrev: oldid,
+          ...(/\d+/.test(diff) ? {
+            torev: diff,
+          } : {
+            torelative: diff,
+          }),
           prop: ['diff', 'user', 'parsedcomment', 'ids', 'title'],
         }) as ApiCompareResponse;
         const {
