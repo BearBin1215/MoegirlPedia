@@ -47,7 +47,7 @@ $(() => (async () => {
       text: '出错',
     },
   ], 'massedit-log', 'h5');
-  mw.loader.load('https://mzh.moegirl.org.cn/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
+  mw.loader.load('/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
   $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
   const tags = mw.config.get('wgUserGroups')!.includes('bot') ? 'Bot' : 'Automation tool';
 
