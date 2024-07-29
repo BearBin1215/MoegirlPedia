@@ -2,12 +2,13 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   // 编辑页Ctrl+S保存，Ctrl+Shift+S小编辑保存
   window.addEventListener('keydown', (event) => {
     if (event.ctrlKey) {
-      event.preventDefault();
       switch (event.key) {
         case 's': // Ctrl+S保存
+          event.preventDefault();
           document.getElementById('wpSave')!.click();
           break;
         case 'S': // Ctrl+Shift+S 切换小编辑后保存
+          event.preventDefault();
           document.getElementById('wpMinoredit')!.click();
           document.getElementById('wpSave')!.click();
           break;
