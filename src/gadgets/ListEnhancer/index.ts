@@ -35,8 +35,8 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere" />').append(
       '（',
       $('<a>复制本页</a>').on('click', ({ target }) => {
-        const linkList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
-        copyAction(linkList.join('\n'), $(target));
+        const anchorList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
+        copyAction(anchorList.join('\n'), $(target));
       }),
       $('#mw-content-text a[href*="&from="]').length
         ? ' | '
@@ -67,7 +67,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
     const searchEnhance = () => {
       $(document.head).append($(`<style>${styles}</style>`));
       let showDetail = true;
-      const linkList: string[] = [];
+      const anchorList: string[] = [];
 
       // 复制一个按钮插入到多媒体搜索后面，用于搜索要用于替换的页面
       const $searchMedia = $('.search-types li').eq(1);
@@ -80,7 +80,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
       // 在搜索结果的每个页面后添加编辑按钮，顺带存一个linkList列表用于后续复制列表
       ($('a[data-serp-pos]') as JQuery<HTMLAnchorElement>).each((_, ele) => {
-        linkList.push(decodeURIComponent(ele.href).replace(/(https:\/\/)?m?zh.moegirl.org.cn\//, '').replace(/_/g, ' '));
+        anchorList.push(decodeURIComponent(ele.href).replace(/(https:\/\/)?m?zh.moegirl.org.cn\//, '').replace(/_/g, ' '));
         $(ele).before(`<a class="listenhancer-search-edit" href="${ele.href}?action=edit">[编辑]</a>`);
       });
 
@@ -99,7 +99,7 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
         }
       });
       const $copyList = $('<a>复制列表</a>').on('click', ({ target }) => {
-        copyAction(linkList.join('\n'), $(target));
+        copyAction(anchorList.join('\n'), $(target));
       });
 
       // 把按钮放到输入条下方的名字空间选择右侧
