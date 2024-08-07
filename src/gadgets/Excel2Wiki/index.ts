@@ -45,7 +45,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
         if (table?.tagName === 'TABLE') { // 判断粘贴的内容是否为table标签
           const useDouble: boolean = useDoubleSelect.isSelected();
           const wikitable: string[] = []; // 用于存放各tr内容
-          table.querySelectorAll('tr').forEach((tr) => { // 遍历所有tr
+          table.querySelectorAll<HTMLTableRowElement>('tr').forEach((tr) => { // 遍历所有tr
             const tableRow: string[] = []; // 用于存放各td内容
             tr.querySelectorAll<HTMLTableCellElement>('td, th').forEach((td, index) => {
               // 对于每一个td，判断其是否有大于1的colspan或rowspan属性并加入

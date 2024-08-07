@@ -5,7 +5,7 @@ import {
 import './index.less';
 import exportIcon from './exportIcon.svg' assert { type: 'xml' };
 
-document.querySelectorAll('table.wikitable').forEach((table) => {
+document.querySelectorAll<HTMLTableElement>('table.wikitable').forEach((table) => {
   const exportButton = document.createElement('div');
   exportButton.innerHTML = exportIcon;
   exportButton.classList.add('export-table-button');

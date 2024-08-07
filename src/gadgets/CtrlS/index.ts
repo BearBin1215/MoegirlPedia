@@ -16,7 +16,7 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
           event.preventDefault();
           // 模块页“预览使用本模板的页面”
           if (mw.config.get('wgCodeEditorCurrentLanguage') === 'lua') {
-            (document.querySelector('#wpTemplateSandboxPreview input') as HTMLInputElement)!.click();
+            (document.querySelector<HTMLInputElement>('#wpTemplateSandboxPreview input'))!.click();
           }
           document.getElementById('wpPreview')!.click();
           break;

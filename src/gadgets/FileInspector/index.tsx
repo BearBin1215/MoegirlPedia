@@ -15,5 +15,5 @@ $(() => {
   }
   const rootNode = document.createDocumentFragment();
   createRoot(rootNode).render(<FileInspectorForm username={USERNAME} />);
-  document.querySelector('#mw-content-text>.mw-contributions-form, #mw-listfiles-form')!.after(rootNode);
+  document.querySelector<HTMLFormElement>('#mw-content-text>.mw-contributions-form, #mw-listfiles-form')!.after(rootNode);
 });

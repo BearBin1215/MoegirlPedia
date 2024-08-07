@@ -212,7 +212,7 @@ mw.loader.using('mediawiki.api').then(() => {
     });
 
     $moderationNotice.append($gadgetZone.append('您也可以 ', $showCurrentButton, '。'));
-  } else if (document.querySelector('.permissions-errors a[href*="action=edit"]')) {
+  } else if (document.querySelector<HTMLAnchorElement>('.permissions-errors a[href*="action=edit"]')) {
     // 新页面
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
     const $showPageButton = $('<a>查看待审核内容</a>') as JQuery<HTMLAnchorElement>;
