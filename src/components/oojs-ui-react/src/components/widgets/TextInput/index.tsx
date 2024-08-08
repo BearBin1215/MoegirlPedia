@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
@@ -72,7 +72,7 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
   };
 
   /** input的内边距是用内联样式控制的，要根据label判定 */
-  const inputStyle = useMemo(() => {
+  const inputStyle = (() => {
     const style: CSSProperties = {};
     if (labelRef.current) {
       const paddingWidth = `${labelRef.current.offsetWidth}px`;
@@ -83,7 +83,7 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
       }
     }
     return style;
-  }, [label, labelPosition]);
+  })();
 
   useImperativeHandle(ref, () => ({
     getValue: () => value,
