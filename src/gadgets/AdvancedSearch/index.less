@@ -1,10 +1,43 @@
+@max-width: 960px;
+
 #advanced-search-panel {
     clear: both;
+    margin-top: 0.4em;
     padding: 0.5em 0.75em;
     border: 1px solid #c8ccd1;
     background-color: #f8f9fa;
 
     &.panel-hide {
         display: none;
+    }
+
+    .panel-header {
+        max-width: @max-width;
+        display: flex;
+        justify-content: space-between;
+
+        .panel-title {
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+    }
+
+    .panel-content {
+        max-width: @max-width;
+        margin-top: 0.6em;
+
+        .condition-item {
+            display: flex;
+            margin-top: 0.4em;
+
+            .condition-type {
+                flex: 0 0 10em;
+            }
+
+            .condition-value {
+                flex: 1 1 50em;
+                max-width: unset;
+            }
+        }
     }
 }

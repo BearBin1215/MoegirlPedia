@@ -1,41 +1,68 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Button } from 'oojs-ui-react';
+import {
+  Button,
+  Dropdown,
+  MenuOption,
+  TextInput,
+} from 'oojs-ui-react';
 import './index.less';
 import type { FC } from 'react';
 
+/** 搜索代码及其映射中文 */
+const searchCodes = {
+  insource: '源码包含',
+  prefix: '前缀',
+  intitle: '标题包含',
+  incategory: '属于分类',
+  linksto: '链接到',
+  hastemplate: '嵌入模板',
+  contentmodel: '内容模型',
+  subpageof: '从属子页面',
+  filetype: '文件类型',
+  filemime: '文件MIME',
+  filesize: '文件大小',
+  filewidth: '文件宽度',
+  fileheight: '文件高度',
+  fileres: '文件分辨率',
+  filebits: '文件色深',
+};
+
 /** 可用的搜索代码 */
-type SearchCode =
-  'insource' | // 源码包含
-  'prefix' | // 前缀
-  'intitle' | // 标题包含
-  'incategory' | // 属于分类
-  'linksto' | // 链接到
-  'hastemplate' | // 嵌入模板
-  'contentmodel' | // 内容模型
-  'subpageof' | // 从属子页面
-  'filetype' | // 文件类型
-  'filemime' | // 文件MIME
-  'filesize' | // 文件大小
-  'filewidth' | // 文件宽度
-  'fileheight' | // 文件高度
-  'fileres' | // 文件分辨率
-  'filebits' | // 文件色深
-  undefined;
+type SearchCode = keyof typeof searchCodes;
 
 /** 搜索条件 */
 interface Condition {
-  type: SearchCode;
-  text: string;
+  index: number;
+  /** 条件类型 */
+  type: SearchCode | undefined;
+  /** 搜索文本 */
+  value: string | undefined;
 }
 
 const AdvancedPanel: FC = () => {
   const [show, setShow] = useState(false);
-  const [conditions, setConditions] = useState<Condition[]>([]);
+  const [conditions, setConditions] = useState<Condition[]>([{
+    index: 0,
+    type: 'insource',
+    value: '',
+  }]);
 
   /** 展开或隐藏面板 */
   const toggle = () => {
     setShow(!show);
+  };
+
+  /** 添加一条 */
+  const handleAdd = () => {
+    setConditions([
+      ...conditions,
+      {
+        index: (conditions.at(-1)?.index ?? -1) + 1,
+        type: undefined,
+        value: '',
+      },
+    ]);
   };
 
   return (
@@ -44,7 +71,30 @@ const AdvancedPanel: FC = () => {
         <Button onClick={toggle} id='advanced-search-toggle'>高级</Button>,
         document.querySelector('#mw-search-top-table .oo-ui-actionFieldLayout-button')!,
       )}
-      高级搜索
+      <div className='panel-header'>
+        <div className='panel-title'>高级搜索</div>
+        <Button icon='add' onClick={handleAdd} />
+      </div>
+      <div className='panel-content'>
+        {conditions.map(({ index, value }) => {
+          /** 移除此行 */
+          const handleRemove = () => {
+            setConditions(conditions.filter((condition) => condition.index !== index));
+          };
+
+          return (
+            <div key={index} className='condition-item'>
+              <Dropdown className='condition-type'>
+                {Object.entries(searchCodes).map(([code, text]) => (
+                  <MenuOption key={code} data={code}>{text}</MenuOption>
+                ))}
+              </Dropdown>
+              <TextInput className='condition-value' defaultValue={value} />
+              <Button icon='subtract' onClick={handleRemove} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

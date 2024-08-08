@@ -8,5 +8,5 @@ $(() => {
   }
   const rootNode = document.createDocumentFragment();
   createRoot(rootNode).render(<AdvancedPanel />);
-  document.getElementById('mw-search-top-table')!.after(rootNode);
+  document.querySelector('#search .mw-search-visualclear')!.after(rootNode);
 });
