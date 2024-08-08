@@ -70,6 +70,7 @@
     "cssnano": "^6.1.2",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-vue": "^9.27.0",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
     "glob": "9.3.5",
