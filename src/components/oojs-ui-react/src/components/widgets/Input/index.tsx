@@ -30,6 +30,9 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
 
   /** 是否必填 */
   required?: boolean;
+
+  /** 输入框值（受控） */
+  value?: T;
 }
 
 const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | number>>(({
@@ -41,6 +44,7 @@ const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | num
   onChange,
   placeholder,
   required,
+  value: controlledValue,
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
@@ -85,7 +89,7 @@ const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | num
         className='oo-ui-inputWidget-input'
         disabled={disabled}
         required={required}
-        value={value}
+        value={controlledValue ?? value}
         placeholder={placeholder}
       />
     </div>

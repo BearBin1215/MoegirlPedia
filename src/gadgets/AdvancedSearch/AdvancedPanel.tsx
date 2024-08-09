@@ -76,7 +76,7 @@ const AdvancedPanel: FC = () => {
         <Button icon='add' onClick={handleAdd} />
       </div>
       <div className='panel-content'>
-        {conditions.map(({ index, value }) => {
+        {conditions.map(({ index, value, type }) => {
           /** 移除此行 */
           const handleRemove = () => {
             setConditions(conditions.filter((condition) => condition.index !== index));
@@ -84,12 +84,12 @@ const AdvancedPanel: FC = () => {
 
           return (
             <div key={index} className='condition-item'>
-              <Dropdown className='condition-type'>
+              <Dropdown className='condition-type' value={type}>
                 {Object.entries(searchCodes).map(([code, text]) => (
                   <MenuOption key={code} data={code}>{text}</MenuOption>
                 ))}
               </Dropdown>
-              <TextInput className='condition-value' defaultValue={value} />
+              <TextInput className='condition-value' value={value} />
               <Button icon='subtract' onClick={handleRemove} />
             </div>
           );

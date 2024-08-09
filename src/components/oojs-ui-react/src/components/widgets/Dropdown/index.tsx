@@ -25,6 +25,8 @@ export interface DropdownProps extends
   IconElement,
   LabelElement {
 
+  value?: string | number | boolean;
+
   defaultValue?: string | number | boolean;
 
   children?: OptionElement | OptionElement[];
@@ -45,6 +47,7 @@ const Dropdown = forwardRef<
   icon,
   label,
   onChange,
+  value: controlledValue,
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
@@ -137,7 +140,7 @@ const Dropdown = forwardRef<
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <MenuSelect onSelect={handleSelect} value={value} open={open}>
+      <MenuSelect onSelect={handleSelect} value={controlledValue ?? value} open={open}>
         {children}
       </MenuSelect>
     </div>

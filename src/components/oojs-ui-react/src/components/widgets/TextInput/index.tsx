@@ -45,6 +45,7 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
   labelPosition = 'after',
   readOnly,
   required,
+  value: controlledValue,
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -107,7 +108,7 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
         disabled={disabled}
-        value={value}
+        value={controlledValue ?? value}
         readOnly={readOnly}
         required={required}
         aria-required={required}
