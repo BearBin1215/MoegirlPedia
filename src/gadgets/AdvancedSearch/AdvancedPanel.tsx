@@ -12,7 +12,7 @@ const AdvancedPanel: FC = () => {
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
     code: 'none',
-    text: '',
+    value: '',
   }]);
 
   /** 展开或隐藏面板 */
@@ -27,7 +27,7 @@ const AdvancedPanel: FC = () => {
       {
         index: (conditions.at(-1)?.index ?? -1) + 1,
         code: 'none',
-        text: '',
+        value: '',
       },
     ]);
   };
@@ -35,14 +35,14 @@ const AdvancedPanel: FC = () => {
   useEffect(() => {
     // 条件列表发生变化，触发输入框更新
     document.querySelector<HTMLInputElement>('#searchText input')!.value =
-      conditions.map(({ code, text }) => {
-        if ([void 0, ''].includes(text)) {
+      conditions.map(({ code, value }) => {
+        if ([void 0, ''].includes(String(value))) {
           return null;
         }
         if (['none', void 0].includes(code)) {
-          return text;
+          return value;
         }
-        return `${code}:"${text?.replace('"', ' ')}"`;
+        return `${code}:"${String(value).replace('"', ' ')}"`;
       }).filter((item) => item !== null).join(' ');
   }, [conditions]);
 
@@ -54,7 +54,7 @@ const AdvancedPanel: FC = () => {
       )}
       <div className='panel-header'>高级搜索</div>
       <div className='panel-content'>
-        {conditions.map(({ index, text, code }, i) => {
+        {conditions.map(({ index, value, code }, i) => {
           const nextLine = i === conditions.length - 1;
           /** 移除此行 */
           const handleRemove = () => {
@@ -62,20 +62,20 @@ const AdvancedPanel: FC = () => {
           };
 
           /** 搜索类型发生变化回调 */
-          const handleCodeChange: ChangeHandler<SearchCode> = ({ value }) => {
+          const handleCodeChange: ChangeHandler<SearchCode> = ({ value: newValue }) => {
             setConditions(conditions.map((condition) => {
               if (condition.index === index) {
-                return { ...condition, code: value };
+                return { ...condition, code: newValue };
               }
               return condition;
             }));
           };
 
           /** 搜索内容发生变化回调 */
-          const handleTextChange: ChangeHandler<any, HTMLInputElement> = ({ value }) => {
+          const handleValueChange: ChangeHandler<any, HTMLInputElement> = ({ value: newValue }) => {
             setConditions(conditions.map((condition) => {
               if (condition.index === index) {
-                return { ...condition, text: value };
+                return { ...condition, value: newValue };
               }
               return condition;
             }));
@@ -84,11 +84,11 @@ const AdvancedPanel: FC = () => {
           return (
             <ConditionLine
               code={code}
-              text={text}
+              value={value}
               key={index}
               onRemove={handleRemove}
               onCodeChange={handleCodeChange}
-              onTextChange={handleTextChange}
+              onValueChange={handleValueChange}
               onFocus={nextLine ? handleAddLine : undefined}
               nextLine={nextLine}
             />

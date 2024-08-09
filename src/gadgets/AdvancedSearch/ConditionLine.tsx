@@ -4,6 +4,7 @@ import {
   Dropdown,
   MenuOption,
   TextInput,
+  NumberInput,
 } from 'oojs-ui-react';
 import type { FC } from 'react';
 import type { ChangeHandler } from 'oojs-ui-react';
@@ -37,14 +38,14 @@ export interface Condition {
   /** 搜索代码 */
   code: SearchCode;
   /** 搜索文本 */
-  text: string | undefined;
+  value: string | number | undefined;
 }
 
 interface ConditionLineProps extends Omit<Condition, 'index'> {
   /** 搜索代码变化 */
   onCodeChange: ChangeHandler<SearchCode>;
   /** 搜索值变化 */
-  onTextChange: ChangeHandler<any, HTMLInputElement>;
+  onValueChange: ChangeHandler<any, HTMLInputElement>;
   /** 点击移除行按钮 */
   onRemove: () => void;
   /** 聚焦事件 */
@@ -55,13 +56,28 @@ interface ConditionLineProps extends Omit<Condition, 'index'> {
 
 const ConditionLine: FC<ConditionLineProps> = ({
   code,
-  text,
+  value,
   onCodeChange,
-  onTextChange,
+  onValueChange,
   onRemove,
   onFocus,
   nextLine = false,
 }) => {
+  const identifyType = (searchCode: SearchCode) => {
+    switch (searchCode) {
+      case 'filewidth':
+      case 'fileheight':
+      case 'filebits':
+        return 'number';
+      case 'contentmodel':
+        return 'contentmodel';
+      default:
+        return 'text';
+    }
+  };
+
+  const selectType = identifyType(code);
+
   return (
     <div className={`condition-line ${nextLine ? 'condition-line-next' : ''}`}>
       <Dropdown
@@ -74,12 +90,22 @@ const ConditionLine: FC<ConditionLineProps> = ({
           <MenuOption key={searchCode} data={searchCode}>{searchText}</MenuOption>
         ))}
       </Dropdown>
-      <TextInput
-        className='condition-text'
-        value={text}
-        onChange={onTextChange}
-        onFocus={onFocus}
-      />
+      {selectType === 'text' && (
+        <TextInput
+          className='condition-text'
+          value={value as string}
+          onChange={onValueChange}
+          onFocus={onFocus}
+        />
+      )}
+      {selectType === 'number' && (
+        <NumberInput
+          className='condition-text'
+          value={value as number}
+          onChange={onValueChange}
+          onFocus={onFocus}
+        />
+      )}
       {!nextLine && (
         <Button
           icon='subtract'
