@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Button,
@@ -37,7 +37,7 @@ type SearchCode = keyof typeof searchCodes;
 interface Condition {
   index: number;
   /** 条件类型 */
-  type: SearchCode | undefined;
+  type: SearchCode;
   /** 搜索文本 */
   value: string | undefined;
 }
@@ -61,11 +61,24 @@ const AdvancedPanel: FC = () => {
       ...conditions,
       {
         index: (conditions.at(-1)?.index ?? -1) + 1,
-        type: undefined,
+        type: 'none',
         value: '',
       },
     ]);
   };
+
+  useEffect(() => {
+    // 条件列表发生变化，触发输入框更新
+    document.querySelector<HTMLInputElement>('#searchText input')!.value = conditions.map(({ type, value }) => {
+      if ([void 0, ''].includes(value)) {
+        return null;
+      }
+      if (['none', void 0].includes(type)) {
+        return value;
+      }
+      return `${type}:"${value?.replace('"', ' ')}"`;
+    }).filter((item) => item !== null).join(' ');
+  }, [conditions]);
 
   return (
     <div id='advanced-search-panel' className={show ? 'panel-show' : 'panel-hide'}>
