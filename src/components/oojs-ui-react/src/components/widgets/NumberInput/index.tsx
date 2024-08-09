@@ -60,6 +60,7 @@ const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
   required,
   showButtons,
   step = 1,
+  value: controlledValue,
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
@@ -137,7 +138,7 @@ const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
           readOnly={readOnly}
           required={required}
           aria-required={required}
-          value={value}
+          value={controlledValue ?? value}
           placeholder={placeholder}
           min={min}
           max={max}

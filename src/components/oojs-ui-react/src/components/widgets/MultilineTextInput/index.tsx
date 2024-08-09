@@ -40,6 +40,7 @@ const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineT
   autosize,
   rows,
   maxRows = 10,
+  value: controlledValue,
   ...rest
 }: MultilineTextInputProps, ref) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -148,7 +149,7 @@ const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineT
         aria-disabled={!!disabled}
         className={inputClasses}
         disabled={disabled}
-        value={value}
+        value={controlledValue ?? value}
         readOnly={readOnly}
         required={required}
         aria-required={required}

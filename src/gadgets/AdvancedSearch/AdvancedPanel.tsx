@@ -69,15 +69,16 @@ const AdvancedPanel: FC = () => {
 
   useEffect(() => {
     // 条件列表发生变化，触发输入框更新
-    document.querySelector<HTMLInputElement>('#searchText input')!.value = conditions.map(({ type, value }) => {
-      if ([void 0, ''].includes(value)) {
-        return null;
-      }
-      if (['none', void 0].includes(type)) {
-        return value;
-      }
-      return `${type}:"${value?.replace('"', ' ')}"`;
-    }).filter((item) => item !== null).join(' ');
+    document.querySelector<HTMLInputElement>('#searchText input')!.value =
+      conditions.map(({ type, value }) => {
+        if ([void 0, ''].includes(value)) {
+          return null;
+        }
+        if (['none', void 0].includes(type)) {
+          return value;
+        }
+        return `${type}:"${value?.replace('"', ' ')}"`;
+      }).filter((item) => item !== null).join(' ');
   }, [conditions]);
 
   return (
