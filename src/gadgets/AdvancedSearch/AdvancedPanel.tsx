@@ -8,9 +8,11 @@ import {
 } from 'oojs-ui-react';
 import './index.less';
 import type { FC } from 'react';
+import type { ChangeHandler } from 'oojs-ui-react';
 
 /** 搜索代码及其映射中文 */
 const searchCodes = {
+  none: '无',
   insource: '源码包含',
   prefix: '前缀',
   intitle: '标题包含',
@@ -44,7 +46,7 @@ const AdvancedPanel: FC = () => {
   const [show, setShow] = useState(false);
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
-    type: 'insource',
+    type: 'none',
     value: '',
   }]);
 
@@ -82,15 +84,47 @@ const AdvancedPanel: FC = () => {
             setConditions(conditions.filter((condition) => condition.index !== index));
           };
 
+          /** 搜索类型发生变化回调 */
+          const handleTypeChange: ChangeHandler<SearchCode> = ({ value: newType }) => {
+            setConditions(conditions.map((condition) => {
+              if (condition.index === index) {
+                return { ...condition, type: newType };
+              }
+              return condition;
+            }));
+          };
+
+          /** 搜索内容发生变化回调 */
+          const handleValueChange: ChangeHandler<any, HTMLInputElement> = ({ value: newValue }) => {
+            setConditions(conditions.map((condition) => {
+              if (condition.index === index) {
+                return { ...condition, value: newValue };
+              }
+              return condition;
+            }));
+          };
+
           return (
             <div key={index} className='condition-item'>
-              <Dropdown className='condition-type' value={type}>
+              <Dropdown
+                className='condition-type'
+                value={type}
+                onChange={handleTypeChange}
+              >
                 {Object.entries(searchCodes).map(([code, text]) => (
                   <MenuOption key={code} data={code}>{text}</MenuOption>
                 ))}
               </Dropdown>
-              <TextInput className='condition-value' value={value} />
-              <Button icon='subtract' onClick={handleRemove} />
+              <TextInput
+                className='condition-value'
+                value={value}
+                onChange={handleValueChange}
+              />
+              <Button
+                icon='subtract'
+                onClick={handleRemove}
+                tabIndex={-1}
+              />
             </div>
           );
         })}

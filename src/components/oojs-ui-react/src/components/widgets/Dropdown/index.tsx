@@ -88,7 +88,7 @@ const Dropdown = forwardRef<
   /** 如果有选中的则显示已选，没选则显示label */
   const displayLabel = useMemo(() => {
     return options.find((option) => {
-      return 'data' in option.props && option.props.data === value;
+      return 'data' in option.props && option.props.data === (controlledValue ?? value);
     })?.props.children || label;
   }, [value, label]);
 

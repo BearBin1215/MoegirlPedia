@@ -47,6 +47,7 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
   indicator,
   rel = 'nofollow',
   title,
+  tabIndex,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
@@ -106,11 +107,12 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
       aria-disabled={!!disabled}
+      tabIndex={tabIndex}
     >
       <a
         className='oo-ui-buttonElement-button'
         role='button'
-        tabIndex={0}
+        tabIndex={tabIndex ?? 0}
         href={href}
         rel={rel}
         title={title}
