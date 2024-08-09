@@ -14,25 +14,26 @@
     .panel-header {
         display: flex;
         justify-content: space-between;
-
-        .panel-title {
-            font-size: 1.25em;
-            font-weight: 600;
-        }
+        font-size: 1.2em;
+        font-weight: 600;
     }
 
     .panel-content {
         margin-top: 0.6em;
 
-        .condition-item {
+        .condition-line {
             display: flex;
             margin-top: 0.4em;
 
-            .condition-type {
+            &.condition-line-next {
+                opacity: 0.4;
+            }
+
+            .condition-code {
                 flex: 0 0 10em;
             }
 
-            .condition-value {
+            .condition-text {
                 flex: 1 1 50em;
                 max-width: unset;
             }
