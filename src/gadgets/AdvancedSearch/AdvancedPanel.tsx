@@ -13,7 +13,7 @@ const AdvancedPanel: FC = () => {
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
     code: 'none',
-    value: document.querySelector<HTMLInputElement>('#searchText input')!.value,
+    value: '',
   }]);
 
   /** 展开或隐藏面板 */
@@ -43,6 +43,9 @@ const AdvancedPanel: FC = () => {
   };
 
   useEffect(() => {
+    if (firstOpen) {
+      return;
+    }
     // 条件列表发生变化，触发输入框更新
     document.querySelector<HTMLInputElement>('#searchText input')!.value =
       conditions.map(({ code, value }) => {
