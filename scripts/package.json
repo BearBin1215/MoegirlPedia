@@ -25,7 +25,8 @@
       "userStatus",
       "WikiplusSummary",
       "ExportXML",
-      "FileInspector"
+      "FileInspector",
+      "AdvancedSearch"
     ]
   }
 }
