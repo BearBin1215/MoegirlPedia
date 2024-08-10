@@ -13,7 +13,7 @@ const AdvancedPanel: FC = () => {
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
     code: 'none',
-    value: '',
+    value: document.querySelector<HTMLInputElement>('#searchText input')!.value,
   }]);
 
   /** 展开或隐藏面板 */
