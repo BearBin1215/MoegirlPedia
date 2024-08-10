@@ -25,8 +25,15 @@
             display: flex;
             margin-top: 0.4em;
 
+            // 未填行，设为半透明
             &.condition-line-next {
                 opacity: 0.4;
+                transition: opacity ease-out 0.3s;
+
+                // 鼠标悬浮时变透明
+                &:hover {
+                    opacity: 1;
+                }
             }
 
             .condition-code {
@@ -34,7 +41,7 @@
             }
 
             .condition-text {
-                flex: 1 1 50em;
+                flex: 1 1 40em;
                 max-width: unset;
             }
         }

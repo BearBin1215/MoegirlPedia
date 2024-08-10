@@ -5,10 +5,11 @@ import ConditionLine from './ConditionLine';
 import './index.less';
 import type { FC } from 'react';
 import type { ChangeHandler } from 'oojs-ui-react';
-import type { SearchCode, Condition } from './ConditionLine';
+import type { Condition } from './ConditionLine';
 
 const AdvancedPanel: FC = () => {
   const [show, setShow] = useState(false);
+  const [firstOpen, setFirstOpen] = useState(true);
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
     code: 'none',
@@ -18,6 +19,15 @@ const AdvancedPanel: FC = () => {
   /** 展开或隐藏面板 */
   const toggle = () => {
     setShow(!show);
+    setFirstOpen(false);
+    const inputValue = document.querySelector<HTMLInputElement>('#searchText input')!.value;
+    if (firstOpen) {
+      setConditions([{
+        index: -1,
+        code: 'none',
+        value: inputValue,
+      }, ...conditions]);
+    }
   };
 
   /** 添加一行 */
@@ -36,7 +46,7 @@ const AdvancedPanel: FC = () => {
     // 条件列表发生变化，触发输入框更新
     document.querySelector<HTMLInputElement>('#searchText input')!.value =
       conditions.map(({ code, value }) => {
-        if ([void 0, ''].includes(String(value))) {
+        if (['undefined', ''].includes(String(value))) {
           return null;
         }
         if (['none', void 0].includes(code)) {
@@ -61,21 +71,14 @@ const AdvancedPanel: FC = () => {
             setConditions(conditions.filter((condition) => condition.index !== index));
           };
 
-          /** 搜索类型发生变化回调 */
-          const handleCodeChange: ChangeHandler<SearchCode> = ({ value: newValue }) => {
-            setConditions(conditions.map((condition) => {
-              if (condition.index === index) {
-                return { ...condition, code: newValue };
-              }
-              return condition;
-            }));
-          };
-
           /** 搜索内容发生变化回调 */
-          const handleValueChange: ChangeHandler<any, HTMLInputElement> = ({ value: newValue }) => {
+          const handleChange: ChangeHandler = (data) => {
             setConditions(conditions.map((condition) => {
               if (condition.index === index) {
-                return { ...condition, value: newValue };
+                return {
+                  index,
+                  ...data.value,
+                };
               }
               return condition;
             }));
@@ -87,8 +90,7 @@ const AdvancedPanel: FC = () => {
               value={value}
               key={index}
               onRemove={handleRemove}
-              onCodeChange={handleCodeChange}
-              onValueChange={handleValueChange}
+              onChange={handleChange}
               onFocus={nextLine ? handleAddLine : undefined}
               nextLine={nextLine}
             />

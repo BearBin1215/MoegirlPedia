@@ -29,23 +29,35 @@ export const searchCodes = {
   filebits: '文件色深',
 };
 
+export const contentModels = [
+  'GadgetDefinition',
+  'sanitized-css',
+  'Scribunto',
+  'wikitext',
+  'javascript',
+  'json',
+  'css',
+  'text',
+];
+
 /** 可用的搜索代码 */
 export type SearchCode = keyof typeof searchCodes;
 
-/** 搜索条件 */
-export interface Condition {
-  index: number;
+/** 行值 */
+export interface LineValue {
   /** 搜索代码 */
   code: SearchCode;
   /** 搜索文本 */
   value: string | number | undefined;
 }
 
+/** 搜索条件 */
+export interface Condition extends LineValue {
+  index: number;
+}
+
 interface ConditionLineProps extends Omit<Condition, 'index'> {
-  /** 搜索代码变化 */
-  onCodeChange: ChangeHandler<SearchCode>;
-  /** 搜索值变化 */
-  onValueChange: ChangeHandler<any, HTMLInputElement>;
+  onChange?: ChangeHandler<LineValue>;
   /** 点击移除行按钮 */
   onRemove: () => void;
   /** 聚焦事件 */
@@ -57,8 +69,7 @@ interface ConditionLineProps extends Omit<Condition, 'index'> {
 const ConditionLine: FC<ConditionLineProps> = ({
   code,
   value,
-  onCodeChange,
-  onValueChange,
+  onChange,
   onRemove,
   onFocus,
   nextLine = false,
@@ -78,12 +89,43 @@ const ConditionLine: FC<ConditionLineProps> = ({
 
   const selectType = identifyType(code);
 
+  const handleCodeChange: ChangeHandler<SearchCode> = (data) => {
+    if (!onChange) {
+      return;
+    }
+    let newValue = value;
+    if (identifyType(data.value) === 'contentmodel' && !contentModels.includes(value as string)) {
+      // 若新搜索代码为内容模型，判断其是否为有效的内容模型值，不是则清空value
+      newValue = '';
+    } else if (identifyType(data.value) === 'number' && identifyType(code) === 'text') {
+      // 若新代码为数字类型，判断其是否为有效的数字值，不是则清空value
+      if (Number.isFinite(Number(value))) {
+        newValue = Number(value);
+      } else {
+        newValue = void 0;
+      }
+    }
+    onChange({
+      value: { code: data.value, value: newValue },
+      oldValue: { code, value },
+    });
+  };
+
+  const handleValueChange: ChangeHandler<any> = (data) => {
+    if (onChange) {
+      onChange({
+        value: { code, value: data.value },
+        oldValue: { code, value },
+      });
+    }
+  };
+
   return (
     <div className={`condition-line ${nextLine ? 'condition-line-next' : ''}`}>
       <Dropdown
         className='condition-code'
         value={code}
-        onChange={onCodeChange}
+        onChange={handleCodeChange}
         onFocus={onFocus}
       >
         {Object.entries(searchCodes).map(([searchCode, searchText]) => (
@@ -94,7 +136,7 @@ const ConditionLine: FC<ConditionLineProps> = ({
         <TextInput
           className='condition-text'
           value={value as string}
-          onChange={onValueChange}
+          onChange={handleValueChange}
           onFocus={onFocus}
         />
       )}
@@ -102,9 +144,19 @@ const ConditionLine: FC<ConditionLineProps> = ({
         <NumberInput
           className='condition-text'
           value={value as number}
-          onChange={onValueChange}
+          onChange={handleValueChange}
           onFocus={onFocus}
         />
+      )}
+      {selectType === 'contentmodel' && (
+        <Dropdown
+          className='condition-text'
+          value={value as string}
+          onChange={handleValueChange}
+          onFocus={onFocus}
+        >
+          {contentModels.map((model) => <MenuOption key={model} data={model}>{model}</MenuOption>)}
+        </Dropdown>
       )}
       {!nextLine && (
         <Button
