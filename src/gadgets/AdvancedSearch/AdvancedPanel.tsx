@@ -52,7 +52,7 @@ const AdvancedPanel: FC = () => {
         if (['none', void 0].includes(code)) {
           return value;
         }
-        return `${code}:"${String(value).replace('"', ' ')}"`;
+        return `${code}:"${String(value).replace(/"/g, ' ')}"`;
       }).filter((item) => item !== null).join(' ');
   }, [conditions]);
 
