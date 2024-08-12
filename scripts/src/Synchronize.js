@@ -109,7 +109,20 @@ if (!list.length) {
         if (j <= maxRetry) {
           console.log(`正在重试（${j}/${maxRetry}）`);
         } else {
-          errorList.push(item);
+          try {
+            await bot.request({
+              action: 'edit',
+              title,
+              text: `mw.loader.load("//fastly.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/${item}.min.js")`,
+              summary: `同步GitHub更改：${lastCommitMessage}`,
+              bot: true,
+              tags: 'Bot',
+              token: bot.editToken,
+            });
+            console.log(`${item}已通过外部脚本形式同步。`);
+          } catch {
+            errorList.push(item);
+          }
         }
         continue;
       }
