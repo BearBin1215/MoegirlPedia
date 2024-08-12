@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, type FC } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { SketchPicker } from 'react-color';
+import { SketchPicker, type ColorResult } from 'react-color';
 import { Button } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import './index.less';
-import type { FunctionComponent } from 'react';
-import type { ColorResult } from 'react-color';
 
 interface ColorPickerProps {
   open: boolean;
 }
 
-const PickerModal: FunctionComponent<ColorPickerProps> = (props) => {
+const PickerModal: FC<ColorPickerProps> = (props) => {
   const [displayPicker, setDisplayPicker] = useState(props.open);
   const [color, setColor] = useState('#222');
 

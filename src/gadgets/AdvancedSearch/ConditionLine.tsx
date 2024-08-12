@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import {
   Button,
   Dropdown,
   MenuOption,
   TextInput,
   NumberInput,
+  type ChangeHandler,
 } from 'oojs-ui-react';
-import type { FC } from 'react';
-import type { ChangeHandler } from 'oojs-ui-react';
 
 /** 搜索代码及其映射中文 */
 export const searchCodes = {

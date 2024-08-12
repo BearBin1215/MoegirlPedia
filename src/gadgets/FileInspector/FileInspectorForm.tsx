@@ -6,14 +6,19 @@ import React, {
   useCallback,
   useRef,
   useEffect,
+  type MouseEvent,
+  type ChangeEvent,
+  type FC,
 } from 'react';
 import { chunk } from 'lodash-es';
-import { Button, NumberInput } from 'oojs-ui-react';
+import {
+  Button,
+  NumberInput,
+  type InputWidgetRef,
+} from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
-import type { MouseEvent, ChangeEvent, FC } from 'react';
-import type { InputWidgetRef } from 'oojs-ui-react';
 import type { ApiQueryResponse, GlobalUsage } from '@/@types/api';
 
 interface BasicFileData {

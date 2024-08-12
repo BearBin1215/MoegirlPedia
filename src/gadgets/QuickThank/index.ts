@@ -30,8 +30,8 @@ if (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle').replac
             setTimeout(() => {
               $thankButton.remove();
             }, 3000);
-          }).fail((e) => {
-            $thankButton.text(`[感谢失败：${e}]`);
+          }).fail((err) => {
+            $thankButton.text(`[感谢失败：${err}]`);
             setTimeout(() => {
               $thankButton.text('[感谢]');
             }, 3000);

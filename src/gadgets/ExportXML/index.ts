@@ -2,7 +2,7 @@
  * @description 将页面内容导出为可在其他站点导入的XML文件
  */
 
-import { toXML } from 'jstoxml';
+import { toXML, type XmlElement } from 'jstoxml';
 import { categoryMembers } from '@/utils/api';
 import { splitList } from '@/utils/string';
 import waitInterval from '@/utils/wait';
@@ -11,7 +11,6 @@ import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
 import generateBaseinfo from './baseinfo';
 import type { ApiParams, Revisions, ApiQueryResponse } from '@/@types/api';
-import type { XmlElement } from 'jstoxml';
 import './index.less';
 
 interface Page {

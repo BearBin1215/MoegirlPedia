@@ -1,10 +1,16 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  type FunctionComponent,
+  type ChangeEvent,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'less';
 import { copyText } from '@/utils/clipboard';
 import { Button } from 'oojs-ui-react';
-import type { FunctionComponent, ChangeEvent } from 'react';
 import './index.less';
 
 const ParserModal: FunctionComponent = () => {

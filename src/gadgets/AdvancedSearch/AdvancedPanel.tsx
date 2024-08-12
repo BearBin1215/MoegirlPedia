@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type FC } from 'react';
 import { createPortal } from 'react-dom';
-import { Button } from 'oojs-ui-react';
-import ConditionLine from './ConditionLine';
+import { Button, type ChangeHandler } from 'oojs-ui-react';
+import ConditionLine, { type Condition } from './ConditionLine';
 import './index.less';
-import type { FC } from 'react';
-import type { ChangeHandler } from 'oojs-ui-react';
-import type { Condition } from './ConditionLine';
 
 const AdvancedPanel: FC = () => {
   const [show, setShow] = useState(false);
