@@ -5,6 +5,7 @@
 - [工具介绍](#工具介绍)
   - [一键更新页面缓存](#一键更新页面缓存)
   - [批量编辑](#批量编辑)
+  - [高级搜索](#高级搜索)
   - [页面导出](#页面导出)
   - [共享站查询文件非链入使用](#共享站查询文件非链入使用)
   - [侧边栏优化](#侧边栏优化)
@@ -46,6 +47,19 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/MassEdit.min.js");
 // 或 mw.loader.load("https://mzh.moegirl.org.cn/index.php?title=User:BearBin/js/MassEdit.js&action=raw&ctype=text/javascript");
 ```
+
+### 高级搜索
+
+- 在[搜索页面](https://zh.moegirl.org.cn/Special:Search)提供高级搜索按钮，可以在面板中可视化地选择要使用的搜索代码。
+
+![高级搜索演示](/img/AdvancedSearch.gif)
+
+使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
+
+```JavaScript
+mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/AdvancedSearch.min.js");
+```
+
 
 ### 页面导出
 
