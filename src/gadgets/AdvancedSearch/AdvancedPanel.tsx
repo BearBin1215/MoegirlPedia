@@ -43,6 +43,9 @@ const AdvancedPanel: FC = () => {
   };
 
   useEffect(() => {
+    if (firstOpen) {
+      return;
+    }
     // 条件列表发生变化，触发输入框更新
     document.querySelector<HTMLInputElement>('#searchText input')!.value =
       conditions.map(({ code, value }) => {
@@ -52,7 +55,7 @@ const AdvancedPanel: FC = () => {
         if (['none', void 0].includes(code)) {
           return value;
         }
-        return `${code}:"${String(value).replace('"', ' ')}"`;
+        return `${code}:"${String(value).replace(/"/g, ' ')}"`;
       }).filter((item) => item !== null).join(' ');
   }, [conditions]);
 
