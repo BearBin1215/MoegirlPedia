@@ -157,13 +157,13 @@ const ConditionLine: FC<ConditionLineProps> = ({
           {contentModels.map((model) => <MenuOption key={model} data={model}>{model}</MenuOption>)}
         </Dropdown>
       )}
-      {!nextLine && (
-        <Button
-          icon='subtract'
-          tabIndex={-1}
-          onClick={onRemove}
-        />
-      )}
+      <Button
+        className='condition-removebutton'
+        icon='subtract'
+        tabIndex={-1}
+        onClick={onRemove}
+        disabled={nextLine}
+      />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
+import type { MouseEventHandler } from 'react';
 import type { WidgetProps } from '../../../types/props';
 import type { ButtonFlag } from '../../../types/utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../../../types/mixin';
@@ -48,6 +49,7 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
   rel = 'nofollow',
   title,
   tabIndex,
+  onClick,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
@@ -80,6 +82,13 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
     iconDestructive && 'oo-ui-image-destructive',
   );
 
+  /** 点击回调 */
+  const handleClick: MouseEventHandler<HTMLSpanElement> = (ev) => {
+    if (!disabled && onClick) {
+      onClick(ev);
+    }
+  };
+
   /** 按住鼠标 */
   const handlePress = () => {
     if (!disabled) {
@@ -103,6 +112,7 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
       {...rest}
       ref={elementRef}
       className={classes}
+      onClick={handleClick}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
