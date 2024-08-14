@@ -1,8 +1,6 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type ReactElement } from 'react';
 import classNames from 'classnames';
-import Widget from '../Widget';
-import type { ReactElement } from 'react';
-import type { WidgetProps } from '../Widget';
+import Widget, { type WidgetProps } from '../Widget';
 import type { ButtonProps } from '../Button';
 import type { ElementRef } from '../../../types/ref';
 

@@ -9,7 +9,7 @@ import type { ElementRef } from '../../../types/ref';
 
 export interface OptionData {
   /** 选项对应的数据 */
-  data: string | number | boolean;
+  data: string | number;
 
   /** 选项文本 */
   children?: ReactNode;

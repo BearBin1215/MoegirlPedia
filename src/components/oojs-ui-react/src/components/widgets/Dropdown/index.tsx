@@ -5,19 +5,22 @@ import React, {
   useImperativeHandle,
   useEffect,
   useMemo,
+  type Key,
 } from 'react';
 import classNames from 'classnames';
-import MenuSelect from '../MenuSelect';
+import MenuSelect, { type MenuSelectRef } from './MenuSelect';
+import MenuOption, { type MenuOptionProps } from '../MenuOption';
+import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processArray, processClassNames } from '../../../utils/tool';
+import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../../../types/props';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../../types/mixin';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionData } from '../Option';
-import type { OptionElement } from '../Select';
-import type { MenuSelectRef } from '../MenuSelect';
+
+export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & { key: Key };
 
 export interface DropdownProps extends
   WidgetProps<HTMLDivElement>,
@@ -25,11 +28,12 @@ export interface DropdownProps extends
   IconElement,
   LabelElement {
 
-  value?: string | number | boolean;
+  /** 选项集 */
+  options: DropdownOptionProps[];
 
-  defaultValue?: string | number | boolean;
+  value?: string | number;
 
-  children?: OptionElement | OptionElement[];
+  defaultValue?: string | number;
 
   onChange?: ChangeHandler<any>;
 }
@@ -41,20 +45,18 @@ const Dropdown = forwardRef<
   DropdownProps
 >(({
   className,
-  children,
   defaultValue,
   disabled,
   icon,
   label,
   onChange,
+  options,
   value: controlledValue,
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue);
   const elementRef = useRef<HTMLDivElement>(null);
-
-  const options = useMemo(() => processArray(children), [children, value]);
 
   const classes = classNames(
     className,
@@ -88,8 +90,8 @@ const Dropdown = forwardRef<
   /** 如果有选中的则显示已选，没选则显示label */
   const displayLabel = useMemo(() => {
     return options.find((option) => {
-      return 'data' in option.props && option.props.data === (controlledValue ?? value);
-    })?.props.children || label;
+      return 'data' in option && option.data === (controlledValue ?? value);
+    })?.children || label;
   }, [value, label]);
 
   useEffect(() => {
@@ -141,7 +143,21 @@ const Dropdown = forwardRef<
         <IndicatorBase indicator='down' />
       </span>
       <MenuSelect onSelect={handleSelect} value={controlledValue ?? value} open={open}>
-        {children}
+        {options.map((option) => 'data' in option ? (
+          <MenuOption
+            {...option}
+            key={option.key}
+          >
+            {option.children}
+          </MenuOption>
+        ) : (
+          <MenuSectionOption
+            {...option}
+            key={option.key}
+          >
+            {option.children}
+          </MenuSectionOption>
+        ))}
       </MenuSelect>
     </div>
   );

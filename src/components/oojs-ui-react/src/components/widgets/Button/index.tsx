@@ -1,10 +1,15 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { MouseEventHandler } from 'react';
 import type { WidgetProps } from '../../../types/props';
 import type { ButtonFlag } from '../../../types/utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../../../types/mixin';

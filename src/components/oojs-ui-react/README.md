@@ -129,11 +129,28 @@ import { Dropdown, MenuOption } from 'oojs-ui-react';
 
 const App = () => {
   return (
-    <Dropdown label='please select'>
-      <MenuOption data='a'>foo</MenuOption>
-      <MenuOption data='b' icon='check'>bar</MenuOption>
-      <MenuOption data='c' disabled>disabled</MenuOption>
-    </Dropdown>
+    <Dropdown
+      label='please select'
+      options={[
+        {
+          key: 'a',
+          data: 'a',
+          children: 'foo',
+        },
+        {
+          key: 'b',
+          data: 'b',
+          icon: 'check',
+          children: 'bar',
+        },
+        {
+          key: 'c',
+          data: 'c',
+          disabled: true,
+          children: 'disabled',
+        },
+      ]}
+    />
   );
 };
 
@@ -150,13 +167,37 @@ import { Dropdown, MenuOption, MenuSectionOption } from 'oojs-ui-react';
 
 const App = () => {
   return (
-    <Dropdown label='please select'>
-      <MenuSectionOption icon='check'>group1</MenuSectionOption>
-      <MenuOption data='a'>foo</MenuOption>
-      <MenuOption data='b'>bar</MenuOption>
-      <MenuSectionOption icon='cancel'>group2</MenuSectionOption>
-      <MenuOption data='c' disabled>disabled</MenuOption>
-    </Dropdown>
+    <Dropdown
+      label='please select'
+      options={[
+        {
+          key: 'group1',
+          icon: 'check',
+          children: 'group1',
+        },
+        {
+          key: 'a',
+          data: 'a',
+          children: 'foo',
+        },
+        {
+          key: 'b',
+          data: 'b',
+          children: 'bar',
+        },
+        {
+          key: 'group2',
+          icon: 'cancel',
+          children: 'group2',
+        },
+        {
+          key: 'c',
+          data: 'c',
+          disabled: true,
+          children: 'disabled',
+        },
+      ]}
+    />
   );
 };
 

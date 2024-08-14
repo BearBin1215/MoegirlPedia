@@ -2,7 +2,6 @@ import React, { type FC } from 'react';
 import {
   Button,
   Dropdown,
-  MenuOption,
   TextInput,
   NumberInput,
   type ChangeHandler,
@@ -126,11 +125,12 @@ const ConditionLine: FC<ConditionLineProps> = ({
         value={code}
         onChange={handleCodeChange}
         onFocus={onFocus}
-      >
-        {Object.entries(searchCodes).map(([searchCode, searchText]) => (
-          <MenuOption key={searchCode} data={searchCode}>{searchText}</MenuOption>
-        ))}
-      </Dropdown>
+        options={Object.entries(searchCodes).map(([searchCode, searchText]) => ({
+          key: searchCode,
+          data: searchCode,
+          children: searchText,
+        }))}
+      />
       {selectType === 'text' && (
         <TextInput
           className='condition-text'
@@ -153,9 +153,12 @@ const ConditionLine: FC<ConditionLineProps> = ({
           value={value as string}
           onChange={handleValueChange}
           onFocus={onFocus}
-        >
-          {contentModels.map((model) => <MenuOption key={model} data={model}>{model}</MenuOption>)}
-        </Dropdown>
+          options={contentModels.map((model) => ({
+            key: model,
+            data: model,
+            children: model,
+          }))}
+        />
       )}
       <Button
         className='condition-removebutton'

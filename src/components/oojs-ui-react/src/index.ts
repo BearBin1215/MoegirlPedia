@@ -33,7 +33,6 @@ export { default as OutlineOption } from './components/widgets/OutlineOption';
 export { default as MenuSectionOption } from './components/widgets/MenuSectionOption';
 export { default as Select } from './components/widgets/Select';
 export { default as OutlineSelect } from './components/widgets/OutlineSelect';
-export { default as MenuSelect } from './components/widgets/MenuSelect';
 export { default as Dropdown } from './components/widgets/Dropdown';
 
 // 布局

@@ -33,7 +33,6 @@ export type { OutlineOptionProps } from '../components/widgets/OutlineOption';
 export type { MenuSectionOptionProps } from '../components/widgets/MenuSectionOption';
 export type { SelectProps } from '../components/widgets/Select';
 export type { OutlineSelectProps } from '../components/widgets/OutlineSelect';
-export type { MenuSelectProps } from '../components/widgets/MenuSelect';
 export type { DropdownProps } from '../components/widgets/Dropdown';
 
 // 布局

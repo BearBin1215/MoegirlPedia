@@ -8,7 +8,7 @@ export interface MenuSelectProps extends SelectProps {
   open?: boolean;
 }
 
-export type MenuSelectRef = InputWidgetRef<HTMLDivElement, string | number | boolean | undefined>;
+export type MenuSelectRef = InputWidgetRef<HTMLDivElement, string | number | undefined>;
 
 const MenuSelect = forwardRef<MenuSelectRef, MenuSelectProps>(({
   className,

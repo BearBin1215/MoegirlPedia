@@ -13,7 +13,7 @@ export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'o
   name?: string;
   onChange?: ChangeHandler<boolean, HTMLInputElement>;
   selected?: boolean;
-  data: number | string | boolean;
+  data: number | string;
 }
 
 const RadioOption = forwardRef<ElementRef<HTMLLabelElement>, RadioOptionProps>(({
