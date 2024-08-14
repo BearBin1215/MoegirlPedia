@@ -82,6 +82,7 @@ module.exports = {
     'no-param-reassign': 2,
     'no-shadow': 2,
     'no-unused-expressions': 2,
+    'no-useless-rename': 2,
     'no-useless-return': 2,
     'no-use-before-define': 2,
     'object-shorthand': 2,
