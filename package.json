@@ -27,6 +27,7 @@
   "engines": {
     "node": "16.x"
   },
+  "sideEffects": ["*.less", "*.css"],
   "dependencies": {
     "@types/jquery": "^3.5.30",
     "classnames": "^2.5.1",
