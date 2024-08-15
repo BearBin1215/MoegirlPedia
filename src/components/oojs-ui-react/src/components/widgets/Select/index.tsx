@@ -11,8 +11,8 @@ import MenuOption from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
 import { processClassNames } from '../../../utils/tool';
-import type { WidgetProps, OptionProps } from '../../../types/props';
-import type { OptionData } from '../Option';
+import type { WidgetProps } from '../Widget';
+import type { OptionProps, OptionData } from '../Option';
 import type { ElementRef } from '../../../types/ref';
 
 export type SelectOptionProps = (OptionProps | MenuSectionOptionProps) & {

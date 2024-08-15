@@ -15,7 +15,7 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { WidgetProps } from '../../../types/props';
+import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../../types/mixin';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionData } from '../Option';

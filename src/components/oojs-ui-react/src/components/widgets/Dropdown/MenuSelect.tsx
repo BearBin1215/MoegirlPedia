@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
-import type { SelectProps } from '../../../types/props';
+import type { SelectProps } from '../Select';
 import type { InputWidgetRef } from '../../../types/ref';
 
 export interface MenuSelectProps extends SelectProps {

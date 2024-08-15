@@ -1,12 +1,9 @@
-import React, { forwardRef, type ReactNode } from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import type { ElementRef } from '../../../types/ref';
 
-export interface PageLayoutProps extends PanelLayoutProps {
-  /** 用于BookletLayout子组件时生成页签 */
-  label?: ReactNode;
-}
+export type PageLayoutProps = PanelLayoutProps;
 
 /** @description 页组件，用于`BookletLayout`组件的子元素生成分页，`key`参数必须 */
 const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({

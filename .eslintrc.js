@@ -15,6 +15,7 @@ module.exports = {
     '@typescript-eslint',
     'react',
     'vue',
+    'import',
   ],
   parser: '@typescript-eslint/parser',
   'extends': [
@@ -23,6 +24,8 @@ module.exports = {
     'plugin:@typescript-eslint/stylistic',
     'plugin:react/recommended',
     'plugin:vue/vue3-recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   parserOptions: {
     ecmaVersion: 'latest',
@@ -35,6 +38,10 @@ module.exports = {
   settings: {
     react: {
       version: 'detect',
+    },
+    'import/resolver': {
+      typescript: true,
+      node: true,
     },
   },
   globals: {

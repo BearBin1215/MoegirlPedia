@@ -11,7 +11,7 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { InputProps } from '../../../types/props';
+import type { InputProps } from '../Input';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
 import type { InputWidgetRef } from '../../../types/ref';

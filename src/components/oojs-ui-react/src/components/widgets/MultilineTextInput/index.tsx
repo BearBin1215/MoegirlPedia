@@ -13,7 +13,7 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { TextInputProps } from '../../../types/props';
+import type { TextInputProps } from '../TextInput';
 import type { InputWidgetRef } from '../../../types/ref';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {

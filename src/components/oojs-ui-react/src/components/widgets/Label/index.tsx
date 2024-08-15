@@ -2,7 +2,7 @@ import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import LabelBase from './Base';
 import { processClassNames } from '../../../utils/tool';
-import type { WidgetProps } from '../../../types/props';
+import type { WidgetProps } from '../Widget';
 import type { ElementRef } from '../../../types/ref';
 
 export type LabelProps = WidgetProps<HTMLSpanElement>;

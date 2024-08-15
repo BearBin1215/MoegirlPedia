@@ -2,7 +2,7 @@ import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import IconBase from './Base';
 import { processClassNames } from '../../../utils/tool';
-import type { WidgetProps } from '../../../types/props';
+import type { WidgetProps } from '../Widget';
 import type { IconFlag } from '../../../types/utils';
 import type { IconElement } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';

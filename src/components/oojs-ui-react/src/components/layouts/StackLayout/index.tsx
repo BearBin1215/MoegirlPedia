@@ -43,17 +43,13 @@ const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {options.map((option) => {
-        // 去掉label参数
-        const { label: _, ...pageProps } = option;
-        return (
-          <PageLayout
-            {...pageProps}
-            hidden={!continuous && option.key !== activeKey}
-            key={option.key}
-          />
-        );
-      })}
+      {options.map((option) => (
+        <PageLayout
+          {...option}
+          hidden={!continuous && option.key !== activeKey}
+          key={option.key}
+        />
+      ))}
     </PanelLayout>
   );
 });

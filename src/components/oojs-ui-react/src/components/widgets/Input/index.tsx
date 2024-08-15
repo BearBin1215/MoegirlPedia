@@ -8,7 +8,7 @@ import React, {
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
-import type { WidgetProps } from '../../../types/props';
+import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';
 import type { InputWidgetRef } from '../../../types/ref';
 

@@ -8,7 +8,7 @@ import React, {
 import classNames from 'classnames';
 import IconWidget from '../Icon';
 import { processClassNames } from '../../../utils/tool';
-import type { InputProps } from '../../../types/props';
+import type { InputProps } from '../Input';
 import type { AccessKeyElement } from '../../../types/mixin';
 import type { SelectWidgetRef } from '../../../types/ref';
 

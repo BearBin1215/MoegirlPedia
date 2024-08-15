@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
-import type { InputProps } from '../../../types/props';
+import type { InputProps } from '../Input';
 import type { ElementRef } from '../../../types/ref';
 
 export interface RadioInputProps extends Omit<InputProps<

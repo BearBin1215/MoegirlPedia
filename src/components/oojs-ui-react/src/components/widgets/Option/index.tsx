@@ -7,7 +7,7 @@ import React, {
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { WidgetProps } from '../../../types/props';
+import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';
 
