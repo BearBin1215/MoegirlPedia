@@ -1,32 +1,34 @@
-import React, { useState, forwardRef, Children } from 'react';
+import React, {
+  useState,
+  forwardRef,
+  type Key,
+} from 'react';
 import classNames from 'classnames';
-import MenuLayout from '../MenuLayout';
-import PanelLayout from '../PanelLayout';
+import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import StackLayout from '../StackLayout';
-import OutlineSelect from '../../widgets/OutlineSelect';
-import OutlineOption from '../../widgets/OutlineOption';
-import type { ReactElement } from 'react';
 import type { OptionData } from '../../widgets/Option';
-import type { MenuLayoutProps } from '../MenuLayout';
 import type { PageLayoutProps } from '../PageLayout';
 import type { ElementRef } from '../../../types/ref';
 import type { ChangeHandler } from '../../../types/utils';
 
-type PageElement = ReactElement<PageLayoutProps>;
+type PageOptionProps = PageLayoutProps & {
+  key: Key;
+};
 
 export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'children' | 'onChange'> {
   /** 默认激活标签 */
-  defaultKey?: string | number | boolean;
+  defaultKey?: string | number;
 
-  children?: PageElement | PageElement[];
+  /** 页签集 */
+  options: PageOptionProps[];
 
   /** 页签变化钩子 */
-  onChange?: ChangeHandler<any>;
+  onChange?: ChangeHandler<string | number>;
 }
 
 const BookletLayout = forwardRef<ElementRef<HTMLDivElement>, BookletLayoutProps>(({
   className,
-  children,
+  options,
   defaultKey,
   onChange,
   ...rest
@@ -53,33 +55,19 @@ const BookletLayout = forwardRef<ElementRef<HTMLDivElement>, BookletLayoutProps>
       {...rest}
       className={classes}
       ref={ref}
-      menu={
-        <PanelLayout
-          className='oo-ui-bookletLayout-outlinePanel'
-          scrollable
-          expanded
-        >
-          <OutlineSelect value={activeKey} onSelect={handleSelect}>
-            {Children.map(children, (page) => {
-              if (!page) {
-                return void 0;
-              }
-              return (
-                <OutlineOption key={page.key} data={page.key!}>
-                  {page.props.label}
-                </OutlineOption>
-              );
-            })}
-          </OutlineSelect>
-        </PanelLayout>
-      }
+      options={options.map((option) => ({
+        ...option,
+        data: option.key,
+        children: option.label,
+      }))}
+      activeKey={activeKey}
+      onSelect={handleSelect}
     >
       <StackLayout
         className='oo-ui-bookletLayout-stackLayout'
         activeKey={activeKey}
-      >
-        {children}
-      </StackLayout>
+        options={options}
+      />
     </MenuLayout>
   );
 });

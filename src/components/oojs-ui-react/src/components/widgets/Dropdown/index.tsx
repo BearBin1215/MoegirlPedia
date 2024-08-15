@@ -9,8 +9,8 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import MenuSelect, { type MenuSelectRef } from './MenuSelect';
-import MenuOption, { type MenuOptionProps } from '../MenuOption';
-import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
+import type { MenuOptionProps } from '../MenuOption';
+import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -20,7 +20,9 @@ import type { AccessKeyElement, IconElement, LabelElement } from '../../../types
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionData } from '../Option';
 
-export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & { key: Key };
+export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & {
+  key: Key;
+};
 
 export interface DropdownProps extends
   WidgetProps<HTMLDivElement>,
@@ -40,10 +42,10 @@ export interface DropdownProps extends
 
 type DropdownRef = MenuSelectRef;
 
-const Dropdown = forwardRef<
-  DropdownRef,
-  DropdownProps
->(({
+/**
+ * @description 下拉选择框组件
+ */
+const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
   className,
   defaultValue,
   disabled,
@@ -142,23 +144,12 @@ const Dropdown = forwardRef<
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
-      <MenuSelect onSelect={handleSelect} value={controlledValue ?? value} open={open}>
-        {options.map((option) => 'data' in option ? (
-          <MenuOption
-            {...option}
-            key={option.key}
-          >
-            {option.children}
-          </MenuOption>
-        ) : (
-          <MenuSectionOption
-            {...option}
-            key={option.key}
-          >
-            {option.children}
-          </MenuSectionOption>
-        ))}
-      </MenuSelect>
+      <MenuSelect
+        onSelect={handleSelect}
+        value={controlledValue ?? value}
+        open={open}
+        options={options}
+      />
     </div>
   );
 });

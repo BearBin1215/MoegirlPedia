@@ -1,5 +1,9 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import type { HTMLAttributes } from 'react';
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type HTMLAttributes,
+} from 'react';
 import type { ElementRef } from '../../../types/ref';
 
 /** 组件基础属性 */

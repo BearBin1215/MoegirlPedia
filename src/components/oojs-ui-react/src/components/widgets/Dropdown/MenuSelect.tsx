@@ -10,6 +10,9 @@ export interface MenuSelectProps extends SelectProps {
 
 export type MenuSelectRef = InputWidgetRef<HTMLDivElement, string | number | undefined>;
 
+/**
+ * Dropdown组件内包裹的中间组件
+ */
 const MenuSelect = forwardRef<MenuSelectRef, MenuSelectProps>(({
   className,
   open = false,

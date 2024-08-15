@@ -1,9 +1,13 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
 import { processClassNames } from '../../../utils/tool';
-import type { MouseEventHandler } from 'react';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionProps } from '../../../types/props';
 import type { ElementRef } from '../../../types/ref';

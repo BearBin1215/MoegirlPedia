@@ -1,30 +1,42 @@
-import React, { forwardRef } from 'react';
+import React, {
+  forwardRef,
+  type Key,
+} from 'react';
 import classNames from 'classnames';
-import Layout from '../Layout';
-import type { ReactElement } from 'react';
-import type { LayoutProps } from '../Layout';
+import Layout, { type LayoutProps } from '../Layout';
+import PanelLayout from '../PanelLayout';
+import OutlineSelect from '../../widgets/OutlineSelect';
+import type { OptionData } from '../../widgets/Option';
 import type { ElementRef } from '../../../types/ref';
 
-export interface MenuLayoutProps extends LayoutProps {
+export type MenuLayoutOptions = LayoutProps & {
+  key: Key;
+};
+
+export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   /** 是否铺满父元素 */
   expanded?: boolean;
   /** 是否显示菜单 */
   showMenu?: boolean;
   /** 菜单位置 */
   menuPosition?: 'top' | 'after' | 'bottom' | 'before';
-  /** 菜单元素 */
-  menu?: ReactElement<LayoutProps>;
-  /** 页面元素 */
-  children?: ReactElement<LayoutProps>;
+  /** 页签集 */
+  options: MenuLayoutOptions[];
+  /** 选中选项回调函数 */
+  onSelect?: (option: OptionData) => void;
+  /** 当前选中页签 */
+  activeKey?: any;
 }
 
 const MenuLayout = forwardRef<ElementRef<HTMLDivElement>, MenuLayoutProps>(({
+  activeKey,
   className,
   children,
-  menu,
   expanded = true,
   showMenu = true,
   menuPosition = 'before',
+  options,
+  onSelect,
   ...rest
 }, ref) => {
   const classes = classNames(
@@ -41,7 +53,17 @@ const MenuLayout = forwardRef<ElementRef<HTMLDivElement>, MenuLayoutProps>(({
       className='oo-ui-menuLayout-menu'
       aria-hidden={!showMenu}
     >
-      {menu}
+      <PanelLayout
+        className='oo-ui-bookletLayout-outlinePanel'
+        scrollable
+        expanded
+      >
+        <OutlineSelect
+          value={activeKey}
+          onSelect={onSelect}
+          options={options}
+        />
+      </PanelLayout>
     </div>,
     <div
       key='content'
@@ -57,7 +79,7 @@ const MenuLayout = forwardRef<ElementRef<HTMLDivElement>, MenuLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {['button', 'after'].includes(menuPosition) ? elements.reverse() : elements}
+      {['buttom', 'after'].includes(menuPosition) ? elements.reverse() : elements}
     </Layout>
   );
 });

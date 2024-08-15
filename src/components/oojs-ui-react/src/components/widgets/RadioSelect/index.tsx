@@ -1,10 +1,15 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type MouseEventHandler,
+  type ReactElement,
+} from 'react';
 import classNames from 'classnames';
-import RadioOption from '../RadioOption';
+import RadioOption, { type RadioOptionProps } from '../RadioOption';
 import { processArray, processClassNames } from '../../../utils/tool';
-import type { MouseEventHandler, ReactElement } from 'react';
 import type { WidgetProps } from '../Widget';
-import type { RadioOptionProps } from '../RadioOption';
 import type { ChangeHandler } from '../../../types/utils';
 import type { InputWidgetRef } from '../../../types/ref';
 
@@ -14,14 +19,14 @@ export interface RadioSelectProps extends WidgetProps {
   children: OptionElement | OptionElement[];
 
   /** 默认要勾选的选项 */
-  defaultValue?: string | number | boolean;
+  defaultValue?: string | number;
 
   name?: string;
 
-  onChange?: ChangeHandler<string | number | boolean | undefined, HTMLInputElement>;
+  onChange?: ChangeHandler<string | number | undefined, HTMLInputElement>;
 }
 
-const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | boolean | undefined>, RadioSelectProps>(({
+const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | undefined>, RadioSelectProps>(({
   children,
   className,
   defaultValue,

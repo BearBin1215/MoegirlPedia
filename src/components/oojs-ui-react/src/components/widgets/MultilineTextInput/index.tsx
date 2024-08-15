@@ -1,10 +1,18 @@
-import React, { useState, useMemo, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type CSSProperties,
+  type ChangeEvent,
+} from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { CSSProperties, ChangeEvent } from 'react';
 import type { TextInputProps } from '../../../types/props';
 import type { InputWidgetRef } from '../../../types/ref';
 

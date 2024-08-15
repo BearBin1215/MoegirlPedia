@@ -1,7 +1,12 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type ChangeEvent,
+} from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
-import type { ChangeEvent } from 'react';
 import type { ChangeHandler } from '../../../types/utils';
 import type { WidgetProps } from '../../../types/props';
 import type { AccessKeyElement } from '../../../types/mixin';

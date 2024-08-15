@@ -1,6 +1,5 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type HTMLAttributes } from 'react';
 import classNames from 'classnames';
-import type { HTMLAttributes } from 'react';
 import type { IconElement } from '../../../types/mixin';
 
 export interface IconBaseProps extends

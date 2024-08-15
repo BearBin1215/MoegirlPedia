@@ -1,11 +1,13 @@
-import React, { forwardRef } from 'react';
+import React, {
+  forwardRef,
+  type ReactNode,
+  type MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
-import Dialog from './Dialog';
+import Dialog, { type DialogProps } from './Dialog';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
-import type { ReactNode, MouseEventHandler } from 'react';
-import type { DialogProps } from './Dialog';
 import type { ElementRef } from '../../types/ref';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {

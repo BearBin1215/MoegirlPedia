@@ -1,6 +1,5 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type HTMLAttributes } from 'react';
 import classNames from 'classnames';
-import type { HTMLAttributes } from 'react';
 import type { LabelElement } from '../../../types/mixin';
 
 export interface LabelBaseProps extends

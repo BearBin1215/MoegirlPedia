@@ -1,7 +1,12 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type ChangeEvent,
+} from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
-import type { ChangeEvent } from 'react';
 import type { InputProps } from '../../../types/props';
 import type { ElementRef } from '../../../types/ref';
 

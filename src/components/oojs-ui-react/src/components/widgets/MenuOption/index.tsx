@@ -1,8 +1,7 @@
 import React, { useState, forwardRef } from 'react';
 import classNames from 'classnames';
-import DecoratedOption from '../DecoratedOption';
+import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
-import type { DecoratedOptionProps } from '../DecoratedOption';
 import type { ElementRef } from '../../../types/ref';
 
 export interface MenuOptionProps extends

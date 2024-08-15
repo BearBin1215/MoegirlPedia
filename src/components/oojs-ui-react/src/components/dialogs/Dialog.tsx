@@ -1,9 +1,16 @@
-import React, { useState, useMemo, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+  type ReactNode,
+} from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
 import type { ElementProps } from '../widgets/Element';
-import type { ReactNode } from 'react';
 import type { ElementRef } from '../../types/ref';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {

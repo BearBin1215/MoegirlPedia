@@ -1,8 +1,7 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type ReactNode } from 'react';
 import classNames from 'classnames';
 import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';
-import type { ReactNode } from 'react';
 import type { WidgetProps } from '../../../types/props';
 import type { LabelElement } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';

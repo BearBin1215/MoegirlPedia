@@ -13,7 +13,7 @@ const Label = forwardRef<ElementRef<HTMLSpanElement>, LabelProps>(({
   disabled,
   ...rest
 }, ref) => {
-  const ElementRef = useRef<HTMLSpanElement>(null);
+  const elementRef = useRef<HTMLSpanElement>(null);
   const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'label'),
@@ -21,7 +21,7 @@ const Label = forwardRef<ElementRef<HTMLSpanElement>, LabelProps>(({
   );
 
   useImperativeHandle(ref, () => ({
-    element: ElementRef.current,
+    element: elementRef.current,
   }));
 
   return (
@@ -29,7 +29,7 @@ const Label = forwardRef<ElementRef<HTMLSpanElement>, LabelProps>(({
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={ElementRef}
+      ref={elementRef}
     >
       {children}
     </LabelBase>

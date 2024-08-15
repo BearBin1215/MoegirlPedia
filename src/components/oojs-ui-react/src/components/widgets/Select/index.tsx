@@ -1,43 +1,53 @@
-import React, { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type Key,
+  type MouseEventHandler,
+} from 'react';
 import classNames from 'classnames';
 import MenuOption from '../MenuOption';
+import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
-import { processArray, processClassNames } from '../../../utils/tool';
-import type { MouseEventHandler, ReactElement } from 'react';
-import type { WidgetProps, OptionProps, MenuSectionOptionProps } from '../../../types/props';
+import { processClassNames } from '../../../utils/tool';
+import type { WidgetProps, OptionProps } from '../../../types/props';
 import type { OptionData } from '../Option';
 import type { ElementRef } from '../../../types/ref';
 
-export type OptionElement = ReactElement<OptionProps | MenuSectionOptionProps>;
+export type SelectOptionProps = (OptionProps | MenuSectionOptionProps) & {
+  key: Key;
+};
 
-export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect'> {
+export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect' | 'children'> {
   /** 选中选项回调函数 */
   onSelect?: (option: OptionData) => void;
 
   /** 当前值 */
   value?: any;
 
-  /** 由`MenuOption`或`MenuSectionOption`组成的子元素 */
-  children?: OptionElement | OptionElement[];
-
   /** 是否渲染OutlineOption */
   outline?: boolean;
+
+  /** 选项集 */
+  options: SelectOptionProps[];
 }
 
-/** @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件 */
+/**
+ * @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件
+ * @todo 不再使用ReactElement的方式限制子元素，改用props传入选项参数
+ */
 const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
-  children,
   className,
   disabled,
   onSelect,
   value,
   outline,
+  options,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
-
-  const options = useMemo(() => processArray(children), [children, value]);
 
   const classes = classNames(
     className,
@@ -70,34 +80,39 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
       ref={elementRef}
     >
       {options.map((option) => {
-        if (!('data' in option.props)) {
-          return option;
+        if (!('data' in option)) {
+          return (
+            <MenuSectionOption
+              {...option}
+              key={option.key}
+            />
+          );
         }
         const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
-          if (option.props.onClick) {
-            option.props.onClick(e);
+          if (option.onClick) {
+            option.onClick(e);
           }
-          if (onSelect && !option.props.disabled) {
-            onSelect(option.props as OptionData);
+          if (onSelect && !option.disabled) {
+            onSelect(option as OptionData);
           }
         };
         return outline ? (
           <OutlineOption
-            {...option.props}
+            {...option}
             key={option.key}
             onClick={handleClick}
-            selected={value === option.props.data}
+            selected={value === option.data}
           >
-            {option.props.children}
+            {option.children}
           </OutlineOption>
         ) : (
           <MenuOption
-            {...option.props}
+            {...option}
             key={option.key}
             onClick={handleClick}
-            selected={value === option.props.data}
+            selected={value === option.data}
           >
-            {option.props.children}
+            {option.children}
           </MenuOption>
         );
       })}

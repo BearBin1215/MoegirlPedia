@@ -1,10 +1,16 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type CSSProperties,
+  type ChangeEvent,
+} from 'react';
 import classNames from 'classnames';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { CSSProperties, ChangeEvent } from 'react';
 import type { InputProps } from '../../../types/props';
 import type { LabelElement, IconElement, IndicatorElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';

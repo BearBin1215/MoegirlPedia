@@ -64,6 +64,7 @@ interface ConditionLineProps extends Omit<Condition, 'index'> {
   nextLine?: boolean;
 }
 
+/** 搜索条件行 */
 const ConditionLine: FC<ConditionLineProps> = ({
   code,
   value,
@@ -87,6 +88,7 @@ const ConditionLine: FC<ConditionLineProps> = ({
 
   const selectType = identifyType(code);
 
+  /** 搜索代码发生变更，更新数据，并按照代码的类型判断要不要清空value */
   const handleCodeChange: ChangeHandler<SearchCode> = (data) => {
     if (!onChange) {
       return;

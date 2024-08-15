@@ -1,10 +1,8 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type ReactElement } from 'react';
 import classNames from 'classnames';
-import Select from '../Select';
-import type { ReactElement } from 'react';
-import type { ElementRef } from '../../../types/ref';
-import type { SelectProps } from '../Select';
+import Select, { type SelectProps } from '../Select';
 import type { OutlineOptionProps } from '../OutlineOption';
+import type { ElementRef } from '../../../types/ref';
 
 export type OutlineSelectProps = SelectProps;
 

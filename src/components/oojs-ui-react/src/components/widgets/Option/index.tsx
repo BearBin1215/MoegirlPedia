@@ -1,8 +1,12 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type ReactNode,
+} from 'react';
 import classNames from 'classnames';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { ReactNode } from 'react';
 import type { WidgetProps } from '../../../types/props';
 import type { AccessKeyElement } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';

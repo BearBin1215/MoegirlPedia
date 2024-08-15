@@ -1,15 +1,20 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  type ChangeEvent,
+} from 'react';
 import classNames from 'classnames';
 import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
-import type { ChangeEvent } from 'react';
 import type { InputProps } from '../../../types/props';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
-import type { InputWidgetRef }from '../../../types/ref';
+import type { InputWidgetRef } from '../../../types/ref';
 
 export interface NumberInputProps extends
   InputProps<number | undefined>,

@@ -1,8 +1,6 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type ReactNode } from 'react';
 import classNames from 'classnames';
-import PanelLayout from '../PanelLayout';
-import type { ReactNode } from 'react';
-import type { PanelLayoutProps } from '../PanelLayout';
+import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import type { ElementRef } from '../../../types/ref';
 
 export interface PageLayoutProps extends PanelLayoutProps {

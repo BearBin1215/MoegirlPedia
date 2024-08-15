@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
-import Layout from '../Layout';
-import type { LayoutProps } from '../Layout';
+import Layout, { type LayoutProps } from '../Layout';
 import type { ElementRef } from '../../../types/ref';
 
 export interface PanelLayoutProps extends LayoutProps {
