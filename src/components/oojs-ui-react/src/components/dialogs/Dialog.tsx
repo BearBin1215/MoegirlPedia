@@ -10,7 +10,7 @@ import React, {
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
-import type { ElementProps } from '../widgets/Element';
+import type { ElementProps } from '../../types/mixin';
 import type { ElementRef } from '../../types/ref';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {

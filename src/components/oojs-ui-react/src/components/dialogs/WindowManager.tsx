@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import type { ElementProps } from '../widgets/Element';
+import type { ElementProps } from '../../types/mixin';
 import type { ElementRef } from '../../types/ref';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {

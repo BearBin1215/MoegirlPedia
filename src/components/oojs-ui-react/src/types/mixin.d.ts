@@ -1,5 +1,8 @@
-import type { ReactNode } from 'react';
-import type { Indicator } from './utils';
+import type { ReactNode, HTMLAttributes } from 'react';
+import type { Indicators } from './utils';
+
+/** 基础元素属性 */
+export type ElementProps<T = HTMLDivElement> = HTMLAttributes<T>;
 
 export interface AccessKeyElement {
   /** 组件访问键 */
@@ -21,5 +24,5 @@ export interface IconElement {
 
 export interface IndicatorElement {
   /** 组件指示器 */
-  indicator?: Indicator;
+  indicator?: Indicators;
 }

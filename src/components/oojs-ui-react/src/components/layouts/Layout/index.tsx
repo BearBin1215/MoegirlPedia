@@ -1,6 +1,6 @@
 import React, { forwardRef, useRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
-import type { ElementProps } from '../../widgets/Element';
+import type { ElementProps } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';
 
 export interface LayoutProps extends ElementProps {

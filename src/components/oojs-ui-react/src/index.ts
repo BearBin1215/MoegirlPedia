@@ -1,5 +1,4 @@
 // 基础
-export { default as Element } from './components/widgets/Element';
 export { default as Widget } from './components/widgets/Widget';
 export { default as Label } from './components/widgets/Label';
 

@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
-import type { ElementProps } from '../Element';
+import type { ElementProps } from '../../../types/mixin';
 import type { ElementRef } from '../../../types/ref';
 
 export interface WidgetProps<T = HTMLDivElement> extends Omit<ElementProps<T>, 'defaultValue' | 'onChange'> {

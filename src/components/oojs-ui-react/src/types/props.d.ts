@@ -1,5 +1,4 @@
 // 基础
-export type { ElementProps } from '../components/widgets/Element';
 export type { WidgetProps } from '../components/widgets/Widget';
 export type { LabelProps } from '../components/widgets/Label';
 

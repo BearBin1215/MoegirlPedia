@@ -6,7 +6,7 @@ export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close';
 
 export type LabelPosition = 'before' | 'after';
 
-export type Indicator = 'clear' | 'up' | 'down' | 'required';
+export type Indicators = 'clear' | 'up' | 'down' | 'required';
 
 /** 组件change钩子参数 */
 export interface ChangeValue<T = any, P = HTMLElement> {
