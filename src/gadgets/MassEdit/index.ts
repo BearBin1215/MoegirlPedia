@@ -360,7 +360,7 @@ $(() => (async () => {
           summary: `[[U:BearBin/js#MassEdit|MassEdit]]：【${editFrom.toString().replace(/\n/g, '↵')}】→【${changeTo.replace(/\n/g, '↵')}】${summary && `：${summary}`}`,
         });
         action = 'waiting';
-        if (editResult?.edit?.newrevid) {
+        if (editResult?.edit?.result === 'Success') {
           loger.record(`【<a href="/_?diff=${editResult.edit.newrevid}" target="_blank">${title}</a>】编辑完成。`, 'success');
           return 'success';
         } else if (editResult?.edit?.abusefilter) {
