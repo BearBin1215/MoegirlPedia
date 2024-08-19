@@ -27,7 +27,10 @@
   "engines": {
     "node": "16.x"
   },
-  "sideEffects": ["*.less", "*.css"],
+  "sideEffects": [
+    "*.less",
+    "*.css"
+  ],
   "dependencies": {
     "@types/jquery": "^3.5.30",
     "classnames": "^2.5.1",
@@ -44,7 +47,8 @@
     "react-color": "^2.19.3",
     "react-dom": "npm:@preact/compat@^17.1.2",
     "vue": "^3.4.37",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
