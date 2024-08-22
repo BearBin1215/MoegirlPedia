@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/BearBin1215/MoegirlPedia#readme",
   "engines": {
-    "node": "16.x"
+    "node": ">=16.0.0"
   },
   "sideEffects": [
     "*.less",
