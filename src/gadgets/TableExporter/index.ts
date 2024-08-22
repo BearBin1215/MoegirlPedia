@@ -1,7 +1,7 @@
 import {
   utils,
   writeFile,
-} from 'xlsx/dist/xlsx.mini.min';
+} from 'xlsx';
 import './index.less';
 import exportIcon from './exportIcon.svg' assert { type: 'xml' };
 
