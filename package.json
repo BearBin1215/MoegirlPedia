@@ -5,7 +5,7 @@
   "main": "build/pack.js",
   "scripts": {
     "watch": "webpack --config build/webpack.dev.js --watch --mode development",
-    "start": "yarn run watch",
+    "start": "pnpm run watch",
     "build": "node build/pack.js",
     "sync": "node scripts/src/Synchronize.js",
     "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\" && stylelint --fix \"src/**/*.{css,less,scss}\""
