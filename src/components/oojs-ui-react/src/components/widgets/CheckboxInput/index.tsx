@@ -13,16 +13,16 @@ import type { AccessKeyElement } from '../../../types/mixin';
 import type { SelectWidgetRef } from '../../../types/ref';
 
 export interface CheckboxInputProps extends
-  Omit<InputProps<boolean>, 'placeholder' | 'ref'>,
+  Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'>,
   AccessKeyElement { }
 
 const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInputProps>(({
   name,
   accessKey,
   className,
-  defaultValue = false,
   disabled,
   onChange,
+  defaultValue = false,
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
