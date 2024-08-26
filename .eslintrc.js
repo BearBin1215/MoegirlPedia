@@ -23,7 +23,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
     'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
     'plugin:vue/vue3-recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
