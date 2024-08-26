@@ -54,7 +54,7 @@ const AdvancedPanel: FC = () => {
         }
         return `${code}:"${String(value).replace(/"/g, ' ')}"`;
       }).filter((item) => item !== null).join(' ');
-  }, [conditions]);
+  }, [firstOpen, conditions]);
 
   return (
     <div id='advanced-search-panel' className={show ? 'panel-show' : 'panel-hide'}>
