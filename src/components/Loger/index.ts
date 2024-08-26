@@ -61,7 +61,7 @@ export interface LogDetail {
 }
 
 export default class Loger {
-  _logTypes: LogTypes = {
+  private _logTypes: LogTypes = {
     success: {
       icon: '✓',
       color: '#333',
