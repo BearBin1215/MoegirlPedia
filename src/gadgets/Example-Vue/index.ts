@@ -3,6 +3,6 @@
  */
 
 import { createApp } from 'vue';
-import App from './index.vue';
+import App from './App.vue';
 
 createApp(App).mount('#bodyContent');
