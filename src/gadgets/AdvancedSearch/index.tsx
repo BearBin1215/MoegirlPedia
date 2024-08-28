@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import AdvancedPanel from './AdvancedPanel';
 
@@ -7,6 +7,10 @@ $(() => {
     return;
   }
   const rootNode = document.createDocumentFragment();
-  createRoot(rootNode).render(<AdvancedPanel />);
+  createRoot(rootNode).render(
+    <StrictMode>
+      <AdvancedPanel />
+    </StrictMode>,
+  );
   document.querySelector('#search .mw-search-visualclear')!.after(rootNode);
 });

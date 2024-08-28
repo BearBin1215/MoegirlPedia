@@ -1,7 +1,7 @@
 /**
  * @description 查询指定用户名的图站贡献，并且自动挂删无任何主站使用的图片或者是只在用户页中使用的图片
  */
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import FileInspectorForm from './FileInspectorForm';
 
@@ -14,6 +14,10 @@ $(() => {
     return;
   }
   const rootNode = document.createDocumentFragment();
-  createRoot(rootNode).render(<FileInspectorForm username={USERNAME} />);
+  createRoot(rootNode).render(
+    <StrictMode>
+      <FileInspectorForm username={USERNAME} />
+    </StrictMode>,
+  );
   document.querySelector<HTMLFormElement>('#mw-content-text>.mw-contributions-form, #mw-listfiles-form')!.after(rootNode);
 });

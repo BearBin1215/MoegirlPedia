@@ -1,5 +1,4 @@
 import React, {
-  StrictMode,
   Fragment,
   useState,
   useMemo,
@@ -254,91 +253,89 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   }, []);
 
   return (
-    <StrictMode>
-      <form id='file-inspector'>
-        <fieldset>
-          <legend>用户文件检查</legend>
-          {status === 'ready' && (
-            <>
-              查询该用户所有未使用的文件信息
-              <br />
-              <Button onClick={queryUserFilesUsage} flags='progressive'>查询</Button>
-            </>
-          )}
-          {status === 'querying' && '正在查询……'}
-          {status === 'failed' && (
-            <>
-              查询失败：{failReason}
-              <br />
-              <Button onClick={queryUserFilesUsage}>重试</Button>
-            </>
-          )}
-          {status === 'acquired' && (
-            <>
-              获取成功！该用户上传的无使用或仅用于用户页的文件如下：
-              <dl>
-                {fileUsageData.map(({ fileName, usage, selected, deleted, uploadTime }) => (
-                  <Fragment key={fileName}>
-                    <dt>
-                      {isMaintainer && (
-                        <input
-                          type='checkbox'
-                          name={fileName}
-                          defaultChecked
-                          checked={selected && !deleted}
-                          disabled={deleted || deleteStatus === 'deleting'}
-                          onChange={(e) => handleCheck(e, fileName)}
-                        />
-                      )}
-                      <a
-                        href={`/${fileName}`}
-                        style={{ textDecoration: deleted ? 'line-through' : '' }}
-                        target='_blank'
-                        rel='noreferrer'
-                      >
-                        {fileName}
-                      </a>
-                      <label
-                        style={{ fontWeight: 'normal' }}
-                        htmlFor={fileName}
-                      >
-                        （上传于 {uploadTime}）
-                      </label>
-                    </dt>
-                    {usage.length ? usage.map(({ url, title }) => (
-                      <dd key={title}>
-                        <a href={url} target='_blank' rel='noreferrer'>{title}</a>
-                      </dd>
-                    )) : <dd>无使用</dd>}
-                  </Fragment>
-                ))}
-              </dl>
-              <hr />
-              <div className='file-inspector-panel'>
-                {isMaintainer && (
-                  <Button
-                    onClick={handleDelete}
-                    disabled={deleteStatus === 'deleting'}
-                    flags='progressive'
-                  >
-                    挂删选中的文件
-                  </Button>
-                )}
-                挂删间隔（s）：
-                <NumberInput min={0} defaultValue={6} ref={deleteIntervalInputRef} style={{ width: '5em' }} />
-                <br />
-                <Button onClick={handleCopy} style={{ marginTop: '0.4em' }}>{copyButtonText}</Button>
-              </div>
-              {deleteStatus !== 'ready' && (
-                <ul className='file-inspector-log'>
-                  {deleteRecord.map((record) => <li key={record}>{record}</li>)}
-                </ul>
+    <form id='file-inspector'>
+      <fieldset>
+        <legend>用户文件检查</legend>
+        {status === 'ready' && (
+          <>
+            查询该用户所有未使用的文件信息
+            <br />
+            <Button onClick={queryUserFilesUsage} flags='progressive'>查询</Button>
+          </>
+        )}
+        {status === 'querying' && '正在查询……'}
+        {status === 'failed' && (
+          <>
+            查询失败：{failReason}
+            <br />
+            <Button onClick={queryUserFilesUsage}>重试</Button>
+          </>
+        )}
+        {status === 'acquired' && (
+          <>
+            获取成功！该用户上传的无使用或仅用于用户页的文件如下：
+            <dl>
+              {fileUsageData.map(({ fileName, usage, selected, deleted, uploadTime }) => (
+                <Fragment key={fileName}>
+                  <dt>
+                    {isMaintainer && (
+                      <input
+                        type='checkbox'
+                        name={fileName}
+                        defaultChecked
+                        checked={selected && !deleted}
+                        disabled={deleted || deleteStatus === 'deleting'}
+                        onChange={(e) => handleCheck(e, fileName)}
+                      />
+                    )}
+                    <a
+                      href={`/${fileName}`}
+                      style={{ textDecoration: deleted ? 'line-through' : '' }}
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {fileName}
+                    </a>
+                    <label
+                      style={{ fontWeight: 'normal' }}
+                      htmlFor={fileName}
+                    >
+                      （上传于 {uploadTime}）
+                    </label>
+                  </dt>
+                  {usage.length ? usage.map(({ url, title }) => (
+                    <dd key={title}>
+                      <a href={url} target='_blank' rel='noreferrer'>{title}</a>
+                    </dd>
+                  )) : <dd>无使用</dd>}
+                </Fragment>
+              ))}
+            </dl>
+            <hr />
+            <div className='file-inspector-panel'>
+              {isMaintainer && (
+                <Button
+                  onClick={handleDelete}
+                  disabled={deleteStatus === 'deleting'}
+                  flags='progressive'
+                >
+                  挂删选中的文件
+                </Button>
               )}
-            </>
-          )}
-        </fieldset>
-      </form>
-    </StrictMode>
+              挂删间隔（s）：
+              <NumberInput min={0} defaultValue={6} ref={deleteIntervalInputRef} style={{ width: '5em' }} />
+              <br />
+              <Button onClick={handleCopy} style={{ marginTop: '0.4em' }}>{copyButtonText}</Button>
+            </div>
+            {deleteStatus !== 'ready' && (
+              <ul className='file-inspector-log'>
+                {deleteRecord.map((record) => <li key={record}>{record}</li>)}
+              </ul>
+            )}
+          </>
+        )}
+      </fieldset>
+    </form>
   );
 };
 
