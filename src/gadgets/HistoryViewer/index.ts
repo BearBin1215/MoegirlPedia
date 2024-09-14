@@ -1,4 +1,3 @@
-import queryString from 'query-string';
 import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
@@ -9,13 +8,10 @@ declare global {
   }
 }
 
-interface QueryParams {
-  oldid: string;
-  diff: string;
-}
-
 mw.loader.using('mediawiki.api').then(() => {
-  const { oldid, diff } = queryString.parse(location.search) as unknown as QueryParams;
+  const searchParams = new URLSearchParams(location.search);
+  const oldid = searchParams.get('oldid');
+  const diff = searchParams.get('diff');
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
   const pageContentModel = mw.config.get('wgPageContentModel');

@@ -122,6 +122,8 @@ if (!list.length) {
               token: bot.editToken,
             });
             console.log(`${item}已通过外部脚本形式同步。`);
+            console.log('提交失败的代码：');
+            console.log(text);
           } catch {
             errorList.push(item);
           }
