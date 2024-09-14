@@ -3,7 +3,7 @@ import MWBot from 'mwbot';
 import config from './config.js';
 import { execSync } from 'child_process';
 
-/** 被WAF禁用的Windows对象下的函数 */
+/** 被WAF禁用的Window对象下的函数 */
 const blackListWindowsFunc = [
   'setInterval',
   'setTimeout',
@@ -15,6 +15,7 @@ const blackListWindowsFunc = [
   'alert',
   'confirm',
   'eval',
+  'prompt',
 ];
 
 /** 被WAF禁用的Document对象下的函数 */
@@ -27,6 +28,7 @@ const blackListAllFunc = [
   'charCodeAt',
   'alert',
   'confirm',
+  'appendChild',
 ];
 
 /** 最近一次提交所修改的文件 */
