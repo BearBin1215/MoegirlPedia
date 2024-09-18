@@ -113,7 +113,7 @@ if (!list.length) {
             await bot.request({
               action: 'edit',
               title,
-              text: `mw.loader.load("//fastly.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/${item}.min.js")`,
+              text: `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\nmw.loader.load("//fastly.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/${item}.min.js")`,
               summary: `同步GitHub更改：${lastCommitMessage}`,
               bot: true,
               tags: 'Bot',
