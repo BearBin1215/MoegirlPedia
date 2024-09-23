@@ -28,8 +28,8 @@ if (!gadgets.length) {
     .replace(/\\/g, '/') // windows系统反斜杠换成正斜杠
     .replace(/^(?:.\/)?(.*)$/, './$1'))
     .reduce((entries, path) => {
-      const entry = path.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
-      entries[entry] = path;
+      const gadgetName = path.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
+      entries[gadgetName] = path;
       return entries;
     }, {});
   log(`即将打包：${Object.keys(entry).join('、')}`);
