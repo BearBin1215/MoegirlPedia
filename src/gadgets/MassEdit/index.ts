@@ -179,7 +179,12 @@ $(() => (async () => {
     ),
     $('<ul/>').append(
       '<li>编辑间隔单位为秒（s），不填默认为20s。不包含本身编辑页面所用的时间。</li>',
-      '<li>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率和<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>并自行设置间隔，或申请机器用户权限。</li>',
+      $('<li/>').append(
+        '<b>请注意<a target="_blank" href="/萌娘百科:机器用户">机器用户方针</a>所规定速率</b>',
+        '和',
+        '<a target="_blank" href="/api.php?action=query&meta=userinfo&uiprop=ratelimits">ratelimit限制</a>',
+        '并自行设置间隔，或申请机器用户权限。',
+      ),
     ),
     loger.element,
     $('<ul/>').append(
