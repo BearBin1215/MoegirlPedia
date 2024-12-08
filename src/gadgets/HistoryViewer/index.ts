@@ -134,15 +134,15 @@ mw.loader.using('mediawiki.api').then(() => {
       }
       try {
         const currentHTML = await parsePage({
-          oldid,
+          oldid: diff,
         } as ApiParams);
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
-          `<h2 class="diff-currentversion-title">版本${oldid}</h2>`,
+          `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
           $('<div class="mw-parser-output" />').html(currentHTML),
         );
       } catch (error) {
-        $('#mw-content-text').append(`版本${oldid}解析失败：${error}。`);
+        $('#mw-content-text').append(`版本${diff}解析失败：${error}。`);
       }
     });
 
