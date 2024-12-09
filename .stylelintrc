@@ -20,6 +20,7 @@
   "rules": {
     "selector-id-pattern": null,
     "selector-class-pattern": null,
+    "color-function-notation": null,
     "comment-empty-line-before": null,
     "no-descending-specificity": null,
     "at-rule-no-unknown": null,
