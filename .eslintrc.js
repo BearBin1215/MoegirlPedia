@@ -93,6 +93,7 @@ module.exports = {
     'no-useless-return': 2,
     'no-use-before-define': 2,
     'object-shorthand': 2,
+    'one-var': [2, 'never'],
     'prefer-const': 2,
     'prefer-arrow-callback': 2,
     'prefer-spread': 2,
