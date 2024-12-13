@@ -16,6 +16,8 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
     while (cmcontinue !== undefined) {
       const result = await api.post({
         action: 'query',
+        format: 'json',
+        utf8: true,
         list: 'categorymembers',
         cmlimit: 'max',
         cmtitle,

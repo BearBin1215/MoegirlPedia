@@ -26,6 +26,8 @@ interface BasicFileData {
 }
 
 interface FileData {
+  /** 文件页面ID */
+  id: number;
   /** 文件名 */
   fileName: string;
   /** 上传时间 */
@@ -117,13 +119,14 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
           gulimit: 'max',
         }) as ApiQueryResponse;
         gucontinue = result.continue?.gucontinue;
-        for (const { title, globalusage } of Object.values(result.query.pages)) {
+        for (const { pageid, title, globalusage } of Object.values(result.query.pages)) {
           // 已有记录的增加usage，没记录的创建记录
-          const target = fileUsageData.find(({ fileName }) => fileName === title);
+          const target = filtedFileUsageData.find(({ id }) => id === pageid);
           if (target) {
             target.usage.push(...globalusage);
           } else {
             filtedFileUsageData.push({
+              id: pageid,
               fileName: title,
               uploadTime: moment(fileList.find((file) => file.title === title)!.timestamp)
                 .format('YYYY年M月D日 HH:mm:ss'),
@@ -135,6 +138,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
         }
       }
     }
+    console.log(filtedFileUsageData);
     // 全域文件使用不包括共享站使用，还需要筛选一轮本域使用
     const newChunks = chunk(filtedFileUsageData, queryLimit);
     for (const fileData of newChunks) {
@@ -150,9 +154,9 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
           fulimit: 'max',
         }) as ApiQueryResponse;
         fucontinue = result.continue?.fucontinue;
-        for (const { title, fileusage } of Object.values(result.query.pages)) {
+        for (const { pageid, fileusage } of Object.values(result.query.pages)) {
           if (fileusage?.length) {
-            filtedFileUsageData.find(({ fileName }) => fileName === title)!.cmused = true;
+            filtedFileUsageData.find(({ id }) => id === pageid)!.cmused = true;
           }
         }
       }
