@@ -1,7 +1,7 @@
 import type {ApiResponse} from '../core';
 import type { ContentModel } from '../../utils';
 import type { Linkshere, Redirects, Revisions, Transcludedin } from './propData';
-import type { Categorymembers, GlobalUsage, Search, Usercontrib } from './listData';
+import type { Categorymembers, GlobalUsage, Search, Tag, Usercontrib } from './listData';
 
 /**
  * 一次API查询经常不能获取你想要的所有数据。当这种情况发生时，
@@ -247,6 +247,9 @@ export interface ApiQueryResponse extends ApiResponse {
 
     /** 搜索结果 */
     search: Search[];
+
+    /** 标签数据 */
+    tags: Tag[];
 
     /** 用户贡献 */
     usercontribs: Usercontrib[];

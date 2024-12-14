@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createElement } from 'react';
 import classNames from 'classnames';
 
 export interface ChangeslistLineProps {
@@ -43,7 +43,7 @@ export interface ChangeslistLineProps {
   /** 标签 */
   tags?: string[];
   /** 标签->描述 */
-  tagMeaningsMap: Record<string, string>;
+  tagMeaningsMap?: Record<string, string>;
 }
 
 const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
@@ -67,7 +67,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   userid,
   parsedcomment,
   tags = [],
-  tagMeaningsMap,
+  tagMeaningsMap = {},
 }) => {
   const {
     wgScript,
@@ -100,6 +100,22 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   );
 
   const date = new Date(timestamp);
+
+  const diffLen = newlen - oldlen;
+
+  /** 差异字节数元素的标签，不到500为span，超过500为strong */
+  let diffNumTag = 'span';
+  if (Math.abs(diffLen) >= 500) {
+    diffNumTag = 'string';
+  }
+
+  /** 差异字节数元素的类名，按照正、负、零区分 */
+  let diffNumClassName = 'mw-plusminus-null';
+  if (diffLen > 0) {
+    diffNumClassName = 'mw-plusminus-pos';
+  } else if (diffLen < 0) {
+    diffNumClassName = 'mw-plusminus-neg';
+  }
 
   return (
     <table
@@ -149,13 +165,11 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
             </a>
             {'）\u00A0'}
             <span className='mw-changeslist-separator'>. .</span>
-            <strong
-              dir='ltr'
-              className='mw-plusminus-pos'
-              title={`更改后有${newlen.toLocaleString()}字节`}
-            >
-              （{(newlen - oldlen).toLocaleString()}）
-            </strong>
+            {createElement(diffNumTag, {
+              dir: 'ltr',
+              className: diffNumClassName,
+              title: `更改后有${newlen.toLocaleString()}字节`,
+            }, `（${diffLen > 0 ? '+' : ''}${diffLen.toLocaleString()}）`)}
             {'\u200E\u00A0'}
             <span className='mw-changeslist-separator'>. .</span>
             <a
@@ -186,7 +200,12 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
               </a>
               ）
             </span>
-            <span className='comment' dangerouslySetInnerHTML={{ __html: `（${parsedcomment}）` }} />
+            {parsedcomment && (
+              <span
+                className='comment'
+                dangerouslySetInnerHTML={{ __html: `（${parsedcomment}）` }}
+              />
+            )}
             {tags.length > 0 && (
               <span className="mw-tag-markers">
                 （

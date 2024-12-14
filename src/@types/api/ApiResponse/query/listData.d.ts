@@ -1,4 +1,4 @@
-import type { PageProps, Cmtype } from '../../utils';
+import type { PageProps, Cmtype, TagSource } from '../../utils';
 
 /**
  * 通过`list=xxx`请求得到的数据
@@ -54,6 +54,30 @@ export interface Search extends PageProps {
 
   /** 已解析的匹配分类片段 */
   categorysnippet: string;
+}
+
+/** Special:标签 */
+export interface Tag {
+  /** 标签名称 */
+  name: string;
+
+  /** 系统消息显示 */
+  displayName: string;
+
+  /** 描述 */
+  description: string;
+
+  /** 已添加此标签的修订版本与日志数量，无命中则无此属性 */
+  hitcount?: number;
+
+  /** 标签是否已定义 */
+  defined?: '';
+
+  /** 标签来源 */
+  source: TagSource[];
+
+  /** 标签是否仍可被应用 */
+  active?: '';
 }
 
 /** 用户贡献记录 */
