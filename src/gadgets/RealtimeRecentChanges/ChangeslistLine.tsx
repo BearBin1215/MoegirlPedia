@@ -1,7 +1,25 @@
 import React, { createElement } from 'react';
 import classNames from 'classnames';
 
-export interface ChangeslistLineProps {
+export interface ChangeFlagProps {
+  /** 该编辑是否创建了新页面 */
+  'new'?: boolean;
+  /** 是否为小编辑 */
+  minor?: boolean;
+  /** 是否为机器人编辑 */
+  bot?: boolean;
+  /** 是否未巡查 */
+  unpatrolled?: boolean;
+}
+
+export interface ChangeDiffProps {
+  /** 更改前长度 */
+  oldlen: number;
+  /** 更改后长度 */
+  newlen: number;
+}
+
+export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps {
   /** 页面标题 */
   title: string;
   /** 修订版本ID */
@@ -14,26 +32,14 @@ export interface ChangeslistLineProps {
   timestamp: string;
   /** 名字空间 */
   ns: number;
-  /** 该编辑是否创建了新页面 */
-  'new'?: boolean;
-  /** 是否为小编辑 */
-  minor?: boolean;
-  /** 是否为机器人编辑 */
-  bot?: boolean;
   /** 是否已巡查 */
   patrolled?: boolean;
   /** 是否为自动巡查 */
   autopatrolled?: boolean;
-  /** 是否未巡查 */
-  unpatrolled?: boolean;
   /** 是否为重定向 */
   redirect?: boolean;
   /** 是否为一组同页同类编辑的最新一条 */
   last?: boolean;
-  /** 更改前长度 */
-  oldlen: number;
-  /** 更改后长度 */
-  newlen: number;
   /** 做出编辑的用户 */
   user: string;
   /** 做出编辑的用户ID */
@@ -45,6 +51,49 @@ export interface ChangeslistLineProps {
   /** 标签->描述 */
   tagMeaningsMap?: Record<string, string>;
 }
+
+/** 渲染编辑行的标记 */
+const ChangeFlag: React.FC<ChangeFlagProps> = ({
+  'new': isNew,
+  minor,
+  bot,
+  unpatrolled = false,
+}) => {
+  return (
+    <>
+      {isNew ? <abbr className='newpage' title='该编辑创建了新页面'>新</abbr> : '\u00A0'}
+      {minor ? <abbr className='minoredit' title='该编辑为小编辑'>小</abbr> : '\u00A0'}
+      {bot ? <abbr className='botedit' title='该编辑由机器人执行'>机</abbr> : '\u00A0'}
+      {unpatrolled ? <abbr className='unpatrolled' title='该编辑尚未巡查'>!</abbr> : '\u00A0'}
+      {'\u00A0'}
+    </>
+  );
+};
+
+/** 渲染当前编辑字节差异 */
+const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
+  const diffLen = newlen - oldlen;
+
+  /** 差异字节数元素的标签，不到500为span，超过500为strong */
+  let diffNumTag = 'span';
+  if (Math.abs(diffLen) >= 500) {
+    diffNumTag = 'string';
+  }
+
+  /** 差异字节数元素的类名，按照正、负、零区分 */
+  let diffNumClassName = 'mw-plusminus-null';
+  if (diffLen > 0) {
+    diffNumClassName = 'mw-plusminus-pos';
+  } else if (diffLen < 0) {
+    diffNumClassName = 'mw-plusminus-neg';
+  }
+
+  return createElement(diffNumTag, {
+    dir: 'ltr',
+    className: diffNumClassName,
+    title: `更改后有${newlen.toLocaleString()}字节`,
+  }, `（${diffLen > 0 ? '+' : ''}${diffLen.toLocaleString()}）`);
+};
 
 const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   title,
@@ -101,22 +150,6 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
 
   const date = new Date(timestamp);
 
-  const diffLen = newlen - oldlen;
-
-  /** 差异字节数元素的标签，不到500为span，超过500为strong */
-  let diffNumTag = 'span';
-  if (Math.abs(diffLen) >= 500) {
-    diffNumTag = 'string';
-  }
-
-  /** 差异字节数元素的类名，按照正、负、零区分 */
-  let diffNumClassName = 'mw-plusminus-null';
-  if (diffLen > 0) {
-    diffNumClassName = 'mw-plusminus-pos';
-  } else if (diffLen < 0) {
-    diffNumClassName = 'mw-plusminus-neg';
-  }
-
   return (
     <table
       data-mw-revid={revid}
@@ -130,11 +163,12 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
           </td>
           <td className='mw-changeslist-line-prefix' />
           <td className='mw-enhanced-rc'>
-            {isNew ? <abbr className='newpage' title='该编辑创建了新页面'>新</abbr> : '\u00A0'}
-            {minor ? <abbr className='minoredit' title='该编辑为小编辑'>小</abbr> : '\u00A0'}
-            {bot ? <abbr className='botedit' title='该编辑由机器人执行'>机</abbr> : '\u00A0'}
-            {unpatrolled ? <abbr className='unpatrolled' title='该编辑尚未巡查'>!</abbr> : '\u00A0'}
-            {'\u00A0'}
+            <ChangeFlag
+              new={isNew}
+              minor={minor}
+              bot={bot}
+              unpatrolled={unpatrolled}
+            />
             {date.getHours()}:{date.getMinutes()}
             {'\u00A0'}
           </td>
@@ -165,11 +199,10 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
             </a>
             {'）\u00A0'}
             <span className='mw-changeslist-separator'>. .</span>
-            {createElement(diffNumTag, {
-              dir: 'ltr',
-              className: diffNumClassName,
-              title: `更改后有${newlen.toLocaleString()}字节`,
-            }, `（${diffLen > 0 ? '+' : ''}${diffLen.toLocaleString()}）`)}
+            <ChangeDiff
+              oldlen={oldlen}
+              newlen={newlen}
+            />
             {'\u200E\u00A0'}
             <span className='mw-changeslist-separator'>. .</span>
             <a
@@ -229,4 +262,5 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   );
 };
 
-export { ChangeslistLine };
+export { ChangeFlag, ChangeDiff };
+export default ChangeslistLine;

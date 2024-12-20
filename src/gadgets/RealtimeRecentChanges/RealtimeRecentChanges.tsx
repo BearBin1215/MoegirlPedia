@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from 'oojs-ui-react';
-import { ChangeslistLine, type ChangeslistLineProps } from './ChangeslistLine';
+import ChangeslistLine, { type ChangeslistLineProps } from './ChangeslistLine';
 import type { ApiQueryResponse } from '@/@types/api';
 
 declare global {
