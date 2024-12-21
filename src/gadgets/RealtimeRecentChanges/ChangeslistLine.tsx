@@ -1,5 +1,6 @@
 import React, { createElement } from 'react';
 import classNames from 'classnames';
+import { HistoryLink, UserLink } from '@/components/MediaWiki';
 
 export interface ChangeFlagProps {
   /** 该编辑是否创建了新页面 */
@@ -29,7 +30,7 @@ export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps {
   /** 旧版本ID */
   oldid: number;
   /** 时间戳 */
-  timestamp: string;
+  timestamp: string | Date;
   /** 名字空间 */
   ns: number;
   /** 是否已巡查 */
@@ -51,6 +52,10 @@ export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps {
   /** 标签->描述 */
   tagMeaningsMap?: Record<string, string>;
 }
+
+const Separator: React.FC = () => (
+  <span className='mw-changeslist-separator'>. .</span>
+);
 
 /** 渲染编辑行的标记 */
 const ChangeFlag: React.FC<ChangeFlagProps> = ({
@@ -183,37 +188,32 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
               </a>
             </span>
             {'\u200E （'}
-            <a
-              className='mw-changeslist-diff'
-              href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
-            >
-              差异
-            </a>
+            {isNew ? '差异' : (
+              <a
+                className='mw-changeslist-diff'
+                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
+              >
+                差异
+              </a>
+            )}
             {'\u00A0|\u00A0'}
-            <a
-              href={`${wgScript}?title=${title}&curid=${pageid}&action=history`}
-              className='mw-changeslist-history'
+            <HistoryLink
               title={title}
-            >
-              历史
-            </a>
+              pageid={pageid}
+              className='mw-changeslist-history'
+            />
             {'）\u00A0'}
-            <span className='mw-changeslist-separator'>. .</span>
+            <Separator />
             <ChangeDiff
               oldlen={oldlen}
               newlen={newlen}
             />
             {'\u200E\u00A0'}
-            <span className='mw-changeslist-separator'>. .</span>
-            <a
-              href={wgArticlePath.replace('$1', `User:${user}`)}
-              className='mw-userlink'
-              title={`User:${user}`}
-              data-user-id={userid}
-              data-user-avatar={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png?ver=0`}
-            >
-              <bdi>{user}</bdi>
-            </a>
+            <Separator />
+            <UserLink
+              user={user}
+              userid={userid}
+            />
             <span className='mw-usertoollinks'>
               （
               <a
@@ -240,9 +240,9 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
               />
             )}
             {tags.length > 0 && (
-              <span className="mw-tag-markers">
+              <span className='mw-tag-markers'>
                 （
-                <a href="/Special:标签" title="Special:标签">{tags.length}个标签</a>
+                <a href='/Special:标签' title='Special:标签'>{tags.length}个标签</a>
                 ：
                 {tags.map((tag) => (
                   <span
@@ -262,5 +262,5 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   );
 };
 
-export { ChangeFlag, ChangeDiff };
+export { Separator, ChangeFlag, ChangeDiff };
 export default ChangeslistLine;

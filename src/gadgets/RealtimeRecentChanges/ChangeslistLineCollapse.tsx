@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
-import ChangeslistLine, { ChangeFlag, ChangeDiff, type ChangeslistLineProps } from './ChangeslistLine';
+import { HistoryLink, UserLink } from '@/components/MediaWiki';
+import ChangeslistLine, { Separator, ChangeFlag, ChangeDiff, type ChangeslistLineProps } from './ChangeslistLine';
 
 interface ChangeslistLineCollapseProps {
-  /** 要合并的最近更改合集 */
+  /** 要合并的最近更改记录集 */
   changes: ChangeslistLineProps[];
   /** 是否默认展开 */
   defaultExpanded?: boolean;
@@ -29,11 +30,11 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   } = mw.config.get([
     'wgScript',
     'wgArticlePath',
-    'wgUserId',
   ]);
 
   const [{
     title,
+    ns,
     redirect,
     timestamp,
     pageid,
@@ -51,9 +52,9 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     'mw-enhanced-rc',
     'mw-changeslist-line',
     'mw-changeslist-edit',
-    'mw-changeslist-ns0-冲田三叶',
+    `mw-changeslist-ns${ns}-${title}`,
     'mw-changeslist-line-not-watched',
-    expanded ? '' : 'mw-changeslist-line-not-watched mw-collapsed',
+    expanded && 'mw-collapsed',
   );
 
   const toggleClassName = classNames(
@@ -65,6 +66,18 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   );
 
   const lastDate = new Date(timestamp);
+
+  const changeBy = useMemo(() => {
+    const editors: Record<string, { id: number; editTimes: number }> = {};
+    for (const { user, userid } of changes.toReversed()) {
+      if (user in editors) {
+        editors[user].editTimes++;
+      } else {
+        editors[user] = { id: userid, editTimes: 1 };
+      }
+    }
+    return editors;
+  }, [changes]);
 
   return (
     <table
@@ -102,29 +115,39 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
               </a>
             </span>
             {'\u200E （'}
-            <a
-              className='mw-changeslist-groupdiff'
-              href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
-            >
-              {changes.length}次更改
-            </a>
+            {changes.at(-1)?.new ? `${changes.length}次更改` : (
+              <a
+                className='mw-changeslist-groupdiff'
+                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
+              >
+                {changes.length}次更改
+              </a>
+            )}
             {'\u00A0|\u00A0'}
-            <a
-              href={`${wgScript}?title=${title}&curid=${pageid}&action=history`}
-              className='mw-changeslist-history'
+            <HistoryLink
               title={title}
-            >
-              历史
-            </a>
+              pageid={pageid}
+              className='mw-changeslist-history'
+            />
             {'）\u00A0'}
-            <span className='mw-changeslist-separator'>. .</span>
+            <Separator />
             <ChangeDiff
               oldlen={oldlen}
               newlen={newlen}
             />
             <span className='changedby'>
               [
-
+              {Object.entries(changeBy).map(([user, { id, editTimes }], index) => (
+                <>
+                  <UserLink
+                    user={user}
+                    userid={id}
+                  />
+                  {'\u200E'}
+                  {editTimes > 1 && `\u00A0（${editTimes}×）`}
+                  {index < Object.keys(changeBy).length - 1 && '；'}
+                </>
+              ))}
               ]
             </span>
           </td>
