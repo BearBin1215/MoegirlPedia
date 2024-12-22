@@ -62,7 +62,7 @@ export interface Tag {
   name: string;
 
   /** 系统消息显示 */
-  displayName: string;
+  displayname: string;
 
   /** 描述 */
   description: string;

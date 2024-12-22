@@ -123,6 +123,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   tags = [],
   tagMeaningsMap = {},
 }) => {
+  console.log(tagMeaningsMap);
   const {
     wgScript,
     wgArticlePath,
@@ -174,7 +175,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
               bot={bot}
               unpatrolled={unpatrolled}
             />
-            {date.getHours()}:{date.getMinutes()}
+            {`${date.getHours()}`.padStart(2, '0')}:{`${date.getMinutes()}`.padStart(2, '0')}
             {'\u00A0'}
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
@@ -244,13 +245,16 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
                 （
                 <a href='/Special:标签' title='Special:标签'>{tags.length}个标签</a>
                 ：
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className={`mw-tag-marker mw-tag-marker-${tag}`}
-                  >
-                    {tagMeaningsMap[tag] ?? tag}
-                  </span>
+                {tags.map((tag, index) => (
+                  <>
+                    <span
+                      key={tag}
+                      className={`mw-tag-marker mw-tag-marker-${tag}`}
+                    >
+                      {tagMeaningsMap[tag] ?? tag}
+                    </span>
+                    {index < tags.length - 1 && '、'}
+                  </>
                 ))}
                 ）
               </span>

@@ -101,7 +101,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
               bot={changes.every(({ bot }) => bot)}
               unpatrolled={changes.some(({ unpatrolled }) => unpatrolled)}
             />
-            {lastDate.getHours()}:{lastDate.getMinutes()}
+            {`${lastDate.getHours()}`.padStart(2, '0')}:{`${lastDate.getMinutes()}`.padStart(2, '0')}
             {'\u00A0'}
           </td>
           <td className='mw-changeslist-line-inner'>
