@@ -61,13 +61,12 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
   };
 
   useEffect(() => {
-    mw.loader.using(['mediawiki.api', 'oojs-ui', 'oojs-ui.styles.icons-media']).then(() => {
+    mw.loader.using(['mediawiki.api', 'moment', 'oojs-ui', 'oojs-ui.styles.icons-media']).then(() => {
       queryTagsData();
     });
   }, []);
 
   useEffect(() => {
-    console.log(running);
     if (running) {
       const interval = setInterval(() => {
         queryData();

@@ -1,7 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
-import { HistoryLink, UserLink } from '@/components/MediaWiki';
-import ChangeslistLine, { Separator, ChangeFlag, ChangeDiff, type ChangeslistLineProps } from './ChangeslistLine';
+import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
+import ChangeslistLine,
+{
+  getLineClassName,
+  Separator,
+  ChangeFlags,
+  ChangeDiff,
+  ChangeTagMarkers,
+  type ChangeslistLineProps,
+} from './ChangeslistLine';
 
 interface ChangeslistLineCollapseProps {
   /** 要合并的最近更改记录集 */
@@ -43,7 +51,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   }] = changes; // 需要的最新编辑数据
 
   const {
-    oldid,
+    old_revid,
     oldlen,
   } = changes.at(-1)!; // 需要的最旧编辑数据
 
@@ -65,7 +73,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     expanded ? 'mw-collapsible-toggle-expanded' : 'mw-collapsible-toggle-collapsed',
   );
 
-  const lastDate = new Date(timestamp);
+  const lastDate = moment(timestamp);
 
   const changeBy = useMemo(() => {
     const editors: Record<string, { id: number; editTimes: number }> = {};
@@ -81,7 +89,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
 
   return (
     <table
-      data-mw-ts={lastDate.getTime()}
+      data-mw-ts={lastDate.utc().format('YYYYMMDDHHmmss')}
       className={className}
     >
       <tbody>
@@ -95,14 +103,15 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
           </td>
           <td className='mw-changeslist-line-prefix' />
           <td className='mw-enhanced-rc'>
-            <ChangeFlag
+            <ChangeFlags
               new={changes.at(-1)?.new}
               minor={changes.every(({ minor }) => minor)}
               bot={changes.every(({ bot }) => bot)}
               unpatrolled={changes.some(({ unpatrolled }) => unpatrolled)}
             />
-            {`${lastDate.getHours()}`.padStart(2, '0')}:{`${lastDate.getMinutes()}`.padStart(2, '0')}
-            {'\u00A0'}
+            {' '}
+            {lastDate.format('HH:mm')}
+            {' '}
           </td>
           <td className='mw-changeslist-line-inner'>
             <span className='mw-title'>
@@ -118,18 +127,18 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             {changes.at(-1)?.new ? `${changes.length}次更改` : (
               <a
                 className='mw-changeslist-groupdiff'
-                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
+                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${old_revid}`}
               >
                 {changes.length}次更改
               </a>
             )}
-            {'\u00A0|\u00A0'}
+            {' | '}
             <HistoryLink
               title={title}
               pageid={pageid}
               className='mw-changeslist-history'
             />
-            {'）\u00A0'}
+            {'） '}
             <Separator />
             <ChangeDiff
               oldlen={oldlen}
@@ -144,7 +153,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                     userid={id}
                   />
                   {'\u200E'}
-                  {editTimes > 1 && `\u00A0（${editTimes}×）`}
+                  {editTimes > 1 && ` （${editTimes}×）`}
                   {index < Object.keys(changeBy).length - 1 && '；'}
                 </>
               ))}
@@ -152,6 +161,97 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             </span>
           </td>
         </tr>
+        {changes.map((change) => {
+          const changeDate = moment(change.timestamp);
+          const revisionSearch = new URLSearchParams({
+            title: change.title,
+            curid: `${change.pageid}`,
+            oldid: `${change.old_revid}`,
+          });
+          const curSearch = new URLSearchParams({
+            title: change.title,
+            curid: `${change.pageid}`,
+            diff: '0',
+            oldid: `${change.old_revid}`,
+          });
+          const preSearch = new URLSearchParams({
+            title: change.title,
+            curid: `${change.pageid}`,
+            diff: `${change.revid}`,
+            oldid: `${change.old_revid}`,
+          });
+          return (
+            <tr
+              key={change.revid}
+              className={getLineClassName(change)}
+              data-mw-revid={change.revid}
+              data-mw-ts={changeDate.utc().format('YYYYMMDDHHmmss')}
+            >
+              <td />
+              <td />
+              <td className='mw-enhanced-rc'>
+                <ChangeFlags
+                  new={change.new}
+                  minor={change.minor}
+                  bot={change.bot}
+                  unpatrolled={change.unpatrolled}
+                />
+                &nbsp;
+              </td>
+              <td
+                className='mw-enhanced-rc-nested'
+                data-target-page={change.title}
+              >
+                <span className='mw-enhanced-rc-time'>
+                  <a
+                    href={`${wgScript}?${revisionSearch.toString()}`}
+                    title={change.title}
+                  >
+                    {changeDate.format('HH:mm')}
+                  </a>
+                  {' （'}
+                  <a
+                    className='mw-changeslist-diff-cur'
+                    href={`${wgScript}?${curSearch.toString()}`}
+                  >
+                    当前
+                  </a>
+                  {' | '}
+                  <a
+                    className='mw-changeslist-diff'
+                    href={`${wgScript}?${preSearch.toString()}`}
+                    title={change.title}
+                  >
+                    之前
+                  </a>
+                  {'） '}
+                  <Separator />
+                  <ChangeDiff
+                    oldlen={change.oldlen}
+                    newlen={change.newlen}
+                  />
+                  {'\u200E '}
+                  <Separator />
+                  <UserLink
+                    user={change.user}
+                    userid={change.userid}
+                  />
+                  <UserToolLinks user={change.user} />
+                  {change.parsedcomment && (
+                    <span
+                      className='comment'
+                      dangerouslySetInnerHTML={{ __html: `（${change.parsedcomment}）` }}
+                    />
+                  )}
+                  <ChangeTagMarkers
+                    tags={change.tags}
+                    tagMeaningsMap={change.tagMeaningsMap}
+                  />
+                </span>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

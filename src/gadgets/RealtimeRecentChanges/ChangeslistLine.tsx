@@ -1,6 +1,7 @@
 import React, { createElement } from 'react';
 import classNames from 'classnames';
-import { HistoryLink, UserLink } from '@/components/MediaWiki';
+import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
+import { type MomentInput } from 'moment';
 
 export interface ChangeFlagProps {
   /** 该编辑是否创建了新页面 */
@@ -20,17 +21,24 @@ export interface ChangeDiffProps {
   newlen: number;
 }
 
-export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps {
+export interface ChangeTagProps {
+  /** 标签 */
+  tags?: string[];
+  /** 标签->描述 */
+  tagMeaningsMap?: Record<string, string>;
+}
+
+export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps, ChangeTagProps {
   /** 页面标题 */
   title: string;
-  /** 修订版本ID */
-  revid: number;
   /** 页面ID */
   pageid: number;
+  /** 修订版本ID */
+  revid: number;
   /** 旧版本ID */
-  oldid: number;
+  old_revid: number;
   /** 时间戳 */
-  timestamp: string | Date;
+  timestamp: MomentInput;
   /** 名字空间 */
   ns: number;
   /** 是否已巡查 */
@@ -47,18 +55,56 @@ export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps {
   userid: number;
   /** 解析后的编辑摘要 */
   parsedcomment: string;
-  /** 标签 */
-  tags?: string[];
-  /** 标签->描述 */
-  tagMeaningsMap?: Record<string, string>;
 }
+
+const {
+  wgScript,
+  wgArticlePath,
+  wgUserId,
+} = mw.config.get([
+  'wgScript',
+  'wgArticlePath',
+  'wgUserId',
+]);
+
+/** 生成更改记录行的类名 */
+export const getLineClassName = ({
+  ns,
+  title,
+  userid,
+  bot,
+  minor,
+  last,
+  'new': isNew,
+  patrolled = true,
+  autopatrolled = false,
+  unpatrolled = false,
+}: ChangeslistLineProps) => classNames(
+  'mw-changeslist-line',
+  'mw-changeslist-edit',
+  `mw-changeslist-ns${ns}-${title}`,
+  `mw-changeslist-ns-${ns}`,
+  'mw-changeslist-line-not-watched',
+  'mw-changeslist-user-registered',
+  'mw-changeslist-user-newcomer', // mw-changeslist-user-experienced
+  wgUserId === userid ? 'mw-changeslist-self' : 'mw-changeslist-others',
+  bot ? 'mw-changeslist-bot' : 'mw-changeslist-human',
+  minor ? 'mw-changeslist-minor' : 'mw-changeslist-major',
+  last ? 'mw-changeslist-last' : 'mw-changeslist-previous',
+  isNew ? 'mw-changeslist-src-mw-new' : 'mw-changeslist-src-mw-edit',
+  patrolled && !autopatrolled && 'mw-changeslist-reviewstatus-manual',
+  autopatrolled && 'mw-changeslist-reviewstatus-auto',
+  unpatrolled && 'mw-changeslist-reviewstatus-unpatrolled',
+  'mw-changeslist-notwatched',
+  'mw-enhanced-rc',
+);
 
 const Separator: React.FC = () => (
   <span className='mw-changeslist-separator'>. .</span>
 );
 
 /** 渲染编辑行的标记 */
-const ChangeFlag: React.FC<ChangeFlagProps> = ({
+const ChangeFlags: React.FC<ChangeFlagProps> = ({
   'new': isNew,
   minor,
   bot,
@@ -70,7 +116,6 @@ const ChangeFlag: React.FC<ChangeFlagProps> = ({
       {minor ? <abbr className='minoredit' title='该编辑为小编辑'>小</abbr> : '\u00A0'}
       {bot ? <abbr className='botedit' title='该编辑由机器人执行'>机</abbr> : '\u00A0'}
       {unpatrolled ? <abbr className='unpatrolled' title='该编辑尚未巡查'>!</abbr> : '\u00A0'}
-      {'\u00A0'}
     </>
   );
 };
@@ -100,67 +145,59 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
   }, `（${diffLen > 0 ? '+' : ''}${diffLen.toLocaleString()}）`);
 };
 
-const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
-  title,
-  revid,
-  pageid,
-  oldid,
-  timestamp,
-  ns,
-  'new': isNew,
-  minor,
-  bot,
-  patrolled = true,
-  autopatrolled = false,
-  unpatrolled = false,
-  redirect,
-  last,
-  oldlen,
-  newlen,
-  user,
-  userid,
-  parsedcomment,
+export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
   tags = [],
   tagMeaningsMap = {},
 }) => {
-  console.log(tagMeaningsMap);
-  const {
-    wgScript,
-    wgArticlePath,
-    wgUserId,
-  } = mw.config.get([
-    'wgScript',
-    'wgArticlePath',
-    'wgUserId',
-  ]);
-
-  const className = classNames(
-    'mw-changeslist-line',
-    'mw-changeslist-edit',
-    `mw-changeslist-ns${ns}-${title}`,
-    `mw-changeslist-ns-${ns}`,
-    'mw-changeslist-line-not-watched',
-    'mw-changeslist-user-registered',
-    'mw-changeslist-user-newcomer', // mw-changeslist-user-experienced
-    wgUserId === userid ? 'mw-changeslist-self' : 'mw-changeslist-others',
-    bot ? 'mw-changeslist-bot' : 'mw-changeslist-human',
-    minor ? 'mw-changeslist-minor' : 'mw-changeslist-major',
-    last ? 'mw-changeslist-last' : 'mw-changeslist-previous',
-    isNew ? 'mw-changeslist-src-mw-new' : 'mw-changeslist-src-mw-edit',
-    patrolled && !autopatrolled && 'mw-changeslist-reviewstatus-manual',
-    autopatrolled && 'mw-changeslist-reviewstatus-auto',
-    unpatrolled && 'mw-changeslist-reviewstatus-unpatrolled',
-    'mw-changeslist-notwatched',
-    'mw-enhanced-rc',
+  return tags.length > 0 && (
+    <span className='mw-tag-markers'>
+      （
+      <a href='/Special:标签' title='Special:标签'>{tags.length}个标签</a>
+      ：
+      {tags.map((tag, index) => (
+        <>
+          <span
+            key={tag}
+            className={`mw-tag-marker mw-tag-marker-${tag}`}
+          >
+            {tagMeaningsMap[tag] ?? tag}
+          </span>
+          {index < tags.length - 1 && '、'}
+        </>
+      ))}
+      ）
+    </span>
   );
+};
 
-  const date = new Date(timestamp);
+const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
+  const {
+    title,
+    revid,
+    pageid,
+    old_revid,
+    timestamp,
+    'new': isNew,
+    minor,
+    bot,
+    unpatrolled = false,
+    redirect,
+    oldlen,
+    newlen,
+    user,
+    userid,
+    parsedcomment,
+    tags = [],
+    tagMeaningsMap = {},
+  } = props;
+
+  const date = moment(timestamp);
 
   return (
     <table
       data-mw-revid={revid}
-      data-mw-ts={date.getTime()}
-      className={className}
+      data-mw-ts={date.utc().format('YYYYMMDDHHmmss')}
+      className={getLineClassName(props)}
     >
       <tbody>
         <tr>
@@ -169,14 +206,15 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
           </td>
           <td className='mw-changeslist-line-prefix' />
           <td className='mw-enhanced-rc'>
-            <ChangeFlag
+            <ChangeFlags
               new={isNew}
               minor={minor}
               bot={bot}
               unpatrolled={unpatrolled}
             />
-            {`${date.getHours()}`.padStart(2, '0')}:{`${date.getMinutes()}`.padStart(2, '0')}
-            {'\u00A0'}
+            &nbsp;
+            {moment(date).format('HH:mm')}
+            &nbsp;
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
             <span className='mw-title'>
@@ -192,73 +230,37 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
             {isNew ? '差异' : (
               <a
                 className='mw-changeslist-diff'
-                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${oldid}`}
+                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${old_revid}`}
               >
                 差异
               </a>
             )}
-            {'\u00A0|\u00A0'}
+            {' | '}
             <HistoryLink
               title={title}
               pageid={pageid}
               className='mw-changeslist-history'
             />
-            {'）\u00A0'}
+            {'） '}
             <Separator />
             <ChangeDiff
               oldlen={oldlen}
               newlen={newlen}
             />
-            {'\u200E\u00A0'}
+            {'\u200E '}
             <Separator />
             <UserLink
               user={user}
               userid={userid}
             />
-            <span className='mw-usertoollinks'>
-              （
-              <a
-                href={`/User_talk:${user}`}
-                className='mw-usertoollinks-talk'
-                title={`User talk:${user}`}
-              >
-                讨论
-              </a>
-              {'\u00A0|\u00A0'}
-              <a
-                href={`/Special:用户贡献/${user}`}
-                className='mw-usertoollinks-contribs'
-                title={`Special:用户贡献/${user}`}
-              >
-                贡献
-              </a>
-              ）
-            </span>
+            <UserToolLinks user={user} />
             {parsedcomment && (
               <span
                 className='comment'
                 dangerouslySetInnerHTML={{ __html: `（${parsedcomment}）` }}
               />
             )}
-            {tags.length > 0 && (
-              <span className='mw-tag-markers'>
-                （
-                <a href='/Special:标签' title='Special:标签'>{tags.length}个标签</a>
-                ：
-                {tags.map((tag, index) => (
-                  <>
-                    <span
-                      key={tag}
-                      className={`mw-tag-marker mw-tag-marker-${tag}`}
-                    >
-                      {tagMeaningsMap[tag] ?? tag}
-                    </span>
-                    {index < tags.length - 1 && '、'}
-                  </>
-                ))}
-                ）
-              </span>
-            )}
+            <ChangeTagMarkers tags={tags} tagMeaningsMap={tagMeaningsMap} />
           </td>
         </tr>
       </tbody>
@@ -266,5 +268,5 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = ({
   );
 };
 
-export { Separator, ChangeFlag, ChangeDiff };
+export { Separator, ChangeFlags, ChangeDiff };
 export default ChangeslistLine;

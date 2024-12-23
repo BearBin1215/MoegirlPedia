@@ -4,26 +4,31 @@ import React, {
 } from 'react';
 
 export interface HistoryLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
+  /** 页面标题 */
   title: string;
+  /** 页面id */
   pageid: number;
 }
 
 /** 页面历史链接 */
-const HistoryLink: FC<HistoryLinkProps> = ({
+export const HistoryLink: FC<HistoryLinkProps> = ({
   title,
   pageid,
   ...rest
 }) => {
   const wgScript = mw.config.get('wgScript');
+  const search = {
+    title,
+    curid: `${pageid}`,
+    action: 'history',
+  };
   return (
     <a
       {...rest}
-      href={`${wgScript}?title=${title}&curid=${pageid}&action=history`}
+      href={`${wgScript}?${(new URLSearchParams(search)).toString()}`}
       title={title}
     >
       历史
     </a>
-  )
-}
-
-export default HistoryLink;
+  );
+};
