@@ -86,7 +86,7 @@ export const getLineClassName = ({
   `mw-changeslist-ns-${ns}`,
   'mw-changeslist-line-not-watched',
   'mw-changeslist-user-registered',
-  'mw-changeslist-user-newcomer', // mw-changeslist-user-experienced
+  'mw-changeslist-user-experienced', // mw-changeslist-user-newcomer
   wgUserId === userid ? 'mw-changeslist-self' : 'mw-changeslist-others',
   bot ? 'mw-changeslist-bot' : 'mw-changeslist-human',
   minor ? 'mw-changeslist-minor' : 'mw-changeslist-major',
@@ -124,12 +124,6 @@ const ChangeFlags: React.FC<ChangeFlagProps> = ({
 const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
   const diffLen = newlen - oldlen;
 
-  /** 差异字节数元素的标签，不到500为span，超过500为strong */
-  let diffNumTag = 'span';
-  if (Math.abs(diffLen) >= 500) {
-    diffNumTag = 'strong';
-  }
-
   /** 差异字节数元素的类名，按照正、负、零区分 */
   let diffNumClassName = 'mw-plusminus-null';
   if (diffLen > 0) {
@@ -138,7 +132,8 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
     diffNumClassName = 'mw-plusminus-neg';
   }
 
-  return createElement(diffNumTag, {
+  // 差异字节数不到500为span，超过500为strong
+  return createElement(Math.abs(diffLen) >= 500 ? 'string' : 'span', {
     dir: 'ltr',
     className: diffNumClassName,
     title: `更改后有${newlen.toLocaleString()}字节`,
@@ -193,6 +188,13 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
 
   const date = moment.utc(timestamp);
 
+  const diffSearch = new URLSearchParams({
+    title,
+    curid: `${pageid}`,
+    diff: `${revid}`,
+    oldid: `${old_revid}`,
+  });
+
   return (
     <table
       data-mw-revid={revid}
@@ -230,7 +232,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
             {isNew ? '差异' : (
               <a
                 className='mw-changeslist-diff'
-                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${old_revid}`}
+                href={`${wgScript}?${diffSearch.toString}`}
               >
                 差异
               </a>

@@ -90,6 +90,13 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     return editors;
   }, [changes]);
 
+  const diffSearch = new URLSearchParams({
+    title,
+    curid: `${pageid}`,
+    diff: `${revid}`,
+    oldid: `${old_revid}`,
+  });
+
   return (
     <table
       data-mw-ts={lastDate.format('YYYYMMDDHHmmss')}
@@ -130,7 +137,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             {changes.at(-1)?.new ? `${changes.length}次更改` : (
               <a
                 className='mw-changeslist-groupdiff'
-                href={`${wgScript}?title=${title}&curid=${pageid}&diff=${revid}&oldid=${old_revid}`}
+                href={`${wgScript}?${diffSearch.toString()}`}
               >
                 {changes.length}次更改
               </a>
