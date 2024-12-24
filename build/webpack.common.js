@@ -65,6 +65,7 @@ module.exports = {
         options: {
           appendTsSuffixTo: [/\.vue$/],
         },
+        exclude: /node_modules/,
       },
       {
         test: /\.(js|jsx)$/,
@@ -75,6 +76,7 @@ module.exports = {
             targets: '> 0.3%, not dead',
           },
         },
+        exclude: /node_modules/,
       },
       {
         test: /\.less$/,
