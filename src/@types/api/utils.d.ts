@@ -41,3 +41,12 @@ export interface PageProps {
 
 /** 标签来源，它可能包括用于扩展定义的标签的extension，以及用于可被用户手动应用的标签的manual */
 export type TagSource = 'extension' | 'manual';
+
+/** 用户信息 */
+export interface UserProps {
+  /** 用户ID */
+  userid: number;
+
+  /** 用户名 */
+  user: string;
+}

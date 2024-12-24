@@ -1,4 +1,4 @@
-import type { PageProps, Cmtype, TagSource } from '../../utils';
+import type { PageProps, Cmtype, TagSource, UserProps } from '../../utils';
 
 /**
  * 通过`list=xxx`请求得到的数据
@@ -31,6 +31,74 @@ export interface GlobalUsage {
 
   /** 使用的页面链接 */
   url: string;
+}
+
+export interface RecentChange extends PageProps, UserProps {
+  /** 更改类型 */
+  type: 'edit' | 'new' | 'log' | 'external' | '​categorize';
+
+  /** 修订版本id */
+  revid: number;
+
+  /** 旧修订版本id */
+  old_revid: number;
+
+  /** 最近更改记录id */
+  rcid: number;
+
+  /** 是否创建了新页面 */
+  'new'?: '';
+
+  /** 是否为小编辑 */
+  minor?: '';
+
+  /** 是否为机器人编辑 */
+  bot?: '';
+
+  /** 页面是否为重定向 */
+  redirect?: '';
+
+  /** 旧修订版本长度 */
+  oldlen: number;
+
+  /** 修改后长度 */
+  newlen: number;
+
+  /** 编辑时间 */
+  timestamp: string;
+
+  /** 编辑摘要 */
+  comment: string;
+
+  /** 解析后的编辑摘要 */
+  parsedcomment: string;
+
+  /** 已巡查标记 */
+  patrolled?: '';
+
+  /** 自动巡查标记 */
+  autopatrolled?: '';
+
+  /** 未巡查标记 */
+  unpatrolled?: '';
+
+  /** 日志id */
+  logid: number;
+
+  /** 日志类型 */
+  logtype: delete;
+
+  /** 日志操作 */
+  logaction: delete;
+
+  /** 日志参数，如移动日志的前后页面等 */
+  logparams: Record<string, any>;
+
+  /** 标签 */
+  tags: string[];
+
+  /** 内容校验和 */
+  sha1: string;
 }
 
 /**
@@ -81,13 +149,7 @@ export interface Tag {
 }
 
 /** 用户贡献记录 */
-export interface Usercontrib extends PageProps {
-  /** 用户ID */
-  userid: number;
-
-  /** 用户名 */
-  user: string;
-
+export interface Usercontrib extends PageProps, UserProps {
   /** 修订版本 */
   revid: number;
 

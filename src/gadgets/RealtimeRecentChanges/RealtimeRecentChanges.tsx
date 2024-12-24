@@ -28,8 +28,8 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
       list: 'recentchanges',
       rclimit: 50,
       rcprop: ['patrolled', 'parsedcomment', 'flags', 'tags', 'title', 'timestamp', 'ids', 'sizes', 'user', 'userid', 'redirect'],
-    });
-    setData(res.query.recentchanges.map((recentchange) => ({
+    }) as ApiQueryResponse;
+    const formattedData = res.query.recentchanges.map((recentchange) => ({
       ...recentchange,
       'new': 'new' in recentchange,
       minor: 'minor' in recentchange,
@@ -39,7 +39,8 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
       unpatrolled: 'unpatrolled' in recentchange,
       redirect: 'redirect' in recentchange,
       last: true,
-    })));
+    }));
+    setData(formattedData);
   };
 
   const queryTagsData = async () => {
