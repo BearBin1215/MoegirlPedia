@@ -127,7 +127,7 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
   /** 差异字节数元素的标签，不到500为span，超过500为strong */
   let diffNumTag = 'span';
   if (Math.abs(diffLen) >= 500) {
-    diffNumTag = 'string';
+    diffNumTag = 'strong';
   }
 
   /** 差异字节数元素的类名，按照正、负、零区分 */
