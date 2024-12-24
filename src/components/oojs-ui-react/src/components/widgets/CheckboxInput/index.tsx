@@ -23,6 +23,7 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
   disabled,
   onChange,
   defaultValue = false,
+  value: controlledValue,
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
@@ -66,7 +67,7 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
         accessKey={accessKey}
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
-        checked={value}
+        checked={controlledValue ?? value}
         disabled={disabled}
         onChange={handleChange}
       />

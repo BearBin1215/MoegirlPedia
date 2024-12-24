@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'oojs-ui-react';
+import { Button, CheckboxInput, FieldLayout } from 'oojs-ui-react';
 import { type ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
+import './index.less';
 
 declare global {
   interface Window {
     /** 用户自定的每次实时更新后回调 */
     realtimeRecentChangeCallback?: () => void;
+    realtimeRecentChangeDefaultActive?: boolean;
   }
 }
 
 const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({ initialData }) => {
-  const [running, setRunning] = useState(false);
+  const [defaultActive, setDefaultActive] = useState(!!(
+    localStorage.getItem('realtimeRecentChangeDefaultActive') || window.realtimeRecentChangeDefaultActive
+  ));
+  const [running, setRunning] = useState(defaultActive);
   const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
   const [tagMeaningsMap, setTagMeaningsMap] = useState<Record<string, string>>({});
   const [data, setData] = useState<ChangeslistLineProps[][]>(initialData);
@@ -88,6 +93,11 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
   }, [running]);
 
   useEffect(() => {
+    // 用户更新是否默认启动的设置时，将其存入localStorage
+    localStorage.setItem('realtimeRecentChangeDefaultActive', defaultActive ? '1' : '');
+  }, [defaultActive]);
+
+  useEffect(() => {
     if (typeof window.realtimeRecentChangeCallback === 'function') {
       window.realtimeRecentChangeCallback();
     }
@@ -95,15 +105,26 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
 
   return (
     <div>
-      <fieldset>
-        <legend>实时更新选项</legend>
-        <Button
-          active={running}
-          icon={running ? 'stop' : 'play'}
-          onClick={() => setRunning(!running)}
-        >
-          实时更新
-        </Button>
+      <fieldset className='realtime-rc-options'>
+        <legend>动态更新选项</legend>
+        <div className='active-panel'>
+          <Button
+            active={running}
+            icon={running ? 'stop' : 'play'}
+            onClick={() => setRunning(!running)}
+          >
+            动态更新
+          </Button>
+          <FieldLayout
+            label='进入页面默认启动'
+            align='inline'
+          >
+            <CheckboxInput
+              value={defaultActive}
+              onChange={({ value }) => setDefaultActive(value)}
+            />
+          </FieldLayout>
+        </div>
       </fieldset>
       {data.map((changeData) => (
         <ChangeslistLineCollapse
