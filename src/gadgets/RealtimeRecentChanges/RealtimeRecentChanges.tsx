@@ -27,7 +27,8 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
       format: 'json',
       utf8: true,
       list: 'recentchanges',
-      rclimit: 50,
+      rclimit: 500,
+      rctype: ['edit', 'new'],
       rcprop: ['patrolled', 'parsedcomment', 'flags', 'tags', 'title', 'timestamp', 'ids', 'sizes', 'user', 'userid', 'redirect'],
     }) as ApiQueryResponse;
     const recentChanges = res.query.recentchanges.map((recentchange) => ({
