@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'oojs-ui-react';
-import ChangeslistLine, { type ChangeslistLineProps } from './ChangeslistLine';
+import { type ChangeslistLineProps } from './ChangeslistLine';
+import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
 
 declare global {
@@ -10,11 +11,11 @@ declare global {
   }
 }
 
-const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ initialData }) => {
+const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({ initialData }) => {
   const [running, setRunning] = useState(false);
   const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
   const [tagMeaningsMap, setTagMeaningsMap] = useState<Record<string, string>>({});
-  const [data, setData] = useState<ChangeslistLineProps[]>(initialData);
+  const [data, setData] = useState<ChangeslistLineProps[][]>(initialData);
   const api = new mw.Api();
 
   const queryData = async () => {
@@ -29,7 +30,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
       rclimit: 50,
       rcprop: ['patrolled', 'parsedcomment', 'flags', 'tags', 'title', 'timestamp', 'ids', 'sizes', 'user', 'userid', 'redirect'],
     }) as ApiQueryResponse;
-    const formattedData = res.query.recentchanges.map((recentchange) => ({
+    const recentChanges = res.query.recentchanges.map((recentchange) => ({
       ...recentchange,
       'new': 'new' in recentchange,
       minor: 'minor' in recentchange,
@@ -38,8 +39,17 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
       autopatrolled: 'autopatrolled' in recentchange,
       unpatrolled: 'unpatrolled' in recentchange,
       redirect: 'redirect' in recentchange,
-      last: true,
     }));
+    // 格式化后，聚合同标题的数据
+    const formattedData: ChangeslistLineProps[][] = [];
+    for (const change of recentChanges) {
+      const existPage = formattedData.find((line) => line[0].title === change.title);
+      if (existPage) {
+        existPage.push(change);
+      } else {
+        formattedData.push([{ ...change, last: true }]);
+      }
+    }
     setData(formattedData);
   };
 
@@ -62,9 +72,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
   };
 
   useEffect(() => {
-    mw.loader.using(['mediawiki.api', 'moment', 'oojs-ui', 'oojs-ui.styles.icons-media']).then(() => {
-      queryTagsData();
-    });
+    queryTagsData();
   }, []);
 
   useEffect(() => {
@@ -97,9 +105,9 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[] }> = ({ i
         </Button>
       </fieldset>
       {data.map((changeData) => (
-        <ChangeslistLine
-          key={changeData.title}
-          {...changeData}
+        <ChangeslistLineCollapse
+          key={changeData[0].title}
+          changes={changeData}
           tagMeaningsMap={tagMeaningsMap}
         />
       ))}

@@ -6,11 +6,13 @@ $(() => {
   if (mw.config.get('wgCanonicalSpecialPageName') !== 'Recentchanges') {
     return;
   }
-  const initialData = [];
-  const rootNode = document.querySelector('.mw-changeslist');
-  createRoot(rootNode!).render(
-    <StrictMode>
-      <RealtimeRecentChanges initialData={initialData} />
-    </StrictMode>,
-  );
+  mw.loader.using(['mediawiki.api', 'moment', 'oojs-ui', 'oojs-ui.styles.icons-media']).then(() => {
+    const initialData = [];
+    const rootNode = document.querySelector('.mw-changeslist');
+    createRoot(rootNode!).render(
+      <StrictMode>
+        <RealtimeRecentChanges initialData={initialData} />
+      </StrictMode>,
+    );
+  });
 });

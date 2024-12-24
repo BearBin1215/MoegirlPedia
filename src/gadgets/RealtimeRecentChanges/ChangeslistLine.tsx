@@ -191,7 +191,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     tagMeaningsMap = {},
   } = props;
 
-  const date = moment(timestamp);
+  const date = moment.utc(timestamp);
 
   return (
     <table
@@ -213,7 +213,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
               unpatrolled={unpatrolled}
             />
             &nbsp;
-            {moment(date).format('HH:mm')}
+            {moment(date).local().format('HH:mm')}
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
@@ -260,7 +260,10 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
                 dangerouslySetInnerHTML={{ __html: `（${parsedcomment}）` }}
               />
             )}
-            <ChangeTagMarkers tags={tags} tagMeaningsMap={tagMeaningsMap} />
+            <ChangeTagMarkers
+              tags={tags}
+              tagMeaningsMap={tagMeaningsMap}
+            />
           </td>
         </tr>
       </tbody>

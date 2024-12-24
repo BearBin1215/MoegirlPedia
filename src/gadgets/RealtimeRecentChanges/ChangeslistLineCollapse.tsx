@@ -11,34 +11,37 @@ import ChangeslistLine,
   type ChangeslistLineProps,
 } from './ChangeslistLine';
 
-interface ChangeslistLineCollapseProps {
+export interface ChangeslistLineCollapseProps {
   /** 要合并的最近更改记录集 */
   changes: ChangeslistLineProps[];
   /** 是否默认展开 */
   defaultExpanded?: boolean;
+  /** 标签->描述 */
+  tagMeaningsMap?: Record<string, string>;
 }
+
+const {
+  wgScript,
+  wgArticlePath,
+} = mw.config.get([
+  'wgScript',
+  'wgArticlePath',
+]);
 
 /** 合并相同页面编辑 */
 const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   changes,
+  tagMeaningsMap = {},
   defaultExpanded = false,
 }) => {
   if (changes.length === 0) {
     return null;
   }
   if (changes.length === 1) {
-    return <ChangeslistLine {...changes[0]} />;
+    return <ChangeslistLine tagMeaningsMap={tagMeaningsMap} {...changes[0]} />;
   }
 
   const [expanded, setExpanded] = useState(defaultExpanded);
-
-  const {
-    wgScript,
-    wgArticlePath,
-  } = mw.config.get([
-    'wgScript',
-    'wgArticlePath',
-  ]);
 
   const [{
     title,
@@ -62,7 +65,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     'mw-changeslist-edit',
     `mw-changeslist-ns${ns}-${title}`,
     'mw-changeslist-line-not-watched',
-    expanded && 'mw-collapsed',
+    !expanded && 'mw-collapsed',
   );
 
   const toggleClassName = classNames(
@@ -73,7 +76,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     expanded ? 'mw-collapsible-toggle-expanded' : 'mw-collapsible-toggle-collapsed',
   );
 
-  const lastDate = moment(timestamp);
+  const lastDate = moment.utc(timestamp);
 
   const changeBy = useMemo(() => {
     const editors: Record<string, { id: number; editTimes: number }> = {};
@@ -89,7 +92,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
 
   return (
     <table
-      data-mw-ts={lastDate.utc().format('YYYYMMDDHHmmss')}
+      data-mw-ts={lastDate.format('YYYYMMDDHHmmss')}
       className={className}
     >
       <tbody>
@@ -109,9 +112,9 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
               bot={changes.every(({ bot }) => bot)}
               unpatrolled={changes.some(({ unpatrolled }) => unpatrolled)}
             />
-            {' '}
-            {lastDate.format('HH:mm')}
-            {' '}
+            &nbsp;
+            {lastDate.local().format('HH:mm')}
+            &nbsp;
           </td>
           <td className='mw-changeslist-line-inner'>
             <span className='mw-title'>
@@ -209,45 +212,45 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                   >
                     {changeDate.format('HH:mm')}
                   </a>
-                  {' （'}
-                  <a
-                    className='mw-changeslist-diff-cur'
-                    href={`${wgScript}?${curSearch.toString()}`}
-                  >
-                    当前
-                  </a>
-                  {' | '}
-                  <a
-                    className='mw-changeslist-diff'
-                    href={`${wgScript}?${preSearch.toString()}`}
-                    title={change.title}
-                  >
-                    之前
-                  </a>
-                  {'） '}
-                  <Separator />
-                  <ChangeDiff
-                    oldlen={change.oldlen}
-                    newlen={change.newlen}
-                  />
-                  {'\u200E '}
-                  <Separator />
-                  <UserLink
-                    user={change.user}
-                    userid={change.userid}
-                  />
-                  <UserToolLinks user={change.user} />
-                  {change.parsedcomment && (
-                    <span
-                      className='comment'
-                      dangerouslySetInnerHTML={{ __html: `（${change.parsedcomment}）` }}
-                    />
-                  )}
-                  <ChangeTagMarkers
-                    tags={change.tags}
-                    tagMeaningsMap={change.tagMeaningsMap}
-                  />
                 </span>
+                {' （'}
+                <a
+                  className='mw-changeslist-diff-cur'
+                  href={`${wgScript}?${curSearch.toString()}`}
+                >
+                  当前
+                </a>
+                {' | '}
+                <a
+                  className='mw-changeslist-diff'
+                  href={`${wgScript}?${preSearch.toString()}`}
+                  title={change.title}
+                >
+                  之前
+                </a>
+                {'） '}
+                <Separator />
+                <ChangeDiff
+                  oldlen={change.oldlen}
+                  newlen={change.newlen}
+                />
+                {'\u200E '}
+                <Separator />
+                <UserLink
+                  user={change.user}
+                  userid={change.userid}
+                />
+                <UserToolLinks user={change.user} />
+                {change.parsedcomment && (
+                  <span
+                    className='comment'
+                    dangerouslySetInnerHTML={{ __html: `（${change.parsedcomment}）` }}
+                  />
+                )}
+                <ChangeTagMarkers
+                  tags={change.tags}
+                  tagMeaningsMap={change.tagMeaningsMap}
+                />
               </td>
             </tr>
           );
