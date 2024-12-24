@@ -34,6 +34,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   tagMeaningsMap = {},
   defaultExpanded = false,
 }) => {
+  // 确保只有超过2条编辑才生成折叠的列表
   if (changes.length === 0) {
     return null;
   }

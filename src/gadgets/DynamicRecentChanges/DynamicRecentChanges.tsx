@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, CheckboxInput, FieldLayout } from 'oojs-ui-react';
+import {
+  Button,
+  CheckboxInput,
+  NumberInput,
+  FieldLayout,
+} from 'oojs-ui-react';
 import { type ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
@@ -9,24 +14,29 @@ declare global {
   interface Window {
     /** 用户自定的每次实时更新后回调 */
     realtimeRecentChangeCallback?: () => void;
+    /** 用户设定的进入页面是否默认启动 */
     realtimeRecentChangeDefaultActive?: boolean;
   }
 }
 
 const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({ initialData }) => {
+  // 是否进入页面默认启动
   const [defaultActive, setDefaultActive] = useState(!!(
     localStorage.getItem('realtimeRecentChangeDefaultActive') || window.realtimeRecentChangeDefaultActive
   ));
+  // 是否运行
   const [running, setRunning] = useState(defaultActive);
+  // 记录定时器id，用于停止
   const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
+  // 标签含义映射，用于渲染标签
   const [tagMeaningsMap, setTagMeaningsMap] = useState<Record<string, string>>({});
+  // 用于渲染最终列表的数据
   const [data, setData] = useState<ChangeslistLineProps[][]>(initialData);
+
   const api = new mw.Api();
 
+  /** 使用API读取最近更改数据，并转化为组件所需的格式 */
   const queryData = async () => {
-    if (!running) {
-      return;
-    }
     const res = await api.post({
       action: 'query',
       format: 'json',
@@ -34,7 +44,19 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
       list: 'recentchanges',
       rclimit: 500,
       rctype: ['edit', 'new'],
-      rcprop: ['patrolled', 'parsedcomment', 'flags', 'tags', 'title', 'timestamp', 'ids', 'sizes', 'user', 'userid', 'redirect'],
+      rcprop: [
+        'patrolled',
+        'parsedcomment',
+        'flags',
+        'tags',
+        'title',
+        'timestamp',
+        'ids',
+        'sizes',
+        'user',
+        'userid',
+        'redirect',
+      ],
     }) as ApiQueryResponse;
     const recentChanges = res.query.recentchanges.map((recentchange) => ({
       ...recentchange,
@@ -59,6 +81,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
     setData(formattedData);
   };
 
+  /** 读取标签数据 */
   const queryTagsData = async () => {
     const res = await api.post({
       action: 'query',
@@ -82,6 +105,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
   }, []);
 
   useEffect(() => {
+    // 运行状态变化，注册或清除定时器
     if (running) {
       const interval = setInterval(() => {
         queryData();
@@ -98,6 +122,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
   }, [defaultActive]);
 
   useEffect(() => {
+    // 数据发生变化时会触发列表的重新渲染，执行用户的自定义回调
     if (typeof window.realtimeRecentChangeCallback === 'function') {
       window.realtimeRecentChangeCallback();
     }
@@ -107,7 +132,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
     <div>
       <fieldset className='realtime-rc-options'>
         <legend>动态更新选项</legend>
-        <div className='active-panel'>
+        <div className='realtime-rc-active-panel'>
           <Button
             active={running}
             icon={running ? 'stop' : 'play'}
@@ -124,6 +149,22 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
               onChange={({ value }) => setDefaultActive(value)}
             />
           </FieldLayout>
+        </div>
+        <div className='realtime-rc-config-panel'>
+          <div className='realtime-rc-config-line'>
+            <label className='realtime-rc-config-label'>自动更新间隔（s）</label>
+            <NumberInput
+              name='updateInterval'
+              className='realtime-rc-config-input'
+            />
+          </div>
+          <div className='realtime-rc-config-line'>
+            <label className='realtime-rc-config-label'>读取审核状态</label>
+            <CheckboxInput
+              name='readModetarion'
+              className='realtime-rc-config-input'
+            />
+          </div>
         </div>
       </fieldset>
       {data.map((changeData) => (

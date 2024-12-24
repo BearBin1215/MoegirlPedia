@@ -1,6 +1,6 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import RealtimeRecentChanges from './RealtimeRecentChanges';
+import DynamicRecentChanges from './DynamicRecentChanges';
 
 $(() => {
   if (mw.config.get('wgCanonicalSpecialPageName') !== 'Recentchanges') {
@@ -11,7 +11,7 @@ $(() => {
     const rootNode = document.querySelector('.mw-changeslist');
     createRoot(rootNode!).render(
       <StrictMode>
-        <RealtimeRecentChanges initialData={initialData} />
+        <DynamicRecentChanges initialData={initialData} />
       </StrictMode>,
     );
   });
