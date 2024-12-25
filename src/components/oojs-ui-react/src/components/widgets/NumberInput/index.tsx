@@ -17,7 +17,7 @@ import type { LabelPosition } from '../../../types/utils';
 import type { InputWidgetRef } from '../../../types/ref';
 
 export interface NumberInputProps extends
-  InputProps<number | undefined>,
+  InputProps<number>,
   AccessKeyElement,
   IconElement,
   IndicatorElement,

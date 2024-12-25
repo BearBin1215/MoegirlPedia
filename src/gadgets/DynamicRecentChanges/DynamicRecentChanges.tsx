@@ -12,17 +12,32 @@ import './index.less';
 
 declare global {
   interface Window {
-    /** 用户自定的每次实时更新后回调 */
-    realtimeRecentChangeCallback?: () => void;
+    /** 用户设定的是否读取审核状态 */
+    realtimeRecentChangeReadModetarion?: boolean;
+    /** 用户设定的自动更新间隔 */
+    realtimeRecentChangeUpdateInterval?: number;
     /** 用户设定的进入页面是否默认启动 */
     realtimeRecentChangeDefaultActive?: boolean;
+    /** 用户自定的每次实时更新后回调 */
+    realtimeRecentChangeCallback?: () => void;
   }
 }
 
 const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({ initialData }) => {
+  // 动态更新间隔
+  const [updateInterval, setUpdateInterval] = useState(
+    window.realtimeRecentChangeUpdateInterval
+    || Number(localStorage.getItem('realtimeRecentChangeUpdateInterval'))
+    || 5,
+  );
+  const [readModetarion, setReadModetarion] = useState(!!(
+    window.realtimeRecentChangeReadModetarion
+    || localStorage.getItem('realtimeRecentChangeReadModetarion')),
+  );
   // 是否进入页面默认启动
   const [defaultActive, setDefaultActive] = useState(!!(
-    localStorage.getItem('realtimeRecentChangeDefaultActive') || window.realtimeRecentChangeDefaultActive
+    window.realtimeRecentChangeDefaultActive
+    || localStorage.getItem('realtimeRecentChangeDefaultActive')
   ));
   // 是否运行
   const [running, setRunning] = useState(defaultActive);
@@ -109,12 +124,30 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
     if (running) {
       const interval = setInterval(() => {
         queryData();
-      }, 5000);
+      }, Math.max(updateInterval * 1000, 3000));
       setTaskInterval(interval);
     } else {
       clearInterval(taskInterval);
     }
   }, [running]);
+
+  useEffect(() => {
+    // 用户更改自动更新间隔时，存入localStorage
+    localStorage.setItem('realtimeRecentChangeUpdateInterval', `${updateInterval || 0}`);
+
+    // 如果在运行状态中，调整更新间隔，重新注册定时器
+    if (running) {
+      clearInterval(taskInterval);
+      setTaskInterval(setInterval(() => {
+        queryData();
+      }, Math.max(updateInterval * 1000, 3000)));
+    }
+  }, [updateInterval]);
+
+  useEffect(() => {
+    // 用户设置是否读取审核状态时，存入localStorage
+    localStorage.setItem('realtimeRecentChangeReadModetarion', readModetarion ? '1' : '');
+  }, [readModetarion]);
 
   useEffect(() => {
     // 用户更新是否默认启动的设置时，将其存入localStorage
@@ -123,9 +156,11 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
 
   useEffect(() => {
     // 数据发生变化时会触发列表的重新渲染，执行用户的自定义回调
-    if (typeof window.realtimeRecentChangeCallback === 'function') {
-      window.realtimeRecentChangeCallback();
-    }
+    setTimeout(() => {
+      if (typeof window.realtimeRecentChangeCallback === 'function') {
+        window.realtimeRecentChangeCallback();
+      }
+    });
   }, [data]);
 
   return (
@@ -156,6 +191,10 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
             <NumberInput
               name='updateInterval'
               className='realtime-rc-config-input'
+              value={updateInterval}
+              onChange={({ value }) => setUpdateInterval(value)}
+              min={3}
+              placeholder='不低于3秒'
             />
           </div>
           <div className='realtime-rc-config-line'>
@@ -163,6 +202,8 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
             <CheckboxInput
               name='readModetarion'
               className='realtime-rc-config-input'
+              value={readModetarion}
+              onChange={({ value }) => setReadModetarion(value)}
             />
           </div>
         </div>

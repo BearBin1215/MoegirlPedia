@@ -41,7 +41,6 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   if (changes.length === 1) {
     return <ChangeslistLine tagMeaningsMap={tagMeaningsMap} {...changes[0]} />;
   }
-
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   const [{
@@ -173,7 +172,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
           </td>
         </tr>
         {changes.map((change) => {
-          const changeDate = moment(change.timestamp);
+          const changeDate = moment.utc(change.timestamp);
           const revisionSearch = new URLSearchParams({
             title: change.title,
             curid: `${change.pageid}`,
@@ -196,7 +195,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
               key={change.revid}
               className={getLineClassName(change)}
               data-mw-revid={change.revid}
-              data-mw-ts={changeDate.utc().format('YYYYMMDDHHmmss')}
+              data-mw-ts={changeDate.format('YYYYMMDDHHmmss')}
             >
               <td />
               <td />
@@ -218,7 +217,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                     href={`${wgScript}?${revisionSearch.toString()}`}
                     title={change.title}
                   >
-                    {changeDate.format('HH:mm')}
+                    {changeDate.local().format('HH:mm')}
                   </a>
                 </span>
                 {' （'}
