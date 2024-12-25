@@ -8,7 +8,6 @@ import {
 import { type ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
-import { ShowAvatarContext } from '@/components/MediaWiki';
 import './index.less';
 
 declare global {
@@ -27,20 +26,16 @@ declare global {
 interface RecentChangeListProps {
   /** 初始数据 */
   initialData: ChangeslistLineProps[][];
-  /** 是否显示用户头像 */
-  showAvatar?: boolean;
 }
 
 const RecentChangeList: React.FC<RecentChangeListProps> = ({
   initialData,
-  showAvatar = false,
 }) => {
-  console.time('渲染用时');
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
     window.realtimeRecentChangeUpdateInterval
     || Number(localStorage.getItem('realtimeRecentChangeUpdateInterval'))
-    || 5,
+    || 10,
   );
   // 更新后是否读取审核状态
   const [readModetarion, setReadModetarion] = useState(!!(
@@ -142,6 +137,10 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   useEffect(() => {
     // 运行状态变化，注册或清除定时器
     if (running) {
+      if (!defaultActive) {
+        // 如果用户没有设置默认启动，这里要读取一次，否则要等一个interval才会第一次更新
+        queryData();
+      }
       const interval = setInterval(() => {
         queryData();
       }, Math.max(updateInterval * 1000, 3000));
@@ -180,10 +179,6 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
       window.realtimeRecentChangeCallback();
     }
   }, [data]);
-
-  useEffect(() => {
-    console.timeEnd('渲染用时');
-  });
 
   return (
     <div>
@@ -231,15 +226,11 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
         </div>
       </fieldset>
       {data.map((changeData) => (
-        <ShowAvatarContext.Provider
-          key={changeData[0].title}
-          value={showAvatar}
-        >
-          <ChangeslistLineCollapse
-            changes={changeData}
-            tagMeaningsMap={tagMeaningsMap}
-          />
-        </ShowAvatarContext.Provider>
+        <ChangeslistLineCollapse
+          key={changeData[0].rcid}
+          changes={changeData}
+          tagMeaningsMap={tagMeaningsMap}
+        />
       ))}
     </div>
   );

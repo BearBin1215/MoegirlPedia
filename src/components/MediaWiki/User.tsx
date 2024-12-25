@@ -1,17 +1,18 @@
 import React, {
   createContext,
   useContext,
-  type AnchorHTMLAttributes,
   type FC,
 } from 'react';
-import classNames from 'classnames';
 
 const wgArticlePath = mw.config.get('wgArticlePath');
 
-/** 使用context传递是否显示头像，以免props冗余 */
-export const ShowAvatarContext = createContext(false);
+/** 使用context传递部分参数，以免props冗余 */
+export const UserLinkContext = createContext({
+  /** 是否显示头像 */
+  showAvatar: false,
+});
 
-export interface UserLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
+export interface UserLinkProps {
   user: string;
   userid: number;
   showAvatar?: boolean;
@@ -21,67 +22,59 @@ export interface UserLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEleme
 export const UserLink: FC<UserLinkProps> = ({
   user,
   userid,
-  ...rest
-}) => {
-  const className = classNames('mw-userlink', rest.className);
-  const showAvatar = rest.showAvatar ?? useContext(ShowAvatarContext);
-
-  return (
-    <>
-      {showAvatar && (
-        <a
-          className='userlink-avatar'
-          href={`https://commons.moegirl.org.cn/Special:ViewAvatar?user=${user}`}
-          target='_blank'
-          title='查看头像'
-        >
-          <img
-            loading='lazy'
-            src={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
-            alt={`${user}的头像`}
-            className='userlink-avatar-small'
-          />
-        </a>
-      )}
+  showAvatar,
+}) => (
+  <>
+    {(showAvatar ?? useContext(UserLinkContext).showAvatar) && (
       <a
-        {...rest}
-        href={wgArticlePath.replace('$1', `User:${user}`)}
-        className={className}
-        title={`User:${user}`}
-        data-user-id={userid}
-        data-user-avatar={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+        className='userlink-avatar'
+        href={`https://commons.moegirl.org.cn/Special:ViewAvatar?user=${user}`}
+        target='_blank'
+        title='查看头像'
       >
-        <bdi>{user}</bdi>
+        <img
+          loading='lazy'
+          src={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+          alt={`${user}的头像`}
+          className='userlink-avatar-small'
+        />
       </a>
-    </>
-  );
-};
+    )}
+    <a
+      href={wgArticlePath.replace('$1', `User:${user}`)}
+      className='mw-userlink'
+      title={`User:${user}`}
+      data-user-id={userid}
+      data-user-avatar={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+    >
+      <bdi>{user}</bdi>
+    </a>
+  </>
+);
 
 export interface UserToolLinksProps {
   user: string;
 }
 
 /** （讨论 | 贡献）链接 */
-export const UserToolLinks: FC<UserToolLinksProps> = ({ user }) => {
-  return (
-    <span className='mw-usertoollinks'>
-      （
-      <a
-        href={wgArticlePath.replace('$1', `User_talk:${user}`)}
-        className='mw-usertoollinks-talk'
-        title={`User talk:${user}`}
-      >
-        讨论
-      </a>
-      {' | '}
-      <a
-        href={wgArticlePath.replace('$1', `/Special:用户贡献/${user}`)}
-        className='mw-usertoollinks-contribs'
-        title={`Special:用户贡献/${user}`}
-      >
-        贡献
-      </a>
-      ）
-    </span>
-  );
-};
+export const UserToolLinks: FC<UserToolLinksProps> = ({ user }) => (
+  <span className='mw-usertoollinks'>
+    （
+    <a
+      href={wgArticlePath.replace('$1', `User_talk:${user}`)}
+      className='mw-usertoollinks-talk'
+      title={`User talk:${user}`}
+    >
+      讨论
+    </a>
+    {' | '}
+    <a
+      href={wgArticlePath.replace('$1', `/Special:用户贡献/${user}`)}
+      className='mw-usertoollinks-contribs'
+      title={`Special:用户贡献/${user}`}
+    >
+      贡献
+    </a>
+    ）
+  </span>
+);

@@ -1,5 +1,6 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { UserLinkContext } from '@/components/MediaWiki';
 import DynamicRecentChanges from './DynamicRecentChanges';
 
 $(() => {
@@ -12,10 +13,9 @@ $(() => {
     const showAvatar = !!document.getElementsByClassName('userlink-avatar')[0];
     createRoot(rootNode!).render(
       <StrictMode>
-        <DynamicRecentChanges
-          initialData={initialData}
-          showAvatar={showAvatar}
-        />
+        <UserLinkContext.Provider value={{ showAvatar }}>
+          <DynamicRecentChanges initialData={initialData} />
+        </UserLinkContext.Provider>
       </StrictMode>,
     );
   });

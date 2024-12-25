@@ -51,7 +51,10 @@ export interface ChangeslistLineProps extends
   ChangeDiffProps,
   ChangeTagProps,
   ChangeslistLogProps {
+  /** 更改记录类型 */
   type?: 'edit' | 'new' | 'log';
+  /** 更改记录id */
+  rcid?: number;
   /** 页面标题 */
   title: string;
   /** 页面ID */
@@ -251,7 +254,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
               unpatrolled={unpatrolled}
             />
             &nbsp;
-            {moment(date).local().format('HH:mm')}
+            {date.local().format('HH:mm')}
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>

@@ -26,11 +26,7 @@ export interface ChangeslistLineCollapseProps {
   tagMeaningsMap?: Record<string, string>;
 }
 
-const {
-  wgScript,
-} = mw.config.get([
-  'wgScript',
-]);
+const wgScript = mw.config.get('wgScript');
 
 /** 合并相同页面编辑 */
 const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
@@ -186,22 +182,20 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
         </tr>
         {changes.map((change) => {
           const changeDate = moment.utc(change.timestamp);
-          const revisionSearch = new URLSearchParams({
+          /** 版本链接、与当前差异、与之前差异链接共用参数 */
+          const commonSearch = {
             title: change.title,
             curid: `${change.pageid}`,
             oldid: `${change.old_revid}`,
-          });
+          };
+          const revisionSearch = new URLSearchParams(commonSearch);
           const curSearch = new URLSearchParams({
-            title: change.title,
-            curid: `${change.pageid}`,
+            ...commonSearch,
             diff: '0',
-            oldid: `${change.old_revid}`,
           });
           const preSearch = new URLSearchParams({
-            title: change.title,
-            curid: `${change.pageid}`,
+            ...commonSearch,
             diff: `${change.revid}`,
-            oldid: `${change.old_revid}`,
           });
           return (
             <tr
