@@ -33,9 +33,9 @@ export interface GlobalUsage {
   url: string;
 }
 
-export interface RecentChange extends PageProps, UserProps {
+export interface RecentChangeCommon extends PageProps, UserProps {
   /** 更改类型 */
-  type: 'edit' | 'new' | 'log' | 'external' | '​categorize';
+  type: 'edit' | 'new' | 'log';
 
   /** 修订版本id */
   revid: number;
@@ -45,9 +45,6 @@ export interface RecentChange extends PageProps, UserProps {
 
   /** 最近更改记录id */
   rcid: number;
-
-  /** 是否创建了新页面 */
-  'new'?: '';
 
   /** 是否为小编辑 */
   minor?: '';
@@ -64,10 +61,10 @@ export interface RecentChange extends PageProps, UserProps {
   /** 修改后长度 */
   newlen: number;
 
-  /** 编辑时间 */
+  /** 时间 */
   timestamp: string;
 
-  /** 编辑摘要 */
+  /** 摘要 */
   comment: string;
 
   /** 解析后的编辑摘要 */
@@ -82,24 +79,33 @@ export interface RecentChange extends PageProps, UserProps {
   /** 未巡查标记 */
   unpatrolled?: '';
 
-  /** 日志id */
-  logid: number;
-
-  /** 日志类型 */
-  logtype: delete;
-
-  /** 日志操作 */
-  logaction: delete;
-
-  /** 日志参数，如移动日志的前后页面等 */
-  logparams: Record<string, any>;
-
   /** 标签 */
   tags: string[];
 
   /** 内容校验和 */
   sha1: string;
 }
+
+export interface RecentChangeEdit extends RecentChangeCommon {
+  /** 是否创建了新页面 */
+  'new'?: '';
+}
+
+export interface RecentChangeLog extends RecentChangeCommon {
+  /** 日志id */
+  logid: number;
+
+  /** 日志类型 */
+  logtype: string;
+
+  /** 日志操作 */
+  logaction: string;
+
+  /** 日志参数，如移动日志的前后页面等 */
+  logparams: Record<string, any>;
+}
+
+export type RecentChange = RecentChangeEdit & RecentChangeLog;
 
 /**
  * 搜索结果

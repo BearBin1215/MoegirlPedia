@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
 import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
-import ChangeslistLine,
-{
+import ChangeslistLine, {
   getLineClassName,
   Separator,
   ChangeFlags,
@@ -10,6 +9,7 @@ import ChangeslistLine,
   ChangeTagMarkers,
   type ChangeslistLineProps,
 } from './ChangeslistLine';
+import LogText, { logEventMeaning } from './LogText';
 
 export interface ChangeslistLineCollapseProps {
   /** 要合并的最近更改记录集 */
@@ -51,6 +51,8 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     pageid,
     revid,
     newlen,
+    type = 'edit',
+    logtype,
   }] = changes; // 需要的最新编辑数据
 
   const {
@@ -62,8 +64,10 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     'mw-collapsible',
     'mw-enhanced-rc',
     'mw-changeslist-line',
-    'mw-changeslist-edit',
-    `mw-changeslist-ns${ns}-${title}`,
+    `mw-changeslist-${type}`,
+    type === 'log'
+      ? `mw-changeslist-log-${logtype}`
+      : `mw-changeslist-ns${ns}-${title}`,
     'mw-changeslist-line-not-watched',
     !expanded && 'mw-collapsed',
   );
@@ -124,36 +128,55 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner'>
-            <span className='mw-title'>
-              <a
-                href={wgArticlePath.replace('$1', title)}
-                className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
-                title={title}
-              >
-                {title}
-              </a>
-            </span>
-            {'\u200E （'}
-            {changes.at(-1)?.new ? `${changes.length}次更改` : (
-              <a
-                className='mw-changeslist-groupdiff'
-                href={`${wgScript}?${diffSearch.toString()}`}
-              >
-                {changes.length}次更改
-              </a>
+            {type === 'log' ? (
+              <>
+                <span className='mw-rc-unwatched'>
+                  （
+                  <a
+                    href={wgArticlePath.replace('$1', `Special:日志/${logtype}`)}
+                    title={`Special:日志/${logtype}`}
+                  >
+                    {logEventMeaning[logtype]}日志
+                  </a>
+                  ）
+                </span>
+                {'\u200E '}
+                <Separator />
+              </>
+            ) : (
+              <>
+                <span className='mw-title'>
+                  <a
+                    href={wgArticlePath.replace('$1', title)}
+                    className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
+                    title={title}
+                  >
+                    {title}
+                  </a>
+                </span>
+                {'\u200E （'}
+                {changes.at(-1)?.new ? `${changes.length}次更改` : (
+                  <a
+                    className='mw-changeslist-groupdiff'
+                    href={`${wgScript}?${diffSearch.toString()}`}
+                  >
+                    {changes.length}次更改
+                  </a>
+                )}
+                {' | '}
+                <HistoryLink
+                  title={title}
+                  pageid={pageid}
+                  className='mw-changeslist-history'
+                />
+                {'） '}
+                <Separator />
+                <ChangeDiff
+                  oldlen={oldlen}
+                  newlen={newlen}
+                />
+              </>
             )}
-            {' | '}
-            <HistoryLink
-              title={title}
-              pageid={pageid}
-              className='mw-changeslist-history'
-            />
-            {'） '}
-            <Separator />
-            <ChangeDiff
-              oldlen={oldlen}
-              newlen={newlen}
-            />
             <span className='changedby'>
               [
               {Object.entries(changeBy).map(([user, { id, editTimes }], index) => (
@@ -212,42 +235,53 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                 className='mw-enhanced-rc-nested'
                 data-target-page={change.title}
               >
-                <span className='mw-enhanced-rc-time'>
-                  <a
-                    href={`${wgScript}?${revisionSearch.toString()}`}
-                    title={change.title}
-                  >
+                {type === 'log' ? (
+                  <span className="mw-enhanced-rc-time">
                     {changeDate.local().format('HH:mm')}
-                  </a>
-                </span>
-                {' （'}
-                <a
-                  className='mw-changeslist-diff-cur'
-                  href={`${wgScript}?${curSearch.toString()}`}
-                >
-                  当前
-                </a>
-                {' | '}
-                <a
-                  className='mw-changeslist-diff'
-                  href={`${wgScript}?${preSearch.toString()}`}
-                  title={change.title}
-                >
-                  之前
-                </a>
-                {'） '}
-                <Separator />
-                <ChangeDiff
-                  oldlen={change.oldlen}
-                  newlen={change.newlen}
-                />
-                {'\u200E '}
-                <Separator />
+                  </span>
+                ) : (
+                  <>
+                    <span className='mw-enhanced-rc-time'>
+                      <a
+                        href={`${wgScript}?${revisionSearch.toString()}`}
+                        title={change.title}
+                      >
+                        {changeDate.local().format('HH:mm')}
+                      </a>
+                    </span>
+                    {' （'}
+                    <a
+                      className='mw-changeslist-diff-cur'
+                      href={`${wgScript}?${curSearch.toString()}`}
+                    >
+                      当前
+                    </a>
+                    {' | '}
+                    <a
+                      className='mw-changeslist-diff'
+                      href={`${wgScript}?${preSearch.toString()}`}
+                      title={change.title}
+                    >
+                      之前
+                    </a>
+                    {'） '}
+                    <Separator />
+                    <ChangeDiff
+                      oldlen={change.oldlen}
+                      newlen={change.newlen}
+                    />
+                    {'\u200E '}
+                    <Separator />
+                  </>
+                )}
                 <UserLink
                   user={change.user}
                   userid={change.userid}
                 />
                 <UserToolLinks user={change.user} />
+                {type === 'log' && (
+                  <LogText {...change} />
+                )}
                 {change.parsedcomment && (
                   <span
                     className='comment'

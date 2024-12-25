@@ -23,13 +23,19 @@ declare global {
   }
 }
 
-const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({ initialData }) => {
+interface RecentChangeListProps {
+  /** 初始数据 */
+  initialData: ChangeslistLineProps[][];
+}
+
+const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
     window.realtimeRecentChangeUpdateInterval
     || Number(localStorage.getItem('realtimeRecentChangeUpdateInterval'))
     || 5,
   );
+  // 更新后是否读取审核状态
   const [readModetarion, setReadModetarion] = useState(!!(
     window.realtimeRecentChangeReadModetarion
     || localStorage.getItem('realtimeRecentChangeReadModetarion')),
@@ -57,7 +63,8 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
       format: 'json',
       utf8: true,
       list: 'recentchanges',
-      rclimit: 500,
+      // 按照用户当前显示的最多更改数读取，不超过500
+      rclimit: Math.min(500, +$('.rclinks a[data-keys="limit"] strong').text()),
       rctype: ['edit', 'new'],
       rcprop: [
         'patrolled',
@@ -87,6 +94,7 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
     const formattedData: ChangeslistLineProps[][] = [];
     for (const change of recentChanges) {
       const existPage = formattedData.find((line) => line[0].title === change.title);
+      // 最近更改API的type可以包括edit/new/log/external/catorize，这里只渲染前三种
       if (existPage) {
         existPage.push(change);
       } else {
@@ -155,12 +163,10 @@ const RecentChangeList: React.FC<{ initialData: ChangeslistLineProps[][] }> = ({
   }, [defaultActive]);
 
   useEffect(() => {
-    // 数据发生变化时会触发列表的重新渲染，执行用户的自定义回调
-    setTimeout(() => {
-      if (typeof window.realtimeRecentChangeCallback === 'function') {
-        window.realtimeRecentChangeCallback();
-      }
-    });
+    // 数据变化重新渲染后，执行用户的自定义回调
+    if (typeof window.realtimeRecentChangeCallback === 'function') {
+      window.realtimeRecentChangeCallback();
+    }
   }, [data]);
 
   return (

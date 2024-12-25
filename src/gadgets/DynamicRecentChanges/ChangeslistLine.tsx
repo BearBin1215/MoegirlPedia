@@ -2,8 +2,9 @@ import React, { createElement } from 'react';
 import classNames from 'classnames';
 import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
 import { type MomentInput } from 'moment';
+import LogText, { logEventMeaning } from './LogText';
 
-export interface ChangeFlagProps {
+interface ChangeFlagsProps {
   /** 该编辑是否创建了新页面 */
   'new'?: boolean;
   /** 是否为小编辑 */
@@ -14,21 +15,37 @@ export interface ChangeFlagProps {
   unpatrolled?: boolean;
 }
 
-export interface ChangeDiffProps {
+interface ChangeDiffProps {
   /** 更改前长度 */
   oldlen: number;
   /** 更改后长度 */
   newlen: number;
 }
 
-export interface ChangeTagProps {
+interface ChangeTagProps {
   /** 标签 */
   tags?: string[];
   /** 标签->描述 */
   tagMeaningsMap?: Record<string, string>;
 }
 
-export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps, ChangeTagProps {
+export interface ChangeslistLogProps {
+  /** 日志id */
+  logid: number;
+  /** 日志类型 */
+  logtype: string;
+  /** 日志操作 */
+  logaction: string;
+  /** 日志参数，如移动日志的前后页面等 */
+  logparams: Record<string, any>;
+}
+
+export interface ChangeslistLineProps extends
+  ChangeFlagsProps,
+  ChangeDiffProps,
+  ChangeTagProps,
+  ChangeslistLogProps {
+  type?: 'edit' | 'new' | 'log';
   /** 页面标题 */
   title: string;
   /** 页面ID */
@@ -45,6 +62,8 @@ export interface ChangeslistLineProps extends ChangeFlagProps, ChangeDiffProps, 
   patrolled?: boolean;
   /** 是否为自动巡查 */
   autopatrolled?: boolean;
+  /** 老编辑者 */
+  experienced?: boolean;
   /** 是否为重定向 */
   redirect?: boolean;
   /** 是否为一组同页同类编辑的最新一条 */
@@ -69,6 +88,7 @@ const {
 
 /** 生成更改记录行的类名 */
 export const getLineClassName = ({
+  type = 'edit',
   ns,
   title,
   userid,
@@ -79,14 +99,18 @@ export const getLineClassName = ({
   patrolled = true,
   autopatrolled = false,
   unpatrolled = false,
+  experienced = true,
+  logtype,
 }: ChangeslistLineProps) => classNames(
   'mw-changeslist-line',
-  'mw-changeslist-edit',
+  `mw-changeslist-${type}`,
   `mw-changeslist-ns${ns}-${title}`,
   `mw-changeslist-ns-${ns}`,
-  'mw-changeslist-line-not-watched',
+  type === 'log'
+    ? `mw-changeslist-log-${logtype}`
+    : `mw-changeslist-ns${ns}-${title}`,
   'mw-changeslist-user-registered',
-  'mw-changeslist-user-experienced', // mw-changeslist-user-newcomer
+  experienced ? 'mw-changeslist-user-experienced' : 'mw-changeslist-user-newcomer',
   wgUserId === userid ? 'mw-changeslist-self' : 'mw-changeslist-others',
   bot ? 'mw-changeslist-bot' : 'mw-changeslist-human',
   minor ? 'mw-changeslist-minor' : 'mw-changeslist-major',
@@ -104,7 +128,7 @@ const Separator: React.FC = () => (
 );
 
 /** 渲染编辑行的标记 */
-const ChangeFlags: React.FC<ChangeFlagProps> = ({
+const ChangeFlags: React.FC<ChangeFlagsProps> = ({
   'new': isNew,
   minor,
   bot,
@@ -132,8 +156,8 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
     diffNumClassName = 'mw-plusminus-neg';
   }
 
-  // 差异字节数不到500为span，超过500为strong
-  return createElement(Math.abs(diffLen) >= 500 ? 'string' : 'span', {
+  // 差异字节数不超过500为span，超过500为strong
+  return createElement(Math.abs(diffLen) > 500 ? 'strong' : 'span', {
     dir: 'ltr',
     className: diffNumClassName,
     title: `更改后有${newlen.toLocaleString()}字节`,
@@ -167,6 +191,7 @@ export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
 
 const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
   const {
+    type = 'edit',
     title,
     revid,
     pageid,
@@ -184,6 +209,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     parsedcomment,
     tags = [],
     tagMeaningsMap = {},
+    logtype,
   } = props;
 
   const date = moment.utc(timestamp);
@@ -219,43 +245,61 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
-            <span className='mw-title'>
-              <a
-                href={wgArticlePath.replace('$1', title)}
-                className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
-                title={title}
-              >
-                {title}
-              </a>
-            </span>
-            {'\u200E （'}
-            {isNew ? '差异' : (
-              <a
-                className='mw-changeslist-diff'
-                href={`${wgScript}?${diffSearch.toString}`}
-              >
-                差异
-              </a>
+            {type === 'log' ? (
+              <>
+                （
+                <a
+                  href={wgArticlePath.replace('$1', `Special:日志/${logtype}`)}
+                  title={`Special:日志/${logtype}`}
+                >
+                  {logEventMeaning[logtype]}日志
+                </a>
+                ）
+              </>
+            ) : (
+              <>
+                <span className='mw-title'>
+                  <a
+                    href={wgArticlePath.replace('$1', title)}
+                    className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
+                    title={title}
+                  >
+                    {title}
+                  </a>
+                </span>
+                {'\u200E （'}
+                {isNew ? '差异' : (
+                  <a
+                    className='mw-changeslist-diff'
+                    href={`${wgScript}?${diffSearch.toString}`}
+                  >
+                    差异
+                  </a>
+                )}
+                {' | '}
+                <HistoryLink
+                  title={title}
+                  pageid={pageid}
+                  className='mw-changeslist-history'
+                />
+                {'） '}
+                <Separator />
+                <ChangeDiff
+                  oldlen={oldlen}
+                  newlen={newlen}
+                />
+                {'\u200E '}
+              </>
             )}
-            {' | '}
-            <HistoryLink
-              title={title}
-              pageid={pageid}
-              className='mw-changeslist-history'
-            />
-            {'） '}
-            <Separator />
-            <ChangeDiff
-              oldlen={oldlen}
-              newlen={newlen}
-            />
-            {'\u200E '}
             <Separator />
             <UserLink
               user={user}
               userid={userid}
             />
             <UserToolLinks user={user} />
+            {type === 'log' && (
+              <LogText {...props} />
+            )}
             {parsedcomment && (
               <span
                 className='comment'
