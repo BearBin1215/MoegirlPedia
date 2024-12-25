@@ -1,8 +1,14 @@
 import React, { createElement } from 'react';
 import classNames from 'classnames';
-import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
+import {
+  MWTitle,
+  HistoryLink,
+  SpecialPageLink,
+  UserLink,
+  UserToolLinks,
+} from '@/components/MediaWiki';
 import { type MomentInput } from 'moment';
-import LogText, { logEventMeaning } from './LogText';
+import LogText from './LogText';
 
 interface ChangeFlagsProps {
   /** 该编辑是否创建了新页面 */
@@ -78,11 +84,9 @@ export interface ChangeslistLineProps extends
 
 const {
   wgScript,
-  wgArticlePath,
   wgUserId,
 } = mw.config.get([
   'wgScript',
-  'wgArticlePath',
   'wgUserId',
 ]);
 
@@ -110,7 +114,9 @@ export const getLineClassName = ({
     ? `mw-changeslist-log-${logtype}`
     : `mw-changeslist-ns${ns}-${title}`,
   'mw-changeslist-user-registered',
-  experienced ? 'mw-changeslist-user-experienced' : 'mw-changeslist-user-newcomer',
+  experienced
+    ? 'mw-changeslist-user-experienced'
+    : 'mw-changeslist-user-newcomer',
   wgUserId === userid ? 'mw-changeslist-self' : 'mw-changeslist-others',
   bot ? 'mw-changeslist-bot' : 'mw-changeslist-human',
   minor ? 'mw-changeslist-minor' : 'mw-changeslist-major',
@@ -124,7 +130,11 @@ export const getLineClassName = ({
 );
 
 const Separator: React.FC = () => (
-  <span className='mw-changeslist-separator'>. .</span>
+  <>
+    {' '}
+    <span className='mw-changeslist-separator'>. .</span>
+    {' '}
+  </>
 );
 
 /** 渲染编辑行的标记 */
@@ -246,27 +256,10 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
             {type === 'log' ? (
-              <>
-                （
-                <a
-                  href={wgArticlePath.replace('$1', `Special:日志/${logtype}`)}
-                  title={`Special:日志/${logtype}`}
-                >
-                  {logEventMeaning[logtype]}日志
-                </a>
-                ）
-              </>
+              <SpecialPageLink logtype={logtype} />
             ) : (
               <>
-                <span className='mw-title'>
-                  <a
-                    href={wgArticlePath.replace('$1', title)}
-                    className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
-                    title={title}
-                  >
-                    {title}
-                  </a>
-                </span>
+                <MWTitle title={title} redirect={redirect} />
                 {'\u200E （'}
                 {isNew ? '差异' : (
                   <a

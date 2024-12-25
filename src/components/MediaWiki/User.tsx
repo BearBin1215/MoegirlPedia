@@ -11,6 +11,7 @@ export interface UserLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEleme
   userid: number;
 }
 
+/** 用户页链接 */
 export const UserLink: FC<UserLinkProps> = ({
   user,
   userid,
@@ -36,6 +37,7 @@ export interface UserToolLinksProps {
   user: string;
 }
 
+/** （讨论 | 贡献）链接 */
 export const UserToolLinks: FC<UserToolLinksProps> = ({ user }) => {
   return (
     <span className='mw-usertoollinks'>

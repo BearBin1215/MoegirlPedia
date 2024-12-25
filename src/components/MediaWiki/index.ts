@@ -1,2 +1,2 @@
-export { HistoryLink } from './History';
-export { UserLink, UserToolLinks } from './User';
+export * from './Page';
+export * from './User';

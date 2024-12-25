@@ -1,6 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import classNames from 'classnames';
-import { HistoryLink, UserLink, UserToolLinks } from '@/components/MediaWiki';
+import {
+  MWTitle,
+  HistoryLink,
+  SpecialPageLink,
+  UserLink,
+  UserToolLinks,
+} from '@/components/MediaWiki';
 import ChangeslistLine, {
   getLineClassName,
   Separator,
@@ -9,7 +15,7 @@ import ChangeslistLine, {
   ChangeTagMarkers,
   type ChangeslistLineProps,
 } from './ChangeslistLine';
-import LogText, { logEventMeaning } from './LogText';
+import LogText from './LogText';
 
 export interface ChangeslistLineCollapseProps {
   /** 要合并的最近更改记录集 */
@@ -22,10 +28,8 @@ export interface ChangeslistLineCollapseProps {
 
 const {
   wgScript,
-  wgArticlePath,
 } = mw.config.get([
   'wgScript',
-  'wgArticlePath',
 ]);
 
 /** 合并相同页面编辑 */
@@ -129,31 +133,10 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
           </td>
           <td className='mw-changeslist-line-inner'>
             {type === 'log' ? (
-              <>
-                <span className='mw-rc-unwatched'>
-                  （
-                  <a
-                    href={wgArticlePath.replace('$1', `Special:日志/${logtype}`)}
-                    title={`Special:日志/${logtype}`}
-                  >
-                    {logEventMeaning[logtype]}日志
-                  </a>
-                  ）
-                </span>
-                {'\u200E '}
-                <Separator />
-              </>
+              <SpecialPageLink logtype={logtype} />
             ) : (
               <>
-                <span className='mw-title'>
-                  <a
-                    href={wgArticlePath.replace('$1', title)}
-                    className={classNames(redirect && 'mw-redirect', 'mw-changeslist-title')}
-                    title={title}
-                  >
-                    {title}
-                  </a>
-                </span>
+                <MWTitle title={title} redirect={redirect} />
                 {'\u200E （'}
                 {changes.at(-1)?.new ? `${changes.length}次更改` : (
                   <a
@@ -236,7 +219,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                 data-target-page={change.title}
               >
                 {type === 'log' ? (
-                  <span className="mw-enhanced-rc-time">
+                  <span className='mw-enhanced-rc-time'>
                     {changeDate.local().format('HH:mm')}
                   </span>
                 ) : (
@@ -271,9 +254,9 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                       newlen={change.newlen}
                     />
                     {'\u200E '}
-                    <Separator />
                   </>
                 )}
+                <Separator />
                 <UserLink
                   user={change.user}
                   userid={change.userid}
@@ -290,7 +273,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                 )}
                 <ChangeTagMarkers
                   tags={change.tags}
-                  tagMeaningsMap={change.tagMeaningsMap}
+                  tagMeaningsMap={tagMeaningsMap}
                 />
               </td>
             </tr>

@@ -2,6 +2,7 @@ import React from 'react';
 
 interface LogTextProps {
   logtype: string;
+  logaction: string;
   logparams: Record<string, any>;
   title: string;
 }
@@ -14,14 +15,9 @@ const {
   'wgArticlePath',
 ]);
 
-const logEventMeaning = {
-  move: '移动',
-  'delete': '删除',
-  block: '封禁',
-};
-
 const LogText: React.FC<LogTextProps> = ({
   logtype,
+  logaction,
   logparams,
   title,
 }) => {
@@ -46,9 +42,41 @@ const LogText: React.FC<LogTextProps> = ({
         >
           {logparams.target_title}
         </a>
+        {logaction === 'move_redir' && '覆盖重定向'}
       </>
     );
   }
+
+  if (logaction === 'delete') {
+    const searchParams = new URLSearchParams({
+      title,
+      action: 'edit',
+      redlink: '1',
+    });
+    return (
+      <>
+        删除页面
+        <a
+          href={`${wgScript}?${searchParams.toString()}`}
+          title=''
+        >
+          {title}
+        </a>
+      </>
+    );
+  }
+
+  if (logaction === 'delete_redir') {
+    return (
+      <>
+        通过覆盖删除重定向
+        <a href={wgArticlePath.replace('', title)}>
+          {title}
+        </a>
+      </>
+    );
+  }
+
   return (
     <>
       （小工具不支持的日志类型，请
@@ -61,4 +89,3 @@ const LogText: React.FC<LogTextProps> = ({
 };
 
 export default LogText;
-export { logEventMeaning };

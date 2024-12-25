@@ -29,6 +29,7 @@ interface RecentChangeListProps {
 }
 
 const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
+  console.time('渲染用时');
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
     window.realtimeRecentChangeUpdateInterval
@@ -65,7 +66,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
       list: 'recentchanges',
       // 按照用户当前显示的最多更改数读取，不超过500
       rclimit: Math.min(500, +$('.rclinks a[data-keys="limit"] strong').text()),
-      rctype: ['edit', 'new'],
+      rctype: ['edit', 'new', 'log'],
       rcprop: [
         'patrolled',
         'parsedcomment',
@@ -78,6 +79,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
         'user',
         'userid',
         'redirect',
+        'loginfo',
       ],
     }) as ApiQueryResponse;
     const recentChanges = res.query.recentchanges.map((recentchange) => ({
@@ -93,8 +95,12 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
     // 格式化后，聚合同标题的数据
     const formattedData: ChangeslistLineProps[][] = [];
     for (const change of recentChanges) {
-      const existPage = formattedData.find((line) => line[0].title === change.title);
       // 最近更改API的type可以包括edit/new/log/external/catorize，这里只渲染前三种
+      const existPage = formattedData.find(([{ title, type, logtype }]) => {
+        // 编辑或创建页面按照同标题合并，日志操作按同类型合并
+        return (type !== 'log' && change.type !== 'log' && title === change.title)
+          || (type === 'log' && change.type === 'log' && logtype === change.logtype);
+      });
       if (existPage) {
         existPage.push(change);
       } else {
@@ -168,6 +174,10 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
       window.realtimeRecentChangeCallback();
     }
   }, [data]);
+
+  useEffect(() => {
+    console.timeEnd('渲染用时');
+  });
 
   return (
     <div>
