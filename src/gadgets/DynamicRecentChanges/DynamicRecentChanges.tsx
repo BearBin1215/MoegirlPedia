@@ -8,6 +8,7 @@ import {
 import { type ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
+import { ShowAvatarContext } from '@/components/MediaWiki';
 import './index.less';
 
 declare global {
@@ -26,9 +27,14 @@ declare global {
 interface RecentChangeListProps {
   /** 初始数据 */
   initialData: ChangeslistLineProps[][];
+  /** 是否显示用户头像 */
+  showAvatar?: boolean;
 }
 
-const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
+const RecentChangeList: React.FC<RecentChangeListProps> = ({
+  initialData,
+  showAvatar = false,
+}) => {
   console.time('渲染用时');
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
@@ -225,11 +231,15 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({ initialData }) => {
         </div>
       </fieldset>
       {data.map((changeData) => (
-        <ChangeslistLineCollapse
+        <ShowAvatarContext.Provider
           key={changeData[0].title}
-          changes={changeData}
-          tagMeaningsMap={tagMeaningsMap}
-        />
+          value={showAvatar}
+        >
+          <ChangeslistLineCollapse
+            changes={changeData}
+            tagMeaningsMap={tagMeaningsMap}
+          />
+        </ShowAvatarContext.Provider>
       ))}
     </div>
   );

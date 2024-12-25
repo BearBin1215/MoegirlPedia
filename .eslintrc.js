@@ -125,6 +125,7 @@ module.exports = {
     'react/jsx-closing-bracket-location': 2,
     'react/jsx-boolean-value': 2,
     'react/jsx-fragments': 2,
+    'react/jsx-no-target-blank': 0,
     'react/jsx-no-useless-fragment': 2,
     'react/self-closing-comp': 2,
     'react/no-unused-state': 2,

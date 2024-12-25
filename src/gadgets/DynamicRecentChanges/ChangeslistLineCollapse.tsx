@@ -43,7 +43,11 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     return null;
   }
   if (changes.length === 1) {
-    return <ChangeslistLine tagMeaningsMap={tagMeaningsMap} {...changes[0]} />;
+    return (
+      <ChangeslistLine
+        tagMeaningsMap={tagMeaningsMap}
+        {...changes[0]}
+      />);
   }
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -88,7 +92,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
 
   const changeBy = useMemo(() => {
     const editors: Record<string, { id: number; editTimes: number }> = {};
-    for (const { user, userid } of changes.toReversed()) {
+    for (const { user, userid } of changes) {
       if (user in editors) {
         editors[user].editTimes++;
       } else {
@@ -133,7 +137,9 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
           </td>
           <td className='mw-changeslist-line-inner'>
             {type === 'log' ? (
-              <SpecialPageLink logtype={logtype} />
+              <span className='mw-rc-unwatched'>
+                <SpecialPageLink logtype={logtype} />
+              </span>
             ) : (
               <>
                 <MWTitle title={title} redirect={redirect} />
@@ -160,6 +166,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                 />
               </>
             )}
+            <Separator />
             <span className='changedby'>
               [
               {Object.entries(changeBy).map(([user, { id, editTimes }], index) => (

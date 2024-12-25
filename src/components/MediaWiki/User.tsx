@@ -1,4 +1,6 @@
 import React, {
+  createContext,
+  useContext,
   type AnchorHTMLAttributes,
   type FC,
 } from 'react';
@@ -6,9 +8,13 @@ import classNames from 'classnames';
 
 const wgArticlePath = mw.config.get('wgArticlePath');
 
+/** 使用context传递是否显示头像，以免props冗余 */
+export const ShowAvatarContext = createContext(false);
+
 export interface UserLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   user: string;
   userid: number;
+  showAvatar?: boolean;
 }
 
 /** 用户页链接 */
@@ -18,18 +24,36 @@ export const UserLink: FC<UserLinkProps> = ({
   ...rest
 }) => {
   const className = classNames('mw-userlink', rest.className);
+  const showAvatar = rest.showAvatar ?? useContext(ShowAvatarContext);
 
   return (
-    <a
-      {...rest}
-      href={wgArticlePath.replace('$1', `User:${user}`)}
-      className={className}
-      title={`User:${user}`}
-      data-user-id={userid}
-      data-user-avatar={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
-    >
-      <bdi>{user}</bdi>
-    </a>
+    <>
+      {showAvatar && (
+        <a
+          className='userlink-avatar'
+          href={`https://commons.moegirl.org.cn/Special:ViewAvatar?user=${user}`}
+          target='_blank'
+          title='查看头像'
+        >
+          <img
+            loading='lazy'
+            src={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+            alt={`${user}的头像`}
+            className='userlink-avatar-small'
+          />
+        </a>
+      )}
+      <a
+        {...rest}
+        href={wgArticlePath.replace('$1', `User:${user}`)}
+        className={className}
+        title={`User:${user}`}
+        data-user-id={userid}
+        data-user-avatar={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+      >
+        <bdi>{user}</bdi>
+      </a>
+    </>
   );
 };
 
