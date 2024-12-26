@@ -10,6 +10,7 @@ import {
 } from 'oojs-ui-react';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
+import { GroupMessageContext } from './LogText';
 import type { ApiQueryResponse } from '@/@types/api';
 import './index.less';
 
@@ -75,6 +76,8 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
   // 标签含义映射，用于渲染标签
   const [tagMeaningsMap, setTagMeaningsMap] = useState<Record<string, string>>({});
+  // 用户组及其含义映射
+  const [groupMessages, setGroupMessage] = useState<Record<string, string>>({});
   // 用于渲染最终列表的数据
   const [data, setData] = useState<ChangeslistLineProps[][]>(initialData);
 
@@ -137,8 +140,28 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
     }
   };
 
+  const queryGroupMessages = async () => {
+    const res = await api.post({
+      action: 'query',
+      utf8: true,
+      meta: 'allmessages',
+      amprefix: 'group-',
+      amincludelocal: true,
+    }) as ApiQueryResponse;
+    if (res.query?.allmessages) {
+      const groupMessage: Record<string, string> = {};
+      for (const message of res.query.allmessages) {
+        if (!/(\.js|\.css|-member)/.test(message.name)) {
+          groupMessage[message.name.replace('group-', '')] = message['*'];
+        }
+      }
+      setGroupMessage(groupMessage);
+    }
+  };
+
   useEffect(() => {
     queryTagsData();
+    queryGroupMessages();
   }, []);
 
   useEffect(() => {
@@ -239,13 +262,15 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
         <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
       )}
       <div>
-        {data.map((changeData) => (
-          <ChangeslistLineCollapse
-            key={changeData[0].rcid}
-            changes={changeData}
-            tagMeaningsMap={tagMeaningsMap}
-          />
-        ))}
+        <GroupMessageContext.Provider value={groupMessages}>
+          {data.map((changeData) => (
+            <ChangeslistLineCollapse
+              key={changeData[0].rcid}
+              changes={changeData}
+              tagMeaningsMap={tagMeaningsMap}
+            />
+          ))}
+        </GroupMessageContext.Provider>
       </div>
     </div>
   );

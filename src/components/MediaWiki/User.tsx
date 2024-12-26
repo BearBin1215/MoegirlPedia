@@ -20,7 +20,7 @@ export const UserLinkContext = createContext({
 
 export interface UserLinkProps {
   user: string;
-  userid: number | string;
+  userid?: number | string;
   showAvatar?: boolean;
   showGroup?: boolean;
   userGroups?: CachedUserGroups;
@@ -38,7 +38,7 @@ export const UserLink: FC<UserLinkProps> = (props) => {
   } = props;
   return (
     <>
-      {showAvatar && (
+      {showAvatar && userid && (
         <a
           className='userlink-avatar'
           href={`https://commons.moegirl.org.cn/Special:ViewAvatar?user=${user}`}

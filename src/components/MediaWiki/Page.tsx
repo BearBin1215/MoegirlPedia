@@ -17,6 +17,8 @@ export const SpecialPageLink: FC<SpecialPageLinkProps> = ({
     move: '移动',
     'delete': '删除',
     block: '封禁',
+    rights: '用户权限',
+    contentmodel: '内容模型更改',
   };
 
   return (
@@ -26,7 +28,7 @@ export const SpecialPageLink: FC<SpecialPageLinkProps> = ({
         href={wgArticlePath.replace('$1', `Special:日志/${logtype}`)}
         title={`Special:日志/${logtype}`}
       >
-        {logEventMeaning[logtype]}日志
+        {logEventMeaning[logtype] ?? logtype}日志
       </a>
       ）
     </>

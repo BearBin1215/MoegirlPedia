@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
+import { UserLink } from '@/components/MediaWiki';
 
 interface LogTextProps {
   logtype: string;
   logaction: string;
   logparams: Record<string, any>;
   title: string;
+  groupMessages?: Record<string, string>;
 }
 
 const {
@@ -15,11 +17,14 @@ const {
   'wgArticlePath',
 ]);
 
+export const GroupMessageContext = createContext<Record<string, string>>({});
+
 const LogText: React.FC<LogTextProps> = ({
   logtype,
   logaction,
   logparams,
   title,
+  groupMessages = useContext(GroupMessageContext),
 }) => {
   if (logtype === 'move') {
     const searchParams = new URLSearchParams({
@@ -73,6 +78,30 @@ const LogText: React.FC<LogTextProps> = ({
         <a href={wgArticlePath.replace('', title)}>
           {title}
         </a>
+      </>
+    );
+  }
+
+  if (logaction === 'rights') {
+    const groupMapping = (group: string) => groupMessages[group] ?? group;
+    return (
+      <>
+        已将
+        <UserLink user={title} showAvatar={false} />
+        的用户组从
+        {logparams.oldgroups.map(groupMapping).join('、') || '（无）'}
+        更改至
+        {logparams.newgroups.map(groupMapping).join('、') || '（无）'}
+      </>
+    );
+  }
+
+  if (logtype === 'contentmodel') {
+    return (
+      <>
+        将页面
+        <a href={wgArticlePath.replace('$1', title)} title=''>{title}</a>
+        的内容模型从“{logparams.oldmodel}”更改为“{logparams.oldmodel}”
       </>
     );
   }

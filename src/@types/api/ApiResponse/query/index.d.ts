@@ -2,6 +2,7 @@ import type {ApiResponse} from '../core';
 import type { ContentModel } from '../../utils';
 import type { Linkshere, Redirects, Revisions, Transcludedin } from './propData';
 import type { Categorymembers, GlobalUsage, Search, Tag, Usercontrib, RecentChange } from './listData';
+import type { Message } from './metaData';
 
 /**
  * 一次API查询经常不能获取你想要的所有数据。当这种情况发生时，
@@ -233,6 +234,9 @@ export interface ApiQueryResponse extends ApiResponse {
 
   /** 请求结果 */
   query: {
+    /** 网站界面消息 */
+    allmessages: Message[];
+
     /** `prop=xxx`获取到的数据 */
     pages: Record<number, ApiQueryPageInfo>;
 
