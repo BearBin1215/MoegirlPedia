@@ -1,3 +1,6 @@
+/**
+ * @description 模拟高版本MediaWiki的最近更改动态更新功能
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Button,
@@ -5,7 +8,7 @@ import {
   NumberInput,
   FieldLayout,
 } from 'oojs-ui-react';
-import { type ChangeslistLineProps } from './ChangeslistLine';
+import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import type { ApiQueryResponse } from '@/@types/api';
 import './index.less';
@@ -181,10 +184,10 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   }, [data]);
 
   return (
-    <div>
-      <fieldset className='realtime-rc-options'>
+    <>
+      <fieldset className='dynamic-rc-options'>
         <legend>动态更新选项</legend>
-        <div className='realtime-rc-active-panel'>
+        <div className='dynamic-rc-active-panel'>
           <Button
             active={running}
             icon={running ? 'stop' : 'play'}
@@ -202,37 +205,40 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
             />
           </FieldLayout>
         </div>
-        <div className='realtime-rc-config-panel'>
-          <div className='realtime-rc-config-line'>
-            <label className='realtime-rc-config-label'>自动更新间隔（s）</label>
+        <div className='dynamic-rc-config-panel'>
+          <div className='dynamic-rc-config-line'>
+            <label className='dynamic-rc-config-label'>自动更新间隔（s）</label>
             <NumberInput
               name='updateInterval'
-              className='realtime-rc-config-input'
+              className='dynamic-rc-config-input'
               value={updateInterval}
               onChange={({ value }) => setUpdateInterval(value)}
               min={3}
               placeholder='不低于3秒'
             />
           </div>
-          <div className='realtime-rc-config-line'>
-            <label className='realtime-rc-config-label'>读取审核状态</label>
+          <div className='dynamic-rc-config-line'>
+            <label className='dynamic-rc-config-label'>读取审核状态</label>
             <CheckboxInput
               name='readModetarion'
-              className='realtime-rc-config-input'
+              className='dynamic-rc-config-input'
               value={readModetarion}
               onChange={({ value }) => setReadModetarion(value)}
             />
           </div>
         </div>
       </fieldset>
-      {data.map((changeData) => (
-        <ChangeslistLineCollapse
-          key={changeData[0].rcid}
-          changes={changeData}
-          tagMeaningsMap={tagMeaningsMap}
-        />
-      ))}
-    </div>
+      <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
+      <div>
+        {data.map((changeData) => (
+          <ChangeslistLineCollapse
+            key={changeData[0].rcid}
+            changes={changeData}
+            tagMeaningsMap={tagMeaningsMap}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
