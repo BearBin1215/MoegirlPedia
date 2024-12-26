@@ -37,7 +37,7 @@ interface ChangeTagProps {
 
 export interface ChangeslistLogProps {
   /** 日志id */
-  logid: number;
+  logid: number | string;
   /** 日志类型 */
   logtype: string;
   /** 日志操作 */
@@ -54,19 +54,19 @@ export interface ChangeslistLineProps extends
   /** 更改记录类型 */
   type?: 'edit' | 'new' | 'log';
   /** 更改记录id */
-  rcid?: number;
+  rcid: number | string;
   /** 页面标题 */
   title: string;
   /** 页面ID */
-  pageid: number;
+  pageid: number | string;
   /** 修订版本ID */
-  revid: number;
+  revid: number | string;
   /** 旧版本ID */
-  old_revid: number;
+  old_revid: number | string;
   /** 时间戳 */
   timestamp: MomentInput;
   /** 名字空间 */
-  ns: number;
+  ns: number | string;
   /** 是否已巡查 */
   patrolled?: boolean;
   /** 是否为自动巡查 */
@@ -80,7 +80,7 @@ export interface ChangeslistLineProps extends
   /** 做出编辑的用户 */
   user: string;
   /** 做出编辑的用户ID */
-  userid: number;
+  userid: number | string;
   /** 解析后的编辑摘要 */
   parsedcomment: string;
 }
@@ -207,6 +207,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     type = 'edit',
     title,
     revid,
+    logid,
     pageid,
     old_revid,
     timestamp,
@@ -223,6 +224,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     tags = [],
     tagMeaningsMap = {},
     logtype,
+    logaction,
   } = props;
 
   const date = moment.utc(timestamp);
@@ -237,6 +239,8 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
   return (
     <table
       data-mw-revid={revid}
+      data-mw-logid={logid}
+      data-mw-logaction={logid ? `${logtype}/${logaction}` : void 0}
       data-mw-ts={date.utc().format('YYYYMMDDHHmmss')}
       className={getLineClassName(props)}
     >

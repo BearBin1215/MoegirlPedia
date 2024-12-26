@@ -87,7 +87,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   const lastDate = moment.utc(timestamp);
 
   const changeBy = useMemo(() => {
-    const editors: Record<string, { id: number; editTimes: number }> = {};
+    const editors: Record<string, { id: number | string; editTimes: number }> = {};
     for (const { user, userid } of changes) {
       if (user in editors) {
         editors[user].editTimes++;
@@ -201,8 +201,10 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             <tr
               key={change.revid}
               className={getLineClassName(change)}
+              data-mw-logid={change.logid}
               data-mw-revid={change.revid}
               data-mw-ts={changeDate.format('YYYYMMDDHHmmss')}
+              data-mw-logaction={change.logid ? `${logtype}/${change.logaction}` : void 0}
             >
               <td />
               <td />

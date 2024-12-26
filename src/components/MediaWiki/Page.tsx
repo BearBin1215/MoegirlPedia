@@ -60,7 +60,7 @@ export interface HistoryLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEl
   /** 页面标题 */
   title: string;
   /** 页面id */
-  pageid: number;
+  pageid: number | string;
 }
 
 /** 页面历史链接 */

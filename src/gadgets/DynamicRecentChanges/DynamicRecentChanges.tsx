@@ -28,11 +28,30 @@ declare global {
 
 interface RecentChangeListProps {
   /** 初始数据 */
-  initialData: ChangeslistLineProps[][];
+  initialData?: ChangeslistLineProps[][];
 }
 
+// 聚合同标题的数据
+const mergeData = (initData: ChangeslistLineProps[]) => {
+  const formattedData: ChangeslistLineProps[][] = [];
+  for (const change of initData) {
+    // 最近更改API的type可以包括edit/new/log/external/catorize，这里只渲染前三种
+    const existPage = formattedData.find(([{ title, type, logtype }]) => {
+      // 编辑或创建页面按照同标题合并，日志操作按同类型合并
+      return (type !== 'log' && change.type !== 'log' && title === change.title)
+        || (type === 'log' && change.type === 'log' && logtype === change.logtype);
+    });
+    if (existPage) {
+      existPage.push(change);
+    } else {
+      formattedData.push([{ ...change, last: true }]);
+    }
+  }
+  return formattedData;
+};
+
 const RecentChangeList: React.FC<RecentChangeListProps> = ({
-  initialData,
+  initialData = [],
 }) => {
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
@@ -96,22 +115,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
       unpatrolled: 'unpatrolled' in recentchange,
       redirect: 'redirect' in recentchange,
     }));
-    // 格式化后，聚合同标题的数据
-    const formattedData: ChangeslistLineProps[][] = [];
-    for (const change of recentChanges) {
-      // 最近更改API的type可以包括edit/new/log/external/catorize，这里只渲染前三种
-      const existPage = formattedData.find(([{ title, type, logtype }]) => {
-        // 编辑或创建页面按照同标题合并，日志操作按同类型合并
-        return (type !== 'log' && change.type !== 'log' && title === change.title)
-          || (type === 'log' && change.type === 'log' && logtype === change.logtype);
-      });
-      if (existPage) {
-        existPage.push(change);
-      } else {
-        formattedData.push([{ ...change, last: true }]);
-      }
-    }
-    setData(formattedData);
+    setData(mergeData(recentChanges));
   };
 
   /** 读取标签数据 */
@@ -177,6 +181,9 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   }, [defaultActive]);
 
   useEffect(() => {
+    if (data.length) {
+      document.querySelector<HTMLDivElement>('.mw-changeslist')!.style.display = 'none';
+    }
     // 数据变化重新渲染后，执行用户的自定义回调
     if (typeof window.realtimeRecentChangeCallback === 'function') {
       window.realtimeRecentChangeCallback();
@@ -184,7 +191,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   }, [data]);
 
   return (
-    <>
+    <div className='dynamic-changeslist'>
       <fieldset className='dynamic-rc-options'>
         <legend>动态更新选项</legend>
         <div className='dynamic-rc-active-panel'>
@@ -228,7 +235,9 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
           </div>
         </div>
       </fieldset>
-      <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
+      {data.length > 0 && (
+        <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
+      )}
       <div>
         {data.map((changeData) => (
           <ChangeslistLineCollapse
@@ -238,8 +247,9 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
           />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 
 export default RecentChangeList;
+export { mergeData };

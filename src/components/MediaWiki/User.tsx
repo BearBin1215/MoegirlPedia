@@ -20,7 +20,7 @@ export const UserLinkContext = createContext({
 
 export interface UserLinkProps {
   user: string;
-  userid: number;
+  userid: number | string;
   showAvatar?: boolean;
   showGroup?: boolean;
   userGroups?: CachedUserGroups;
