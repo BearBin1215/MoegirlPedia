@@ -54,10 +54,10 @@ const RecentChangeList: React.FC = () => {
     || 20,
   );
   // 更新后是否读取审核状态
-  const [readModetarion, setReadModetarion] = useState(!!(
-    window.realtimeRecentChangeReadModetarion
-    || localStorage.getItem('realtimeRecentChangeReadModetarion')),
-  );
+  // const [readModetarion, setReadModetarion] = useState(!!(
+  //   window.realtimeRecentChangeReadModetarion
+  //   || localStorage.getItem('realtimeRecentChangeReadModetarion')),
+  // );
   // 是否进入页面默认启动
   const [defaultActive, setDefaultActive] = useState(!!(
     window.realtimeRecentChangeDefaultActive
@@ -78,6 +78,20 @@ const RecentChangeList: React.FC = () => {
 
   /** 使用API读取最近更改数据，并转化为组件所需的格式 */
   const queryData = async () => {
+    /** 读取页面上的显示/隐藏选项 */
+    const showhideEle = document
+      .querySelector('.rcshowhide')!
+      .querySelectorAll('a[data-keys]');
+    const showHideConfig: Record<string, number> = {};
+    for (const ele of showhideEle) {
+      Object.assign(showHideConfig, JSON.parse(ele.getAttribute('data-params')!));
+    }
+    const rcshow = [
+      !showHideConfig.hideminor && '!minor',
+      !showHideConfig.hidebots && '!bot',
+      !showHideConfig.hideanons && '!anon',
+      !showHideConfig.hidepatrolled && '!patrolled',
+    ].filter(Boolean) as string[];
     const res = await api.post({
       action: 'query',
       format: 'json',
@@ -85,6 +99,7 @@ const RecentChangeList: React.FC = () => {
       list: 'recentchanges',
       // 按照用户当前显示的最多更改数读取，不超过500
       rclimit: Math.min(500, +$('.rclinks a[data-keys="limit"] strong').text()),
+      rcshow,
       rctype: ['edit', 'new', 'log'],
       rcprop: [
         'patrolled',
@@ -100,6 +115,7 @@ const RecentChangeList: React.FC = () => {
         'redirect',
         'loginfo',
       ],
+      rcexcludeuser: showHideConfig.hidemyself ? void 0 : mw.config.get('wgUserName')!,
     }) as ApiQueryResponse;
     const recentChanges = res.query.recentchanges.map((recentchange) => ({
       ...recentchange,
@@ -134,7 +150,7 @@ const RecentChangeList: React.FC = () => {
     }
   };
 
-  const querygroupMeanings = async () => {
+  const queryGroupMeanings = async () => {
     const res = await api.post({
       action: 'query',
       utf8: true,
@@ -174,7 +190,7 @@ const RecentChangeList: React.FC = () => {
         return;
       }
     }
-    Promise.all([queryTagsData(), querygroupMeanings()]).then(([tag, group]) => {
+    Promise.all([queryTagsData(), queryGroupMeanings()]).then(([tag, group]) => {
       storeQueryData(tag, group);
     });
   }, []);
@@ -208,10 +224,10 @@ const RecentChangeList: React.FC = () => {
     }
   }, [updateInterval]);
 
-  useEffect(() => {
-    // 用户设置是否读取审核状态时，存入localStorage
-    localStorage.setItem('realtimeRecentChangeReadModetarion', readModetarion ? '1' : '');
-  }, [readModetarion]);
+  // useEffect(() => {
+  //   // 用户设置是否读取审核状态时，存入localStorage
+  //   localStorage.setItem('realtimeRecentChangeReadModetarion', readModetarion ? '1' : '');
+  // }, [readModetarion]);
 
   useEffect(() => {
     // 用户更新是否默认启动的设置时，将其存入localStorage
@@ -262,7 +278,7 @@ const RecentChangeList: React.FC = () => {
               placeholder='不低于5秒'
             />
           </div>
-          <div className='dynamic-rc-config-line'>
+          {/* <div className='dynamic-rc-config-line'>
             <label className='dynamic-rc-config-label'>读取审核状态</label>
             <CheckboxInput
               name='readModetarion'
@@ -270,7 +286,7 @@ const RecentChangeList: React.FC = () => {
               value={readModetarion}
               onChange={({ value }) => setReadModetarion(value)}
             />
-          </div>
+          </div> */}
         </div>
       </fieldset>
       {data.length > 0 && (
