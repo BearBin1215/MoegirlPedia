@@ -26,7 +26,8 @@
       "WikiplusSummary",
       "ExportXML",
       "FileInspector",
-      "AdvancedSearch"
+      "AdvancedSearch",
+      "DynamicRecentChanges"
     ]
   }
 }
