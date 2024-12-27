@@ -1,4 +1,4 @@
-import React, { createElement } from 'react';
+import React, { useContext, createElement } from 'react';
 import classNames from 'classnames';
 import {
   MWTitle,
@@ -9,6 +9,7 @@ import {
 } from '@/components/MediaWiki';
 import { type MomentInput } from 'moment';
 import LogText from './LogText';
+import ChangeslistLineContext from './ChangeslistLineContext';
 
 interface ChangeFlagsProps {
   /** 该编辑是否创建了新页面 */
@@ -31,8 +32,6 @@ interface ChangeDiffProps {
 interface ChangeTagProps {
   /** 标签 */
   tags?: string[];
-  /** 标签->描述 */
-  tagMeaningsMap?: Record<string, string>;
 }
 
 export interface ChangeslistLogProps {
@@ -179,8 +178,8 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
 
 export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
   tags = [],
-  tagMeaningsMap = {},
 }) => {
+  const { tagMeanings } = useContext(ChangeslistLineContext);
   return tags.length > 0 && (
     <span className='mw-tag-markers'>
       （
@@ -192,7 +191,7 @@ export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
             key={tag}
             className={`mw-tag-marker mw-tag-marker-${tag}`}
           >
-            {tagMeaningsMap[tag] ?? tag}
+            {tagMeanings[tag] ?? tag}
           </span>
           {index < tags.length - 1 && '、'}
         </>
@@ -222,7 +221,6 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     userid,
     parsedcomment,
     tags = [],
-    tagMeaningsMap = {},
     logtype,
     logaction,
   } = props;
@@ -306,10 +304,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
                 dangerouslySetInnerHTML={{ __html: `（${parsedcomment}）` }}
               />
             )}
-            <ChangeTagMarkers
-              tags={tags}
-              tagMeaningsMap={tagMeaningsMap}
-            />
+            <ChangeTagMarkers tags={tags} />
           </td>
         </tr>
       </tbody>

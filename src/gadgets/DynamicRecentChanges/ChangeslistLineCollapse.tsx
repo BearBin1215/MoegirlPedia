@@ -22,8 +22,6 @@ export interface ChangeslistLineCollapseProps {
   changes: ChangeslistLineProps[];
   /** 是否默认展开 */
   defaultExpanded?: boolean;
-  /** 标签->描述 */
-  tagMeaningsMap?: Record<string, string>;
 }
 
 const wgScript = mw.config.get('wgScript');
@@ -31,7 +29,6 @@ const wgScript = mw.config.get('wgScript');
 /** 合并相同页面编辑 */
 const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
   changes,
-  tagMeaningsMap = {},
   defaultExpanded = false,
 }) => {
   // 确保只有超过2条编辑才生成折叠的列表
@@ -39,11 +36,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     return null;
   }
   if (changes.length === 1) {
-    return (
-      <ChangeslistLine
-        tagMeaningsMap={tagMeaningsMap}
-        {...changes[0]}
-      />);
+    return <ChangeslistLine {...changes[0]} />;
   }
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -274,10 +267,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                     dangerouslySetInnerHTML={{ __html: `（${change.parsedcomment}）` }}
                   />
                 )}
-                <ChangeTagMarkers
-                  tags={change.tags}
-                  tagMeaningsMap={tagMeaningsMap}
-                />
+                <ChangeTagMarkers tags={change.tags} />
               </td>
             </tr>
           );

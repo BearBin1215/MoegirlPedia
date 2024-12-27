@@ -10,7 +10,7 @@ import {
 } from 'oojs-ui-react';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
-import { GroupMessageContext } from './LogText';
+import ChangeslistLineContext from './ChangeslistLineContext';
 import type { ApiQueryResponse } from '@/@types/api';
 import './index.less';
 
@@ -25,11 +25,6 @@ declare global {
     /** 用户自定的每次实时更新后回调 */
     realtimeRecentChangeCallback?: () => void;
   }
-}
-
-interface RecentChangeListProps {
-  /** 初始数据 */
-  initialData?: ChangeslistLineProps[][];
 }
 
 // 聚合同标题的数据
@@ -51,14 +46,12 @@ const mergeData = (initData: ChangeslistLineProps[]) => {
   return formattedData;
 };
 
-const RecentChangeList: React.FC<RecentChangeListProps> = ({
-  initialData = [],
-}) => {
+const RecentChangeList: React.FC = () => {
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
     window.realtimeRecentChangeUpdateInterval
     || Number(localStorage.getItem('realtimeRecentChangeUpdateInterval'))
-    || 10,
+    || 20,
   );
   // 更新后是否读取审核状态
   const [readModetarion, setReadModetarion] = useState(!!(
@@ -75,11 +68,11 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
   // 记录定时器id，用于停止
   const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
   // 标签含义映射，用于渲染标签
-  const [tagMeaningsMap, setTagMeaningsMap] = useState<Record<string, string>>({});
+  const [tagMeanings, setTagMeanings] = useState<Record<string, string>>({});
   // 用户组及其含义映射
-  const [groupMessages, setGroupMessage] = useState<Record<string, string>>({});
+  const [groupMeanings, setGroupMeanings] = useState<Record<string, string>>({});
   // 用于渲染最终列表的数据
-  const [data, setData] = useState<ChangeslistLineProps[][]>(initialData);
+  const [data, setData] = useState<ChangeslistLineProps[][]>([]);
 
   const api = new mw.Api();
 
@@ -136,11 +129,12 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
       for (const { name, displayname } of res.query.tags) {
         meaningMap[name] = displayname;
       }
-      setTagMeaningsMap(meaningMap);
+      setTagMeanings(meaningMap);
+      return meaningMap;
     }
   };
 
-  const queryGroupMessages = async () => {
+  const querygroupMeanings = async () => {
     const res = await api.post({
       action: 'query',
       utf8: true,
@@ -155,13 +149,34 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
           groupMessage[message.name.replace('group-', '')] = message['*'];
         }
       }
-      setGroupMessage(groupMessage);
+      setGroupMeanings(groupMessage);
+      return groupMessage;
     }
   };
 
+  /** 将读取到的标签含义和用户组含义暂存在localStorage，减少请求 */
+  const storeQueryData = (tag: any, group: any) => {
+    localStorage.setItem('realtimeRecentChangeCache', JSON.stringify({
+      timestamp: Date.now(),
+      tagMeanings: tag,
+      groupMeanings: group,
+    }));
+  };
+
   useEffect(() => {
-    queryTagsData();
-    queryGroupMessages();
+    const storedCache = localStorage.getItem('realtimeRecentChangeCache');
+    if (storedCache) {
+      const storedData = JSON.parse(storedCache);
+      // 间隔超过7天才更新
+      if (Date.now() - storedData.timestamp < 7 * 24 * 60 * 60 * 1000) {
+        setTagMeanings(storedData.tagMeanings);
+        setGroupMeanings(storedData.groupMeanings);
+        return;
+      }
+    }
+    Promise.all([queryTagsData(), querygroupMeanings()]).then(([tag, group]) => {
+      storeQueryData(tag, group);
+    });
   }, []);
 
   useEffect(() => {
@@ -173,7 +188,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
       }
       const interval = setInterval(() => {
         queryData();
-      }, Math.max(updateInterval * 1000, 3000));
+      }, Math.max(updateInterval * 1000, 5000));
       setTaskInterval(interval);
     } else {
       clearInterval(taskInterval);
@@ -189,7 +204,7 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
       clearInterval(taskInterval);
       setTaskInterval(setInterval(() => {
         queryData();
-      }, Math.max(updateInterval * 1000, 3000)));
+      }, Math.max(updateInterval * 1000, 5000)));
     }
   }, [updateInterval]);
 
@@ -243,8 +258,8 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
               className='dynamic-rc-config-input'
               value={updateInterval}
               onChange={({ value }) => setUpdateInterval(value)}
-              min={3}
-              placeholder='不低于3秒'
+              min={5}
+              placeholder='不低于5秒'
             />
           </div>
           <div className='dynamic-rc-config-line'>
@@ -262,19 +277,17 @@ const RecentChangeList: React.FC<RecentChangeListProps> = ({
         <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
       )}
       <div>
-        <GroupMessageContext.Provider value={groupMessages}>
+        <ChangeslistLineContext.Provider value={{ groupMeanings, tagMeanings }}>
           {data.map((changeData) => (
             <ChangeslistLineCollapse
               key={changeData[0].rcid}
               changes={changeData}
-              tagMeaningsMap={tagMeaningsMap}
             />
           ))}
-        </GroupMessageContext.Provider>
+        </ChangeslistLineContext.Provider>
       </div>
     </div>
   );
 };
 
 export default RecentChangeList;
-export { mergeData };

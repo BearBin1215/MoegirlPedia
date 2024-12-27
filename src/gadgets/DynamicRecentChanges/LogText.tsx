@@ -1,12 +1,12 @@
-import React, { createContext, useContext } from 'react';
+import React, { useContext } from 'react';
 import { UserLink } from '@/components/MediaWiki';
+import ChangeslistLineContext from './ChangeslistLineContext';
 
 interface LogTextProps {
   logtype: string;
   logaction: string;
   logparams: Record<string, any>;
   title: string;
-  groupMessages?: Record<string, string>;
 }
 
 const {
@@ -17,15 +17,14 @@ const {
   'wgArticlePath',
 ]);
 
-export const GroupMessageContext = createContext<Record<string, string>>({});
-
 const LogText: React.FC<LogTextProps> = ({
   logtype,
   logaction,
   logparams,
   title,
-  groupMessages = useContext(GroupMessageContext),
 }) => {
+  /** 从上下文读取用户组含义 */
+  const { groupMeanings } = useContext(ChangeslistLineContext);
   if (logtype === 'move') {
     const searchParams = new URLSearchParams({
       title,
@@ -83,7 +82,7 @@ const LogText: React.FC<LogTextProps> = ({
   }
 
   if (logaction === 'rights') {
-    const groupMapping = (group: string) => groupMessages[group] ?? group;
+    const groupMapping = (group: string) => groupMeanings[group] ?? group;
     return (
       <>
         已将
