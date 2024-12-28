@@ -269,7 +269,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
                 {isNew ? '差异' : (
                   <a
                     className='mw-changeslist-diff'
-                    href={`${wgScript}?${diffSearch.toString}`}
+                    href={`${wgScript}?${diffSearch.toString()}`}
                   >
                     差异
                   </a>
