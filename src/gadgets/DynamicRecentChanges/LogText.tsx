@@ -95,12 +95,44 @@ const LogText: React.FC<LogTextProps> = ({
     );
   }
 
-  if (logtype === 'contentmodel') {
+  if (logtype === 'contentmodel' && logaction === 'change') {
     return (
       <>
         将页面
         <a href={wgArticlePath.replace('$1', title)} title=''>{title}</a>
         的内容模型从“{logparams.oldmodel}”更改为“{logparams.oldmodel}”
+      </>
+    );
+  }
+
+  if (logtype === 'contentmodel' && logaction === 'new') {
+    return (
+      <>
+        已使用非默认的内容模型“{logparams.newmodel}”创建页面
+        <a href={wgArticlePath.replace('$1', title)} title=''>{title}</a>
+      </>
+    );
+  }
+
+  if (logaction === 'block') {
+    return (
+      <>
+        封禁了
+        <UserLink user={title} showAvatar={false} />
+        ，到期时间为
+        {logparams.duration}
+        （
+        {logparams.flags.join('、')}
+        ）
+      </>
+    );
+  }
+
+  if (logaction === 'unblock') {
+    return (
+      <>
+        解封了
+        <UserLink user={title} showAvatar={false} />
       </>
     );
   }
