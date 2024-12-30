@@ -12,6 +12,7 @@ $(() => {
     'moment',
     'oojs-ui',
     'oojs-ui.styles.icons-media', // 用于启动按钮的play/stop图标样式
+    'ext.gadget.LocalObjectStorage', // 用于读取ModerationStatus工具的缓存
   ]).then(() => {
     /** 用户是否开启显示头像小工具 */
     const showAvatar = !!document.querySelector('.mw-changeslist .userlink-avatar');

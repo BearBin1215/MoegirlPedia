@@ -8,10 +8,12 @@ import {
   NumberInput,
   FieldLayout,
 } from 'oojs-ui-react';
+import { chunk } from 'lodash-es';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import ChangeslistLineContext from './ChangeslistLineContext';
 import type { ApiQueryResponse } from '@/@types/api';
+import type { ModerationStatus } from '@/components/ModIcon';
 import './index.less';
 
 declare global {
@@ -26,6 +28,14 @@ declare global {
     realtimeRecentChangeCallback?: () => void;
   }
 }
+
+interface RevModerationStratus {
+  revid: number;
+  status: ModerationStatus;
+}
+
+const showModerationStatus = !!document.querySelector('.mw-changeslist .mod-icon');
+const ModerationStorage = new LocalObjectStorage('moderationStatus');
 
 // 聚合同标题的数据
 const mergeData = (initData: ChangeslistLineProps[]) => {
@@ -54,10 +64,10 @@ const RecentChangeList: React.FC = () => {
     || 20,
   );
   // 更新后是否读取审核状态
-  // const [readModetarion, setReadModetarion] = useState(!!(
-  //   window.realtimeRecentChangeReadModetarion
-  //   || localStorage.getItem('realtimeRecentChangeReadModetarion')),
-  // );
+  const [readModetarion, setReadModetarion] = useState(!!(
+    window.realtimeRecentChangeReadModetarion
+    || localStorage.getItem('realtimeRecentChangeReadModetarion')),
+  );
   // 是否进入页面默认启动
   const [defaultActive, setDefaultActive] = useState(!!(
     window.realtimeRecentChangeDefaultActive
@@ -73,8 +83,27 @@ const RecentChangeList: React.FC = () => {
   const [groupMeanings, setGroupMeanings] = useState<Record<string, string>>({});
   // 用于渲染最终列表的数据
   const [data, setData] = useState<ChangeslistLineProps[][]>([]);
+  const [moderations, setModerations] = useState(ModerationStorage.getItem<RevModerationStratus[]>('Recentchanges', []));
 
   const api = new mw.Api();
+
+  /**
+   * 按照修订版本列表读取审核状态
+   * @param revids 修订版本列表
+   */
+  const queryModerationStatus = async (revids: number[]): Promise<RevModerationStratus[]> => {
+    const { query: { pages } } = await api.post({
+      action: 'query',
+      format: 'json',
+      prop: 'revisions',
+      revids,
+      rvprop: 'ids',
+    }) as ApiQueryResponse;
+    return Object.values(pages)
+      .map(({ revisions }) => revisions)
+      .flat()
+      .map(({ revid, moderation }) => ({ revid, status: moderation?.status_code ?? 0 }));
+  };
 
   /** 使用API读取最近更改数据，并转化为组件所需的格式 */
   const queryData = async () => {
@@ -126,8 +155,38 @@ const RecentChangeList: React.FC = () => {
       autopatrolled: 'autopatrolled' in recentchange,
       unpatrolled: 'unpatrolled' in recentchange,
       redirect: 'redirect' in recentchange,
+      moderationStatus: showModerationStatus
+        ? moderations.find(({ revid }) => revid === recentchange.revid)?.status
+        : void 0,
     }));
-    setData(mergeData(recentChanges));
+    if (showModerationStatus && readModetarion) {
+      /** 过滤出缺少审核状态或待审核的版本号 */
+      const missingRevids = recentChanges
+        .slice(0, 150)
+        .filter(({ moderationStatus }) => !moderationStatus)
+        .map(({ revid }) => revid);
+      /** 拆分为50个一组并发送请求，最多3个 */
+      const promises = chunk(missingRevids, 50).map(queryModerationStatus);
+      /** 并行发送请求，与当前已有的审核数据合并、去重 */
+      const moderationResult = (await Promise.all(promises))
+        .flat()
+        .concat(moderations)
+        .reduce((acc: RevModerationStratus[], cur: RevModerationStratus) => {
+          const exist = acc.find(({ revid }) => revid === cur.revid);
+          if (exist) {
+            return acc;
+          }
+          return acc.concat([cur]);
+        }, []);
+
+      setModerations(moderationResult.filter(({ status }) => [1, 2].includes(status)));
+      setData(mergeData(recentChanges.map((change) => ({
+        ...change,
+        moderationStatus: moderationResult.find(({ revid }) => revid === change.revid)?.status,
+      }))));
+    } else {
+      setData(mergeData(recentChanges));
+    }
   };
 
   /** 读取标签数据 */
@@ -179,6 +238,7 @@ const RecentChangeList: React.FC = () => {
     }));
   };
 
+  // 页面初始化，检查标签和用户组含义是否需要更新
   useEffect(() => {
     const storedCache = localStorage.getItem('realtimeRecentChangeCache');
     if (storedCache) {
@@ -195,8 +255,8 @@ const RecentChangeList: React.FC = () => {
     });
   }, []);
 
+  // 运行状态变化，注册或清除定时器
   useEffect(() => {
-    // 运行状态变化，注册或清除定时器
     if (running) {
       if (!defaultActive) {
         // 如果用户没有设置默认启动，这里要读取一次，否则要等一个interval才会第一次更新
@@ -224,10 +284,10 @@ const RecentChangeList: React.FC = () => {
     }
   }, [updateInterval]);
 
-  // useEffect(() => {
-  //   // 用户设置是否读取审核状态时，存入localStorage
-  //   localStorage.setItem('realtimeRecentChangeReadModetarion', readModetarion ? '1' : '');
-  // }, [readModetarion]);
+  useEffect(() => {
+    // 用户设置是否读取审核状态时，存入localStorage
+    localStorage.setItem('realtimeRecentChangeReadModetarion', readModetarion ? '1' : '');
+  }, [readModetarion]);
 
   useEffect(() => {
     // 用户更新是否默认启动的设置时，将其存入localStorage
@@ -278,15 +338,17 @@ const RecentChangeList: React.FC = () => {
               placeholder='不低于5秒'
             />
           </div>
-          {/* <div className='dynamic-rc-config-line'>
-            <label className='dynamic-rc-config-label'>读取审核状态</label>
-            <CheckboxInput
-              name='readModetarion'
-              className='dynamic-rc-config-input'
-              value={readModetarion}
-              onChange={({ value }) => setReadModetarion(value)}
-            />
-          </div> */}
+          {showModerationStatus && (
+            <div className='dynamic-rc-config-line'>
+              <label className='dynamic-rc-config-label'>读取审核状态</label>
+              <CheckboxInput
+                name='readModetarion'
+                className='dynamic-rc-config-input'
+                value={readModetarion}
+                onChange={({ value }) => setReadModetarion(value)}
+              />
+            </div>
+          )}
         </div>
       </fieldset>
       {data.length > 0 && (

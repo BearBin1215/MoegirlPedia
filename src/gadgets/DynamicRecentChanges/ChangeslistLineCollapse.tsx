@@ -16,6 +16,7 @@ import ChangeslistLine, {
   type ChangeslistLineProps,
 } from './ChangeslistLine';
 import LogText from './LogText';
+import ModIcon from '@/components/ModIcon';
 
 export interface ChangeslistLineCollapseProps {
   /** 要合并的最近更改记录集 */
@@ -50,6 +51,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     newlen,
     type = 'edit',
     logtype,
+    moderationStatus,
   }] = changes; // 需要的最新编辑数据
 
   const {
@@ -125,6 +127,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner'>
+            {moderationStatus !== void 0 && <ModIcon status={moderationStatus} />}
             {type === 'log' ? (
               <span className='mw-rc-unwatched'>
                 <SpecialPageLink logtype={logtype} />
@@ -214,6 +217,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
                 className='mw-enhanced-rc-nested'
                 data-target-page={change.title}
               >
+                {moderationStatus !== void 0 && <ModIcon status={moderationStatus} />}
                 {type === 'log' ? (
                   <span className='mw-enhanced-rc-time'>
                     {changeDate.local().format('HH:mm')}

@@ -7,6 +7,7 @@ import {
   UserLink,
   UserToolLinks,
 } from '@/components/MediaWiki';
+import ModIcon from '@/components/ModIcon';
 import { type MomentInput } from 'moment';
 import LogText from './LogText';
 import ChangeslistLineContext from './ChangeslistLineContext';
@@ -82,6 +83,8 @@ export interface ChangeslistLineProps extends
   userid: number | string;
   /** 解析后的编辑摘要 */
   parsedcomment: string;
+  /** 审核状态 */
+  moderationStatus?: 0 | 1 | 2 | 3 | 4;
 }
 
 const {
@@ -223,6 +226,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
     tags = [],
     logtype,
     logaction,
+    moderationStatus,
   } = props;
 
   const date = moment.utc(timestamp);
@@ -260,6 +264,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
             &nbsp;
           </td>
           <td className='mw-changeslist-line-inner' data-target-page={title}>
+            {moderationStatus !== void 0 && <ModIcon status={moderationStatus} />}
             {type === 'log' ? (
               <SpecialPageLink logtype={logtype} />
             ) : (
