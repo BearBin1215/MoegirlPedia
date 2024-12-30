@@ -163,7 +163,7 @@ const RecentChangeList: React.FC = () => {
       /** 过滤出缺少审核状态或待审核的版本号 */
       const missingRevids = recentChanges
         .slice(0, 150)
-        .filter(({ moderationStatus }) => !moderationStatus)
+        .filter(({ moderationStatus, revid }) => revid && !moderationStatus)
         .map(({ revid }) => revid);
       /** 拆分为50个一组并发送请求，最多3个 */
       const promises = chunk(missingRevids, 50).map(queryModerationStatus);
