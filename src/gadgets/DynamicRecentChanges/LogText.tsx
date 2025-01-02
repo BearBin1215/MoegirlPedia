@@ -81,8 +81,9 @@ const LogText: React.FC<LogTextProps> = ({
     );
   }
 
+  const groupMapping = (group: string) => groupMeanings[group] ?? group;
+
   if (logaction === 'rights') {
-    const groupMapping = (group: string) => groupMeanings[group] ?? group;
     return (
       <>
         已将
@@ -90,6 +91,17 @@ const LogText: React.FC<LogTextProps> = ({
         的用户组从
         {logparams.oldgroups.map(groupMapping).join('、') || '（无）'}
         更改至
+        {logparams.newgroups.map(groupMapping).join('、') || '（无）'}
+      </>
+    );
+  }
+
+  if (logaction === 'autopromote') {
+    return (
+      <>
+        被自动地提升自
+        {logparams.oldgroups.map(groupMapping).join('、') || '（无）'}
+        至
         {logparams.newgroups.map(groupMapping).join('、') || '（无）'}
       </>
     );
