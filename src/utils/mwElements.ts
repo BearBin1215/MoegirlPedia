@@ -1,4 +1,4 @@
-import createElement from "./dom";
+import createElement from './dom';
 
 /** MediaWiki默认标题编辑按钮区域 */
 export const editSection = '<span class="mw-editsection"></span>';
