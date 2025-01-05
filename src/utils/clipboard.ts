@@ -13,6 +13,12 @@ const copyText = async (text = ''): Promise<void> => {
     input.focus();
     input.select();
     document.execCommand('copy');
+    // 创建一个临时元素接收焦点，以供回收input
+    const dummyElement = document.createElement('div');
+    dummyElement.tabIndex = -1;
+    document.body.appendChild(dummyElement);
+    dummyElement.focus();
+    dummyElement.remove();
     input.remove();
   }
 };
@@ -31,6 +37,12 @@ const pasteText = async (): Promise<string> => {
     pasteArea.focus();
     setTimeout(() => {
       const text = pasteArea.value;
+      // 创建一个临时元素接收焦点，以供回收pasteArea
+      const dummyElement = document.createElement('div');
+      dummyElement.tabIndex = -1;
+      document.body.appendChild(dummyElement);
+      dummyElement.focus();
+      dummyElement.remove();
       pasteArea.remove();
       resolve(text);
     }, 0);
