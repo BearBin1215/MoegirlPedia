@@ -1,28 +1,41 @@
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
+import type { ApiQueryResponse, ApiQueryPageInfo } from '@/@types/api';
+
+type PF = (text: string, categories: string[], title: string) => void;
+
+interface Page {
+  text: string;
+  categories: string[];
+}
+
+interface PageData {
+  [key: string]: (string | [string, string])[] | PageData;
+}
 
 $(() => (async () => {
   await mw.loader.using(['mediawiki.api']);
 
   class MessOutput {
+    data: PageData;
+
     /**
      * 创建MessOutput对象
-     * @param {object} data 初始化列表
+     * @param data 初始化列表
      */
-    constructor(data) {
+    constructor(data: PageData) {
       this.data = data; // 用将导入的data初始化
     }
 
     /**
      * 遍历data广度优先搜索标题，并在对应的列表插入新页面名
-     * @param {string} headline 标题
-     * @param {string|string[]} page 要插入的页面名，或页面名和附加信息组成的数组
-     * @returns
+     * @param headline 标题
+     * @param page 要插入的页面名，或页面名和附加信息组成的数组
      */
-    addPageToList(headline, page) {
-      const queue = [{ obj: this.data, path: [] }];
+    addPageToList(headline: string, page: string | [string, string]) {
+      const queue: { obj: object, path: string[] }[] = [{ obj: this.data, path: [] }];
       while (queue.length > 0) {
-        const { obj, path } = queue.shift();
+        const { obj, path } = queue.shift()!;
         for (const [key, val] of Object.entries(obj)) {
           if (key === headline) {
             if (Array.isArray(val)) {
@@ -55,9 +68,9 @@ $(() => (async () => {
       ];
       /**
        * 递归函数
-       * @param {object|string[]} obj this.data
+       * @param obj this.data
        */
-      const addListToTextList = (obj) => {
+      const addListToTextList = (obj: PageData) => {
         listLevel++;
         for (const [headline, pages] of Object.entries(obj)) {
           // 标题
@@ -309,14 +322,14 @@ $(() => (async () => {
 
   /**
    * 查找正则表达式的匹配在字符串中的位置集
-   * @param {string} str 要查找的字符串
-   * @param {RegExp} reg 正则表达式
-   * @returns {number[]} 匹配位置组成的集合
+   * @param str 要查找的字符串
+   * @param reg 正则表达式
+   * @returns 匹配位置组成的集合
    */
-  const regexPosition = (str, reg) => {
-    let match;
-    const indexes = [];
-    while ((match = reg.exec(str)) !== null) {
+  const regexPosition = (str: string, reg: RegExp) => {
+    const match = reg.exec(str);
+    const indexes: number[] = [];
+    while (match !== null) {
       indexes.push(match.index);
     }
     return indexes;
@@ -325,12 +338,12 @@ $(() => (async () => {
 
   /**
    * 查找模板在文本中的位置
-   * @param {string} text 页面源代码
-   * @param  {...string} templates 模板及其别名
-   * @returns {number[]} 模板位置集合
+   * @param text 页面源代码
+   * @param  templates 模板及其别名
+   * @returns 模板位置集合
    * @example templateIndex("{{欢迎编辑|补充内容}}{{消歧义}}{{电子游戏TOP}}", ...Templates.top) => [0, 20];
    */
-  const templateIndex = (text, ...templates) => regexPosition(text, new RegExp(`${Templates.prefix}(${templates.join('|')})[}\\|\\n]`, 'gi'));
+  const templateIndex = (text: string, ...templates: string[]): number[] => regexPosition(text, new RegExp(`${Templates.prefix}(${templates.join('|')})[}\\|\\n]`, 'gi'));
 
 
   /**
@@ -363,7 +376,7 @@ $(() => (async () => {
    * 检查消歧义页内中的管道符
    * @type {checkFunction}
    */
-  const pipeInDisambig = (text, categories, title) => {
+  const pipeInDisambig: PF = (text, categories, title) => {
     if (categories.includes('Category:消歧义页')) {
       const prefix = text.match(/\[\[(.+)\(.+\)\|\1\]\].*—/);
       const suffix = text.match(/\[\[[^:\n].*:(.+)\|\1\]\].*—/);
@@ -380,7 +393,7 @@ $(() => (async () => {
    * 在页面中查找重复出现的大量换行
    * @type {checkFunction}
    */
-  const wrapDetector = (text, categories, title) => {
+  const wrapDetector: PF = (text, categories, title) => {
     if (categories.some((category) => category.includes('音乐作品'))) { return; } // 排除音乐条目
     if (/(<br *\/ *>\s*){4,}/i.test(text) || /(\n|<br *\/? *>){8}/i.test(text)) {
       messOutput.addPageToList('连续换行', title);
@@ -392,7 +405,7 @@ $(() => (async () => {
    * 检测连续出现的big
    * @type {checkFunction}
    */
-  const bigDetector = (text, _categories, title) => {
+  const bigDetector: PF = (text, _categories, title) => {
     if (/(<big>){5}/i.test(text)) {
       messOutput.addPageToList('big地狱（5个以上）', title);
     }
@@ -403,7 +416,7 @@ $(() => (async () => {
    * 能用内链非要用外链
    * @type {checkFunction}
    */
-  const innerToOuter = (text, _categories, title) => {
+  const innerToOuter: PF = (text, _categories, title) => {
     if ((new RegExp(`${Templates.prefix}(背景[图圖]片|替[换換][侧側][边邊][栏欄]底[图圖])[^}]+img\\.moegirl\\.org\\.cn`, 'si')).test(text) && title !== 'Deltarune/黑暗世界') {
       messOutput.addPageToList('能用内链非要外链', title);
     }
@@ -415,7 +428,7 @@ $(() => (async () => {
    * @type {checkFunction}
    * @todo 将判定方法改为发现疑似页面后判定模板是否为导航模板
    */
-  const headlineBeforeNav = (text, _categories, title) => {
+  const headlineBeforeNav: PF = (text, _categories, title) => {
     if (new RegExp(`== *(相关|更多|其他|其它)(条目|條目|内容|链接)? *==\n*${Templates.prefix}((?!${Templates.bottom.join('|')}).)*\\}`, 'gi').test(text)) {
       messOutput.addPageToList('疑似大家族前单独用二级标题', title);
     }
@@ -426,7 +439,7 @@ $(() => (async () => {
    * 位于注释或外部链接之后的大家族模板
    * @type {checkFunction}
    */
-  const refBeforeNav = (text, _categories, title) => {
+  const refBeforeNav: PF = (text, _categories, title) => {
     if (new RegExp(`== *(脚注|[注註]解|注释|註釋|外部[链鏈]接|外部連結|外链|[参參]考).*==[\\s\\S]*\n${Templates.prefix}((?!${Templates.bottom.join('|')}).)*\\}`, 'gi').test(text)) {
       messOutput.addPageToList('注释和外部链接后的大家族模板', title);
     }
@@ -438,7 +451,7 @@ $(() => (async () => {
    * 检查疑似喊话内容
    * @type {checkFunction}
    */
-  const redBoldText = (text, _categories, title) => {
+  const redBoldText: PF = (text, _categories, title) => {
     if (
       /\{\{color\|red\|'''[^}|]{50,}'''\}\}/i.test(text) ||
       /'''\{\{color\|red\|[^}|]{50,}\}\}'''/i.test(text)
@@ -452,7 +465,7 @@ $(() => (async () => {
    * 检查重复TOP
    * @type {checkFunction}
    */
-  const repetitiveTop = (text, _categories, title) => {
+  const repetitiveTop: PF = (text, _categories, title) => {
     const topPattern = new RegExp(`${Templates.prefix}(${Templates.top.join('|')})[}\\|\\n]`, 'gi');
     const useTemplates = text.match(topPattern) || [];
     let usedTops = 0;
@@ -472,7 +485,7 @@ $(() => (async () => {
    * 检查用图超过99px的页顶模板
    * @type {checkFunction}
    */
-  const imgLT99px = (text, _categories, title) => {
+  const imgLT99px: PF = (text, _categories, title) => {
     if (
       /leftimage *=[.\n]*\d{3}px/.test(text) ||
       /\{\{(?:template:|[模样樣]板:|T:)?(欢迎编辑|歡迎編輯|不完整|customtop).*\d{3}px/i.test(text)
@@ -486,7 +499,7 @@ $(() => (async () => {
    * 检查页顶模板排序
    * @type {checkFunction}
    */
-  const templateOrder = (text, _categories, title) => {
+  const templateOrder: PF = (text, _categories, title) => {
     const templateIndexes = {
       消歧义导航模板: templateIndex(text, ...Templates.disambigTop), // 消歧义导航模板
       专题导航导航: templateIndex(text, '导航'), // 专题导航
@@ -514,7 +527,7 @@ $(() => (async () => {
    * 检查用图超过99px的页顶模板
    * @type {checkFunction}
    */
-  const imgLT99pxInTemplate = (text, categories, title) => {
+  const imgLT99pxInTemplate: PF = (text, categories, title) => {
     if (categories.includes('Category:页顶提示模板') && (
       /leftimage *=.*\d{3}px/.test(text) ||
       /(width|size) *= *\d{3}px/.test(text) ||
@@ -529,7 +542,7 @@ $(() => (async () => {
    * 检查模板中的多余换行
    * @type {checkFunction}
    */
-  const redundantWrapInTemplate = (text, categories, title) => {
+  const redundantWrapInTemplate: PF = (text, categories, title) => {
     if (categories.some((category) => ['Category:模板文档', 'Category:条目格式模板', 'Category:权限申请模板'].includes(category))) {
       return;
     }
@@ -544,7 +557,7 @@ $(() => (async () => {
    * •左右缺少空格
    * @type {checkFunction}
    */
-  const needSpaceBesidesPoint = (text, categories, title) => {
+  const needSpaceBesidesPoint: PF = (text, categories, title) => {
     if (categories.includes('Category:用户编辑组模板')) {
       return;
     }
@@ -562,7 +575,7 @@ $(() => (async () => {
    * 管道符前一致
    * @type {checkFunction}
    */
-  const redundantPipe = (text, _categories, title) => {
+  const redundantPipe: PF = (text, _categories, title) => {
     const normal = text.match(/\[\[ *([^\]]+) *\| *\1 *\]\]/);
     const escape = text.match(/\| *([^\]{}}]+) *\{\{!\}\} *\1 *(\||\})/);
     if (normal) {
@@ -577,7 +590,7 @@ $(() => (async () => {
    * 可能需要补充“配音角色”
    * @type {checkFunction}
    */
-  const oldCVCategory = (text, _categories, title) => {
+  const oldCVCategory: PF = (text, _categories, title) => {
     const match = text.match(/\|多位(配音|声优) *= *\{\{cate\|[^{}|]+\|[^{}[\]\n]+[^色{}[\]\n](\}\}|\|)/gi);
     if (match) {
       messOutput.addPageToList('旧声优分类格式', [title, `<code><nowiki>${match[0]}</nowiki></code>`]);
@@ -588,7 +601,7 @@ $(() => (async () => {
    * navbox中的错误name参数
    * @type {checkFunction}
    */
-  const wrongNavName = (text, categories, title) => {
+  const wrongNavName: PF = (text, categories, title) => {
     const nameParam = text.match(/\| *name *= *[^|\n]*/gi) || [];
     if (
       categories.includes('Category:模板文档') ||
@@ -610,7 +623,7 @@ $(() => (async () => {
    * 检查http(s)少冒号或斜杠
    * @type {checkFunction}
    */
-  const httpColon = (text, _categories, title) => {
+  const httpColon: PF = (text, _categories, title) => {
     const http = text.match(/[^/]https?(\/\/|:\/[a-zA-Z0-9])/gi);
     if (http) {
       messOutput.addPageToList('http(s)少冒号或斜杠', [title, `<code><nowiki>${http[0]}</nowiki></code>`]);
@@ -623,27 +636,26 @@ $(() => (async () => {
 
   /**
    * 遍历所有页面
-   * @param {function(text<string>, categories<string[]>, title<string>)[]} functions 执行检查的函数集，这些函数都接受text、categories、title三个参数
-   * @param {number} [namespace=0] 要遍历的名字空间
-   * @param {number} [maxRetry=10] 最大重试次数
-   * @param {number} [limit=500] 单词请求最大页面数
-   * @returns {Promise<void>}
+   * @param functions 执行检查的函数集，这些函数都接受text、categories、title三个参数
+   * @param [namespace=0] 要遍历的名字空间
+   * @param [maxRetry=10] 最大重试次数
+   * @param [limit=500] 单词请求最大页面数
    */
-  const traverseAllPages = async (functions, namespace = 0, maxRetry = 10, limit = 500) => {
+  const traverseAllPages = async (functions: PF[], namespace = 0, maxRetry = 10, limit = 500) => {
     let count = 0;
-    let pages = {};
+    let pages: Record<string, Page> = {};
     let reported = false; // 标记是否已报错，用于控制台输出显示
 
     /**
      * 分析pages
-     * @param {string[]} pageList 页面列表
+     * @param pageList 页面列表
      */
-    const processPage = (pageList) => {
+    const processPage = (pageList: ApiQueryPageInfo[]) => {
       for (const { title, revisions, categories } of pageList) {
-        pages[title] ||= {}; // 初始化pages中每个页面的对象
-        pages[title].categories ||= []; // 初始化其中的categories
-        // 将此轮循环得到的页面源代码和分类存入pages
-        pages[title].text = revisions?.[0]?.['*']?.replace(/<!--[\s\S]*?-->/g, '') || ''; // 去除注释，以及如果获取到空的revisions就先赋值为空字符串
+        pages[title] ||= {
+          categories: [],
+          text: revisions?.[0]?.['*']?.replace(/<!--[\s\S]*?-->/g, '') || '', // 去除注释，以及如果获取到空的revisions就先赋值为空字符串
+        }; // 初始化pages中每个页面的对象
         if (revisions?.length > 0) {
           count++;
         }
@@ -654,7 +666,7 @@ $(() => (async () => {
     };
 
     // 初始化请求参数
-    const params = {
+    const params: Record<string, any> = {
       action: 'query',
       generator: 'allpages',
       gaplimit: limit, // 本来设置为max，但总是aborted，还是控制一下吧
@@ -666,7 +678,7 @@ $(() => (async () => {
     };
 
     // 报错及参数调整以供下次请求
-    const resolveError = async (error, retryCount) => {
+    const resolveError = async (error: any, retryCount: number) => {
       if (!reported) {
         console.log('');
         reported = true;
@@ -696,9 +708,7 @@ $(() => (async () => {
       reported = false;
       params.gaplimit = Math.min(params.gaplimit * 2, limit); // 请求成功后逐渐恢复原有数量
 
-      processPage(Object.values(res.query.pages));
-
-      console.log(JSON.stringify(res.continue || {}));
+      processPage(Object.values((res as ApiQueryResponse).query.pages));
 
       // 处理continue
       let { gapcontinue, rvcontinue, clcontinue } = res.continue || {};
@@ -764,11 +774,10 @@ $(() => (async () => {
 
   /**
    * 获取疑似繁体页面名（from 星海）
-   * @param {number|string} gapnamespace 名字空间
-   * @returns {Promise<void>}
+   * @param gapnamespace 名字空间
    */
-  const getVariantTitles = async (gapnamespace = 0) => {
-    let gapcontinue = '';
+  const getVariantTitles = async (gapnamespace: number | string = 0) => {
+    let gapcontinue: string | undefined = '';
     let retryCount = 0;
     do {
       if (retryCount >= 10) {
@@ -785,7 +794,7 @@ $(() => (async () => {
           gaplimit: 'max',
           gapnamespace,
           gapcontinue,
-        });
+        }) as ApiQueryResponse;
         gapcontinue = res.continue?.gapcontinue;
         for (const { title, varianttitles: { 'zh-cn': titleCN } } of Object.values(res.query.pages)) {
           if (
@@ -831,7 +840,7 @@ $(() => (async () => {
 
   /**
    * 主函数
-   * @param {number} [retryCount=5] 最大重试次数
+   * @param 最大重试次数
    */
   const main = async (retryCount = 5) => {
     let retries = 0;

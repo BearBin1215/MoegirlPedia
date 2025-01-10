@@ -209,6 +209,9 @@ export interface ApiQueryPageInfo {
   /** `prop=revisions`获取的修订版本信息 */
   revisions: Revisions[];
 
+  /** 分类信息，有分类才有此字段 */
+  categories?: { ns: number; title: string }[];
+
   /** `prop=transcludedin`获取的所有嵌入指定页面的页面 */
   transcludedin: Transcludedin[];
 
