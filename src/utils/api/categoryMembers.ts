@@ -21,6 +21,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         list: 'categorymembers',
         cmlimit: 'max',
         cmtitle,
+        cmprop: 'title',
         cmtype,
         cmcontinue,
       }) as ApiQueryResponse;
