@@ -311,7 +311,7 @@ $(() => (async () => {
 
 
   // 页顶提示模板
-  let topTipTemplate;
+  let topTipTemplate: string[];
 
 
   /**
@@ -348,10 +348,10 @@ $(() => (async () => {
 
   /**
    * 检查多个数组是否前一个均小于后一个，用于检查顶部模板顺序
-   * @param {Array<Array<number>>} arrays 数组列表
-   * @returns {number} 位置有误的模板排序
+   * @param arrays 数组列表
+   * @returns 位置有误的模板排序
    */
-  const checkOrder = (arrays) => {
+  const checkOrder = (arrays: number[][]): number => {
     for (let i = 0; i < arrays.length - 1; i++) {
       const maxA = Math.max(...arrays[i].filter((num) => num <= 600));
       for (let j = i + 1; j < arrays.length; j++) {
