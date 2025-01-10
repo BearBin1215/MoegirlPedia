@@ -662,6 +662,7 @@ $(() => (async () => {
       gapnamespace: namespace,
       prop: 'revisions|categories',
       rvprop: 'content',
+      utf8: true,
     };
 
     // 报错及参数调整以供下次请求
@@ -674,6 +675,9 @@ $(() => (async () => {
       params.gaplimit = Math.ceil(params.gaplimit / 2); // 减少页面数
       await waitInterval(3000);
     };
+
+    // 固定等待时间
+    await waitInterval(1500);
 
     // 父循环
     do {
@@ -693,6 +697,8 @@ $(() => (async () => {
       params.gaplimit = Math.min(params.gaplimit * 2, limit); // 请求成功后逐渐恢复原有数量
 
       processPage(Object.values(res.query.pages));
+
+      console.log(JSON.stringify(res.continue || {}));
 
       // 处理continue
       let { gapcontinue, rvcontinue, clcontinue } = res.continue || {};
@@ -722,7 +728,7 @@ $(() => (async () => {
 
         // 有gapcontinue则更新并退出子循环
         if (subRes.continue?.gapcontinue) {
-          ({ gapcontinue } = subRes.continue.gapcontinue);
+          ({ gapcontinue } = subRes.continue);
           Reflect.deleteProperty(params, 'rvcontinue');
           Reflect.deleteProperty(params, 'clcontinue');
           break;
@@ -751,7 +757,7 @@ $(() => (async () => {
           func(text, categories, title);
         }
       }
-      console.log(`已遍历\x1B[4m${count}\x1B[0m个页面`);
+      console.log(`已遍历\x1B[4m${count}\x1B[0m个页面 - params.gapcontinue: ${params.gapcontinue}`);
     } while (params.gapcontinue !== undefined);
   };
 
@@ -800,6 +806,7 @@ $(() => (async () => {
   /** 将wikitext提交至萌百 */
   const updatePage = async (maxRetry = 5) => {
     const title = 'User:BearBin/杂物';
+    console.log(messOutput.wikitext);
     let retryCount = 0;
     while (retryCount < maxRetry) {
       try {
@@ -852,7 +859,6 @@ $(() => (async () => {
         ], 0, 30);
         console.log('\n主名字空间检查完毕。');
 
-        // 检查模板
         await traverseAllPages([
           imgLT99pxInTemplate, // 检查查过99px的页顶模板
           redundantWrapInTemplate, // 检查多余换行
