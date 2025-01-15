@@ -1,6 +1,6 @@
 import fs from 'fs';
-import MWBot from 'mwbot';
-import config from './config.js';
+import mw from './mw';
+import config from './config';
 import { execSync } from 'child_process';
 
 /** 被WAF禁用的Window对象下的函数 */
@@ -51,24 +51,21 @@ if (!list.length) {
 } else {
   console.log(`发生变化的工具：${list.join('、')}。即将开始同步。`);
 
-  const waitInterval = (time) => new Promise((resolve) => setTimeout(resolve, time));
+  const waitInterval = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
 
-  const bot = new MWBot({
-    apiUrl: config.API_PATH,
-  }, {
-    timeout: 90000,
+  const bot = new mw.Api({
+    url: config.API_PATH,
+    username: config.username,
+    password: config.password,
   });
 
   /** 最近一次提交的消息 */
   const lastCommitMessage = execSync('git log -1 --pretty=%s').toString();
 
   // 执行同步
-  await bot.loginGetEditToken({
-    username: config.username,
-    password: config.password,
-  });
+  await bot.login();
   console.log('登陆成功，开始同步');
-  const errorList = [];
+  const errorList: string[] = [];
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
     /** 萌百页面名 */
@@ -86,16 +83,17 @@ if (!list.length) {
     );
     /** 加上页顶文档文本、nowiki标签，生成最后要提交到页面的源码 */
     const text = `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\n// <nowiki>\n\n${source}\n\n// </nowiki>`;
+    const { csrftoken } = await bot.getToken('csrf');
     for (let j = 0; j <= maxRetry;) {
       try {
-        const res = await bot.request({
+        const res = await bot.post({
           action: 'edit',
           title,
           text,
           summary: `同步GitHub更改：${lastCommitMessage}`,
           bot: true,
           tags: 'Bot',
-          token: bot.editToken,
+          token: csrftoken,
         });
         if (res.edit.nochange === '') {
           console.log(`${title}保存前后无变化。`);
@@ -110,14 +108,14 @@ if (!list.length) {
           console.log(`正在重试（${j}/${maxRetry}）`);
         } else {
           try {
-            await bot.request({
+            await bot.post({
               action: 'edit',
               title,
               text: `var _addText = '{{Documentation|content=* 工具介绍见[[User:BearBin/js#${item}]]。\\n* 源代码见[https://github.com/BearBin1215/MoegirlPedia/blob/master/src/gadgets/${item} GitHub]。}}';\n\nmw.loader.load("//fastly.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/${item}.min.js")`,
               summary: `同步GitHub更改：${lastCommitMessage}`,
               bot: true,
               tags: 'Bot',
-              token: bot.editToken,
+              token: csrftoken,
             });
             console.log(`${item}已通过外部脚本形式同步。`);
             console.log('提交失败的代码：');

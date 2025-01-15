@@ -24,4 +24,5 @@ jobs:
         env:
           MW_USERNAME: BearBin
           MW_PASSWORD: ${{ secrets.MGP_PASSWORD }}
-        run: node scripts/src/Synchronize.js
+          DEFAULT_COOKIE: ${{ secrets.DEFAULT_COOKIE }}
+        run: tsx scripts/src/Synchronize.ts
