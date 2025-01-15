@@ -66,8 +66,8 @@ mw.loader.using('mediawiki.api').then(() => {
   };
 
   if (diff && oldid) {
-    // 查看差异，仅在有显示“返回最后的版本 ↺”按钮时加载
-    if (!($('.permissions-errors a[href]').text().includes('↺'))) {
+    // 查看差异，仅在有显示“返回至XXX”按钮时加载
+    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回至'))) {
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
@@ -146,11 +146,10 @@ mw.loader.using('mediawiki.api').then(() => {
       }
     });
 
-    $('#mw-content-text').append($gadgetZone.append('或 ', $loadDiffButton, '。'));
+    $('#mw-returnto').after($gadgetZone.append('您也可以', $loadDiffButton, '。'));
   } else if (oldid) {
     // 查看旧版本
-    if (!($('.permissions-errors a[href]').text().includes('↺'))) {
-      // 仅在有显示“返回最后的版本 ↺”按钮时加载
+    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回至'))) {
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
@@ -178,7 +177,7 @@ mw.loader.using('mediawiki.api').then(() => {
       }
     });
 
-    $('#mw-content-text').append($gadgetZone.append('或', $loadHTMLButton, '。'));
+    $('#mw-returnto').after($gadgetZone.append('您也可以', $loadHTMLButton, '。'));
   } else if ($moderationNotice.get(0) && !$moderationNotice.children('a[href*="Special:Moderation"]').length) {
     // 有提示当前版本未通过审核，且不是自己的编辑时
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
@@ -208,7 +207,8 @@ mw.loader.using('mediawiki.api').then(() => {
     });
 
     $moderationNotice.append($gadgetZone.append('您也可以 ', $showCurrentButton, '。'));
-  } else if (document.querySelector<HTMLAnchorElement>('.permissions-errors a[href*="action=edit"]')) {
+  } else if ($('#mw-content-text').text().includes('的版本#0不存在。')) {
+    console.log('新页面');
     // 新页面
     const $gadgetZone = $('<div class="history-revert-showcurrent" />');
     const $showPageButton = $('<a>查看待审核内容</a>') as JQuery<HTMLAnchorElement>;
@@ -237,6 +237,6 @@ mw.loader.using('mediawiki.api').then(() => {
       }
     });
 
-    $('.permissions-errors').append($gadgetZone.append('您也可以 ', $showPageButton, '。'));
+    $('#mw-content-text').append($gadgetZone.append('也可能当前页面未通过审核，您可以尝试', $showPageButton, '。'));
   }
 });
