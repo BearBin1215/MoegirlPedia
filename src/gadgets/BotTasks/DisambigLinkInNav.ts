@@ -1,5 +1,5 @@
 import waitInterval from '@/utils/wait';
-import { categoryMembers } from '@/utils/api';
+import { traverseCategoryMembers } from '@/utils/api';
 
 interface Title {
   title: string;
@@ -96,7 +96,7 @@ const main = async (retryCount = 5) => {
       const DisambigList = await getDisambigList();
       console.log(`获取到\x1B[4m${DisambigList.length}\x1B[0m个消歧义页及其重定向，正在获取所有导航模板……`);
 
-      const templates = await categoryMembers('Category:导航模板');
+      const templates = await traverseCategoryMembers('Category:导航模板');
       console.log(`获取到\x1B[4m${templates.length}\x1B[0m个模板。正在获取模板中包含的链接……`);
 
       const linksInTemplates = await getLinksInTemplates(templates, 500);

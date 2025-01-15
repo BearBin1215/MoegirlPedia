@@ -89,4 +89,37 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
   return pageList;
 };
 
+export const traverseCategoryMembers = async (cmtitle: string) => {
+  const traversedCategoryList: string[] = [];
+
+  const traverseCategory = async (category: string) => {
+    const api = new mw.Api();
+    const pageList: string[] = [];
+    let gcmcontinue: string | undefined = '';
+    while (gcmcontinue !== undefined) {
+      const response = await api.post({
+        action: 'query',
+        generator: 'categorymembers',
+        gcmtitle: category,
+        gcmtype: 'page|subcat',
+        gcmlimit: 'max',
+        gcmcontinue,
+      }) as ApiQueryResponse;
+      gcmcontinue = response.continue?.gcmcontinue;
+      for (const { ns, title } of Object.values(response.query.pages)) {
+        if (ns === 14 && !traversedCategoryList.includes(title)) {
+          traversedCategoryList.push(title); // 避免套娃
+          pageList.push(...await traverseCategory(title));
+        } else {
+          pageList.push(title);
+        }
+      }
+      console.log(`\x1B[4m${category}\x1B[0m下查找到\x1B[4m${pageList.length}\x1B[0m个页面`);
+    }
+    return [...new Set(pageList)];
+  };
+
+  return await traverseCategory(cmtitle);
+};
+
 export default getCategoryMembers;
