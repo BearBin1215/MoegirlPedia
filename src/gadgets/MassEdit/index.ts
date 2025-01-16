@@ -48,7 +48,7 @@ $(() => (async () => {
     },
   ], 'massedit-log', 'h5');
   mw.loader.load('/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
-  $(document.head).append(`<link rel="stylesheet" href="${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles" />`);
+  mw.loader.load(`${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles`, 'text/css');
 
   /**
    * 在Special:MassEdit构建页面
@@ -59,10 +59,15 @@ $(() => (async () => {
   $('#firstHeading').html('批量编辑页面<div>By <a href="/User:BearBin">BearBin</a></div>');
   $('#contentSub').remove();
 
-  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>') as JQuery<HTMLTextAreaElement>; // “原文字”输入框
-  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>') as JQuery<HTMLTextAreaElement>; // “替换为”输入框
-  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>') as JQuery<HTMLTextAreaElement>; // 页面列表
-  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>') as JQuery<HTMLTextAreaElement>; // 分类列表
+  /** “原文字”输入框 */
+  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>') as JQuery<HTMLTextAreaElement>;
+  /** “替换为”输入框 */
+  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>') as JQuery<HTMLTextAreaElement>;
+  /** 页面列表 */
+  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
+  /** 分类列表 */
+  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
+
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
   });

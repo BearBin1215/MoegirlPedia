@@ -53,6 +53,9 @@ module.exports = {
       "oojs-ui-react": path.resolve(__dirname, '..', 'src/components/oojs-ui-react'),
     },
   },
+  cache: {
+    type: 'filesystem',
+  },
   module: {
     rules: [
       {
