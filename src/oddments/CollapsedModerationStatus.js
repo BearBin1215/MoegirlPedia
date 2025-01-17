@@ -2,5 +2,8 @@
 $('.mw-collapsible.mw-changeslist-line').each(function (_, ele) {
   var $modIcon = $(ele).find('.mod-status-icon').first();
   $modIcon[0].previousSibling.remove();
+  if ($modIcon[0].previousSibling.textContent.includes('（')) {
+    $modIcon[0].nextSibling.remove();
+  }
   $(ele).find('tbody>tr:first-child .mw-changeslist-line-inner').prepend($modIcon);
 });
