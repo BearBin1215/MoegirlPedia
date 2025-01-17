@@ -327,9 +327,9 @@ $(() => (async () => {
    * @returns 匹配位置组成的集合
    */
   const regexPosition = (str: string, reg: RegExp) => {
-    const match = reg.exec(str);
+    let match: RegExpExecArray | null;
     const indexes: number[] = [];
-    while (match !== null) {
+    while ((match = reg.exec(str)) !== null) {
       indexes.push(match.index);
     }
     return indexes;
@@ -689,7 +689,7 @@ $(() => (async () => {
     };
 
     // 固定等待时间
-    await waitInterval(1500);
+    await waitInterval(3000);
 
     // 父循环
     do {
@@ -842,59 +842,49 @@ $(() => (async () => {
    * 主函数
    * @param 最大重试次数
    */
-  const main = async (retryCount = 5) => {
-    let retries = 0;
-    while (retries < retryCount) {
-      try {
-        topTipTemplate = (await categoryMembers('Category:页顶提示模板')).map((item) => item.replace('Template:', ''))
-          .filter((item) => !['架空历史'].includes(item)); // 获取Category:页顶提示模板内的模板，排除架空历史TOP等
-        console.log(`获取到${topTipTemplate.length}个页顶提示模板。`);
+  const main = async () => {
+    topTipTemplate = (await categoryMembers('Category:页顶提示模板')).map((item) => item.replace('Template:', ''))
+      .filter((item) => !['架空历史'].includes(item)); // 获取Category:页顶提示模板内的模板，排除架空历史TOP等
+    console.log(`获取到${topTipTemplate.length}个页顶提示模板。`);
 
-        // 检查主名字空间
-        await traverseAllPages([
-          pipeInDisambig, // 检查消歧义页模板
-          wrapDetector, // 检查过量换行
-          bigDetector, // 检查连续<big>
-          repetitiveTop, // 检查重复TOP
-          imgLT99px, // 检查图片超过99px的页顶模板
-          redBoldText, // 检查疑似喊话内容
-          headlineBeforeNav, // 检查大家族前的二级标题
-          refBeforeNav, // 检查错误大家族模板位置
-          templateOrder, // 检查页顶模板顺序
-          innerToOuter, // 检查背景图片等模板中的图站外链
-          redundantPipe, // 管道符前后内容一致
-          oldCVCategory, // 旧的声优分类格式
-          httpColon, // 检查http(s)//（少冒号）
-        ], 0, 30);
-        console.log('\n主名字空间检查完毕。');
+    // 检查主名字空间
+    await traverseAllPages([
+      pipeInDisambig, // 检查消歧义页模板
+      wrapDetector, // 检查过量换行
+      bigDetector, // 检查连续<big>
+      repetitiveTop, // 检查重复TOP
+      imgLT99px, // 检查图片超过99px的页顶模板
+      redBoldText, // 检查疑似喊话内容
+      headlineBeforeNav, // 检查大家族前的二级标题
+      refBeforeNav, // 检查错误大家族模板位置
+      templateOrder, // 检查页顶模板顺序
+      innerToOuter, // 检查背景图片等模板中的图站外链
+      redundantPipe, // 管道符前后内容一致
+      oldCVCategory, // 旧的声优分类格式
+      httpColon, // 检查http(s)//（少冒号）
+    ], 0, 30);
+    console.log('\n主名字空间检查完毕。');
 
-        await traverseAllPages([
-          imgLT99pxInTemplate, // 检查查过99px的页顶模板
-          redundantWrapInTemplate, // 检查多余换行
-          needSpaceBesidesPoint, // 检查•左右缺少的空格
-          redundantPipe, // 管道符前后内容一致
-          wrongNavName, // 大家族模板中错误的name参数
-        ], 10, 10);
-        console.log('\n模板名字空间检查完毕。');
+    await traverseAllPages([
+      imgLT99pxInTemplate, // 检查查过99px的页顶模板
+      redundantWrapInTemplate, // 检查多余换行
+      needSpaceBesidesPoint, // 检查•左右缺少的空格
+      redundantPipe, // 管道符前后内容一致
+      wrongNavName, // 大家族模板中错误的name参数
+    ], 10, 10);
+    console.log('\n模板名字空间检查完毕。');
 
-        await getVariantTitles(0);
-        console.log('主名字空间疑似繁体命名检查完毕。');
-        await getVariantTitles(10);
-        console.log('模板名字空间疑似繁体命名检查完毕。');
-        await getVariantTitles(14);
-        console.log('分类空间疑似繁体命名检查完毕。');
+    await getVariantTitles(0);
+    console.log('主名字空间疑似繁体命名检查完毕。');
+    await getVariantTitles(10);
+    console.log('模板名字空间疑似繁体命名检查完毕。');
+    await getVariantTitles(14);
+    console.log('分类空间疑似繁体命名检查完毕。');
 
 
-        await updatePage(); // 提交至萌百
-        return;
-      } catch (error) {
-        console.error(`获取数据出错：${error}\n正在重试（${retries + 1}/${retryCount}）`);
-        retries++;
-      }
-    }
-    throw new Error(`运行失败：已连续尝试${retryCount}次。`);
+    await updatePage(); // 提交至萌百
   };
 
   // 执行
-  main(5);
+  main();
 })());
