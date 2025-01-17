@@ -689,7 +689,7 @@ $(() => (async () => {
     };
 
     // 固定等待时间
-    await waitInterval(7000);
+    await waitInterval(5000);
 
     // 父循环
     do {
@@ -700,6 +700,7 @@ $(() => (async () => {
       while (retryCount < maxRetry) {
         try {
           res = await api.post(params); // 发送请求
+          await waitInterval(5000);
           break;
         } catch (error) {
           await resolveError(error, ++retryCount);
@@ -727,6 +728,7 @@ $(() => (async () => {
         while (retryCount < maxRetry) {
           try {
             subRes = await api.post(params);
+            await waitInterval(5000);
             break;
           } catch (error) {
             await resolveError(error, ++retryCount);
