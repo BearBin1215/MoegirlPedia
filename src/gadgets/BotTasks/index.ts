@@ -689,7 +689,7 @@ $(() => (async () => {
     };
 
     // 固定等待时间
-    await waitInterval(3000);
+    await waitInterval(7000);
 
     // 父循环
     do {
@@ -862,7 +862,7 @@ $(() => (async () => {
       redundantPipe, // 管道符前后内容一致
       oldCVCategory, // 旧的声优分类格式
       httpColon, // 检查http(s)//（少冒号）
-    ], 0, 30);
+    ], 0, 20);
     console.log('\n主名字空间检查完毕。');
 
     await traverseAllPages([
