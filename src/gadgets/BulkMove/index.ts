@@ -202,7 +202,7 @@ $(() => (async () => {
       const watchlist = watchlistWidget.isSelected() ? 'watch' : 'unwatch';
       const reason = reasonBox.getValue().length > 0 ? `[[User:BearBin/js#批量移动页面|BulkMove]]：${reasonBox.getValue()}` : '[[User:BearBin/js#批量移动页面|BulkMove]]';
       const interval = Number(intervalBox.getValue()) * 1000;
-      const tags = mw.config.get('wgUserGroups')!.includes('bot') ? 'bot' : 'Automation tool';
+      const tags = mw.config.get('wgUserGroups')!.includes('bot') ? 'Bot' : 'Automation tool';
       const pageList: { from: string; to: string }[] = [];
 
       $tableBody.children('tr').each((_, tr) => {
