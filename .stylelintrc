@@ -20,6 +20,7 @@
   "rules": {
     "selector-id-pattern": null,
     "selector-class-pattern": null,
+    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global"] }],
     "color-function-notation": null,
     "comment-empty-line-before": null,
     "no-descending-specificity": null,

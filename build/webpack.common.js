@@ -89,9 +89,9 @@ module.exports = {
             type: 'asset/source',
             use: [postCssLoader, 'less-loader'],
           },
-          /** import styles from 'foo.less?module'; 时作为CSS Module导入 */
+          /** import styles from 'foo.module.less'; 时作为CSS Module导入 */
           {
-            resourceQuery: /module/,
+            test: /\.module\.less$/,
             use: [
               'style-loader',
               cssModuleLoader,

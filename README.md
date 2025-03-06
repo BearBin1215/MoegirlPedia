@@ -255,8 +255,8 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
     > - dist/gadgets/Example-Vue.min.js: 67.517KB (69137字节)
   - 由于首先考虑支持react，本项目**不支持使用jsx编写vue**。如有需要，请使用[渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)。
 - 样式表有3种导入方式：
-  - 使用`import './foo.less'`，这种情况下样式表经过webpack的处理会自动加载到`<head>`中。
-  - 使用`import styles from 'foo.less?module';`，样式表将作为[CSS Modules](https://github.com/css-modules/css-modules)导入。
+  - 使用`import './foo.less'`，样式表经过webpack的处理会在代码运行时自动加载到`<head>`中。
+  - 使用`import styles from 'foo.module.less';`，样式表将作为[CSS Modules](https://github.com/css-modules/css-modules)导入。
   - 使用`import styles from './foo.less' assert { type: 'string' }`，该情况下会将样式表内容作为字符串导入，less则会在编译后作为字符串导入。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
 
