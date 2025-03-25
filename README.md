@@ -250,9 +250,9 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 - 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js、[ts](https://www.typescriptlang.org/)和[vue3](https://vuejs.org/)编写都可以，项目会通过webpack处理依赖并打包为单一的可执行js文件。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js或ts文件中调用。
   - 使用React和Vue编写的简单实例分别参考[Example-React](/src/gadgets/Example-React)和[Example-Vue](/src/gadgets/Example-Vue)。
   - 项目使用[preact](https://preactjs.com/)的兼容层取代react以减小打包体积、优化性能，在实际编写中请自行查阅文档查看区别。
-  - 如非技术限制，建议使用react而非vue编写，在使用preact后打包体积为22KB+，而使用vue编写后打包体积为67KB+，已经接近了萌娘百科提交超时界限。
+  - 如非技术限制，建议使用react而非vue编写，在使用preact后打包体积为22KB+，而使用vue编写后打包体积为58KB+，已经接近了萌娘百科提交超时界限。
     > - dist/gadgets/Example-React.min.js: 22.736KB (23282字节)
-    > - dist/gadgets/Example-Vue.min.js: 67.517KB (69137字节)
+    > - dist/gadgets/Example-Vue.min.js: 58.787KB (60198字节)
   - 由于首先考虑支持react，本项目**不支持使用jsx编写vue**。如有需要，请使用[渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)。
 - 样式表有3种导入方式：
   - 使用`import './foo.less'`，样式表经过webpack的处理会在代码运行时自动加载到`<head>`中。

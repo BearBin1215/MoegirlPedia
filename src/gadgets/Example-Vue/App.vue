@@ -4,16 +4,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  data() {
-    return {
-      msg: 'Hello, Vue!',
-    };
-  },
-});
+<script setup lang="ts">
+const msg = 'Hello, Vue!';
 </script>
 
 <style scoped>
