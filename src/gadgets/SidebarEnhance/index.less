@@ -57,18 +57,14 @@
 }
 
 .sidebar-enchance-title {
-    .n-collapse-item-arrow {
+    .folder-icon {
+        width: 1.2em;
         float: right;
-
-        svg {
-            transition: @transform-transition;
-            transform: rotate(90deg);
-        }
     }
 
-    &.body-folded .n-collapse-item-arrow {
-        svg {
-            transform: rotate(0);
+    &.body-folded {
+        .folder-icon {
+            transform: rotate(90deg);
         }
     }
 }

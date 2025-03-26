@@ -141,14 +141,14 @@ module.exports = {
       {
         test: /\.svg$/,
         oneOf: [
-          {
-            issuer: /\.[jt]sx?$/,
-            use: ['@svgr/webpack'],
-          },
           // `import svg from 'foo.svg' assert { type: 'xml' }`时作为完整的XML字符串导入
           {
             assert: { type: 'xml' },
             type: 'asset/source',
+          },
+          {
+            issuer: /\.[jt]sx$/,
+            use: ['@svgr/webpack'],
           },
           {
             type: 'asset/inline',

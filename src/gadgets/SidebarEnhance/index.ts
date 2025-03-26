@@ -9,12 +9,11 @@ $(() => {
    * 使$title点击时控制$body的缩放
    * @param {JQuery<HTMLElement>} $title 侧栏块标题
    * @param {JQuery<HTMLElement>} $body 侧栏块内容
-   * @param {JQuery<HTMLElement> | string} $icon 折叠图标
    */
-  const addFold = ($title: JQuery<HTMLElement>, $body: JQuery<HTMLElement>, $icon: JQuery<HTMLElement> | string) => {
+  const addFold = ($title: JQuery<HTMLElement>, $body: JQuery<HTMLElement>) => {
     $title
       .addClass('sidebar-enchance-title')
-      .append($icon);
+      .append(folderSvg);
 
     let foldState = false;
     $title.on('click', () => {
@@ -43,16 +42,12 @@ $(() => {
     }
   };
 
-  /** 折叠图标 */
-  let folderIcon: string | JQuery<HTMLElement> = folderSvg;
-
   switch (mw.config.get('skin')) {
     case 'moeskin':
-      folderIcon = $('#moe-sitenotice-container .n-collapse-item-arrow'); // moeskin使用现成的图标
-      addFold($('#moe-custom-sidenav-block h2'), $('#moe-custom-sidenav-block-list'), folderIcon.clone()); // 自定义工具栏
-      addFold($('#side-toc-container h3'), $('#side-toc-container>.moe-table-of-contents'), folderIcon.clone()); // 目录
-      addFold($('#p-sl h3'), $('#p-sl>div>div'), folderIcon.clone()); // 短连接
-      addFold($('.artwork-main .n-page-header'), $('.artwork-main .n-card__content>div'), folderIcon.clone()); // 短连接
+      addFold($('#moe-custom-sidenav-block h2'), $('#moe-custom-sidenav-block-list')); // 自定义工具栏
+      addFold($('#side-toc-container h3'), $('#side-toc-container>.moe-table-of-contents')); // 目录
+      addFold($('#p-sl h3'), $('#p-sl>div>div')); // 短连接
+      addFold($('.artwork-main .n-page-header'), $('.artwork-main .n-card__content>div')); // 短连接
 
       // 将工具放到sticky容器
       moveToSticky();
@@ -60,13 +55,13 @@ $(() => {
       break;
     case 'vector-2022':
       $('.vector-pinnable-element .vector-menu').each((_, ele) => {
-        addFold($(ele).children('.vector-menu-heading'), $(ele).children('.vector-menu-content'), folderIcon);
+        addFold($(ele).children('.vector-menu-heading'), $(ele).children('.vector-menu-content'));
       });
       break;
     case 'vector':
     default:
       $('#mw-panel .portal').each((_, portal) => {
-        addFold($(portal).children('h3'), $(portal).children('.body'), folderIcon);
+        addFold($(portal).children('h3'), $(portal).children('.body'));
       });
 
       // 将工具放到sticky容器
