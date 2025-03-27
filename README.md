@@ -252,7 +252,7 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
   - 项目使用[preact](https://preactjs.com/)的兼容层取代react以减小打包体积、优化性能，在实际编写中请自行查阅文档查看区别。
   - 如非技术限制，建议使用react而非vue编写，在使用preact后打包体积为22KB+，而使用vue编写后打包体积为58KB+，已经接近了萌娘百科提交超时界限。
     > - dist/gadgets/Example-React.min.js: 22.736KB (23282字节)
-    > - dist/gadgets/Example-Vue.min.js: 58.787KB (60198字节)
+    > - dist/gadgets/Example-Vue.min.js: 63.229KB (64746字节)
   - 由于首先考虑支持react，本项目**不支持使用jsx编写vue**。如有需要，请使用[渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)。
 - 样式表有3种导入方式：
   - 使用`import './foo.less'`，样式表经过webpack的处理会在代码运行时自动加载到`<head>`中。

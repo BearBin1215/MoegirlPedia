@@ -5,10 +5,12 @@
 </template>
 
 <script setup lang="ts">
-const msg = 'Hello, Vue!';
+import { ref } from "vue";
+
+const msg = ref("Hello, Vue!");
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .vue-component-example {
   color: blue;
 }

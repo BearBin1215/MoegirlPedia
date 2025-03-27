@@ -27,10 +27,6 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "sideEffects": [
-    "*.less",
-    "*.css"
-  ],
   "dependencies": {
     "classnames": "^2.5.1",
     "dom-to-image": "^2.6.0",
