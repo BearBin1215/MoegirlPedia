@@ -3,11 +3,15 @@ import { createRoot } from 'react-dom/client';
 import ReactJson from 'react18-json-view';
 import { pageSource } from '@/utils/api';
 import 'react18-json-view/src/style.css';
+import 'react18-json-view/src/dark.css';
 import './index.less';
 
 declare global {
   interface Window {
-    jsonViewTheme?: 'default' | 'a11y' | 'github' | 'vscode' | 'atom' | 'winter-is-coming';
+    /** 颜色主题 */
+    jsonViewerTheme?: 'default' | 'a11y' | 'github' | 'vscode' | 'atom' | 'winter-is-coming';
+    /** 暗色模式 */
+    jsonViewerDark?: boolean;
   }
 }
 
@@ -27,7 +31,8 @@ $(() => (async () => {
         src={JSON.parse(json!)}
         displaySize
         editable
-        theme={window.jsonViewTheme || 'vscode'}
+        theme={window.jsonViewerTheme || 'vscode'}
+        dark={window.jsonViewerDark}
       />
     </StrictMode>,
   );
