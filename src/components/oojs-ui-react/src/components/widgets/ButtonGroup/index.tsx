@@ -2,13 +2,12 @@ import React, { forwardRef, type ReactElement } from 'react';
 import classNames from 'classnames';
 import Widget, { type WidgetProps } from '../Widget';
 import type { ButtonProps } from '../Button';
-import type { ElementRef } from '../../../types/ref';
 
 export interface ButtonGroupProps extends WidgetProps {
   children: ReactElement<ButtonProps> | ReactElement<ButtonProps>[];
 }
 
-const ButtonGroup = forwardRef<ElementRef<HTMLDivElement>, ButtonGroupProps>(({
+const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   className,
   children,
   ...rest

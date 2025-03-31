@@ -2,18 +2,15 @@ import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Select from '../Select';
 import type { SelectProps } from '../Select';
-import type { InputWidgetRef } from '../../../types/ref';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;
 }
 
-export type MenuSelectRef = InputWidgetRef<HTMLDivElement, string | number | undefined>;
-
 /**
  * Dropdown组件内包裹的中间组件
  */
-const MenuSelect = forwardRef<MenuSelectRef, MenuSelectProps>(({
+const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,
   open = false,
   ...rest

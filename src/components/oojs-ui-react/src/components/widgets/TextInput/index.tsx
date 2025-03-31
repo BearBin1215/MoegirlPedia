@@ -2,7 +2,6 @@ import React, {
   useState,
   useRef,
   forwardRef,
-  useImperativeHandle,
   type CSSProperties,
   type ChangeEvent,
 } from 'react';
@@ -14,7 +13,6 @@ import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { LabelElement, IconElement, IndicatorElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
-import type { ElementRef } from '../../../types/ref';
 
 export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extends
   InputProps<string | undefined, T, P>,
@@ -36,7 +34,7 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
  * 文本输入框
  * @returns
  */
-const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
+const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   accessKey,
   name,
   className,
@@ -55,7 +53,6 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue || '');
-  const elementRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
 
   const classes = classNames(
@@ -92,18 +89,12 @@ const TextInput = forwardRef<ElementRef<HTMLDivElement>, TextInputProps>(({
     return style;
   })();
 
-  useImperativeHandle(ref, () => ({
-    getValue: () => value,
-    setValue,
-    element: elementRef.current,
-  }), [value]);
-
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <input
         accessKey={accessKey}

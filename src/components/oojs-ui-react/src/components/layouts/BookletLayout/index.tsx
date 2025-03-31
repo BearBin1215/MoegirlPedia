@@ -9,7 +9,6 @@ import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import StackLayout from '../StackLayout';
 import type { OptionData } from '../../widgets/Option';
 import type { PageLayoutProps } from '../PageLayout';
-import type { ElementRef } from '../../../types/ref';
 import type { ChangeHandler } from '../../../types/utils';
 
 type BookletLayoutOptionProps = PageLayoutProps & {
@@ -28,7 +27,7 @@ export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'chil
   onChange?: ChangeHandler<string | number>;
 }
 
-const BookletLayout = forwardRef<ElementRef<HTMLDivElement>, BookletLayoutProps>(({
+const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   className,
   options,
   defaultKey,

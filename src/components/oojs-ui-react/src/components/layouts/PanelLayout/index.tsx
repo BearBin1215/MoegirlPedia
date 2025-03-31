@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Layout, { type LayoutProps } from '../Layout';
-import type { ElementRef } from '../../../types/ref';
 
 export interface PanelLayoutProps extends LayoutProps {
   /** 是否可滚动 */
@@ -15,7 +14,7 @@ export interface PanelLayoutProps extends LayoutProps {
 }
 
 /** @description 面板组件，用于制作各类布局组件 */
-const PanelLayout = forwardRef<ElementRef<HTMLDivElement>, PanelLayoutProps>(({
+const PanelLayout = forwardRef<HTMLDivElement, PanelLayoutProps>(({
   className,
   children,
   scrollable,

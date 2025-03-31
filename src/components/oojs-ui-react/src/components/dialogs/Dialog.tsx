@@ -4,14 +4,12 @@ import React, {
   useEffect,
   forwardRef,
   useRef,
-  useImperativeHandle,
   type ReactNode,
 } from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
 import type { ElementProps } from '../../types/mixin';
-import type { ElementRef } from '../../types/ref';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {
   /** 弹窗大小 */
@@ -26,7 +24,7 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
   contentClassName?: string,
 }
 
-const Dialog = forwardRef<ElementRef<HTMLDivElement>, DialogProps>(({
+const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   className,
   contentClassName,
   size = 'small',
@@ -44,7 +42,6 @@ const Dialog = forwardRef<ElementRef<HTMLDivElement>, DialogProps>(({
   const headRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const footRef = useRef<HTMLDivElement>(null);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -138,10 +135,6 @@ const Dialog = forwardRef<ElementRef<HTMLDivElement>, DialogProps>(({
     }
   }, [open]);
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }));
-
   return (
     <WindowManager
       full={full}
@@ -150,7 +143,7 @@ const Dialog = forwardRef<ElementRef<HTMLDivElement>, DialogProps>(({
       <div
         {...rest}
         className={classes}
-        ref={elementRef}
+        ref={ref}
       >
         <div
           className='oo-ui-window-frame'

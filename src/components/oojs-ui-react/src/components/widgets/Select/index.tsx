@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type Key,
   type MouseEventHandler,
 } from 'react';
@@ -13,7 +11,6 @@ import OutlineOption from '../OutlineOption';
 import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { OptionProps, OptionData } from '../Option';
-import type { ElementRef } from '../../../types/ref';
 
 export type SelectOptionProps = (OptionProps | MenuSectionOptionProps) & {
   key: Key;
@@ -37,7 +34,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
  * @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件
  * @todo 不再使用ReactElement的方式限制子元素，改用props传入选项参数
  */
-const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
+const Select = forwardRef<HTMLDivElement, SelectProps>(({
   className,
   disabled,
   onSelect,
@@ -47,7 +44,6 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -63,10 +59,6 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
     setPressed(false);
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }), [value]);
-
   return (
     <div
       {...rest}
@@ -77,7 +69,7 @@ const Select = forwardRef<ElementRef<HTMLDivElement>, SelectProps>(({
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
-      ref={elementRef}
+      ref={ref}
     >
       {options.map((option) => {
         if (!('data' in option)) {

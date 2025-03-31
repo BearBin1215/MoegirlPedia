@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type ChangeEvent,
 } from 'react';
 import classNames from 'classnames';
@@ -10,13 +8,12 @@ import IconWidget from '../Icon';
 import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement } from '../../../types/mixin';
-import type { SelectWidgetRef } from '../../../types/ref';
 
 export interface CheckboxInputProps extends
   Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'>,
   AccessKeyElement { }
 
-const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInputProps>(({
+const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   name,
   accessKey,
   className,
@@ -27,7 +24,6 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
-  const elementRef = useRef<HTMLSpanElement>(null);
 
   const classes = classNames(
     className,
@@ -47,18 +43,12 @@ const CheckboxInput = forwardRef<SelectWidgetRef<HTMLSpanElement>, CheckboxInput
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-    isSelected: () => value,
-    setSelected: (newValue: boolean) => setValue(newValue),
-  }));
-
   return (
     <span
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <input
         name={name}

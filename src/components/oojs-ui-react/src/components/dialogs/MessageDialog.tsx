@@ -8,7 +8,6 @@ import Dialog, { type DialogProps } from './Dialog';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
-import type { ElementRef } from '../../types/ref';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;
@@ -19,7 +18,7 @@ export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   onCancel?: MouseEventHandler<HTMLSpanElement>;
 }
 
-const MessageDialog = forwardRef<ElementRef<HTMLDivElement>, MessageDialogProps>(({
+const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   children,
   className,
   title,

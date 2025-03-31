@@ -1,11 +1,10 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Layout, { type LayoutProps } from '../Layout';
-import type { ElementRef } from '../../../types/ref';
 
 export type HorizontalLayoutProps = LayoutProps;
 
-const HorizontalLayout = forwardRef<ElementRef<HTMLDivElement>, HorizontalLayoutProps>(({
+const HorizontalLayout = forwardRef<HTMLDivElement, HorizontalLayoutProps>(({
   className,
   children,
   ...rest

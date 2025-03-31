@@ -1,8 +1,7 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import type { ElementProps } from '../../types/mixin';
-import type { ElementRef } from '../../types/ref';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;
@@ -12,7 +11,7 @@ export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   portal?: Element | DocumentFragment,
 }
 
-const WindowManager = forwardRef<ElementRef<HTMLDivElement>, WindowManagerProps>(({
+const WindowManager = forwardRef<HTMLDivElement, WindowManagerProps>(({
   className,
   children,
   modal = true,
@@ -20,7 +19,6 @@ const WindowManager = forwardRef<ElementRef<HTMLDivElement>, WindowManagerProps>
   portal = document.body,
   ...rest
 }, ref) => {
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -29,12 +27,14 @@ const WindowManager = forwardRef<ElementRef<HTMLDivElement>, WindowManagerProps>
     full ? 'oo-ui-windowManager-fullscreen' : 'oo-ui-windowManager-floating',
   );
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }));
-
   return createPortal(
-    <div {...rest} className={classes} ref={elementRef}>{children}</div>,
+    <div
+      {...rest}
+      className={classes}
+      ref={ref}
+    >
+      {children}
+    </div>,
     portal,
   );
 });

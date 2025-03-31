@@ -1,7 +1,5 @@
 import React, {
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type MouseEventHandler,
 } from 'react';
 import classNames from 'classnames';
@@ -10,7 +8,6 @@ import RadioInput from '../RadioInput';
 import { processClassNames } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionProps } from '../Option';
-import type { ElementRef } from '../../../types/ref';
 
 export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'onClick'> {
   onClick?: MouseEventHandler<HTMLLabelElement>;
@@ -20,7 +17,7 @@ export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'o
   data: number | string;
 }
 
-const RadioOption = forwardRef<ElementRef<HTMLLabelElement>, RadioOptionProps>(({
+const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
   accessKey,
   className,
   disabled,
@@ -30,17 +27,11 @@ const RadioOption = forwardRef<ElementRef<HTMLLabelElement>, RadioOptionProps>((
   selected,
   ...rest
 }, ref) => {
-  const elementRef = useRef<HTMLLabelElement>(null);
-
   const classes = classNames(
     className,
     processClassNames({ disabled, label: children }, 'option', 'radioOption'),
     selected && 'oo-ui-optionWidget-selected',
   );
-
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }), []);
 
   return (
     <label
@@ -50,7 +41,7 @@ const RadioOption = forwardRef<ElementRef<HTMLLabelElement>, RadioOptionProps>((
       tabIndex={-1}
       role='radio'
       aria-checked={!!selected}
-      ref={elementRef}
+      ref={ref}
     >
       <RadioInput
         accessKey={accessKey}

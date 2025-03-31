@@ -1,11 +1,10 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import Select, { type SelectProps } from '../Select';
-import type { ElementRef } from '../../../types/ref';
 
 export type OutlineSelectProps = SelectProps;
 
-const OutlineSelect = forwardRef<ElementRef<HTMLDivElement>, OutlineSelectProps>(({
+const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
   className,
   ...rest
 }, ref) => {

@@ -8,7 +8,7 @@ import React, {
   type Key,
 } from 'react';
 import classNames from 'classnames';
-import MenuSelect, { type MenuSelectRef } from './MenuSelect';
+import MenuSelect from './MenuSelect';
 import type { MenuOptionProps } from '../MenuOption';
 import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
@@ -40,12 +40,10 @@ export interface DropdownProps extends
   onChange?: ChangeHandler<any>;
 }
 
-type DropdownRef = MenuSelectRef;
-
 /**
  * @description 下拉选择框组件
  */
-const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
+const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   className,
   defaultValue,
   disabled,
@@ -119,11 +117,7 @@ const Dropdown = forwardRef<DropdownRef, DropdownProps>(({
     };
   }, [elementRef]);
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-    getValue: () => value,
-    setValue,
-  }));
+  useImperativeHandle(ref, () => elementRef.current!);
 
   return (
     <div

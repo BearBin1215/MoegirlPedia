@@ -2,14 +2,13 @@ import React, { useState, forwardRef } from 'react';
 import classNames from 'classnames';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
-import type { ElementRef } from '../../../types/ref';
 
 export interface MenuOptionProps extends
   Omit<DecoratedOptionProps, 'labelProps'>,
   OptionProps { }
 
 /** 选项组件，用于作为`Dropdown`子组件 */
-const MenuOption = forwardRef<ElementRef<HTMLDivElement>, MenuOptionProps>(({
+const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   disabled,
   selected,
   ...rest

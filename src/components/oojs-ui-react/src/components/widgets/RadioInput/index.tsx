@@ -1,14 +1,11 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type ChangeEvent,
 } from 'react';
 import classNames from 'classnames';
 import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
-import type { ElementRef } from '../../../types/ref';
 
 export interface RadioInputProps extends Omit<InputProps<
   boolean,
@@ -18,7 +15,7 @@ export interface RadioInputProps extends Omit<InputProps<
   selected?: boolean;
 }
 
-const RadioInput = forwardRef<ElementRef<HTMLSpanElement>, RadioInputProps>(({
+const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   accessKey,
   className,
   disabled,
@@ -29,7 +26,6 @@ const RadioInput = forwardRef<ElementRef<HTMLSpanElement>, RadioInputProps>(({
   ...rest
 }, ref) => {
   const [checked, setChecked] = useState(!!selected);
-  const elementRef = useRef<HTMLSpanElement>(null);
 
   const classes = classNames(
     className,
@@ -49,16 +45,12 @@ const RadioInput = forwardRef<ElementRef<HTMLSpanElement>, RadioInputProps>(({
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }));
-
   return (
     <span
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <input
         type='radio'

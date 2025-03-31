@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useRef,
   forwardRef,
-  useImperativeHandle,
   type CSSProperties,
   type ChangeEvent,
 } from 'react';
@@ -14,7 +13,6 @@ import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
 import type { TextInputProps } from '../TextInput';
-import type { InputWidgetRef } from '../../../types/ref';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
   /** 行数 */
@@ -30,7 +28,7 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
 /**
  * @todo autosize功能
  */
-const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineTextInputProps>(({
+const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
   name,
   className,
@@ -52,7 +50,6 @@ const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineT
   ...rest
 }: MultilineTextInputProps, ref) => {
   const [value, setValue] = useState(defaultValue || '');
-  const elementRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
@@ -136,18 +133,12 @@ const MultilineTextInput = forwardRef<InputWidgetRef<HTMLDivElement>, MultilineT
     };
   }, [autosize, maxRows]);
 
-  useImperativeHandle(ref, () => ({
-    getValue: () => value,
-    setValue,
-    element: elementRef.current,
-  }), [value]);
-
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <textarea
         accessKey={accessKey}

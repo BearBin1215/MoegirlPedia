@@ -5,7 +5,6 @@ import React, {
 import classNames from 'classnames';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import PageLayout, { type PageLayoutProps } from '../PageLayout';
-import type { ElementRef } from '../../../types/ref';
 
 type PageOptionProps = PageLayoutProps & {
   key: Key;
@@ -20,7 +19,7 @@ export interface StackLayoutProps extends PanelLayoutProps {
   options: PageOptionProps[];
 }
 
-const StackLayout = forwardRef<ElementRef<HTMLDivElement>, StackLayoutProps>(({
+const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
   activeKey,
   className,
   expanded = true,

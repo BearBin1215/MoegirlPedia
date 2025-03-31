@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type ChangeEvent,
 } from 'react';
 import classNames from 'classnames';
@@ -10,7 +8,6 @@ import { processClassNames } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
 import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';
-import type { InputWidgetRef } from '../../../types/ref';
 
 /**
  * @template T 输入值类型
@@ -40,7 +37,7 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   value?: T;
 }
 
-const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | number>>(({
+const Input = forwardRef<HTMLDivElement, InputProps<string | number>>(({
   accessKey,
   name,
   className,
@@ -53,7 +50,6 @@ const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | num
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -72,18 +68,12 @@ const Input = forwardRef<InputWidgetRef<HTMLDivElement>, InputProps<string | num
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-    getValue: () => value,
-    setValue,
-  }));
-
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <input
         accessKey={accessKey}

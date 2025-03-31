@@ -7,7 +7,6 @@ import Layout, { type LayoutProps } from '../Layout';
 import PanelLayout from '../PanelLayout';
 import OutlineSelect from '../../widgets/OutlineSelect';
 import type { OptionData } from '../../widgets/Option';
-import type { ElementRef } from '../../../types/ref';
 
 export type MenuLayoutOptions = LayoutProps & {
   key: Key;
@@ -28,7 +27,7 @@ export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   activeKey?: any;
 }
 
-const MenuLayout = forwardRef<ElementRef<HTMLDivElement>, MenuLayoutProps>(({
+const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
   activeKey,
   className,
   children,

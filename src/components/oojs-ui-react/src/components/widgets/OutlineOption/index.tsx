@@ -2,13 +2,12 @@ import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionData } from '../Option';
-import type { ElementRef } from '../../../types/ref';
 
 export interface OutlineOptionProps extends DecoratedOptionProps, OptionData {
   level?: number;
 }
 
-const OutlineOption = forwardRef<ElementRef<HTMLDivElement>, OutlineOptionProps>(({
+const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   className,
   level = 0,
   selected,

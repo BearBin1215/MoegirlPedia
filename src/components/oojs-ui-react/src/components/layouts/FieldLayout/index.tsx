@@ -4,7 +4,6 @@ import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
 import type { LabelElement } from '../../../types/mixin';
-import type { ElementRef } from '../../../types/ref';
 
 export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,
@@ -16,7 +15,7 @@ export interface FieldLayoutProps extends
   help?: ReactNode;
 }
 
-const FieldLayout = forwardRef<ElementRef<HTMLDivElement>, FieldLayoutProps>(({
+const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
   align = 'left',
   children,
   className,

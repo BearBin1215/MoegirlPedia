@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type ChangeEvent,
 } from 'react';
 import classNames from 'classnames';
@@ -14,7 +12,6 @@ import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
-import type { InputWidgetRef } from '../../../types/ref';
 
 export interface NumberInputProps extends
   InputProps<number>,
@@ -46,7 +43,7 @@ export interface NumberInputProps extends
 }
 
 /** 数字输入框 */
-const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
+const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   name,
   accessKey,
   className,
@@ -69,7 +66,6 @@ const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
   ...rest
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = classNames(
     className,
@@ -109,18 +105,12 @@ const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-    getValue: () => value,
-    setValue,
-  }), [value]);
-
   return (
     <div
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
-      ref={elementRef}
+      ref={ref}
     >
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator} />

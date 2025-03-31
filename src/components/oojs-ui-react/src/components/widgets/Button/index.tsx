@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type MouseEventHandler,
 } from 'react';
 import classNames from 'classnames';
@@ -13,7 +11,6 @@ import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ButtonFlag } from '../../../types/utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../../../types/mixin';
-import type { ElementRef } from '../../../types/ref';
 
 export interface ButtonProps extends
   WidgetProps<HTMLSpanElement>,
@@ -40,7 +37,7 @@ export interface ButtonProps extends
   title?: string;
 }
 
-const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
+const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   active,
   accessKey,
   children,
@@ -58,7 +55,6 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
-  const elementRef = useRef<HTMLSpanElement>(null);
 
   const iconInvert = flags.includes('primary') || disabled || active;
   const iconDestructive = !flags.includes('primary')
@@ -108,14 +104,10 @@ const Button = forwardRef<ElementRef<HTMLSpanElement>, ButtonProps>(({
     }
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-  }));
-
   return (
     <span
       {...rest}
-      ref={elementRef}
+      ref={ref}
       className={classes}
       onClick={handleClick}
       onMouseUp={handleUnpress}

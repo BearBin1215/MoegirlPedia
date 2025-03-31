@@ -1,8 +1,6 @@
 import React, {
   useState,
-  useRef,
   forwardRef,
-  useImperativeHandle,
   type MouseEventHandler,
   type ReactElement,
 } from 'react';
@@ -11,7 +9,6 @@ import RadioOption, { type RadioOptionProps } from '../RadioOption';
 import { processArray, processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ChangeHandler } from '../../../types/utils';
-import type { InputWidgetRef } from '../../../types/ref';
 
 type OptionElement = ReactElement<RadioOptionProps>;
 
@@ -26,7 +23,7 @@ export interface RadioSelectProps extends WidgetProps {
   onChange?: ChangeHandler<string | number | undefined, HTMLInputElement>;
 }
 
-const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | undefined>, RadioSelectProps>(({
+const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   children,
   className,
   defaultValue,
@@ -37,7 +34,6 @@ const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | 
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
   const [pressed, setPressed] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
 
   const options = processArray(children);
 
@@ -55,12 +51,6 @@ const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | 
     setPressed(false);
   };
 
-  useImperativeHandle(ref, () => ({
-    element: elementRef.current,
-    getValue: () => value,
-    setValue,
-  }), [value]);
-
   return (
     <div
       {...rest}
@@ -71,7 +61,7 @@ const RadioSelect = forwardRef<InputWidgetRef<HTMLDivElement, string | number | 
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
-      ref={elementRef}
+      ref={ref}
     >
       {options.map((option) => {
         const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {

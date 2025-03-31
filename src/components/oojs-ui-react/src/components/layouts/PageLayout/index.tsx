@@ -1,12 +1,11 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
-import type { ElementRef } from '../../../types/ref';
 
 export type PageLayoutProps = PanelLayoutProps;
 
 /** @description 页组件，用于`BookletLayout`组件的子元素生成分页，`key`参数必须 */
-const PageLayout = forwardRef<ElementRef<HTMLDivElement>, PageLayoutProps>(({
+const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
   className,
   children,
   hidden,
