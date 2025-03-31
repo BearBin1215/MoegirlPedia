@@ -219,11 +219,13 @@ import { RadioOption, RadioSelect } from 'oojs-ui-react';
 
 const App = () => {
   return (
-    <RadioSelect>
-      <RadioOption data='a'>A</RadioOption>
-      <RadioOption data='b'>B</RadioOption>
-      <RadioOption data='c' disabled>C</RadioOption>
-    </RadioSelect>
+    <RadioSelect
+      options={[
+        { data: 'a' },
+        { data: 'b' },
+        { data: 'c', disabled: true },
+      ]}
+    />
   );
 };
 

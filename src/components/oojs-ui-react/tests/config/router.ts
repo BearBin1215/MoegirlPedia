@@ -15,6 +15,10 @@ const router: RouterItem[] = [
     Component: () => import('../pages/button'),
   },
   {
+    title: 'Radio',
+    Component: () => import('../pages/radio'),
+  },
+  {
     title: 'Layout',
     Component: () => import('../pages/layout'),
   },
