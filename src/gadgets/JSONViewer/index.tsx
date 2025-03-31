@@ -15,6 +15,8 @@ declare global {
   }
 }
 
+window.jsonViewerDark = true;
+
 $(() => (async () => {
   const jsonElement = document.getElementsByClassName('mw-json')[0] as HTMLDivElement;
   if (!jsonElement || mw.config.get('wgPageContentModel') !== 'json') {
@@ -23,6 +25,11 @@ $(() => (async () => {
   const json = await pageSource(mw.config.get('wgPageName'));
   const container = document.createElement('div');
   container.id = 'bearbintools-jsonviewer';
+  if (window.jsonViewerDark) {
+    container.classList.add('dark-mode');
+  } else {
+    container.classList.add('light-mode');
+  }
   jsonElement.replaceWith(container);
 
   createRoot(container).render(
