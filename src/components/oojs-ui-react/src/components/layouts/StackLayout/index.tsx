@@ -6,9 +6,9 @@ import classNames from 'classnames';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import PageLayout, { type PageLayoutProps } from '../PageLayout';
 
-type PageOptionProps = PageLayoutProps & {
+interface PageOptionProps extends PageLayoutProps {
   key: Key;
-};
+}
 
 export interface StackLayoutProps extends PanelLayoutProps {
   /** 是否全显示。优先级高于activeKey设置的显示 */

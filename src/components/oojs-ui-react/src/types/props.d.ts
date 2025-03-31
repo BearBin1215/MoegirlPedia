@@ -43,6 +43,7 @@ export type { MenuLayoutProps } from '../components/layouts/MenuLayout';
 export type { BookletLayoutProps } from '../components/layouts/BookletLayout';
 export type { FieldLayoutProps } from '../components/layouts/FieldLayout';
 export type { HorizontalLayoutProps } from '../components/layouts/HorizontalLayout';
+export type { IndexLayoutProps } from '../components/layouts/IndexLayout';
 
 // 弹窗
 export type { DialogProps } from '../components/dialogs/Dialog';

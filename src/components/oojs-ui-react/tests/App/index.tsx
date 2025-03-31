@@ -9,7 +9,7 @@ import 'oojs-ui/dist/oojs-ui-images-wikimediaui.min.css';
 const App = () => {
   return (
     <BookletLayout
-      defaultKey='Home'
+      defaultKey='Layout'
       options={router.map((route) => ({
         key: route.title,
         label: route.title,

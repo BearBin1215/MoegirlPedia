@@ -9,7 +9,7 @@ export interface PanelLayoutProps extends LayoutProps {
   padded?: boolean;
   /** 是否铺满父元素 */
   expanded?: boolean;
-  /** 有误边框 */
+  /** 有无边框 */
   framed?: boolean;
 }
 

@@ -43,6 +43,7 @@ export { default as MenuLayout } from './components/layouts/MenuLayout';
 export { default as BookletLayout } from './components/layouts/BookletLayout';
 export { default as FieldLayout } from './components/layouts/FieldLayout';
 export { default as HorizontalLayout } from './components/layouts/HorizontalLayout';
+export { default as IndexLayout } from './components/layouts/IndexLayout';
 
 // 弹窗
 export { default as Dialog } from './components/dialogs/Dialog';

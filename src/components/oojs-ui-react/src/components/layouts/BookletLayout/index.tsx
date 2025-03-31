@@ -6,17 +6,19 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
+import PanelLayout from '../PanelLayout';
+import OutlineSelect from '../../widgets/OutlineSelect';
 import StackLayout from '../StackLayout';
 import type { OptionData } from '../../widgets/Option';
 import type { PageLayoutProps } from '../PageLayout';
 import type { ChangeHandler } from '../../../types/utils';
 
-type BookletLayoutOptionProps = PageLayoutProps & {
+interface BookletLayoutOptionProps extends PageLayoutProps {
   /** 菜单选项显示内容 */
   label: ReactNode;
   /** 唯一标识，用于控制显示 */
   key: Key;
-};
+}
 
 export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'children' | 'onChange'> {
   /** 默认激活标签 */
@@ -62,9 +64,20 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
       {...rest}
       className={classes}
       ref={ref}
-      options={menuOptions}
       activeKey={activeKey}
-      onSelect={handleSelect}
+      menu={
+        <PanelLayout
+          className='oo-ui-bookletLayout-outlinePanel'
+          scrollable
+          expanded
+        >
+          <OutlineSelect
+            value={activeKey}
+            onSelect={handleSelect}
+            options={menuOptions}
+          />
+        </PanelLayout>
+      }
     >
       <StackLayout
         className='oo-ui-bookletLayout-stackLayout'

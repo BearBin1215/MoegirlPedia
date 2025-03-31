@@ -1,12 +1,10 @@
 import React, {
   forwardRef,
+  type ReactNode,
   type Key,
 } from 'react';
 import classNames from 'classnames';
 import Layout, { type LayoutProps } from '../Layout';
-import PanelLayout from '../PanelLayout';
-import OutlineSelect from '../../widgets/OutlineSelect';
-import type { OptionData } from '../../widgets/Option';
 
 export type MenuLayoutOptions = LayoutProps & {
   key: Key;
@@ -19,29 +17,25 @@ export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   showMenu?: boolean;
   /** 菜单位置 */
   menuPosition?: 'top' | 'after' | 'bottom' | 'before';
-  /** 页签集 */
-  options: MenuLayoutOptions[];
-  /** 选中选项回调函数 */
-  onSelect?: (option: OptionData) => void;
   /** 当前选中页签 */
   activeKey?: any;
+  /** 选择列表 */
+  menu: ReactNode;
 }
 
 const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
-  activeKey,
   className,
   children,
   expanded = true,
   showMenu = true,
   menuPosition = 'before',
-  options,
-  onSelect,
+  menu,
   ...rest
 }, ref) => {
   const classes = classNames(
     className,
     'oo-ui-menuLayout',
-    expanded && 'oo-ui-menuLayout-expanded',
+    expanded ? 'oo-ui-menuLayout-expanded' : 'oo-ui-menuLayout-static',
     showMenu ? 'oo-ui-menuLayout-showMenu' : 'oo-ui-menuLayout-hideMenu',
     `oo-ui-menuLayout-${menuPosition}`,
   );
@@ -52,17 +46,7 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
       className='oo-ui-menuLayout-menu'
       aria-hidden={!showMenu}
     >
-      <PanelLayout
-        className='oo-ui-bookletLayout-outlinePanel'
-        scrollable
-        expanded
-      >
-        <OutlineSelect
-          value={activeKey}
-          onSelect={onSelect}
-          options={options}
-        />
-      </PanelLayout>
+      {menu}
     </div>,
     <div
       key='content'
