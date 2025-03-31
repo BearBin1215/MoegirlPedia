@@ -1,13 +1,21 @@
 #bearbintools-jsonviewer {
     .json-view {
         padding: 0.6em 1em;
+        word-break: break-all;
+        line-height: inherit;
+
+        .jv-indent {
+            padding-left: 2em;
+        }
+
+        .jv-button {
+            font: inherit;
+        }
     }
 
     &.light-mode {
-        background-color: rgb(255 255 255 / 75%);
-    }
-
-    .jv-indent {
-        padding-left: 2em;
+        .json-view {
+            background-color: rgb(255 255 255 / 75%);
+        }
     }
 }

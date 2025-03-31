@@ -36,6 +36,7 @@ $(() => (async () => {
         src={JSON.parse(json!)}
         displaySize
         editable
+        collapseStringMode='word'
         theme={window.jsonViewerTheme || 'vscode'}
         dark={window.jsonViewerDark}
       />
