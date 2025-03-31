@@ -2,18 +2,15 @@ import React, {
   useState,
   forwardRef,
   type MouseEventHandler,
-  type ReactElement,
 } from 'react';
 import classNames from 'classnames';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
-import { processArray, processClassNames } from '../../../utils/tool';
+import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ChangeHandler } from '../../../types/utils';
 
-type OptionElement = ReactElement<RadioOptionProps>;
-
 export interface RadioSelectProps extends WidgetProps {
-  children: OptionElement | OptionElement[];
+  options: RadioOptionProps[];
 
   /** 默认要勾选的选项 */
   defaultValue?: string | number;
@@ -24,7 +21,7 @@ export interface RadioSelectProps extends WidgetProps {
 }
 
 const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
-  children,
+  options,
   className,
   defaultValue,
   disabled,
@@ -34,8 +31,6 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
   const [pressed, setPressed] = useState(false);
-
-  const options = processArray(children);
 
   const classes = classNames(
     className,
@@ -65,9 +60,9 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     >
       {options.map((option) => {
         const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {
-          const newValue = option.props.data;
-          if (typeof option.props.onChange === 'function') {
-            option.props.onChange(changeEvent);
+          const newValue = option.data;
+          if (typeof option.onChange === 'function') {
+            option.onChange(changeEvent);
           }
           if (typeof onChange === 'function') {
             onChange({
@@ -76,14 +71,14 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
               event: changeEvent?.event,
             });
           }
-          setValue(option.props.data);
+          setValue(option.data);
         };
         return (
           <RadioOption
-            {...option.props}
-            disabled={option.props.disabled === void 0 ? disabled : option.props.disabled}
-            selected={value === option.props.data}
-            key={option.key}
+            {...option}
+            disabled={option.disabled === void 0 ? disabled : option.disabled}
+            selected={value === option.data}
+            key={option.data}
             name={name}
             onChange={handleChange}
           />

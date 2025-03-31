@@ -14,6 +14,10 @@ const router: RouterItem[] = [
     title: 'Button',
     Component: () => import('../pages/button'),
   },
+  {
+    title: 'Radio',
+    Component: () => import('../pages/radio'),
+  },
 ];
 
 export default router;
