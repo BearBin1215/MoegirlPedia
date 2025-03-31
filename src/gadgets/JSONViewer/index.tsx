@@ -15,8 +15,6 @@ declare global {
   }
 }
 
-window.jsonViewerDark = true;
-
 $(() => (async () => {
   const jsonElement = document.getElementsByClassName('mw-json')[0] as HTMLDivElement;
   if (!jsonElement || mw.config.get('wgPageContentModel') !== 'json') {
