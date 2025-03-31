@@ -32,7 +32,6 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
 
 /**
  * @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件
- * @todo 不再使用ReactElement的方式限制子元素，改用props传入选项参数
  */
 const Select = forwardRef<HTMLDivElement, SelectProps>(({
   className,
