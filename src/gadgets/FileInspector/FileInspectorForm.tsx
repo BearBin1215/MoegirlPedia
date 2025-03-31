@@ -13,7 +13,7 @@ import { chunk } from 'lodash-es';
 import {
   Button,
   NumberInput,
-  type InputWidgetRef,
+  type ChangeHandler,
 } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
@@ -55,10 +55,10 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   const [deleteRecord, setDeleteRecord] = useState<string[]>([]);
   // 复制状态
   const [copyButtonText, setCopyButtonText] = useState('复制文件列表');
+  // 删除间隔
+  const [deleteInterval, setDeleteInterval] = useState(6);
   /** 用于记录非链入使用文件 */
   const usedNotLinkdRef = useRef<string[]>([]);
-  /** 挂删间隔输入框 */
-  const deleteIntervalInputRef = useRef<InputWidgetRef>(null);
 
   const api = useMemo(() => new mw.Api(), []);
 
@@ -196,7 +196,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
   }, []);
 
   const handleDelete = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
-    const interval = deleteIntervalInputRef.current!.getValue() * 1000;
+    const interval = deleteInterval * 1000;
     e.preventDefault(); // 避免触发提交跳转
     const currentUser = mw.config.get('wgUserName');
     const fileList = fileUsageData.filter(({ selected }) => selected);
@@ -251,6 +251,10 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
       setCopyButtonText(`复制失败：${err}`);
     });
   }, [fileUsageData]);
+
+  const handleIntervalChange: ChangeHandler<number> = ({ value }) => {
+    setDeleteInterval(value);
+  };
 
   useEffect(() => {
     mw.loader.using(['mediawiki.api', 'oojs-ui', 'moment']);
@@ -327,7 +331,7 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
                 </Button>
               )}
               挂删间隔（s）：
-              <NumberInput min={0} defaultValue={6} ref={deleteIntervalInputRef} style={{ width: '5em' }} />
+              <NumberInput min={0} value={deleteInterval} onChange={handleIntervalChange} style={{ width: '5em' }} />
               <br />
               <Button onClick={handleCopy} style={{ marginTop: '0.4em' }}>{copyButtonText}</Button>
             </div>

@@ -85,7 +85,7 @@ const NumberInput = forwardRef<InputWidgetRef, NumberInputProps>(({
     setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
-        value: newValue,
+        value: (typeof min === 'number' && min > newValue) ? min : newValue,
         oldValue: value,
         event,
       });
