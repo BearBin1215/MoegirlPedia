@@ -1,9 +1,7 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import ReactJson from 'react18-json-view';
 import { pageSource } from '@/utils/api';
-import 'react18-json-view/src/style.css';
-import 'react18-json-view/src/dark.css';
+import JSONViewer from './JSONViewer';
 import './index.less';
 
 declare global {
@@ -20,26 +18,15 @@ $(() => (async () => {
   if (!jsonElement || mw.config.get('wgPageContentModel') !== 'json') {
     return;
   }
+
   const json = await pageSource(mw.config.get('wgPageName'));
   const container = document.createElement('div');
   container.id = 'bearbintools-jsonviewer';
-  if (window.jsonViewerDark) {
-    container.classList.add('dark-mode');
-  } else {
-    container.classList.add('light-mode');
-  }
   jsonElement.replaceWith(container);
 
   createRoot(container).render(
     <StrictMode>
-      <ReactJson
-        src={JSON.parse(json!)}
-        displaySize
-        editable
-        collapseStringMode='word'
-        theme={window.jsonViewerTheme || 'vscode'}
-        dark={window.jsonViewerDark}
-      />
+      <JSONViewer json={json!} />
     </StrictMode>,
   );
 })());
