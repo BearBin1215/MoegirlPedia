@@ -5,7 +5,7 @@ import 'react18-json-view/src/dark.css';
 
 const useDarkTheme = () => document.body.classList.contains('theme-dark');
 
-const JSONViewer: FC<{ json: string }> = ({ json }) => {
+const JSONViewer: FC<{ json: object }> = ({ json }) => {
   // 是否使用暗色模式
   const [dark, setDark] = useState(window.jsonViewerDark || useDarkTheme());
 
@@ -34,7 +34,7 @@ const JSONViewer: FC<{ json: string }> = ({ json }) => {
 
   return (
     <ReactJson
-      src={JSON.parse(json)}
+      src={json}
       displaySize
       editable
       collapseStringMode='word'
