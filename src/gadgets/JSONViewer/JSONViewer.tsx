@@ -36,7 +36,6 @@ const JSONViewer: FC<{ json: object }> = ({ json }) => {
     <ReactJson
       src={json}
       displaySize
-      editable
       collapseStringMode='word'
       theme={window.jsonViewerTheme || 'vscode'}
       dark={dark}

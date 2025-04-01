@@ -14,6 +14,9 @@ declare global {
 }
 
 $(() => (async () => {
+  if (mw.config.get('wgAction') !== 'view') {
+    return;
+  }
   const jsonElement = document.getElementsByClassName('mw-json')[0] as HTMLDivElement;
   /** 渲染容器 */
   const container = document.createElement('div');
