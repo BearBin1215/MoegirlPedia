@@ -193,7 +193,11 @@ mw.loader.using('mediawiki.api').then(() => {
         if (pageContentModel in acceptsLangs) {
           const $mwcode = $('#mw-content-text>.mw-code');
           const $currentContent = $(currentHTML);
-          $mwcode.replaceWith($currentContent);
+          if ($mwcode.length) {
+            $mwcode.replaceWith($currentContent);
+          } else {
+            $moderationNotice.after($currentContent);
+          }
           if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
             pretty($currentContent);
           }
