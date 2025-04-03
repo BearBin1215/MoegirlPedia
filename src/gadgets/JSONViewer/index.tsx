@@ -25,7 +25,14 @@ $(() => (async () => {
 
   if (jsonElement && mw.config.get('wgPageContentModel') === 'json') {
     // 页面内容格式为JSON，获取JSON并渲染
-    const json = await pageSource(mw.config.get('wgPageName'));
+    const diff = (new URLSearchParams(window.location.search)).get('diff');
+    const json = await pageSource(
+      mw.config.get('wgPageName'),
+      diff ? {
+        rvstartid: +diff,
+        rvendid: +diff,
+      } : void 0,
+    );
     jsonElement.replaceWith(container);
 
     root.render(
