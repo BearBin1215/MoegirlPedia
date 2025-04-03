@@ -37,6 +37,7 @@ const JSONViewer: FC<{ json: object }> = ({ json }) => {
       src={json}
       displaySize
       collapseStringMode='word'
+      collapseStringsAfterLength={150}
       theme={window.jsonViewerTheme || 'vscode'}
       dark={dark}
     />
