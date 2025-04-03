@@ -25,7 +25,8 @@ $(() => (async () => {
 
   if (jsonElement && mw.config.get('wgPageContentModel') === 'json') {
     // 页面内容格式为JSON，获取JSON并渲染
-    const diff = (new URLSearchParams(window.location.search)).get('diff');
+    const urlParams = new URLSearchParams(window.location.search);
+    const diff = urlParams.get('diff') ?? urlParams.get('oldid');
     const json = await pageSource(
       mw.config.get('wgPageName'),
       diff ? {
