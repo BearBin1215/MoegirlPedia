@@ -15,13 +15,9 @@ const JSONViewer: FC<{ json: object }> = ({ json }) => {
     }
     /** 监视moeskin控制暗色模式的类产生变化 */
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class' && useDarkTheme()) {
-          setDark(true);
-        } else if (mutation.attributeName === 'class' && !useDarkTheme()) {
-          setDark(false);
-        }
-      });
+      mutations
+        .filter(({ attributeName }) => attributeName === 'class')
+        .forEach(() => setDark(useDarkTheme()));
     });
 
     observer.observe(document.body, {
