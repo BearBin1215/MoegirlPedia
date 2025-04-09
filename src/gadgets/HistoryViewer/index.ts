@@ -32,6 +32,7 @@ mw.loader.using('mediawiki.api').then(() => {
       window.prettyPrint();
     } else {
       mw.loader.load('/index.php?title=MediaWiki:Gadget-code-prettify.js&action=raw&ctype=text/javascript');
+      mw.loader.load('/index.php?title=MediaWiki:Gadget-code-prettify.css&action=raw&ctype=text/css', 'text/css');
     }
   };
 
@@ -140,8 +141,16 @@ mw.loader.using('mediawiki.api').then(() => {
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
           `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
-          $('<div class="mw-parser-output" />').html(currentHTML),
         );
+        if (pageContentModel in acceptsLangs) {
+          const $currentContent = $(currentHTML);
+          $('#mw-content-text').append($currentContent);
+          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+            pretty($currentContent);
+          }
+        } else {
+          $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        }
       } catch (error) {
         $('#mw-content-text').append(`版本${diff}解析失败：${error}。`);
       }
