@@ -1,7 +1,7 @@
 import { chunk } from 'lodash-es';
 import { categoryMembers } from '@/utils/api';
 import addHeaderButton from '@/utils/addHeaderButton';
-import { ApiQueryResponse } from '@/@types/api';
+import type { ApiQueryResponse } from '@/@types/api';
 
 $(() => {
   const api = new mw.Api();
@@ -49,7 +49,7 @@ $(() => {
         mw.notify('更新成功！即将刷新页面……');
         window.location.reload();
       } catch (e) {
-        mw.notify(`更新失败！${e}`, { type: 'error' });
+        mw.notify(`更新失败：${e}`, { type: 'error' });
         $uploadButton.text('更新');
       }
     });
