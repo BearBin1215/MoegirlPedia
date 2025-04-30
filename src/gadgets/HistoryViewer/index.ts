@@ -212,7 +212,12 @@ mw.loader.using('mediawiki.api').then(() => {
             pretty($currentContent);
           }
         } else {
-          $('#mw-content-text>.mw-parser-output').html(currentHTML);
+          let $mwParserOutput = $('#mw-content-text>.mw-parser-output');
+          if (!$mwParserOutput.length) {
+            $mwParserOutput = $('<div class="mw-parser-output" />');
+            $moderationNotice.after($mwParserOutput);
+          }
+          $mwParserOutput.html(currentHTML);
         }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {
