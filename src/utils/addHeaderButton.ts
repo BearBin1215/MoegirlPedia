@@ -16,6 +16,7 @@ const addHeaderButton = ({
 
   const $button = $(`<button class="bearbintool-headerbutton">${text}</button>`);
   $buttonZone.append($button);
+
   return $button;
 };
 
