@@ -32,8 +32,10 @@ export const updateCVLastUpdateDate = async () => {
     action: 'edit',
     title: 'User:BearBin/VNData/Galgame声优更新时间',
     text: [
+      '{{用户 允许他人编辑|[[Template:萌百视觉小说研究会|视研会]]成员}}',
       '本页面统计[[:Category:R-18作品声优]]内页面的最后更新时间，提示可能需要更新的页面。\n',
       '您可以使用[[User:BearBin/VNData#VNTools|VNTools]]更新本页面。\n',
+      `本页面最后一次由{{User|${mw.config.get('wgUserName')}}}更新于~~~~~。\n`,
       listText,
     ].join('\n'),
     summary: '使用[[User:BearBin/VNData#VNTools|VNTools]]自动更新列表',
