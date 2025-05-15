@@ -34,7 +34,7 @@ const renderSpecialPage = (
     });
     const headerRoot = createRoot(firstHeading);
     headerRoot.render(
-      <StrictMode>
+      <>
         {header}
         {suffix === true && (
           <div style={{ fontSize: '0.6em' }}>
@@ -44,7 +44,7 @@ const renderSpecialPage = (
           </div>
         )}
         {suffix && suffix !== true && suffix}
-      </StrictMode>,
+      </>,
     );
   }
 };
