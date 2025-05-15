@@ -3,13 +3,13 @@ import { createRoot } from 'react-dom/client';
 
 /**
  * 替换特殊页面内容
+ * @param component 页面内容
+ * @param header 页面标题
+ * @param suffix 显示落款
  */
 const renderSpecialPage = (
-  /** 页面内容 */
   component: ReactNode,
-  /** 页面标题 */
   header?: string,
-  /** 显示落款 */
   suffix: boolean | ReactNode = true,
 ) => {
   mw.config.set('wgCanonicalSpecialPageName', mw.config.get('wgTitle'));
