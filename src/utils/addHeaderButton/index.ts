@@ -1,4 +1,4 @@
-import styles from './headerButton.less' assert { type: 'string '};
+import styles from './index.less' assert { type: 'string '};
 
 /** 在页面标题尾部增加按钮 */
 const addHeaderButton = ({
