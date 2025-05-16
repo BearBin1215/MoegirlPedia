@@ -2,29 +2,34 @@ import React, { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 /**
- * 替换特殊页面内容
+ * 替换页面内容
  * @param component 页面内容
  * @param header 页面标题
  * @param suffix 显示落款
  */
-const renderSpecialPage = (
+const renderPage = (
   component: ReactNode,
   header?: string,
   suffix: boolean | ReactNode = true,
 ) => {
-  mw.config.set('wgCanonicalSpecialPageName', mw.config.get('wgTitle'));
-  $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
+  // 页面内容及元数据初始化
+  if (mw.config.get('wgNamespaceNumber') === -1) {
+    mw.config.set('wgCanonicalSpecialPageName', mw.config.get('wgTitle'));
+    $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
+  }
   $('#contentSub').remove();
-  /** 渲染页面主体 */
+
+  // 渲染页面主体
   const pageRoot = createRoot(document.getElementById('mw-content-text')!);
   pageRoot.render(
     <StrictMode>
       {component}
     </StrictMode>,
   );
+
+  // 渲染页面标题
   if (header) {
     document.title = `${header} - 萌娘百科_万物皆可萌的百科全书`;
-    /** 渲染页面标题 */
     const firstHeading = document.getElementById('firstHeading')!;
     $(firstHeading).css({
       display: 'flex',
@@ -49,4 +54,4 @@ const renderSpecialPage = (
   }
 };
 
-export default renderSpecialPage;
+export default renderPage;
