@@ -91,7 +91,7 @@ const RecentChangeList: React.FC = () => {
       utf8: true,
       list: 'recentchanges',
       // 按照用户当前显示的最多更改数读取，不超过500
-      rclimit: Math.min(500, +$('.rclinks a[data-keys="limit"] strong').text()),
+      rclimit: Math.min(500, JSON.parse($('.rclinks a[data-keys="limit"] strong').parent().attr('data-params') ?? '{"limit":250}').limit),
       rcshow,
       rctype: ['edit', 'new', 'log'],
       rcprop: [
