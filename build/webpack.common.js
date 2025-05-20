@@ -43,7 +43,7 @@ const cssModuleLoader = {
 module.exports = {
   entry,
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '.less'],
     alias: {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
