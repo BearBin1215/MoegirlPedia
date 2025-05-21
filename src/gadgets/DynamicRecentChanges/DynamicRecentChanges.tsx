@@ -91,6 +91,7 @@ const RecentChangeList: React.FC = () => {
       utf8: true,
       list: 'recentchanges',
       // 按照用户当前显示的最多更改数读取，不超过500
+      // 超过3位数的显示形如“1,000”，因此读取data-params的值解析
       rclimit: Math.min(500, JSON.parse($('.rclinks a[data-keys="limit"] strong').parent().attr('data-params') ?? '{"limit":250}').limit),
       rcshow,
       rctype: ['edit', 'new', 'log'],
