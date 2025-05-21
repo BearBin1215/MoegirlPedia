@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
  * @param header 页面标题
  * @param suffix 显示落款
  */
-const renderPage = (
+const overwritePage = (
   component: ReactNode,
   header?: string,
   suffix: boolean | ReactNode = true,
@@ -54,4 +54,4 @@ const renderPage = (
   }
 };
 
-export default renderPage;
+export default overwritePage;
