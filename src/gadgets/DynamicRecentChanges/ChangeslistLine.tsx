@@ -92,6 +92,45 @@ const {
   'wgUserId',
 ]);
 
+/** 去除标题的名字空间前缀 */
+const removeNsPrefix = (title: string, ns: number | string) => {
+  switch (+ns) {
+    case 0:
+      return title;
+    case 1:
+      return title.replace(/^Talk:/, '');
+    case 2:
+    case 3:
+      return title.replace(/^User( talk)?:/, '');
+    case 4:
+    case 5:
+      return title.replace(/^萌娘百科( talk)?:/, '');
+    case 6:
+    case 7:
+      return title.replace(/^File( talk)?:/, '');
+    case 8:
+    case 9:
+      return title.replace(/^MediaWiki( talk)?:/, '');
+    case 10:
+    case 11:
+      return title.replace(/^Template( talk)?:/, '');
+    case 12:
+    case 13:
+      return title.replace(/^Help( talk)?:/, '');
+    case 14:
+    case 15:
+      return title.replace(/^Category( talk)?:/, '');
+    case 274:
+    case 275:
+      return title.replace(/^Widget( talk)?:/, '');
+    case 828:
+    case 829:
+      return title.replace(/^模块(讨论)?:/, '');
+    default:
+      return title;
+  }
+};
+
 /** 生成更改记录行的类名 */
 export const getLineClassName = ({
   type = 'edit',
@@ -110,11 +149,11 @@ export const getLineClassName = ({
 }: ChangeslistLineProps) => classNames(
   'mw-changeslist-line',
   `mw-changeslist-${type}`,
-  `mw-changeslist-ns${ns}-${title.replace(/[.:/]/, '_')}`,
+  `mw-changeslist-ns${ns}-${removeNsPrefix(title, ns).replace(/[.:/]/, '_')}`,
   `mw-changeslist-ns-${ns}`,
   type === 'log'
     ? `mw-changeslist-log-${logtype}`
-    : `mw-changeslist-ns${ns}-${title.replace(/[.:/]/, '_')}`,
+    : `mw-changeslist-ns${ns}-${removeNsPrefix(title, ns).replace(/[.:/]/, '_')}`,
   'mw-changeslist-user-registered',
   experienced
     ? 'mw-changeslist-user-experienced'
