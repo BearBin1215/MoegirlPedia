@@ -110,11 +110,11 @@ export const getLineClassName = ({
 }: ChangeslistLineProps) => classNames(
   'mw-changeslist-line',
   `mw-changeslist-${type}`,
-  `mw-changeslist-ns${ns}-${title}`,
+  `mw-changeslist-ns${ns}-${title.replace(/[.:/]/, '_')}`,
   `mw-changeslist-ns-${ns}`,
   type === 'log'
     ? `mw-changeslist-log-${logtype}`
-    : `mw-changeslist-ns${ns}-${title}`,
+    : `mw-changeslist-ns${ns}-${title.replace(/[.:/]/, '_')}`,
   'mw-changeslist-user-registered',
   experienced
     ? 'mw-changeslist-user-experienced'
