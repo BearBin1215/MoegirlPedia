@@ -1,21 +1,28 @@
 import type { ComponentType } from 'react';
 
-export interface RouterItem {
+export type RouterItem = {
   title: string;
   Component: () => Promise<{ 'default': ComponentType }>;
-}
+} | {
+  title: string;
+  section: true;
+};
 
 const router: RouterItem[] = [
   {
-    title: 'Home',
+    title: 'Home 导航',
     Component: () => import('../pages/home'),
   },
   {
-    title: 'Button',
+    title: 'Widgets 组件',
+    section: true,
+  },
+  {
+    title: 'Button 按钮',
     Component: () => import('../pages/button'),
   },
   {
-    title: 'Radio',
+    title: 'Radio 单选框',
     Component: () => import('../pages/radio'),
   },
 ];
