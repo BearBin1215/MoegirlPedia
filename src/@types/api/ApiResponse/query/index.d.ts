@@ -241,7 +241,7 @@ export interface ApiQueryResponse extends ApiResponse {
     allmessages: Message[];
 
     /** `prop=xxx`获取到的数据 */
-    pages: Record<number, ApiQueryPageInfo>;
+    pages: Record<string, ApiQueryPageInfo>;
 
     /** `list=categorymembers`获取到的分类成员信息 */
     categorymembers: Categorymembers[];

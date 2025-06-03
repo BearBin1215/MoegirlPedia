@@ -37,7 +37,7 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   value?: T;
 }
 
-const Input = forwardRef<HTMLDivElement, InputProps<string | number>>(({
+const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElement>>(({
   accessKey,
   name,
   className,

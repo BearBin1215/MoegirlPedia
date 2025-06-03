@@ -1,0 +1,25 @@
+#firstHeading:has(.bearbintool-headerbutton-wrapper) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    .bearbintool-headerbutton-wrapper {
+        display: flex;
+        gap: 6px;
+
+        .bearbintool-headerbutton {
+            border-radius: 0;
+            background-color: #fff;
+            padding: 4px 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #aaa;
+            transition: background-color 0.2s ease-out;
+
+            &:hover {
+                background-color: #eee;
+            }
+        }
+    }
+}

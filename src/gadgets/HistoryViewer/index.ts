@@ -32,6 +32,7 @@ mw.loader.using('mediawiki.api').then(() => {
       window.prettyPrint();
     } else {
       mw.loader.load('/index.php?title=MediaWiki:Gadget-code-prettify.js&action=raw&ctype=text/javascript');
+      mw.loader.load('/index.php?title=MediaWiki:Gadget-code-prettify.css&action=raw&ctype=text/css', 'text/css');
     }
   };
 
@@ -75,6 +76,7 @@ mw.loader.using('mediawiki.api').then(() => {
 
     $loadDiffButton.on('click', async (e) => {
       e.preventDefault();
+      mw.loader.load(`${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles`, 'text/css');
       $gadgetZone.text('加载中……');
       try {
         const response = await api.post({
@@ -139,8 +141,16 @@ mw.loader.using('mediawiki.api').then(() => {
         $('#mw-content-text').append(
           '<hr class="diff-hr" id="mw-oldid">',
           `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
-          $('<div class="mw-parser-output" />').html(currentHTML),
         );
+        if (pageContentModel in acceptsLangs) {
+          const $currentContent = $(currentHTML);
+          $('#mw-content-text').append($currentContent);
+          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+            pretty($currentContent);
+          }
+        } else {
+          $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        }
       } catch (error) {
         $('#mw-content-text').append(`版本${diff}解析失败：${error}。`);
       }
@@ -193,12 +203,21 @@ mw.loader.using('mediawiki.api').then(() => {
         if (pageContentModel in acceptsLangs) {
           const $mwcode = $('#mw-content-text>.mw-code');
           const $currentContent = $(currentHTML);
-          $mwcode.replaceWith($currentContent);
+          if ($mwcode.length) {
+            $mwcode.replaceWith($currentContent);
+          } else {
+            $moderationNotice.after($currentContent);
+          }
           if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
             pretty($currentContent);
           }
         } else {
-          $('#mw-content-text>.mw-parser-output').html(currentHTML);
+          let $mwParserOutput = $('#mw-content-text>.mw-parser-output');
+          if (!$mwParserOutput.length) {
+            $mwParserOutput = $('<div class="mw-parser-output" />');
+            $moderationNotice.after($mwParserOutput);
+          }
+          $mwParserOutput.html(currentHTML);
         }
         $gadgetZone.text('加载成功，您现在看到的是最新版本（部分依赖于js的功能可能无法正常工作）。');
       } catch (error) {

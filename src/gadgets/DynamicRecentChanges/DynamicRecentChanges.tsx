@@ -1,7 +1,7 @@
 /**
  * @description 模拟高版本MediaWiki的最近更改动态更新功能
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
   CheckboxInput,
@@ -59,7 +59,7 @@ const RecentChangeList: React.FC = () => {
   // 是否运行
   const [running, setRunning] = useState(defaultActive);
   // 记录定时器id，用于停止
-  const [taskInterval, setTaskInterval] = useState<NodeJS.Timeout | undefined>(void 0);
+  const taskInterval = useRef<NodeJS.Timeout>();
   // 标签含义映射，用于渲染标签
   const [tagMeanings, setTagMeanings] = useState<Record<string, string>>({});
   // 用户组及其含义映射
@@ -91,7 +91,8 @@ const RecentChangeList: React.FC = () => {
       utf8: true,
       list: 'recentchanges',
       // 按照用户当前显示的最多更改数读取，不超过500
-      rclimit: Math.min(500, +$('.rclinks a[data-keys="limit"] strong').text()),
+      // 超过3位数的显示形如“1,000”，因此读取data-params的值解析
+      rclimit: Math.min(500, JSON.parse($('.rclinks a[data-keys="limit"] strong').parent().attr('data-params') ?? '{"limit":250}').limit),
       rcshow,
       rctype: ['edit', 'new', 'log'],
       rcprop: [
@@ -196,12 +197,12 @@ const RecentChangeList: React.FC = () => {
         // 如果用户没有设置默认启动，这里要读取一次，否则要等一个interval才会第一次更新
         queryData();
       }
-      const interval = setInterval(() => {
+      taskInterval.current = setInterval(() => {
         queryData();
       }, Math.max(updateInterval * 1000, 5000));
-      setTaskInterval(interval);
     } else {
-      clearInterval(taskInterval);
+      clearInterval(taskInterval.current);
+      taskInterval.current = undefined;
     }
   }, [running]);
 
@@ -211,10 +212,10 @@ const RecentChangeList: React.FC = () => {
 
     // 如果在运行状态中，调整更新间隔，重新注册定时器
     if (running) {
-      clearInterval(taskInterval);
-      setTaskInterval(setInterval(() => {
+      clearInterval(taskInterval.current);
+      taskInterval.current = setInterval(() => {
         queryData();
-      }, Math.max(updateInterval * 1000, 5000)));
+      }, Math.max(updateInterval * 1000, 5000));
     }
   }, [updateInterval]);
 

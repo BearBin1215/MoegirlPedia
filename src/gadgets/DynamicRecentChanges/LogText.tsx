@@ -70,6 +70,24 @@ const LogText: React.FC<LogTextProps> = ({
     );
   }
 
+  if (logaction === 'revision') {
+    return (
+      <>
+        更改页面
+        <a
+          href={`/${title}`}
+          title=''
+        >
+          {title}
+          的
+          {logparams.ids.length}
+          个版本的可见性：
+          {logparams.old.bitmask ? '隐藏内容' : '公开内容'}
+        </a>
+      </>
+    );
+  }
+
   if (logaction === 'delete_redir') {
     return (
       <>

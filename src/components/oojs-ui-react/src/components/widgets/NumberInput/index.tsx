@@ -14,7 +14,7 @@ import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } fr
 import type { LabelPosition } from '../../../types/utils';
 
 export interface NumberInputProps extends
-  InputProps<number>,
+  InputProps<number, HTMLDivElement>,
   AccessKeyElement,
   IconElement,
   IndicatorElement,

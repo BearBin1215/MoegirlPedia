@@ -1,0 +1,31 @@
+/** flex基础，默认全居中 */
+.flex(@justify-content: center; @align-items: @justify-content) {
+    display: flex;
+    justify-content: @justify-content;
+    align-items: @align-items;
+}
+
+/** 覆盖渲染页面的样式 */
+.overwrite-page() {
+    #firstHeading {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        >div {
+            font-size: 0.6em;
+        }
+    }
+
+    #bodyContent {
+        padding-right: 0 !important;
+    }
+}
+
+/** 文本溢出显示省略号 */
+.text-overflow() {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

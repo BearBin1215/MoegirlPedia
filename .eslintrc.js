@@ -176,8 +176,9 @@ module.exports = {
         browser: true,
         node: false,
         jquery: true,
-        es6: true,
+        es6: false,
       },
+      parser: 'espree',
       parserOptions: {
         ecmaVersion: 5,
         sourceType: 'script',

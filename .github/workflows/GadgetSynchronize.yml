@@ -1,11 +1,11 @@
 name: 同步用户工具
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - dist/gadgets/**/*.js
-      - scripts/package.json
+  # push:
+  #   branches:
+  #     - master
+  #   paths:
+  #     - dist/gadgets/**/*.js
+  #     - scripts/package.json
   workflow_dispatch:
 
 jobs:

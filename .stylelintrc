@@ -23,6 +23,7 @@
     "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global"] }],
     "color-function-notation": null,
     "comment-empty-line-before": null,
+    "import-notation": ["string"],
     "no-descending-specificity": null,
     "at-rule-no-unknown": null,
     "media-feature-range-notation": null

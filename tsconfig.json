@@ -6,7 +6,6 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "jsx": "react",
     "module": "ESNext",
     "rootDir": "./",

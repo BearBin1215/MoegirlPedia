@@ -1,10 +1,28 @@
 #bearbintools-jsonviewer {
     .json-view {
-        background-color: rgb(255 255 255 / 75%);
         padding: 0.6em 1em;
+        word-break: break-all;
+        line-height: inherit;
+        font-size: inherit;
+
+        .jv-indent {
+            @media screen and (min-width: 768px) {
+                padding-left: 2em;
+            }
+        }
+
+        .jv-button {
+            font: inherit;
+        }
+
+        .jv-size, .jv-button {
+            user-select: none;
+        }
     }
 
-    .jv-indent {
-        padding-left: 2em;
+    &.light-mode {
+        .json-view {
+            background-color: rgb(255 255 255 / 70%);
+        }
     }
 }
