@@ -9,7 +9,7 @@
     "build": "node build/pack.js",
     "sync": "tsx scripts/src/Synchronize.ts",
     "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\" && stylelint --fix \"src/**/*.{css,less,scss}\"",
-    "oojs-serve": "cd src/components/oojs-ui-react && pnpm start"
+    "start:oojs": "cd src/components/oojs-ui-react && pnpm start"
   },
   "repository": {
     "type": "git",
