@@ -7,9 +7,9 @@ const RadioPage = () => {
       <h1>Radio - 单选框</h1>
       <RadioSelect
         options={[
-          { data: 'a' },
-          { data: 'b' },
-          { data: 'c', disabled: true },
+          { data: 'a', children: <span style={{ color: 'blue' }}>a</span> },
+          { data: 'b', children: 'b' },
+          { data: 'c', children: 'c', disabled: true },
         ]}
       />
     </>

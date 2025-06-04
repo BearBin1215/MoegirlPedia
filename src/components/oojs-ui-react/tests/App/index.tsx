@@ -5,6 +5,7 @@ import router from '../config/router';
 import 'oojs-ui/dist/oojs-ui-core-wikimediaui.min.css';
 import 'oojs-ui/dist/oojs-ui-widgets-wikimediaui.min.css';
 import 'oojs-ui/dist/oojs-ui-images-wikimediaui.min.css';
+import './index.less';
 
 const App = () => {
   return (

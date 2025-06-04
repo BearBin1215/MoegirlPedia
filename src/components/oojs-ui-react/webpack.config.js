@@ -6,16 +6,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const postCSSLoader = {
   loader: 'postcss-loader',
   options: {
-    postcssOptions: () => ({
+    postcssOptions: {
       plugins: [
-        [
-          'autoprefixer', // 自动补全供应商前缀
-        ],
+        ['autoprefixer'],
       ],
-    }),
+    },
   },
 };
 
+/** @type {(_: any, argv: any) => (import('webpack').Configuration)} */
 module.exports = (_, argv) => {
   return {
     mode: argv.mode,
@@ -37,12 +36,12 @@ module.exports = (_, argv) => {
           ],
         },
         {
-          test: /\.s[ac]ss$/i,
+          test: /\.less$/i,
           use: [
             'style-loader',
             'css-loader',
             postCSSLoader,
-            'sass-loader',
+            'less-loader',
           ],
         },
         {

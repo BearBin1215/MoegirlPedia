@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
+import { omit } from 'lodash-es';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -32,7 +33,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
 
   return (
     <div
-      {...rest}
+      {...omit(rest, 'label', 'data')}
       className={classes}
       aria-disabled={!!disabled}
       tabIndex={-1}
