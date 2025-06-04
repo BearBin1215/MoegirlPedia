@@ -9,12 +9,16 @@ import 'oojs-ui/dist/oojs-ui-images-wikimediaui.min.css';
 const App = () => {
   return (
     <BookletLayout
-      defaultKey='Layout'
-      options={router.map((route) => ({
+      defaultKey='Home 导航'
+      options={router.map((route) => 'section' in route ? {
         key: route.title,
         label: route.title,
+        disabled: true,
+      } : {
+        key: route.title,
+        label: <span style={{ paddingLeft: '1em' }}>{route.title}</span>,
         children: <LazyComponent route={route} />,
-      }))}
+      })}
     />
   );
 };
