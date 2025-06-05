@@ -11,7 +11,11 @@ export type RouterItem = {
 const router: RouterItem[] = [
   {
     title: 'Home 导航',
-    Component: () => import('../pages/home'),
+    Component: () => import('../pages/top-pages/home'),
+  },
+  {
+    title: 'Start 使用',
+    Component: () => import('../pages/top-pages/start'),
   },
 
   {

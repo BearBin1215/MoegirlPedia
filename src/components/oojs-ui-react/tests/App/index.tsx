@@ -7,6 +7,8 @@ import 'oojs-ui/dist/oojs-ui-widgets-wikimediaui.min.css';
 import 'oojs-ui/dist/oojs-ui-images-wikimediaui.min.css';
 import './index.less';
 
+const topPages = ['Home 导航', 'Start 使用'];
+
 const App = () => {
   return (
     <BookletLayout
@@ -17,7 +19,11 @@ const App = () => {
         disabled: true,
       } : {
         key: route.title,
-        label: <span style={{ paddingLeft: '1em' }}>{route.title}</span>,
+        label: (
+          <span style={{ paddingLeft: topPages.includes(route.title) ? void 0 : '1em' }}>
+            {route.title}
+          </span>
+        ),
         children: <LazyComponent route={route} />,
       })}
     />

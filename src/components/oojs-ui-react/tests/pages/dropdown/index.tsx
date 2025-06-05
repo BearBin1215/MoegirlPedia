@@ -23,19 +23,21 @@ const DropdownPage = () => {
             key: 'c',
             data: 'c',
             disabled: true,
-            children: '禁用选项（disabled: true）',
+            children: '禁用选项（disabled: "true"）',
           },
           {
             key: 'check',
             data: 'check',
             icon: 'check',
-            children: '带图标',
+            children: '带图标（icon: "check"）',
           },
         ]}
       />
 
       <h2>分组</h2>
-      不带<code>data</code>属性的选项将作为分组。
+      <p>
+        不带<code>data</code>属性的选项将作为分组。
+      </p>
       <Dropdown
         label='please select'
         options={[

@@ -1,6 +1,7 @@
 /** @description webpack配置，用于搭建开发服务器 */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 /** PostCSS配置 */
 const postCSSLoader = {
@@ -25,7 +26,23 @@ module.exports = (_, argv) => {
         {
           test: /\.tsx?$/i,
           exclude: /node_modules/,
-          use: ['ts-loader'],
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  ['@babel/preset-env', { targets: 'defaults' }],
+                ],
+                plugins: [require.resolve('react-refresh/babel')],
+              },
+            },
+            {
+              loader: 'ts-loader',
+              options: {
+                transpileOnly: true,
+              },
+            },
+          ],
         },
         {
           test: /\.css$/i,
@@ -60,6 +77,7 @@ module.exports = (_, argv) => {
       new HtmlWebpackPlugin({
         template: './tests/index.html',
       }),
+      new ReactRefreshWebpackPlugin(),
     ],
     devServer: {
       port: 8090,

@@ -5,7 +5,7 @@ import type { Indicators } from './utils';
 export type ElementProps<T = HTMLDivElement> = HTMLAttributes<T>;
 
 export interface AccessKeyElement {
-  /** 组件访问键 */
+  /** 快捷键 */
   accessKey?: string;
 }
 

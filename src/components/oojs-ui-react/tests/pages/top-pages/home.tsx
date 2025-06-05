@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { type FC } from 'react';
 
-const ButtonPage = () => {
+const Home: FC = () => {
   return (
     <>
       <h1>
@@ -57,4 +57,6 @@ const ButtonPage = () => {
   );
 };
 
-export default ButtonPage;
+Home.displayName = 'Home';
+
+export default Home;
