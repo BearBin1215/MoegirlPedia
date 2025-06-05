@@ -24,9 +24,6 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
   autosize?: boolean;
 }
 
-/**
- * @todo autosize功能
- */
 const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
   name,
@@ -116,7 +113,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         hiddenInputRef.current.value = '';
         const { clientHeight } = hiddenInputRef.current;
 
-        inputRef.current.style.height = `${Math.min(scrollHeight, clientHeight)}px`;
+        inputRef.current.style.height = `${Math.min(scrollHeight, clientHeight) + 2}px`;
 
         hiddenInputRef.current.classList.add('oo-ui-element-hidden');
       }

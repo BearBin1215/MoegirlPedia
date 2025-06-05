@@ -27,8 +27,12 @@ const router: RouterItem[] = [
     Component: () => import('../pages/button'),
   },
   {
-    title: 'Inputs 输入框',
-    Component: () => import('../pages/inputs'),
+    title: 'TextInput 文本输入',
+    Component: () => import('../pages/text-input'),
+  },
+  {
+    title: 'NumberInput 数字输入',
+    Component: () => import('../pages/number-input'),
   },
   {
     title: 'Dropdown 下拉选择框',
