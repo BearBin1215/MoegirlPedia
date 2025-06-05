@@ -15,7 +15,7 @@ import type { LabelElement, IconElement, IndicatorElement } from '../../../types
 import type { LabelPosition } from '../../../types/utils';
 
 export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extends
-  InputProps<string | undefined, T, P>,
+  InputProps<string, T, P>,
   LabelElement,
   IconElement,
   IndicatorElement {

@@ -27,16 +27,16 @@ const router: RouterItem[] = [
     Component: () => import('../pages/button'),
   },
   {
+    title: 'Inputs 输入框',
+    Component: () => import('../pages/inputs'),
+  },
+  {
     title: 'Dropdown 下拉选择框',
     Component: () => import('../pages/dropdown'),
   },
   {
     title: 'Radio 单选框',
     Component: () => import('../pages/radio'),
-  },
-  {
-    title: 'Layout',
-    Component: () => import('../pages/layout'),
   },
 
 

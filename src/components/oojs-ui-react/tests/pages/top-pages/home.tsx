@@ -15,6 +15,9 @@ const Home: FC = () => {
         <a href='https://www.npmjs.com/package/oojs-ui' target='_blank'>oojs-ui</a>
         进行重新实现，旨在使用react编写萌百小工具（gadgets）时有组件库可用。
       </p>
+      <p>
+        由于目前完成度较低<del>且有许多不符合最佳实践的操作</del>，暂不推送npm，后续闲下来水瓶高点再搞。
+      </p>
       <h2>特性</h2>
       <ul>
         <li>

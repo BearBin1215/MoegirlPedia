@@ -4,7 +4,6 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useEffect,
-  useMemo,
   type Key,
 } from 'react';
 import classNames from 'classnames';
@@ -88,11 +87,9 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   };
 
   /** 如果有选中的则显示已选，没选则显示label */
-  const displayLabel = useMemo(() => {
-    return options.find((option) => {
-      return 'data' in option && option.data === (controlledValue ?? value);
-    })?.children || label;
-  }, [value, label]);
+  const displayLabel = options.find((option) => {
+    return 'data' in option && option.data === (controlledValue ?? value);
+  })?.children || label;
 
   useEffect(() => {
     /** 点击页面其他地方时关闭下拉菜单 */
