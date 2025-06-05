@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
+import { omit } from 'lodash-es';
 import type { ElementProps } from '../../../types/mixin';
 
 export interface LayoutProps extends ElementProps {
@@ -22,7 +23,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
 
   return (
     <div
-      {...rest}
+      {...omit(rest, 'activeKey')}
       className={classes}
       aria-hidden={hidden}
       ref={ref}

@@ -1,4 +1,17 @@
-del, s {
+body {
+    font-size: 14px;
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+del,
+s {
     color: #626262;
     padding-left: 2px;
     padding-right: 2px;
@@ -12,7 +25,25 @@ code {
 
 h1:first-child {
     margin-top: 0;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid #0074F9;
+}
+
+h2 {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.oo-ui-menuLayout {
+    >.oo-ui-menuLayout-menu {
+        width: 17.5em;
+
+        .oo-ui-outlineOptionWidget {
+            padding-left: 1.75em;
+        }
+    }
+
+    >.oo-ui-menuLayout-content {
+        left: 17.5em;
+    }
 }
 
 .oo-ui-menuSelectWidget {

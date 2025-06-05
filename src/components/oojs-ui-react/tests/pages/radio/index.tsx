@@ -9,7 +9,7 @@ const RadioPage = () => {
         options={[
           { data: 'a', children: <span style={{ color: 'blue' }}>a</span> },
           { data: 'b', children: 'b' },
-          { data: 'c', children: 'c', disabled: true },
+          { data: 'c', children: 'disabled', disabled: true },
         ]}
       />
     </>

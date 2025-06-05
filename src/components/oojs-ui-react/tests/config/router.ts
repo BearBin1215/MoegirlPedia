@@ -41,13 +41,13 @@ const router: RouterItem[] = [
 
 
   {
-    title: 'Layout 布局',
+    title: 'Layouts 布局',
     section: true,
   },
 
 
   {
-    title: 'Dialog 弹窗',
+    title: 'Dialogs 弹窗',
     section: true,
   },
 ];
