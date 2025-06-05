@@ -44,6 +44,6 @@ const Inputs: FC = () => {
   );
 };
 
-Inputs.displayName = 'Inputs';
+Inputs.displayName = 'InputsPage';
 
 export default Inputs;

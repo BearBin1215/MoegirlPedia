@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { BookletLayout } from 'oojs-ui-react';
 import LazyComponent from './LazyComponent';
 import router from '../config/router';
@@ -9,7 +9,7 @@ import './index.less';
 
 const topPages = ['Home 导航', 'Start 使用'];
 
-const App = () => {
+const App: FC = () => {
   return (
     <BookletLayout
       defaultKey='Home 导航'
@@ -29,5 +29,7 @@ const App = () => {
     />
   );
 };
+
+App.displayName = 'App';
 
 export default App;

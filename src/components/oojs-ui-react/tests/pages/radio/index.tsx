@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { type FC } from 'react';
 import { RadioSelect } from 'oojs-ui-react';
 
-const RadioPage = () => {
+const RadioPage: FC = () => {
   return (
     <>
       <h1>Radio - 单选框</h1>
@@ -15,5 +15,7 @@ const RadioPage = () => {
     </>
   );
 };
+
+RadioPage.displayName = 'RadioPage';
 
 export default RadioPage;

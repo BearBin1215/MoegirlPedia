@@ -11,4 +11,6 @@ const LazyComponent: FC<{ route: RouterItem }> = ({ route }) => {
   );
 };
 
+LazyComponent.displayName = 'LazyComponent';
+
 export default LazyComponent;

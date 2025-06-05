@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useMemo,
   useEffect,
   forwardRef,
   useRef,
@@ -60,7 +59,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     setup && 'oo-ui-window-content-setup',
   );
 
-  const frameWidth = useMemo(() => {
+  const frameWidth = (() => {
     switch (size) {
       case 'full':
         return false;
@@ -74,7 +73,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
       default:
         return 500;
     }
-  }, [size]);
+  })();
 
   // 更新弹窗尺寸
   const updateSize = () => {

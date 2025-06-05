@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useMemo,
   useEffect,
   useRef,
   forwardRef,
@@ -80,7 +79,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   };
 
   /** input的内边距是用内联样式控制的，要根据label判定 */
-  const inputStyle = useMemo(() => {
+  const inputStyle = (() => {
     const style: CSSProperties = {};
     if (labelRef.current) {
       const paddingWidth = `${labelRef.current.offsetWidth + 2}px`;
@@ -91,7 +90,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
       }
     }
     return style;
-  }, [label, labelPosition]);
+  })();
 
   useEffect(() => {
     if (!autosize) {
