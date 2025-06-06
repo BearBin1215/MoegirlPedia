@@ -28,12 +28,15 @@ const Home: FC = () => {
         <li>
           可按需引入，在webpack等构建工具中构建时支持Tree Shaking。
         </li>
+        <li>
+          使用<a href='https://www.typescriptlang.org/' target='_blank'>TypeScript</a>编写，支持类型检查及提示
+        </li>
       </ul>
       <h2>相关链接</h2>
       <ul>
         <li>
           <a
-            href="https://doc.wikimedia.org/oojs-ui/master/js/"
+            href='https://doc.wikimedia.org/oojs-ui/master/js/'
             target='_blank'
           >
             oojs-ui 官方文档
@@ -41,7 +44,7 @@ const Home: FC = () => {
         </li>
         <li>
           <a
-            href="https://doc.wikimedia.org/oojs-ui/master/demos/"
+            href='https://doc.wikimedia.org/oojs-ui/master/demos/'
             target='_blank'
           >
             oojs-ui 官方Demo
