@@ -16,6 +16,7 @@
   - [Wikiplus快速摘要](#wikiplus快速摘要)
   - [新条目分类统计](#新条目分类统计)
   - [一键提醒投票](#一键提醒投票)
+- [参与完善](#参与完善)
 
 ## 工具介绍
 
@@ -183,3 +184,6 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/VoteRemind.min.js");
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");
 ```
+
+## 参与完善
+见[CONTRIBUTING.md](CONTRIBUTING.md)
