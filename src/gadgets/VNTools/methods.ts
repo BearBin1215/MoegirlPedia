@@ -30,7 +30,7 @@ export const updateCVLastUpdateDate = async () => {
   }).map(({ title, timestamp }) => `* [[${title}]]：${moment(timestamp).format('YYYY-MM-DD HH:mm:ss')}`).join('\n');
   await api.postWithToken('csrf', {
     action: 'edit',
-    title: 'User:BearBin/VNData/Galgame声优更新时间',
+    title: 'User:BearBin/VNData/里界声优条目更新时间',
     text: [
       '{{用户 允许他人编辑|[[Template:萌百视觉小说研究会|视研会]]成员}}',
       '本页面统计[[:Category:R-18作品声优]]内页面的最后更新时间，提示可能需要更新的页面。\n',

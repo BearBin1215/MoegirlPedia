@@ -3,7 +3,7 @@ import { updateCVLastUpdateDate, updateNavbox } from './methods';
 
 $(() => {
   mw.loader.using(['mediawiki.notification', 'mediawiki.api']);
-  if (mw.config.get('wgPageName') === 'User:BearBin/VNData/Galgame声优更新时间') {
+  if (mw.config.get('wgPageName') === 'User:BearBin/VNData/里界声优条目更新时间') {
     mw.loader.using(['moment']);
     const $uploadButton = addHeaderButton({ text: '更新' });
     $uploadButton.on('click', async () => {
