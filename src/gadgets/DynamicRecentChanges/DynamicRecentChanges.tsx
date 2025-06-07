@@ -58,6 +58,8 @@ const RecentChangeList: React.FC = () => {
   ));
   // 是否运行
   const [running, setRunning] = useState(defaultActive);
+  // 显示报错信息，比如吃waf了
+  const [errorMessage, setErrorMessage] = useState('');
   // 记录定时器id，用于停止
   const taskInterval = useRef<NodeJS.Timeout>();
   // 标签含义映射，用于渲染标签
@@ -85,43 +87,48 @@ const RecentChangeList: React.FC = () => {
       !showHideConfig.hideanons && '!anon',
       !showHideConfig.hidepatrolled && '!patrolled',
     ].filter(Boolean) as string[];
-    const res = await api.post({
-      action: 'query',
-      format: 'json',
-      utf8: true,
-      list: 'recentchanges',
-      // 按照用户当前显示的最多更改数读取，不超过500
-      // 超过3位数的显示形如“1,000”，因此读取data-params的值解析
-      rclimit: Math.min(500, JSON.parse($('.rclinks a[data-keys="limit"] strong').parent().attr('data-params') ?? '{"limit":250}').limit),
-      rcshow,
-      rctype: ['edit', 'new', 'log'],
-      rcprop: [
-        'patrolled',
-        'parsedcomment',
-        'flags',
-        'tags',
-        'title',
-        'timestamp',
-        'ids',
-        'sizes',
-        'user',
-        'userid',
-        'redirect',
-        'loginfo',
-      ],
-      rcexcludeuser: showHideConfig.hidemyself ? void 0 : mw.config.get('wgUserName')!,
-    }) as ApiQueryResponse;
-    const recentChanges = res.query.recentchanges.map((recentchange) => ({
-      ...recentchange,
-      'new': 'new' in recentchange,
-      minor: 'minor' in recentchange,
-      bot: 'bot' in recentchange,
-      patrolled: 'patrolled' in recentchange,
-      autopatrolled: 'autopatrolled' in recentchange,
-      unpatrolled: 'unpatrolled' in recentchange,
-      redirect: 'redirect' in recentchange,
-    }));
-    setData(mergeData(recentChanges));
+    try {
+      const res = await api.post({
+        action: 'query',
+        format: 'json',
+        utf8: true,
+        list: 'recentchanges',
+        // 按照用户当前显示的最多更改数读取，不超过500
+        // 超过3位数的显示形如“1,000”，因此读取data-params的值解析
+        rclimit: Math.min(500, JSON.parse($('.rclinks a[data-keys="limit"] strong').parent().attr('data-params') ?? '{"limit":250}').limit),
+        rcshow,
+        rctype: ['edit', 'new', 'log'],
+        rcprop: [
+          'patrolled',
+          'parsedcomment',
+          'flags',
+          'tags',
+          'title',
+          'timestamp',
+          'ids',
+          'sizes',
+          'user',
+          'userid',
+          'redirect',
+          'loginfo',
+        ],
+        rcexcludeuser: showHideConfig.hidemyself ? void 0 : mw.config.get('wgUserName')!,
+      }) as ApiQueryResponse;
+      const recentChanges = res.query.recentchanges.map((recentchange) => ({
+        ...recentchange,
+        'new': 'new' in recentchange,
+        minor: 'minor' in recentchange,
+        bot: 'bot' in recentchange,
+        patrolled: 'patrolled' in recentchange,
+        autopatrolled: 'autopatrolled' in recentchange,
+        unpatrolled: 'unpatrolled' in recentchange,
+        redirect: 'redirect' in recentchange,
+      }));
+      setData(mergeData(recentChanges));
+      setErrorMessage('');
+    } catch (err) {
+      setErrorMessage(err as any);
+    }
   };
 
   /** 读取标签数据 */
@@ -269,6 +276,16 @@ const RecentChangeList: React.FC = () => {
             />
           </div>
         </div>
+        {errorMessage && (
+          <div className='dynamic-rc-error'>
+            请求最近更改列表出现错误：{errorMessage}，请
+            {errorMessage === 'http' ? (
+              <a href='/api.php'>检查是否遇到WAF或验证码</a>
+            ) : (
+              <a href='/User_talk:BearBin'>向BearBin报告问题。</a>
+            )}
+          </div>
+        )}
       </fieldset>
       {data.length > 0 && (
         <h4>{moment.utc(data[0]?.[0].timestamp).local().format('YYYY年MM月DD日 (dddd)')}</h4>
