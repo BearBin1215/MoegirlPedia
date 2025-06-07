@@ -47,7 +47,7 @@ export const UserLink: FC<UserLinkProps> = (props) => {
         >
           <img
             loading='lazy'
-            src={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png`}
+            src={`https://img.moegirl.org.cn/common/avatars/${userid}/128.png?ver=0`}
             alt={`${user}的头像`}
             className='userlink-avatar-small'
           />
