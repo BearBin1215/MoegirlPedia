@@ -10,7 +10,7 @@ $(() => (async () => {
   if (mw.config.get('wgNamespaceNumber') === 6) {
     await mw.loader.using(['mediawiki.api', 'mediawiki.ForeignApi', 'mediawiki.notification', 'oojs-ui']);
     const api = new mw.Api();
-    const zhmoeApi = new mw.ForeignApi('https://mzh.moegirl.org.cn/api.php', { anonymous: true });
+    const zhmoeApi = new mw.ForeignApi('https://mzh.moegirl.org.cn/api.php');
     const FILENAME = mw.config.get('wgTitle');
     const PAGENAME = mw.config.get('wgPageName');
 
