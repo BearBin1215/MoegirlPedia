@@ -130,7 +130,7 @@ const LogText: React.FC<LogTextProps> = ({
       <>
         将页面
         <a href={wgArticlePath.replace('$1', title)} title=''>{title}</a>
-        的内容模型从“{logparams.oldmodel}”更改为“{logparams.oldmodel}”
+        的内容模型从“{logparams.oldmodel}”更改为“{logparams.newmodel}”
       </>
     );
   }
