@@ -21,7 +21,7 @@ const Home: FC = () => {
       <h2>特性</h2>
       <ul>
         <li>
-          在MediaWiki站点中使用时无需额外引入样式表，使用
+          在MediaWiki站点中使用时无需额外引入样式表。使用
           <a href='https://preactjs.com/guide/v10/switching-to-preact'>Preact兼容层</a>
           替代React、利用构建工具合理优化后输出文件大小为22KB+。
         </li>

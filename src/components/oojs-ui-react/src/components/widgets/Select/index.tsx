@@ -47,7 +47,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
   const classes = classNames(
     className,
     processClassNames({ disabled }, 'select'),
-    pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-depressed',
+    pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 
   const handlePress: MouseEventHandler<HTMLDivElement> = () => {

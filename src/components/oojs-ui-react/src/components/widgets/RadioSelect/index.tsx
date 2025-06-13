@@ -35,7 +35,7 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   const classes = classNames(
     className,
     processClassNames({ disabled }, 'select', 'radioSelect'),
-    pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-depressed',
+    pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 
   const handlePress: MouseEventHandler<HTMLDivElement> = () => {

@@ -1,5 +1,7 @@
 body {
     font-size: 14px;
+    margin: 0;
+    padding: 0;
 }
 
 a {
@@ -25,15 +27,45 @@ code {
 
 h1:first-child {
     margin-top: 0;
-    border-bottom: 2px solid #0074F9;
+    border-bottom: 2px solid #0074f9;
 }
 
 h2 {
     border-bottom: 1px solid #e0e0e0;
 }
 
+#root {
+    height: 100vh;
+}
+
+.oojs-ui-react {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .oojs-ui-react-header {
+        display: flex;
+        flex: 0 0 48px;
+        padding: 10px 16px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #aaa;
+
+        .oojs-ui-react-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.2em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+    }
+
+    .oojs-ui-react-content {
+        flex: 1 0;
+        position: relative;
+    }
+}
+
 .oo-ui-menuLayout {
-    >.oo-ui-menuLayout-menu {
+    > .oo-ui-menuLayout-menu {
         width: 17.5em;
 
         .oo-ui-outlineOptionWidget {
@@ -41,7 +73,7 @@ h2 {
         }
     }
 
-    >.oo-ui-menuLayout-content {
+    > .oo-ui-menuLayout-content {
         left: 17.5em;
 
         .oo-ui-inputWidget {

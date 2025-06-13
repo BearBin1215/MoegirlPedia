@@ -26,7 +26,7 @@ export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'chil
   /** 页签集 */
   options: BookletLayoutOptionProps[];
   /** 页签变化钩子 */
-  onChange?: ChangeHandler<string | number>;
+  onChange?: ChangeHandler<Key>;
 }
 
 const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
