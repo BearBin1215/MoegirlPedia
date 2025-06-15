@@ -133,6 +133,7 @@ module.exports = {
     'react/no-unused-state': 2,
     'react/no-arrow-function-lifecycle': 2,
     'react/prop-types': 0,
+
     '@stylistic/arrow-parens': 2,
     '@stylistic/arrow-spacing': [2, { before: true, after: true }],
     '@stylistic/comma-dangle': [1, 'always-multiline'],
@@ -162,6 +163,7 @@ module.exports = {
       ],
       rules: {
         'vue/multi-word-component-names': 0,
+        'vue/html-quotes': 0,
       },
     },
 

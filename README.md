@@ -17,6 +17,7 @@
   - [新条目分类统计](#新条目分类统计)
   - [一键提醒投票](#一键提醒投票)
 - [参与完善](#参与完善)
+- [特别鸣谢](#特别鸣谢)
 
 ## 工具介绍
 
@@ -185,5 +186,10 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");
 ```
 
+
 ## 参与完善
 见[CONTRIBUTING.md](CONTRIBUTING.md)
+
+
+## 特别鸣谢
+* [鬼影233](https://github.com/gui-ying233)：为调用高版本MediaWiki自带Vue提出宝贵建议；参与完善多个工具。

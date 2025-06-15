@@ -57,6 +57,11 @@ module.exports = {
     type: 'filesystem',
   },
   module: {
+    parser: {
+      javascript: {
+        dynamicImportMode: 'eager',
+      },
+    },
     rules: [
       {
         test: /\.vue$/,
