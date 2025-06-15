@@ -165,4 +165,7 @@ module.exports = {
     ],
   },
   plugins: [new ForkTsCheckerWebpackPlugin(), new VueLoaderPlugin()],
+  externals: {
+    vue: 'Vue',
+  },
 };

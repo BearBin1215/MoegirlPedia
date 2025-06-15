@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+const { ref } = Vue;
 
 const msg = ref("Hello, Vue!");
 </script>
