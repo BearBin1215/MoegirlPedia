@@ -1,75 +1,86 @@
-declare const moment: typeof import('moment');
+export { };
 
-/** 在页面右下方插入按钮 */
-declare function insertToBottomRightCorner(text: string): JQuery<HTMLDivElement>;
+declare global {
+  const Vue: typeof import('vue');
+  const Pinia: typeof import('pinia');
 
-declare function wgUXS(
-  wg: string,
-  hans: string,
-  hant?: string,
-  cn?: string,
-  tw?: string,
-  hk?: string,
-  sg?: string,
-  zh?: string,
-  mo?: string,
-  my?: string,
-): string;
+  interface Window {
+    Pinia: typeof Pinia;
+  }
 
-declare const wgULS: typeof wgUXS extends (wg: string, ...rest: infer Rest) => infer ReturnType ? (...args: Rest) => ReturnType : never;
+  const moment: typeof import('moment');
 
-declare const wgUVS: typeof wgULS;
+  /** 在页面右下方插入按钮 */
+  declare function insertToBottomRightCorner(text: string): JQuery<HTMLDivElement>;
 
-declare namespace libCachedCode {
-  export function getCachedCode(url: string): Promise<string>;
+  declare function wgUXS(
+    wg: string,
+    hans: string,
+    hant?: string,
+    cn?: string,
+    tw?: string,
+    hk?: string,
+    sg?: string,
+    zh?: string,
+    mo?: string,
+    my?: string,
+  ): string;
 
-  export function getCachedCodeUrl(url: string): Promise<string>;
+  declare const wgULS: typeof wgUXS extends (wg: string, ...rest: infer Rest) => infer ReturnType ? (...args: Rest) => ReturnType : never;
 
-  export function injectCachedCode(url: string, _type: string): Promise<void>;
+  declare const wgUVS: typeof wgULS;
 
-  export function batchInjectCachedCode(urls: string[], type: string): Promise<void>[];
-}
+  declare namespace libCachedCode {
+    export function getCachedCode(url: string): Promise<string>;
 
-interface Transformation {
-  type: string;
+    export function getCachedCodeUrl(url: string): Promise<string>;
 
-  match: (arg: any) => boolean;
+    export function injectCachedCode(url: string, _type: string): Promise<void>;
 
-  encode: (value: any) => string;
+    export function batchInjectCachedCode(urls: string[], type: string): Promise<void>[];
+  }
 
-  decode: (value: string) => any;
-}
+  interface Transformation {
+    type: string;
 
-declare class LocalObjectStorage {
-  static plugins: {
-    transformations: {
-      get list(): Transformation[];
+    match: (arg: any) => boolean;
 
-      add: (transformation: Transformation) => boolean;
-    }
-  };
+    encode: (value: any) => string;
 
-  #keyPrefix: string;
+    decode: (value: string) => any;
+  }
 
-  constructor(prefix?: string);
+  declare class LocalObjectStorage {
+    static plugins: {
+      transformations: {
+        get list(): Transformation[];
 
-  get _keyPrefix(): string;
+        add: (transformation: Transformation) => boolean;
+      }
+    };
 
-  #getAllKeys(): string[];
+    #keyPrefix: string;
 
-  getAllKeys(): string[];
+    constructor(prefix?: string);
 
-  get length(): number;
+    get _keyPrefix(): string;
 
-  getItem<T = any>(key: string): T | string | null;
+    #getAllKeys(): string[];
 
-  getItem<T = any>(key: string, fallback: T): T;
+    getAllKeys(): string[];
 
-  setItem<T = any>(key: string, value: T): void;
+    get length(): number;
 
-  removeItem(key: string): void;
+    getItem<T = any>(key: string): T | string | null;
 
-  clear(): void;
+    getItem<T = any>(key: string, fallback: T): T;
 
-  key(index: number): string | undefined;
+    setItem<T = any>(key: string, value: T): void;
+
+    removeItem(key: string): void;
+
+    clear(): void;
+
+    key(index: number): string | undefined;
+  }
 }

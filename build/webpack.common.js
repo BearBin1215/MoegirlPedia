@@ -171,6 +171,8 @@ module.exports = {
   },
   plugins: [new ForkTsCheckerWebpackPlugin(), new VueLoaderPlugin()],
   externals: {
+    moment: 'moment',
     vue: 'Vue',
+    pinia: 'window.Pinia',
   },
 };
