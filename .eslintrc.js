@@ -35,6 +35,7 @@ module.exports = {
     },
     requireConfigFile: false,
     project: './tsconfig.json',
+    extraFileExtensions: ['.vue'],
   },
   settings: {
     react: {
