@@ -35,6 +35,7 @@
     ".eslintrc.js",
     "src/**/*",
     "node_modules/moment/index.d.ts",
-    "node_modules/types-mediawiki"
+    "node_modules/types-mediawiki",
+    "build/**/*",
   ]
 }
