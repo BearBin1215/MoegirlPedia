@@ -32,7 +32,8 @@
     "dist"
   ],
   "include": [
-    "src",
+    ".eslintrc.js",
+    "src/**/*",
     "node_modules/moment/index.d.ts",
     "node_modules/types-mediawiki"
   ]
