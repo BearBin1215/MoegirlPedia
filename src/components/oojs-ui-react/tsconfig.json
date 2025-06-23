@@ -18,6 +18,9 @@
       "oojs-ui-react": [
         "src/index.ts"
       ],
+      "oojs-ui-react/*": [
+        "src/*"
+      ],
     },
     "jsx": "react",
     "lib": [

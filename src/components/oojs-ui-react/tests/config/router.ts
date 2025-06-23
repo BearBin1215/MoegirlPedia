@@ -27,6 +27,10 @@ const router: RouterItem[] = [
     Component: () => import('../pages/button'),
   },
   {
+    title: 'Icon/Indicator 图标',
+    Component: () => import('../pages/icon'),
+  },
+  {
     title: 'TextInput 文本输入',
     Component: () => import('../pages/text-input'),
   },

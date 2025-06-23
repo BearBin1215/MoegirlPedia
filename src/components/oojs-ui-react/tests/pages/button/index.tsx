@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import React, { type FC } from 'react';
 import { Button, ButtonGroup } from 'oojs-ui-react';
 
 const ButtonPage: FC = () => {

@@ -1,0 +1,23 @@
+.icon-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    .icon-item {
+        flex: 0 0 15em;
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0.5em 0.6em;
+        cursor: pointer;
+        transition: box-shadow 0.25s ease-in-out;
+
+        &:hover {
+            box-shadow: 0 0 0.4em rgba(0, 0, 0, 20%);
+        }
+
+        .icon-code {
+            line-height: 1;
+        }
+    }
+}

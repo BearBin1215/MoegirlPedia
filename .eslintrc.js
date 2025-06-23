@@ -107,6 +107,7 @@ module.exports = {
     'require-await': 2,
     yoda: 2,
     'import/no-named-as-default': 0,
+    'import/no-unresolved': 0,
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/naming-convention': [
       2,

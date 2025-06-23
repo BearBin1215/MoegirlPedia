@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
+import { omit } from 'lodash-es';
 
 export type PageLayoutProps = PanelLayoutProps;
 
@@ -21,7 +22,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
 
   return (
     <PanelLayout
-      {...rest}
+      {...omit(rest, 'label')}
       expanded={expanded}
       scrollable={scrollable}
       className={classes}

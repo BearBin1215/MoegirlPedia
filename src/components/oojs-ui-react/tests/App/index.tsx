@@ -2,9 +2,7 @@ import React, { useState, type FC, type Key } from 'react';
 import { BookletLayout, ChangeHandler } from 'oojs-ui-react';
 import LazyComponent from './LazyComponent';
 import router from '../config/router';
-import 'oojs-ui/dist/oojs-ui-core-wikimediaui.min.css';
-import 'oojs-ui/dist/oojs-ui-widgets-wikimediaui.min.css';
-import 'oojs-ui/dist/oojs-ui-images-wikimediaui.min.css';
+import 'oojs-ui/dist/oojs-ui-wikimediaui.css';
 import './index.less';
 
 const topPages = ['Home 导航', 'Start 使用'];
