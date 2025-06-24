@@ -17,12 +17,8 @@ const IconPage: FC = () => {
     <>
       <h1>Icon/Indicator - 图标</h1>
       <ul>
-        <li>
-          加载对应的CSS后可以使用。
-        </li>
-        <li>
-          点击本页图标可复制React代码。
-        </li>
+        <li>加载对应的CSS后可以使用，需要自定义可以自己添加CSS。</li>
+        <li>点击本页图标可复制React代码。</li>
       </ul>
       {iconList.map(({ title, icons }) => (
         <Fragment key={title}>

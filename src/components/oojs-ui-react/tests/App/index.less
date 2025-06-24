@@ -1,3 +1,7 @@
+@import '~oojs-ui/dist/oojs-ui-wikimediaui.css';
+
+@link-color: #0011ee;
+
 body {
     font-size: 14px;
     margin: 0;
@@ -7,19 +11,40 @@ body {
 // 页面内的第一个一级标题
 h1:first-child {
     margin-top: 0;
-    border-bottom: 2px solid #0074f9;
 }
 
+// 标题样式
 h2 {
-    border-bottom: 1px solid #e0e0e0;
+    margin: 1.4em 0 0.6em;
+}
+
+h3 {
+    margin: 1.2em 0 0.4em;
+}
+
+h4,
+h5,
+h6 {
+    margin: 1em 0 0.4em;
+}
+
+p {
+    margin: 0.8em 0;
 }
 
 // 链接默认无下划线，悬浮时显示
 a {
     text-decoration: none;
+    color: @link-color;
 
     &:hover {
         text-decoration: underline;
+    }
+
+    &.link {
+        &:visited {
+            color: darken(@link-color, 10%);
+        }
     }
 }
 

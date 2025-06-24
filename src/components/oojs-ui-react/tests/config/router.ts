@@ -23,12 +23,12 @@ const router: RouterItem[] = [
     section: true,
   },
   {
-    title: 'Button 按钮',
-    Component: () => import('../pages/button'),
-  },
-  {
     title: 'Icon/Indicator 图标',
     Component: () => import('../pages/icon'),
+  },
+  {
+    title: 'Button 按钮',
+    Component: () => import('../pages/button'),
   },
   {
     title: 'TextInput 文本输入',
@@ -45,6 +45,10 @@ const router: RouterItem[] = [
   {
     title: 'Radio 单选框',
     Component: () => import('../pages/radio'),
+  },
+  {
+    title: 'CheckboxInput 勾选框',
+    Component: () => import('../pages/checkbox-input'),
   },
 
 
