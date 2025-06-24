@@ -8,8 +8,9 @@
     "stylelint-config-recommended-less"
   ],
   "ignoreFiles": [
-    "dist/**/*.css",
-    "node_modules/**/*.css"
+    "dist/**/*",
+    "node_modules/**/*",
+    "src/components/oojs-ui-react/node_modules/**/*"
   ],
   "overrides": [
     {

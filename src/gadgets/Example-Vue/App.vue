@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang='ts'>
+// webpack配置中将pinia库指向window.Pinia，在index.ts中挂载好就可以使用
 import { defineStore, storeToRefs } from 'pinia';
 
 const useStore = defineStore('store', {

@@ -4,6 +4,17 @@ body {
     padding: 0;
 }
 
+// 页面内的第一个一级标题
+h1:first-child {
+    margin-top: 0;
+    border-bottom: 2px solid #0074f9;
+}
+
+h2 {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+// 链接默认无下划线，悬浮时显示
 a {
     text-decoration: none;
 
@@ -12,6 +23,7 @@ a {
     }
 }
 
+// 删除线样式
 del,
 s {
     color: #626262;
@@ -19,19 +31,24 @@ s {
     padding-right: 2px;
 }
 
+// 代码块
 code {
-    padding: 1px 4px;
-    border: 1px solid #eaeaea;
-    background-color: rgb(248 249 250 / 56%);
+    margin: 0 0.25em;
+    padding: 0.2em 0.4em;
+    background: rgba(0, 0, 0, 4%);
+    border: 1px solid rgba(5, 5, 5, 6%);
 }
 
-h1:first-child {
-    margin-top: 0;
-    border-bottom: 2px solid #0074f9;
-}
+// 无序列表
+ul {
+    list-style: none;
+    padding: 0;
+    line-height: 1.6;
 
-h2 {
-    border-bottom: 1px solid #e0e0e0;
+    li {
+        list-style-type: circle;
+        margin-inline-start: 20px;
+    }
 }
 
 #root {
@@ -54,7 +71,8 @@ h2 {
             display: flex;
             align-items: center;
             font-size: 1.2em;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
     }
 
