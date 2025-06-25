@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { processClassNames } from '../../../utils/tool';
 import type { ElementProps } from '../../../types/mixin';
 
@@ -14,7 +14,7 @@ const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
   disabled,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }),
   );

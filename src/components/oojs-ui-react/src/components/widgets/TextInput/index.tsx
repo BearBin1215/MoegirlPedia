@@ -5,7 +5,7 @@ import React, {
   type CSSProperties,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -55,7 +55,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
     label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,

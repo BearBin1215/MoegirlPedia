@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
@@ -67,7 +67,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
     label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,

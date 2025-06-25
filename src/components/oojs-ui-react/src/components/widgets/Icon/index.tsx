@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import IconBase from './Base';
 import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
@@ -21,7 +21,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
   ...rest
 }, ref) => {
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, icon }, 'icon'),
     (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag} oo-ui-image-${flag}`),

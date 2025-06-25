@@ -1,5 +1,5 @@
 import React, { forwardRef, type ReactNode } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
@@ -22,7 +22,7 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
   label,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     label && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',

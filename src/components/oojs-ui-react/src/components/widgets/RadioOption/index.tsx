@@ -2,7 +2,7 @@ import React, {
   forwardRef,
   type MouseEventHandler,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
 import { processClassNames } from '../../../utils/tool';
@@ -27,7 +27,7 @@ const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
   selected,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, label: children }, 'option', 'radioOption'),
     selected && 'oo-ui-optionWidget-selected',

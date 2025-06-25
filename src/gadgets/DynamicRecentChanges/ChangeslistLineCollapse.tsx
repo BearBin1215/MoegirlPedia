@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import classNames from 'classnames';
+import clasx from 'clsx';
 import {
   MWTitle,
   HistoryLink,
@@ -57,7 +57,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     oldlen,
   } = changes.at(-1)!; // 需要的最旧编辑数据
 
-  const className = classNames(
+  const className = clasx(
     'mw-collapsible',
     'mw-enhanced-rc',
     'mw-changeslist-line',
@@ -69,7 +69,7 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
     !expanded && 'mw-collapsed',
   );
 
-  const toggleClassName = classNames(
+  const toggleClassName = clasx(
     'mw-collapsible-toggle',
     'mw-collapsible-arrow',
     'mw-enhancedchanges-arrow',

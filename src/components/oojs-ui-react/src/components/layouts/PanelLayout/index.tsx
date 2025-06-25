@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Layout, { type LayoutProps } from '../Layout';
 
 export interface PanelLayoutProps extends LayoutProps {
@@ -23,7 +23,7 @@ const PanelLayout = forwardRef<HTMLDivElement, PanelLayoutProps>(({
   framed,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-panelLayout',
     scrollable && 'oo-ui-panelLayout-scrollable',

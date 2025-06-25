@@ -1,5 +1,5 @@
 import React, { useContext, createElement } from 'react';
-import classNames from 'classnames';
+import clasx from 'clsx';
 import {
   MWTitle,
   HistoryLink,
@@ -146,7 +146,7 @@ export const getLineClassName = ({
   unpatrolled = false,
   experienced = true,
   logtype,
-}: ChangeslistLineProps) => classNames(
+}: ChangeslistLineProps) => clasx(
   'mw-changeslist-line',
   `mw-changeslist-${type}`,
   `mw-changeslist-ns${ns}-${removeNsPrefix(title, ns).replace(/[.:/]/, '_')}`,

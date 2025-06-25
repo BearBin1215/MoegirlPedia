@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Select from '../Select';
 import type { SelectProps } from '../Select';
 
@@ -15,7 +15,7 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   open = false,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-clippableElement-clippable',
     'oo-ui-floatableElement-floatable',

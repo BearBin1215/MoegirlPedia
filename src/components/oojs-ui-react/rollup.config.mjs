@@ -5,7 +5,7 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import del from 'rollup-plugin-delete';
 
-const external = ['react', 'react-dom', 'classnames', 'lodash-es', 'tslib'];
+const external = ['react', 'react-dom', 'clsx', 'lodash-es', 'tslib'];
 
 /** @type {import('@rollup/plugin-babel').RollupBabelInputPluginOptions} */
 const babelOptions = {

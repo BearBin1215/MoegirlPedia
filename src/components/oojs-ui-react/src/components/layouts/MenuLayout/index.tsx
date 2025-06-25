@@ -3,7 +3,7 @@ import React, {
   type ReactNode,
   type Key,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Layout, { type LayoutProps } from '../Layout';
 
 export type MenuLayoutOptions = LayoutProps & {
@@ -32,7 +32,7 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
   menu,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-menuLayout',
     expanded ? 'oo-ui-menuLayout-expanded' : 'oo-ui-menuLayout-static',

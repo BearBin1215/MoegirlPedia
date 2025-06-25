@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionData } from '../Option';
 
@@ -13,7 +13,7 @@ const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   selected,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-outlineOptionWidget',
     `oo-ui-outlineOptionWidget-level-${level}`,

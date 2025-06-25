@@ -2,7 +2,7 @@ import React, {
   forwardRef,
   type Key,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import PageLayout, { type PageLayoutProps } from '../PageLayout';
 
@@ -28,7 +28,7 @@ const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
   options,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-stackLayout',
     continuous && 'oo-ui-stackLayout-continuous',

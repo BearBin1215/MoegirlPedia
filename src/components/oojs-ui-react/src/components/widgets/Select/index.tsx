@@ -4,7 +4,7 @@ import React, {
   type Key,
   type MouseEventHandler,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import MenuOption from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
@@ -44,7 +44,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
 }, ref) => {
   const [pressed, setPressed] = useState(false);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }, 'select'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { omit } from 'lodash-es';
 import type { ElementProps } from '../../../types/mixin';
 
@@ -15,7 +15,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
   hidden,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-layout',
     hidden && 'oo-ui-element-hidden',

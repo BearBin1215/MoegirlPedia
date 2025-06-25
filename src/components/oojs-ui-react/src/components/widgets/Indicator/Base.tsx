@@ -1,5 +1,5 @@
 import React, { forwardRef, type HTMLAttributes } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import type { IndicatorElement } from '../../../types/mixin';
 
 export interface IndicatorBaseProps extends
@@ -11,7 +11,7 @@ const IndicatorBase = forwardRef<HTMLSpanElement, IndicatorBaseProps>(({
   indicator,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     'oo-ui-indicatorElement-indicator',
     indicator && `oo-ui-indicator-${indicator}`,
     className,

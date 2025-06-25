@@ -3,7 +3,7 @@ import React, {
   type ReactNode,
   type MouseEventHandler,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Dialog, { type DialogProps } from './Dialog';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
@@ -27,7 +27,7 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   onCancel,
   ...rest
 }, ref) => {
-  const classes = classNames(className, 'oo-ui-messageDialog');
+  const classes = clsx(className, 'oo-ui-messageDialog');
 
   return (
     <Dialog

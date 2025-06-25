@@ -1,5 +1,5 @@
 import React, { useState, forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
 
@@ -16,7 +16,7 @@ const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   const [pressed, setPressed] = useState(false);
   const [highlighted, setHighlighted] = useState(false);
 
-  const classes = classNames(
+  const classes = clsx(
     'oo-ui-menuOptionWidget',
     pressed && 'oo-ui-optionWidget-pressed',
     highlighted && 'oo-ui-optionWidget-highlighted',

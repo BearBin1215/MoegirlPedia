@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { processClassNames } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
 import type { WidgetProps } from '../Widget';
@@ -51,7 +51,7 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElem
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }, 'input'),
   );

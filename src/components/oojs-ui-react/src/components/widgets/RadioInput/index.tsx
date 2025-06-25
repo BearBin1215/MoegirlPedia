@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 
@@ -27,7 +27,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
 }, ref) => {
   const [checked, setChecked] = useState(!!selected);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }, 'input', 'radioInput'),
   );

@@ -1,5 +1,5 @@
 import React, { forwardRef, type ReactElement } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Widget, { type WidgetProps } from '../Widget';
 import type { ButtonProps } from '../Button';
 
@@ -12,7 +12,7 @@ const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   children,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-buttonGroupWidget',
   );

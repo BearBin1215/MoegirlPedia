@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Select, { type SelectProps } from '../Select';
 
 export type OutlineSelectProps = SelectProps;
@@ -8,7 +8,7 @@ const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
   className,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-outlineSelectWidget',
   );

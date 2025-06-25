@@ -1,5 +1,5 @@
 import React, { forwardRef, type HTMLAttributes } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import type { LabelElement } from '../../../types/mixin';
 
 export interface LabelBaseProps extends
@@ -14,7 +14,7 @@ const LabelBase = forwardRef<HTMLSpanElement, LabelBaseProps>(({
   children,
   ...rest
 }, ref) => {
-  const classes = classNames('oo-ui-labelElement-label', className);
+  const classes = clsx('oo-ui-labelElement-label', className);
 
   return (
     <span

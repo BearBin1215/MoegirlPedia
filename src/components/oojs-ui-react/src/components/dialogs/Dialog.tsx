@@ -5,7 +5,7 @@ import React, {
   useRef,
   type ReactNode,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { debounce } from 'lodash-es';
 import WindowManager from './WindowManager';
 import type { ElementProps } from '../../types/mixin';
@@ -42,7 +42,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   const bodyRef = useRef<HTMLDivElement>(null);
   const footRef = useRef<HTMLDivElement>(null);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-window',
     'oo-ui-dialog',
@@ -51,7 +51,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     active ? 'oo-ui-window-active' : 'oo-ui-element-hidden',
   );
 
-  const contentClasses = classNames(
+  const contentClasses = clsx(
     'oo-ui-window-content',
     'oo-ui-dialog-content',
     contentClassName,

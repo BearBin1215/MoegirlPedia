@@ -6,7 +6,7 @@ import React, {
   type CSSProperties,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -50,14 +50,14 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
     label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
 
-  const inputClasses = classNames(
+  const inputClasses = clsx(
     'oo-ui-inputWidget-input',
     autosize && 'oo-ui-textInputWidget-autosized',
   );

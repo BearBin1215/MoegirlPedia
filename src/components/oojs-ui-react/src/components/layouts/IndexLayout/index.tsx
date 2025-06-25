@@ -3,7 +3,7 @@ import React, {
   type ReactNode,
   type Key,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import PanelLayout from '../PanelLayout';
 import Select from '../../widgets/Select';
@@ -28,7 +28,7 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   framed,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-indexLayout',
   );

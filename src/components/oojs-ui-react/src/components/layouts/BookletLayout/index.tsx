@@ -4,7 +4,7 @@ import React, {
   type ReactNode,
   type Key,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import PanelLayout from '../PanelLayout';
 import OutlineSelect from '../../widgets/OutlineSelect';
@@ -38,7 +38,7 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
 }, ref) => {
   const [activeKey, setActiveKey] = useState(defaultKey);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-bookletLayout',
   );

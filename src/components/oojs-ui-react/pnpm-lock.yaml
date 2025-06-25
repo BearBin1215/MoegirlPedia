@@ -4,6 +4,14 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  clsx:
+    specifier: ^2.1.1
+    version: 2.1.1
+  lodash-es:
+    specifier: ^4.0.0
+    version: 4.17.21
+
 devDependencies:
   '@babel/core':
     specifier: ^7.24.5
@@ -47,9 +55,6 @@ devDependencies:
   babel-loader:
     specifier: ^9.1.3
     version: 9.1.3(@babel/core@7.24.5)(webpack@5.91.0)
-  classnames:
-    specifier: ^2.5.1
-    version: 2.5.1
   css-loader:
     specifier: ^6.11.0
     version: 6.11.0(webpack@5.91.0)
@@ -68,9 +73,6 @@ devDependencies:
   less-loader:
     specifier: 11.1.4
     version: 11.1.4(less@4.3.0)(webpack@5.91.0)
-  lodash-es:
-    specifier: ^4.17.21
-    version: 4.17.21
   oojs-ui:
     specifier: ^0.49.2
     version: 0.49.2
@@ -2610,10 +2612,6 @@ packages:
     engines: {node: '>=6.0'}
     dev: true
 
-  /classnames@2.5.1:
-    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
-    dev: true
-
   /clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
     engines: {node: '>= 10.0'}
@@ -2634,6 +2632,11 @@ packages:
       kind-of: 6.0.3
       shallow-clone: 3.0.1
     dev: true
+
+  /clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
+    dev: false
 
   /color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -4428,7 +4431,7 @@ packages:
 
   /lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: true
+    dev: false
 
   /lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}

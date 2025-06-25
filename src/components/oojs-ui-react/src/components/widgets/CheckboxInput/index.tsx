@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type ChangeEvent,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import IconWidget from '../Icon';
 import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
@@ -25,7 +25,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
 }, ref) => {
   const [value, setValue] = useState(defaultValue);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }, 'input', 'checkboxInput'),
   );

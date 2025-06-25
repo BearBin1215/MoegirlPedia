@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type MouseEventHandler,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
 import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
@@ -32,7 +32,7 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   const [value, setValue] = useState(defaultValue);
   const [pressed, setPressed] = useState(false);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled }, 'select', 'radioSelect'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',

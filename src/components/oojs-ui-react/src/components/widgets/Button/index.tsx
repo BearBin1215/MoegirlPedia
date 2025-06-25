@@ -3,7 +3,7 @@ import React, {
   forwardRef,
   type MouseEventHandler,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -63,7 +63,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     && !active;
 
   /** 根据参数生成按钮类 */
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({
       disabled,
@@ -78,7 +78,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  const imageClasses = classNames(
+  const imageClasses = clsx(
     iconInvert && 'oo-ui-image-invert',
     iconDestructive && 'oo-ui-image-destructive',
   );

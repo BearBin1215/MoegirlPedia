@@ -2,7 +2,7 @@ import React, {
   forwardRef,
   type ReactNode,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
@@ -33,7 +33,7 @@ const Option = forwardRef<HTMLDivElement, OptionProps>(({
   selected,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({ disabled, label: children }, 'option'),
     selected && 'oo-ui-optionWidget-selected',

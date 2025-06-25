@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { omit } from 'lodash-es';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
@@ -21,7 +21,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   indicator,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({
       disabled,

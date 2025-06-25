@@ -6,7 +6,7 @@ import React, {
   useEffect,
   type Key,
 } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import MenuSelect from './MenuSelect';
 import type { MenuOptionProps } from '../MenuOption';
 import type { MenuSectionOptionProps } from '../MenuSectionOption';
@@ -57,7 +57,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   const [value, setValue] = useState(defaultValue);
   const elementRef = useRef<HTMLDivElement>(null);
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     processClassNames({
       disabled,

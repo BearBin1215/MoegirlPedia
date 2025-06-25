@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clasx from 'clsx';
 import type { WidgetProps } from '../components/widgets/Widget';
 import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
 
@@ -29,7 +29,7 @@ export function processClassNames(
   { disabled, label, icon, indicator }: ComponentProps,
   ...widgetNames: string[]
 ): string {
-  return classNames(
+  return clasx(
     'oo-ui-widget',
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     icon && 'oo-ui-iconElement',

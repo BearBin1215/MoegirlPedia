@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 
 export type MenuSectionOptionProps = DecoratedOptionProps;
@@ -9,7 +9,7 @@ const MenuSectionOption = forwardRef<HTMLDivElement, MenuSectionOptionProps>(({
   className,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-menuSectionOptionWidget',
   );

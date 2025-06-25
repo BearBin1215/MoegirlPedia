@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import { omit } from 'lodash-es';
 
@@ -14,7 +14,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
   scrollable = true,
   ...rest
 }, ref) => {
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-pageLayout',
     !hidden && 'oo-ui-pageLayout-active',

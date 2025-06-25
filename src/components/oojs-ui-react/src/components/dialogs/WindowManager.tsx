@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { createPortal } from 'react-dom';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import type { ElementProps } from '../../types/mixin';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
@@ -20,7 +20,7 @@ const WindowManager = forwardRef<HTMLDivElement, WindowManagerProps>(({
   ...rest
 }, ref) => {
 
-  const classes = classNames(
+  const classes = clsx(
     className,
     'oo-ui-windowManager',
     modal && 'oo-ui-windowManager-modal',
