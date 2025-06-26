@@ -53,7 +53,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
-    label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
 
@@ -169,7 +169,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
       )}
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} style={{ right: '2px' }} />
-      {label && <LabelBase>{label}</LabelBase>}
+      {(label !== null && label !== void 0) && <LabelBase>{label}</LabelBase>}
     </div>
   );
 });

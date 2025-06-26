@@ -35,6 +35,10 @@ const router: RouterItem[] = [
     Component: () => import('../pages/text-input'),
   },
   {
+    title: 'MultilineInput 文本域',
+    Component: () => import('../pages/multiline-input'),
+  },
+  {
     title: 'NumberInput 数字输入',
     Component: () => import('../pages/number-input'),
   },

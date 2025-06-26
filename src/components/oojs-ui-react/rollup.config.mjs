@@ -66,7 +66,7 @@ export default [
     output: {
       file: 'lib/umd/index.min.js',
       format: 'umd',
-      name: 'ITGUIReact',
+      name: 'oojs-ui-react',
       sourcemap: true,
       globals: {
         react: 'React',

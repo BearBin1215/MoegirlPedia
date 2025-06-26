@@ -58,7 +58,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
-    label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
 
@@ -115,7 +115,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
       />
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
-      {label && <LabelBase ref={labelRef}>{label}</LabelBase>}
+      {(label !== null && label !== void 0) && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );
 });

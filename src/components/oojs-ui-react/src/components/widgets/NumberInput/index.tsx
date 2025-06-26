@@ -70,7 +70,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   const classes = clsx(
     className,
     processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
-    label && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );
@@ -149,7 +149,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           />
         )}
       </div>
-      {label && <LabelBase>{label}</LabelBase>}
+      {(label !== null && label !== void 0) && <LabelBase>{label}</LabelBase>}
     </div>
   );
 });
