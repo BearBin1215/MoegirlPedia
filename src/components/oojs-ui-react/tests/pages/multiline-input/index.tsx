@@ -21,6 +21,9 @@ const TextInputs: FC = () => {
 
       <h3>label</h3>
       <MultilineTextInput rows={3} label='label' />
+
+      <h3>禁用</h3>
+      <MultilineTextInput disabled />
     </>
   );
 };

@@ -2,3 +2,4 @@ dist/
 node_modules/
 lib/
 webpack.config.js
+rspack.config.js

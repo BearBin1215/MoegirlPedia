@@ -1,7 +1,7 @@
 /** @description webpack配置，用于搭建开发服务器 */
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const { rspack } = require('@rspack/core');
+const ReactRefreshPlugin = require('@rspack/plugin-react-refresh');
 
 /** PostCSS配置 */
 const postCSSLoader = {
@@ -15,7 +15,7 @@ const postCSSLoader = {
   },
 };
 
-/** @type {(_: any, argv: any) => (import('webpack').Configuration)} */
+/** @type {(_: any, argv: any) => (import('@rspack/core').RspackOptions)} */
 module.exports = (_, argv) => {
   return {
     mode: argv.mode,
@@ -26,23 +26,15 @@ module.exports = (_, argv) => {
         {
           test: /\.tsx?$/i,
           exclude: /node_modules/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                presets: [
-                  ['@babel/preset-env', { targets: 'defaults' }],
-                ],
-                plugins: [require.resolve('react-refresh/babel')],
+          loader: 'builtin:swc-loader',
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'typescript',
               },
             },
-            {
-              loader: 'ts-loader',
-              options: {
-                transpileOnly: true,
-              },
-            },
-          ],
+          },
+          type: 'javascript/auto',
         },
         {
           test: /\.css$/i,
@@ -74,10 +66,11 @@ module.exports = (_, argv) => {
       },
     },
     plugins: [
-      new HtmlWebpackPlugin({
+      new rspack.HtmlRspackPlugin({
         template: './tests/index.html',
       }),
-      new ReactRefreshWebpackPlugin(),
+      new ReactRefreshPlugin(),
+      new rspack.HotModuleReplacementPlugin(),
     ],
     devServer: {
       port: 8090,
