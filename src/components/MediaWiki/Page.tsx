@@ -2,7 +2,7 @@ import React, {
   type AnchorHTMLAttributes,
   type FC,
 } from 'react';
-import clasx from 'clsx';
+import clsx from 'clsx';
 
 const wgArticlePath = mw.config.get('wgArticlePath');
 
@@ -49,7 +49,7 @@ export const MWTitle = ({
     <span className='mw-title'>
       <a
         href={wgArticlePath.replace('$1', title)}
-        className={clasx(redirect && 'mw-redirect', 'mw-changeslist-title')}
+        className={clsx(redirect && 'mw-redirect', 'mw-changeslist-title')}
         title={title}
       >
         {title}
