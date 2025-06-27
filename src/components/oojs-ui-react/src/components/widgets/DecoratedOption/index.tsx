@@ -8,10 +8,10 @@ import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IndicatorElement } from '../../../types/mixin';
 
-export interface DecoratedOptionProps extends
-  WidgetProps<HTMLDivElement>,
-  IconElement,
-  IndicatorElement {}
+export type DecoratedOptionProps =
+  WidgetProps<HTMLDivElement> &
+  IconElement &
+  IndicatorElement;
 
 const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   children,

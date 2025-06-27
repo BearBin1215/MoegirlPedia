@@ -2,9 +2,9 @@ import React, { forwardRef, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
 import type { IndicatorElement } from '../../../types/mixin';
 
-export interface IndicatorBaseProps extends
-  HTMLAttributes<HTMLSpanElement>,
-  IndicatorElement { }
+export type IndicatorBaseProps =
+  HTMLAttributes<HTMLSpanElement> &
+  IndicatorElement;
 
 const IndicatorBase = forwardRef<HTMLSpanElement, IndicatorBaseProps>(({
   className,

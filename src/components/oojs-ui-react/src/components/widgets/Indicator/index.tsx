@@ -5,9 +5,9 @@ import { processClassNames } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IndicatorElement } from '../../../types/mixin';
 
-export interface IndicatorProps extends
-  Omit<WidgetProps<HTMLSpanElement>, 'children'>,
-  IndicatorElement { }
+export type IndicatorProps =
+  Omit<WidgetProps<HTMLSpanElement>, 'children'> &
+  IndicatorElement;
 
 const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
   indicator,

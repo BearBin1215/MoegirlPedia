@@ -9,9 +9,9 @@ import { processClassNames } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement } from '../../../types/mixin';
 
-export interface CheckboxInputProps extends
-  Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'>,
-  AccessKeyElement { }
+export type CheckboxInputProps =
+  Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'> &
+  AccessKeyElement;
 
 const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   name,

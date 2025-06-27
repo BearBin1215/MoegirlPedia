@@ -19,10 +19,10 @@ export interface OptionData {
   selected?: boolean;
 }
 
-export interface OptionProps<T = HTMLDivElement> extends
-  WidgetProps<T>,
-  AccessKeyElement,
-  OptionData { }
+export type OptionProps<T = HTMLDivElement> =
+  WidgetProps<T> &
+  AccessKeyElement &
+  OptionData;
 
 /** 基础选项组件 */
 const Option = forwardRef<HTMLDivElement, OptionProps>(({

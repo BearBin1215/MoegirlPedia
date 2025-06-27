@@ -56,6 +56,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
 }, ref) => {
   const [pressed, setPressed] = useState(false);
 
+  /** primary、禁用、激活状态下样式反转 */
   const iconInvert = flags.includes('primary') || disabled || active;
   const iconDestructive = !flags.includes('primary')
     && flags.includes('destructive')
@@ -78,7 +79,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  const imageClasses = clsx(
+  const iconClasses = clsx(
     iconInvert && 'oo-ui-image-invert',
     iconDestructive && 'oo-ui-image-destructive',
   );
@@ -91,14 +92,14 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   };
 
   /** 按住鼠标 */
-  const handlePress = () => {
+  const handlePress: MouseEventHandler<HTMLSpanElement> = () => {
     if (!disabled) {
       setPressed(true);
     }
   };
 
   /** 松开或移出 */
-  const handleUnpress = () => {
+  const handleUnpress: MouseEventHandler<HTMLSpanElement> = () => {
     if (!disabled) {
       setPressed(false);
     }
@@ -125,9 +126,9 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
         title={title}
         accessKey={accessKey}
       >
-        <IconBase icon={icon} className={imageClasses} />
+        <IconBase icon={icon} className={iconClasses} />
         <LabelBase>{children}</LabelBase>
-        <IndicatorBase indicator={indicator} className={imageClasses} />
+        <IndicatorBase indicator={indicator} className={iconClasses} />
       </a>
     </span>
   );

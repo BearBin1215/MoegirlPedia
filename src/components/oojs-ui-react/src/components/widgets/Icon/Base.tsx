@@ -2,9 +2,9 @@ import React, { forwardRef, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
 import type { IconElement } from '../../../types/mixin';
 
-export interface IconBaseProps extends
-  HTMLAttributes<HTMLSpanElement>,
-  IconElement { }
+export type IconBaseProps =
+  HTMLAttributes<HTMLSpanElement> &
+  IconElement;
 
 const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
   className,

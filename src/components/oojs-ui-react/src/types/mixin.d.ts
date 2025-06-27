@@ -10,7 +10,7 @@ export interface AccessKeyElement {
 }
 
 export interface LabelElement {
-  /** 标签文字 */
+  /** 标签显示内容 */
   label?: ReactNode;
 }
 

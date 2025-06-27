@@ -14,11 +14,11 @@ export function processArray<T>(elements?: T | T[]) {
   return processedElements;
 }
 
-interface ComponentProps extends
-  WidgetProps,
-  LabelElement,
-  IconElement,
-  IndicatorElement { }
+type ComponentProps =
+  WidgetProps &
+  LabelElement &
+  IconElement &
+  IndicatorElement;
 
 /**
  * 生成常用类
