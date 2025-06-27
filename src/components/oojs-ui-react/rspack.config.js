@@ -60,7 +60,6 @@ export default {
   devServer: {
     port: 8090,
     open: true,
-    hot: true,
   },
   devtool: 'source-map',
 };

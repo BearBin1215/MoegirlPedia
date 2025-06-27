@@ -25,7 +25,7 @@ const TextInputs: FC = () => {
 
       <h3>label</h3>
       <TextInput label='after (default)' />
-      <TextInput label='before' labelPosition='before' />
+      <TextInput label='before' labelPosition='before' style={{ marginTop: 10 }} />
 
       <h3>禁用</h3>
       <TextInput disabled />
