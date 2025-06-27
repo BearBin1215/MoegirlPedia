@@ -20,7 +20,8 @@ const TextInputs: FC = () => {
       <MultilineTextInput rows={3} icon='edit' indicator='required' />
 
       <h3>label</h3>
-      <MultilineTextInput rows={3} label='label' />
+      <MultilineTextInput rows={3} label='after (default)' />
+      <MultilineTextInput rows={3} label='before' labelPosition='before' style={{ marginTop: 10 }} />
 
       <h3>禁用</h3>
       <MultilineTextInput disabled />

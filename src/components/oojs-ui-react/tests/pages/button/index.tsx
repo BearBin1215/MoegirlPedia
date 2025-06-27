@@ -6,10 +6,11 @@ const ButtonPage: FC = () => {
     <>
       <h1>Button - 按钮</h1>
 
-      <h2>样式</h2>
-      <p>根据<code>flags</code>控制样式</p>
       <Button flags={[]}>Normal</Button>
+      <Button disabled>disabled</Button>
 
+      <h2>样式</h2>
+      <p>根据<code>flags</code>控制样式。</p>
       <h3>progressive</h3>
       <Button flags={['progressive']}>progressive</Button>
       <Button flags={['primary', 'progressive']}>primary, progressive</Button>
@@ -17,9 +18,6 @@ const ButtonPage: FC = () => {
       <h3>destructive</h3>
       <Button flags={['destructive']}>destructive</Button>
       <Button flags={['primary', 'destructive']}>primary, destructive</Button>
-
-      <h2>禁用</h2>
-      <Button disabled>disabled</Button>
 
       <h2>带图标</h2>
       <Button icon='edit'>icon=edit</Button>
@@ -37,6 +35,8 @@ const ButtonPage: FC = () => {
       <h2>无边框</h2>
       <Button framed={false}>framed=false</Button>
       <Button framed={false} disabled>framed=false, disabled</Button>
+      <Button framed={false} flags={['progressive']}>framed=false, progressive</Button>
+      <Button framed={false} flags={['destructive']}>framed=false, destructive</Button>
 
       <h2>ButtonGroup</h2>
       <ButtonGroup>

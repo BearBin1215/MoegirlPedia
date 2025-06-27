@@ -1,6 +1,7 @@
 import React, {
   useState,
   useRef,
+  useEffect,
   forwardRef,
   type CSSProperties,
   type ChangeEvent,
@@ -23,7 +24,10 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
   /** 最大长度 */
   maxLength?: number;
 
-  /** 标签位置 */
+  /**
+   * 标签位置
+   * @default 'after'
+   */
   labelPosition?: LabelPosition;
 
   /** 是否只读 */
@@ -52,6 +56,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   value: controlledValue,
   ...rest
 }, ref) => {
+  const [inputStyle, setInputStype] = useState<CSSProperties>({});
   const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -75,19 +80,20 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
     }
   };
 
-  /** input的内边距是用内联样式控制的，要根据label判定 */
-  const inputStyle = (() => {
+  // input的内边距是用内联样式控制的，要根据label判定
+  // 在第一次渲染完成后用useEffect检测labelRef才不会为空，label发生变化后重新计算
+  useEffect(() => {
     const style: CSSProperties = {};
     if (labelRef.current) {
-      const paddingWidth = `${labelRef.current.offsetWidth}px`;
+      const paddingWidth = `${labelRef.current.offsetWidth + 2}px`;
       if (labelPosition === 'before') {
         style.paddingLeft = paddingWidth;
       } else {
         style.paddingRight = paddingWidth;
       }
     }
-    return style;
-  })();
+    setInputStype(style);
+  }, [label]);
 
   return (
     <div

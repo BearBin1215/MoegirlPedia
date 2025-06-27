@@ -45,6 +45,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   value: controlledValue,
   ...rest
 }: MultilineTextInputProps, ref) => {
+  const [inputStyle, setInputStype] = useState<CSSProperties>({});
   const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -75,8 +76,9 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
     }
   };
 
-  /** input的内边距是用内联样式控制的，要根据label判定 */
-  const inputStyle = (() => {
+  // input的内边距是用内联样式控制的，要根据label判定
+  // 在第一次渲染完成后用useEffect检测labelRef才不会为空，label发生变化后重新计算
+  useEffect(() => {
     const style: CSSProperties = {};
     if (labelRef.current) {
       const paddingWidth = `${labelRef.current.offsetWidth + 2}px`;
@@ -86,8 +88,8 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         style.paddingRight = paddingWidth;
       }
     }
-    return style;
-  })();
+    setInputStype(style);
+  }, [label]);
 
   useEffect(() => {
     if (!autosize) {
@@ -169,7 +171,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
       )}
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} style={{ right: '2px' }} />
-      {(label !== null && label !== void 0) && <LabelBase>{label}</LabelBase>}
+      {(label !== null && label !== void 0) && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );
 });
