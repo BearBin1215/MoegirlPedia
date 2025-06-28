@@ -599,7 +599,11 @@ $(() => (async () => {
     for (const { tag, regex } of deprecatedRegexes) {
       const match = text.match(regex);
       if (match) {
-        messOutput.addPageToList(tag, [title, `<code><nowiki>${match[0]}</nowiki></code>`]);
+        if (tag === 'font') {
+          messOutput.addPageToList(tag, [title, `<code><nowiki>${match[0]}</nowiki></code>`]);
+        } else {
+          messOutput.addPageToList(tag, title);
+        }
       }
     }
   };
