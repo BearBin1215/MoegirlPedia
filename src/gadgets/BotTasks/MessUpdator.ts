@@ -118,6 +118,12 @@ $(() => (async () => {
       疑似大家族前单独用二级标题: [],
       疑似喊话: [],
     },
+    弃用标签: {
+      center: [],
+      strike: [],
+      tt: [],
+      font: [],
+    },
     能用内链非要外链: [],
     不符合模板规范: {
       重复TOP: [],
@@ -372,10 +378,7 @@ $(() => (async () => {
    * ------------------------------
    */
 
-  /**
-   * 检查消歧义页内中的管道符
-   * @type {checkFunction}
-   */
+  /** 检查消歧义页内中的管道符 */
   const pipeInDisambig: PF = (text, categories, title) => {
     if (categories.includes('Category:消歧义页')) {
       const prefix = text.match(/\[\[(.+)\(.+\)\|\1\]\].*—/);
@@ -389,10 +392,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 在页面中查找重复出现的大量换行
-   * @type {checkFunction}
-   */
+  /** 在页面中查找重复出现的大量换行 */
   const wrapDetector: PF = (text, categories, title) => {
     if (categories.some((category) => category.includes('音乐作品'))) { return; } // 排除音乐条目
     if (/(<br *\/ *>\s*){4,}/i.test(text) || /(\n|<br *\/? *>){8}/i.test(text)) {
@@ -401,10 +401,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 检测连续出现的big
-   * @type {checkFunction}
-   */
+  /** 检测连续出现的big */
   const bigDetector: PF = (text, _categories, title) => {
     if (/(<big>){5}/i.test(text)) {
       messOutput.addPageToList('big地狱（5个以上）', title);
@@ -412,10 +409,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 能用内链非要用外链
-   * @type {checkFunction}
-   */
+  /** 能用内链非要用外链 */
   const innerToOuter: PF = (text, _categories, title) => {
     if ((new RegExp(`${Templates.prefix}(背景[图圖]片|替[换換][侧側][边邊][栏欄]底[图圖])[^}]+img\\.moegirl\\.org\\.cn`, 'si')).test(text) && title !== 'Deltarune/黑暗世界') {
       messOutput.addPageToList('能用内链非要外链', title);
@@ -425,7 +419,6 @@ $(() => (async () => {
 
   /**
    * 检查大家族前疑似单独使用二级标题的页面
-   * @type {checkFunction}
    * @todo 将判定方法改为发现疑似页面后判定模板是否为导航模板
    */
   const headlineBeforeNav: PF = (text, _categories, title) => {
@@ -435,10 +428,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 位于注释或外部链接之后的大家族模板
-   * @type {checkFunction}
-   */
+  /** 位于注释或外部链接之后的大家族模板 */
   const refBeforeNav: PF = (text, _categories, title) => {
     if (new RegExp(`== *(脚注|[注註]解|注释|註釋|外部[链鏈]接|外部連結|外链|[参參]考).*==[\\s\\S]*\n${Templates.prefix}((?!${Templates.bottom.join('|')}).)*\\}`, 'gi').test(text)) {
       messOutput.addPageToList('注释和外部链接后的大家族模板', title);
@@ -447,10 +437,7 @@ $(() => (async () => {
 
 
 
-  /**
-   * 检查疑似喊话内容
-   * @type {checkFunction}
-   */
+  /** 检查疑似喊话内容 */
   const redBoldText: PF = (text, _categories, title) => {
     if (
       /\{\{color\|red\|'''[^}|]{50,}'''\}\}/i.test(text) ||
@@ -461,10 +448,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 检查重复TOP
-   * @type {checkFunction}
-   */
+  /** 检查重复TOP */
   const repetitiveTop: PF = (text, _categories, title) => {
     const topPattern = new RegExp(`${Templates.prefix}(${Templates.top.join('|')})[}\\|\\n]`, 'gi');
     const useTemplates = text.match(topPattern) || [];
@@ -481,10 +465,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 检查用图超过99px的页顶模板
-   * @type {checkFunction}
-   */
+  /** 检查用图超过99px的页顶模板 */
   const imgLT99px: PF = (text, _categories, title) => {
     if (
       /leftimage *=[.\n]*\d{3}px/.test(text) ||
@@ -495,10 +476,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 检查页顶模板排序
-   * @type {checkFunction}
-   */
+  /** 检查页顶模板排序 */
   const templateOrder: PF = (text, _categories, title) => {
     const templateIndexes = {
       消歧义导航模板: templateIndex(text, ...Templates.disambigTop), // 消歧义导航模板
@@ -523,10 +501,7 @@ $(() => (async () => {
    * ------------------------------
    */
 
-  /**
-   * 检查用图超过99px的页顶模板
-   * @type {checkFunction}
-   */
+  /** 检查用图超过99px的页顶模板 */
   const imgLT99pxInTemplate: PF = (text, categories, title) => {
     if (categories.includes('Category:页顶提示模板') && (
       /leftimage *=.*\d{3}px/.test(text) ||
@@ -538,10 +513,7 @@ $(() => (async () => {
   };
 
 
-  /**
-   * 检查模板中的多余换行
-   * @type {checkFunction}
-   */
+  /** 检查模板中的多余换行 */
   const redundantWrapInTemplate: PF = (text, categories, title) => {
     if (categories.some((category) => ['Category:模板文档', 'Category:条目格式模板', 'Category:权限申请模板'].includes(category))) {
       return;
@@ -553,10 +525,7 @@ $(() => (async () => {
     }
   };
 
-  /**
-   * •左右缺少空格
-   * @type {checkFunction}
-   */
+  /** •左右缺少空格 */
   const needSpaceBesidesPoint: PF = (text, categories, title) => {
     if (categories.includes('Category:用户编辑组模板')) {
       return;
@@ -571,10 +540,7 @@ $(() => (async () => {
     }
   };
 
-  /**
-   * 管道符前一致
-   * @type {checkFunction}
-   */
+  /** 管道符前一致 */
   const redundantPipe: PF = (text, _categories, title) => {
     const normal = text.match(/\[\[ *([^\]]+) *\| *\1 *\]\]/);
     const escape = text.match(/\| *([^\]{}}]+) *\{\{!\}\} *\1 *(\||\})/);
@@ -586,10 +552,7 @@ $(() => (async () => {
     }
   };
 
-  /**
-   * 可能需要补充“配音角色”
-   * @type {checkFunction}
-   */
+  /** 可能需要补充“配音角色” */
   const oldCVCategory: PF = (text, _categories, title) => {
     const match = text.match(/\|多位(配音|声优) *= *\{\{cate\|[^{}|]+\|[^{}[\]\n]+[^色{}[\]\n](\}\}|\|)/gi);
     if (match) {
@@ -597,10 +560,7 @@ $(() => (async () => {
     }
   };
 
-  /**
-   * navbox中的错误name参数
-   * @type {checkFunction}
-   */
+  /** navbox中的错误name参数 */
   const wrongNavName: PF = (text, categories, title) => {
     const nameParam = text.match(/\| *name *= *[^|\n]*/gi) || [];
     if (
@@ -619,14 +579,28 @@ $(() => (async () => {
     }
   };
 
-  /**
-   * 检查http(s)少冒号或斜杠
-   * @type {checkFunction}
-   */
+  /** 检查http(s)少冒号或斜杠 */
   const httpColon: PF = (text, _categories, title) => {
     const http = text.match(/[^/]https?(\/\/|:\/[a-zA-Z0-9])/gi);
     if (http) {
       messOutput.addPageToList('http(s)少冒号或斜杠', [title, `<code><nowiki>${http[0]}</nowiki></code>`]);
+    }
+  };
+
+  /** 检查弃用的标签 */
+  const deprecatedTags: PF = (text, _categories, title) => {
+    const deprecatedRegexes = [
+      { tag: 'center', regex: /<(center)(?:\s[^>]*)?>|<\/center>/gi },
+      { tag: 'tt', regex: /<(tt)(?:\s[^>]*)?>|<\/tt>/gi },
+      { tag: 'strike', regex: /<(strike)(?:\s[^>]*)?>|<\/strike>/gi },
+      { tag: 'font', regex: /<(font)(?:\s[^>]*)?>|<\/font>/gi },
+    ];
+
+    for (const { tag, regex } of deprecatedRegexes) {
+      const match = text.match(regex);
+      if (match) {
+        messOutput.addPageToList(tag, [title, `<code><nowiki>${match[0]}</nowiki></code>`]);
+      }
     }
   };
 
@@ -862,6 +836,7 @@ $(() => (async () => {
       redundantPipe, // 管道符前后内容一致
       oldCVCategory, // 旧的声优分类格式
       httpColon, // 检查http(s)//（少冒号）
+      deprecatedTags, // 检查弃用的标签
     ], 0, 20);
     console.log('\n主名字空间检查完毕。');
 
@@ -871,6 +846,7 @@ $(() => (async () => {
       needSpaceBesidesPoint, // 检查•左右缺少的空格
       redundantPipe, // 管道符前后内容一致
       wrongNavName, // 大家族模板中错误的name参数
+      deprecatedTags, // 检查弃用的标签
     ], 10, 10);
     console.log('\n模板名字空间检查完毕。');
 
