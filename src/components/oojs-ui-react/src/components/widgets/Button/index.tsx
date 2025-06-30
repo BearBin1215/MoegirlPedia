@@ -142,12 +142,12 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       aria-disabled={!!disabled}
-      tabIndex={tabIndex}
+      tabIndex={disabled ? -1 : tabIndex}
     >
       <a
         className='oo-ui-buttonElement-button'
         role='button'
-        tabIndex={tabIndex ?? 0}
+        tabIndex={disabled ? -1 : (tabIndex ?? 0)}
         href={href}
         rel={rel}
         title={title}
