@@ -1,5 +1,5 @@
 import type { ApiParams, ApiQueryResponse } from '@/@types/api';
-import styles from './index.less' assert { type: 'string' };
+import styles from './index.inline.less';
 
 interface UserContribution {
   user: string;

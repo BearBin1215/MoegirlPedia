@@ -1,5 +1,5 @@
-import stretchStyle from './stretchStyle.less' assert { type: 'string' };
-import markupIcon from './markup.svg' assert { type: 'xml' };
+import stretchStyle from './stretchStyle.inline.less';
+import markupIcon from './markup.inline.svg';
 
 if (mw.config.get('skin') === 'moeskin') {
   $('main.moe-flexible-container').css('transition', 'width .24s ease');

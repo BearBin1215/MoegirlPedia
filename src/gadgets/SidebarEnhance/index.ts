@@ -1,6 +1,6 @@
 import { throttle } from 'lodash-es';
-import styles from './index.less' assert { type: 'string' };
-import folderSvg from './folderIcon.svg' assert { type: 'xml' };
+import styles from './index.inline.less';
+import folderSvg from './folderIcon.inline.svg';
 
 $(() => {
   mw.loader.addStyleTag(styles);

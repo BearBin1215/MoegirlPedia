@@ -1,10 +1,17 @@
-const glob = require('glob');
-const path = require('path');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const svgToMiniDataURI = require('mini-svg-data-uri');
-const { VueLoaderPlugin } = require('vue-loader');
+import { sync as globSync } from 'glob';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { rspack } from '@rspack/core';
+import { defineConfig } from '@rspack/cli';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
+import { VueLoaderPlugin } from 'vue-loader';
+import svgToMiniDataURI from 'mini-svg-data-uri';
 
-const entry = glob.sync(
+/** esm中模拟cjs的__dirname */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/** 入口文件 */
+const entry = globSync(
   process.env.gadgetname
     ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}`
     : './src/gadgets/**/index.{js,jsx,ts,tsx}',
@@ -18,6 +25,7 @@ const entry = glob.sync(
     return entries;
   }, {});
 
+/** PostCSS配置 */
 const postCssLoader = {
   loader: 'postcss-loader',
   options: {
@@ -30,6 +38,7 @@ const postCssLoader = {
   },
 };
 
+/** CSS Module配置 */
 const cssModuleLoader = {
   loader: 'css-loader',
   options: {
@@ -39,22 +48,27 @@ const cssModuleLoader = {
   },
 };
 
-/** @type {(import('webpack').Configuration)} */
-module.exports = {
+export default (_, args) => defineConfig({
+  mode: args.mode || 'development',
+  devtool: args.mode === 'development' ? 'eval-source-map' : false,
   entry,
+  output: args.mode === 'development' ? {
+    filename: '[name].js',
+    path: path.resolve(__dirname, './dist/dev'), // 开发模式下输出到dist/dev文件夹，不会提交到仓库
+  } : {
+    filename: '[name].min.js',
+    path: path.resolve(__dirname, './dist/gadgets'), // 构建模式下输出到dist/gadgets
+  },
   resolve: {
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx', '.less'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.less', '.json'],
     alias: {
       react: 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
-      '@': path.resolve(__dirname, '..', 'src'),
-      "oojs-ui-react": path.resolve(__dirname, '..', 'src/components/oojs-ui-react'),
+      '@': path.resolve(__dirname, '.', 'src'),
+      "oojs-ui-react": path.resolve(__dirname, '.', 'src/components/oojs-ui-react'),
     },
-  },
-  cache: {
-    type: 'filesystem',
   },
   module: {
     parser: {
@@ -68,29 +82,30 @@ module.exports = {
         use: 'vue-loader',
       },
       {
-        test: /\.(ts|tsx)$/i,
-        loader: 'ts-loader',
-        options: {
-          appendTsSuffixTo: [/\.vue$/],
-        },
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(js|jsx)$/,
+        test: /\.[jt]sx?$/i,
         use: {
-          loader: 'babel-loader',
+          loader: 'builtin:swc-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
-            targets: '> 0.3%, not dead',
+            env: {
+              targets: '> 0.3%, not dead',
+            },
+            jsc: {
+              parser: {
+                syntax: 'typescript',
+                tsx: true,
+              },
+            },
           },
         },
+        type: 'javascript/auto',
         exclude: /node_modules/,
       },
       {
         test: /\.less$/,
         oneOf: [
+          /** import styles from 'foo.inline.less'; 时作为string导入 */
           {
-            assert: { type: 'string' },
+            test: /\.(inline|raw)\.less$/,
             type: 'asset/source',
             use: [postCssLoader, 'less-loader'],
           },
@@ -118,12 +133,12 @@ module.exports = {
         test: /\.css$/,
         oneOf: [
           {
-            assert: { type: 'string' },
-            type: 'asset/source', // css文件经过post-css处理后作为文本导入
+            test: /\.(inline|raw)\.css$/,
+            type: 'asset/source',
             use: [postCssLoader],
           },
           {
-            resourceQuery: /module/,
+            test: /\.module\.css$/,
             use: [
               'style-loader',
               cssModuleLoader,
@@ -146,9 +161,9 @@ module.exports = {
       {
         test: /\.svg$/,
         oneOf: [
-          // `import svg from 'foo.svg' assert { type: 'xml' }`时作为完整的XML字符串导入
+          // `import svg from 'foo.inline.svg';`时作为完整的XML字符串导入
           {
-            assert: { type: 'xml' },
+            test: /\.(inline|raw)\.svg$/,
             type: 'asset/source',
           },
           {
@@ -169,10 +184,32 @@ module.exports = {
       },
     ],
   },
-  plugins: [new ForkTsCheckerWebpackPlugin(), new VueLoaderPlugin()],
+  plugins: [
+    new TsCheckerRspackPlugin(),
+    new VueLoaderPlugin(),
+  ],
   externals: {
     moment: 'moment',
     vue: 'Vue',
     pinia: 'window.Pinia',
   },
-};
+  watchOptions: {
+    ignored: /node_modules/,
+  },
+  optimization: {
+    minimize: args.mode !== 'development',
+    minimizer: [
+      new rspack.SwcJsMinimizerRspackPlugin({
+        extractComments: false,
+        terserOptions: {
+          output: {
+            comments: false,
+          },
+          compress: {
+            drop_console: true,
+          },
+        },
+      }),
+    ],
+  },
+});

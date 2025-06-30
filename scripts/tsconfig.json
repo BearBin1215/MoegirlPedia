@@ -7,7 +7,6 @@
       "DOM.Iterable"
     ],
     "module": "ESNext",
-    "rootDir": "./",
     "moduleResolution": "node10",
     "noImplicitAny": false,
     "baseUrl": "./",

@@ -2,7 +2,7 @@ import { categoryMembers, linkList, includeList, redirectList } from '@/utils/ap
 import { copyText } from '@/utils/clipboard';
 import { editSection, bracketStart, bracketEnd, divider } from '@/utils/mwElements';
 import type { Cmtype } from '@/@types/api';
-import styles from './index.less' assert { type: 'string' };
+import styles from './index.inline.less';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   let cacheText: string;

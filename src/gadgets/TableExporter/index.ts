@@ -3,7 +3,7 @@ import {
   writeFile,
 } from 'xlsx';
 import './index.less';
-import exportIcon from './exportIcon.svg' assert { type: 'xml' };
+import exportIcon from './exportIcon.inline.svg';
 
 document.querySelectorAll<HTMLTableElement>('table.wikitable').forEach((table) => {
   const exportButton = document.createElement('div');
