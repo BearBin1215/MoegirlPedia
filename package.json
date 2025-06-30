@@ -5,7 +5,7 @@
   "main": "build/pack.js",
   "scripts": {
     "start": "rspack --watch --mode development",
-    "build": "node scripts/pack.js",
+    "build": "tsx scripts/pack.ts",
     "sync": "tsx scripts/src/Synchronize.ts",
     "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,tsx,ts}\" && stylelint --fix \"src/**/*.{css,less,scss}\"",
     "start:ooui": "cd src/components/oojs-ui-react && pnpm start"

@@ -1,17 +1,16 @@
-import { rspack } from '@rspack/core';
+import { Configuration, rspack } from '@rspack/core';
 import { sync as glob } from 'glob';
 import chalk from 'chalk';
-import webpackConfig from '../rspack.config.mjs';
+import rspackConfig from '../rspack.config.mjs';
 
 // eslint-disable-next-line no-undef
 const gadgets = process.argv.slice(2);
 
-/** @type {import('@rspack/core').Configuration} */
-let config;
+let config: Configuration;
 
 if (!gadgets.length) {
   console.log('未指定要打包的工具，即将全部打包……');
-  config = webpackConfig(void 0, { mode: 'production' });
+  config = rspackConfig(void 0, { mode: 'production' });
 } else {
   const sourceFiles = glob(`./src/gadgets/{${gadgets.join(',')},}/index.{js,jsx,ts,tsx}`);
   if (!sourceFiles.length) {
@@ -20,7 +19,8 @@ if (!gadgets.length) {
     process.exit(1);
   }
 
-  const entry = sourceFiles.reduce((entries, path) => {
+  /** 根据命令行输入的工具名，生成入口文件名和路径 */
+  const entry = sourceFiles.reduce<Record<string, string>>((entries, path) => {
     const normalizedPath = path.replace(/\\/g, '/').replace(/^(?:.\/)?(.*)$/, './$1');
     const gadgetName = normalizedPath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
     entries[gadgetName] = normalizedPath;
@@ -29,7 +29,7 @@ if (!gadgets.length) {
 
   console.log(`即将打包：${Object.keys(entry).join('、')}`);
   config = {
-    ...webpackConfig(void 0, { mode: 'production' }),
+    ...rspackConfig(void 0, { mode: 'production' }),
     entry,
   };
 }
@@ -47,11 +47,12 @@ compiler.run((err, stats) => {
     return;
   }
 
-  const info = stats.toJson(void 0);
+  const info = stats!.toJson();
   console.log(`打包成功，用时${info.time}ms。`);
   console.log('输出文件：');
 
-  info.assets.forEach((asset) => {
-    console.log(`- ${chalk.green(`dist/gadgets/${asset.name}`)}: ${chalk.yellow((asset.size / 1024).toFixed(3))}KB (${chalk.underline(asset.size)}字节)`);
+  info.assets!.forEach((asset) => {
+    const size = chalk.yellow((asset.size / 1024).toFixed(3));
+    console.log(`- ${chalk.green(`dist/gadgets/${asset.name}`)}: ${size}KB (${chalk.underline(asset.size)}字节)`);
   });
 });

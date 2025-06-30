@@ -6,7 +6,7 @@ node_modules
 test
 src/gadgets/*test*
 dist/**/*test*
-dist/**/*example*
+dist/**/Example-*
 
 dist/dev
 .env
