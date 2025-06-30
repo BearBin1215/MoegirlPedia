@@ -2,7 +2,7 @@
  * 此文件存放api地址、用户名、密码等数据
  */
 import * as dotenv from 'dotenv';
-import packageJson from '../package.json' assert { type: 'json' };
+import packageJson from './package.json' assert { type: 'json' };
 
 const config = {
   API_PATH: 'https://zh.moegirl.org.cn/api.php', // api.php地址

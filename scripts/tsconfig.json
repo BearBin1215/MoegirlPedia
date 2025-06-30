@@ -23,6 +23,8 @@
     "dist"
   ],
   "include": [
-    "src",
+    "config.ts",
+    "Synchronize.ts",
+    "mw.ts",
   ]
 }

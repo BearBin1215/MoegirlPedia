@@ -5,7 +5,7 @@ import axios, {
 } from 'axios';
 import { Cookie, CookieJar } from 'tough-cookie';
 import queryString from 'query-string';
-import envConfig from '../config';
+import envConfig from './config';
 
 type ApiParams = Record<string, string | number | boolean | string[] | number[] | undefined>;
 
