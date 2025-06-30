@@ -2,6 +2,8 @@ import React, {
   useState,
   forwardRef,
   type MouseEventHandler,
+  type KeyboardEventHandler,
+  type MouseEvent,
 } from 'react';
 import clsx from 'clsx';
 import IconBase from '../Icon/Base';
@@ -52,6 +54,8 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   title,
   tabIndex,
   onClick,
+  onKeyDown,
+  onKeyUp,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
@@ -105,6 +109,27 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
+  /** 按下Enter键等同点击鼠标 */
+  const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
+    if (onKeyDown) {
+      onKeyDown(ev);
+    }
+    if (!disabled && ev.key === 'Enter') {
+      handlePress(ev as unknown as MouseEvent<HTMLSpanElement>);
+    }
+  };
+
+  /** 松开Enter键等同松开鼠标 */
+  const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
+    if (onKeyUp) {
+      onKeyUp(ev);
+    }
+    if (!disabled && ev.key === 'Enter') {
+      handleUnpress(ev as unknown as MouseEvent<HTMLSpanElement>);
+      handleClick(ev as unknown as MouseEvent<HTMLSpanElement>);
+    }
+  };
+
   return (
     <span
       {...rest}
@@ -114,6 +139,8 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
       aria-disabled={!!disabled}
       tabIndex={tabIndex}
     >

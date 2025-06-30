@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { rspack } from '@rspack/core';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,6 +57,7 @@ export default {
     }),
     new ReactRefreshPlugin(),
     new rspack.HotModuleReplacementPlugin(),
+    new TsCheckerRspackPlugin(),
   ],
   devServer: {
     port: 8090,

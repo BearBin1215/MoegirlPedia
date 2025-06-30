@@ -6,6 +6,7 @@
     "strict": true,
     "declaration": true,
     "importHelpers": true,
+    "isolatedModules": true,
     "moduleResolution": "Node10",
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,

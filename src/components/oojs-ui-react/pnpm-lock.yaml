@@ -82,6 +82,9 @@ devDependencies:
   rollup-plugin-delete:
     specifier: ^2.0.0
     version: 2.0.0
+  ts-checker-rspack-plugin:
+    specifier: ^1.1.4
+    version: 1.1.4(@rspack/core@1.3.15)(typescript@5.4.5)
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
@@ -101,7 +104,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/highlight': 7.24.5
-      picocolors: 1.0.1
+      picocolors: 1.1.1
     dev: true
 
   /@babel/compat-data@7.24.4:
@@ -241,7 +244,7 @@ packages:
       '@babel/helper-validator-identifier': 7.24.5
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.0.1
+      picocolors: 1.1.1
     dev: true
 
   /@babel/parser@7.24.5:
@@ -3386,6 +3389,13 @@ packages:
       brace-expansion: 2.0.1
     dev: true
 
+  /minimatch@9.0.5:
+    resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
+    engines: {node: '>=16 || 14 >=14.17'}
+    dependencies:
+      brace-expansion: 2.0.1
+    dev: true
+
   /mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
     engines: {node: '>=10'}
@@ -3648,6 +3658,10 @@ packages:
 
   /picocolors@1.0.1:
     resolution: {integrity: sha512-anP1Z8qwhkbmu7MFP5iTt+wQKXgwzf7zTyGlcdzabySa9vd0Xt392U0rVmz9poOaBj0uHJKyyo9/upk0HrEQew==}
+    dev: true
+
+  /picocolors@1.1.1:
+    resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
     dev: true
 
   /picomatch@2.3.1:
@@ -4395,6 +4409,27 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
     dependencies:
+      typescript: 5.4.5
+    dev: true
+
+  /ts-checker-rspack-plugin@1.1.4(@rspack/core@1.3.15)(typescript@5.4.5):
+    resolution: {integrity: sha512-lDpKuAubxUlsonUE1LpZS5fw7tfjutNb0lwjAo0k8OcxpWv/q18ytaD6eZXdjrFdTEFNIHtKp9dNkUKGky8SgA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      '@rspack/core': ^1.0.0
+      typescript: '>=3.8.0'
+    peerDependenciesMeta:
+      '@rspack/core':
+        optional: true
+    dependencies:
+      '@babel/code-frame': 7.24.2
+      '@rspack/core': 1.3.15
+      '@rspack/lite-tapable': 1.0.1
+      chokidar: 3.6.0
+      is-glob: 4.0.3
+      memfs: 4.17.2
+      minimatch: 9.0.5
+      picocolors: 1.1.1
       typescript: 5.4.5
     dev: true
 
