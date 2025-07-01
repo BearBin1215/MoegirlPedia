@@ -26,24 +26,14 @@ const entry = globSync(
   }, {});
 
 /** 内置lightningcss-loader配置 */
-const lightningcssLoader = {
+const lightningcssLoader = (mode) => ({
   loader: 'builtin:lightningcss-loader',
   /** @type {import('@rspack/core').LightningcssLoaderOptions} */
   options: {
-    targets: '> 0.3%, not dead',
-    minify: true,
+    targets: mode !== 'development' ? '> 0.5%, not dead' : void 0,
+    minify: mode !== 'development',
   },
-};
-
-/** CSS Module配置 */
-const cssModuleLoader = {
-  loader: 'css-loader',
-  options: {
-    modules: {
-      localIdentName: 'beartools__[local]--[hash:base64:5]',
-    },
-  },
-};
+});
 
 export default (_, args) => defineConfig({
   mode: args.mode || 'development',
@@ -72,6 +62,11 @@ export default (_, args) => defineConfig({
       "oojs-ui-react": path.resolve(__dirname, '.', 'src/components/oojs-ui-react'),
     },
   },
+  externals: {
+    moment: 'moment',
+    vue: 'Vue',
+    pinia: 'window.Pinia',
+  },
 
   module: {
     parser: {
@@ -91,7 +86,7 @@ export default (_, args) => defineConfig({
           /** @type {import('@rspack/core').SwcLoaderOptions} */
           options: {
             env: {
-              targets: '> 0.3%, not dead',
+              targets: '> 0.5%, not dead',
             },
             jsc: {
               parser: {
@@ -105,21 +100,28 @@ export default (_, args) => defineConfig({
         exclude: /node_modules/,
       },
       {
-        test: /\.less$/,
+        test: /\.(less|css)$/,
         oneOf: [
           /** import styles from 'foo.inline.less'; 时作为string导入 */
           {
-            test: /\.(inline|raw)\.less$/,
+            test: /\.(inline|raw)\.(less|css)$/,
             type: 'asset/source',
-            use: [lightningcssLoader, 'less-loader'],
+            use: [lightningcssLoader(args.mode), 'less-loader'],
           },
           /** import styles from 'foo.module.less'; 时作为CSS Module导入 */
           {
-            test: /\.module\.less$/,
+            test: /\.module\.(less|css)$/,
             use: [
               'style-loader',
-              cssModuleLoader,
-              lightningcssLoader,
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: {
+                    localIdentName: 'beartools__[local]--[hash:base64:5]',
+                  },
+                },
+              },
+              lightningcssLoader(args.mode),
               'less-loader',
             ],
           },
@@ -127,33 +129,8 @@ export default (_, args) => defineConfig({
             use: [
               'style-loader',
               'css-loader',
-              lightningcssLoader,
+              lightningcssLoader(args.mode),
               'less-loader',
-            ],
-          },
-        ],
-      },
-      {
-        test: /\.css$/,
-        oneOf: [
-          {
-            test: /\.(inline|raw)\.css$/,
-            type: 'asset/source',
-            use: [lightningcssLoader],
-          },
-          {
-            test: /\.module\.css$/,
-            use: [
-              'style-loader',
-              cssModuleLoader,
-              lightningcssLoader,
-            ],
-          },
-          {
-            use: [
-              'style-loader',
-              'css-loader',
-              lightningcssLoader,
             ],
           },
         ],
@@ -170,6 +147,7 @@ export default (_, args) => defineConfig({
             test: /\.(inline|raw)\.svg$/,
             type: 'asset/source',
           },
+          // 在jsx中作为react件引入
           {
             issuer: /\.[jt]sx$/,
             use: ['@svgr/webpack'],
@@ -192,14 +170,6 @@ export default (_, args) => defineConfig({
     new TsCheckerRspackPlugin(),
     new VueLoaderPlugin(),
   ],
-  externals: {
-    moment: 'moment',
-    vue: 'Vue',
-    pinia: 'window.Pinia',
-  },
-  watchOptions: {
-    ignored: /node_modules/,
-  },
   optimization: {
     minimize: args.mode !== 'development',
     minimizer: [
