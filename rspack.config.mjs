@@ -25,16 +25,13 @@ const entry = globSync(
     return entries;
   }, {});
 
-/** PostCSS配置 */
-const postCssLoader = {
-  loader: 'postcss-loader',
+/** 内置lightningcss-loader配置 */
+const lightningcssLoader = {
+  loader: 'builtin:lightningcss-loader',
+  /** @type {import('@rspack/core').LightningcssLoaderOptions} */
   options: {
-    postcssOptions: {
-      plugins: [
-        ['autoprefixer'],
-        ['cssnano', { preset: 'default' }],
-      ],
-    },
+    targets: '> 0.3%, not dead',
+    minify: true,
   },
 };
 
@@ -51,6 +48,10 @@ const cssModuleLoader = {
 export default (_, args) => defineConfig({
   mode: args.mode || 'development',
   devtool: args.mode === 'development' ? 'eval-source-map' : false,
+  experiments: {
+    lazyCompilation: true,
+  },
+
   entry,
   output: args.mode === 'development' ? {
     filename: '[name].js',
@@ -59,6 +60,7 @@ export default (_, args) => defineConfig({
     filename: '[name].min.js',
     path: path.resolve(__dirname, './dist/gadgets'), // 构建模式下输出到dist/gadgets
   },
+
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.less', '.json'],
     alias: {
@@ -70,6 +72,7 @@ export default (_, args) => defineConfig({
       "oojs-ui-react": path.resolve(__dirname, '.', 'src/components/oojs-ui-react'),
     },
   },
+
   module: {
     parser: {
       javascript: {
@@ -85,6 +88,7 @@ export default (_, args) => defineConfig({
         test: /\.[jt]sx?$/i,
         use: {
           loader: 'builtin:swc-loader',
+          /** @type {import('@rspack/core').SwcLoaderOptions} */
           options: {
             env: {
               targets: '> 0.3%, not dead',
@@ -107,7 +111,7 @@ export default (_, args) => defineConfig({
           {
             test: /\.(inline|raw)\.less$/,
             type: 'asset/source',
-            use: [postCssLoader, 'less-loader'],
+            use: [lightningcssLoader, 'less-loader'],
           },
           /** import styles from 'foo.module.less'; 时作为CSS Module导入 */
           {
@@ -115,7 +119,7 @@ export default (_, args) => defineConfig({
             use: [
               'style-loader',
               cssModuleLoader,
-              postCssLoader,
+              lightningcssLoader,
               'less-loader',
             ],
           },
@@ -123,7 +127,7 @@ export default (_, args) => defineConfig({
             use: [
               'style-loader',
               'css-loader',
-              postCssLoader,
+              lightningcssLoader,
               'less-loader',
             ],
           },
@@ -135,21 +139,21 @@ export default (_, args) => defineConfig({
           {
             test: /\.(inline|raw)\.css$/,
             type: 'asset/source',
-            use: [postCssLoader],
+            use: [lightningcssLoader],
           },
           {
             test: /\.module\.css$/,
             use: [
               'style-loader',
               cssModuleLoader,
-              postCssLoader,
+              lightningcssLoader,
             ],
           },
           {
             use: [
               'style-loader',
               'css-loader',
-              postCssLoader,
+              lightningcssLoader,
             ],
           },
         ],
@@ -201,10 +205,7 @@ export default (_, args) => defineConfig({
     minimizer: [
       new rspack.SwcJsMinimizerRspackPlugin({
         extractComments: false,
-        terserOptions: {
-          output: {
-            comments: false,
-          },
+        minimizerOptions: {
           compress: {
             drop_console: true,
           },
