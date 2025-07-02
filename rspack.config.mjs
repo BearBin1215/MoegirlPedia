@@ -25,16 +25,6 @@ const entry = globSync(
     return entries;
   }, {});
 
-/** 内置lightningcss-loader配置 */
-const lightningcssLoader = (mode) => ({
-  loader: 'builtin:lightningcss-loader',
-  /** @type {import('@rspack/core').LightningcssLoaderOptions} */
-  options: {
-    targets: mode !== 'development' ? '> 0.5%, not dead' : void 0,
-    minify: mode !== 'development',
-  },
-});
-
 export default (_, args) => defineConfig({
   mode: args.mode || 'development',
   devtool: args.mode === 'development' ? 'eval-source-map' : false,
@@ -101,12 +91,23 @@ export default (_, args) => defineConfig({
       },
       {
         test: /\.(less|css)$/,
+        // 所有样式表都经过less-loader和lightning-loader的处理
+        use: [
+          {
+            loader: 'builtin:lightningcss-loader',
+            /** @type {import('@rspack/core').LightningcssLoaderOptions} */
+            options: {
+              targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
+              minify: args.mode !== 'development',
+            },
+          },
+          'less-loader',
+        ],
         oneOf: [
           /** import styles from 'foo.inline.less'; 时作为string导入 */
           {
             test: /\.(inline|raw)\.(less|css)$/,
             type: 'asset/source',
-            use: [lightningcssLoader(args.mode), 'less-loader'],
           },
           /** import styles from 'foo.module.less'; 时作为CSS Module导入 */
           {
@@ -121,16 +122,12 @@ export default (_, args) => defineConfig({
                   },
                 },
               },
-              lightningcssLoader(args.mode),
-              'less-loader',
             ],
           },
           {
             use: [
               'style-loader',
               'css-loader',
-              lightningcssLoader(args.mode),
-              'less-loader',
             ],
           },
         ],
