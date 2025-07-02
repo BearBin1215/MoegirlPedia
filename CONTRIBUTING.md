@@ -40,6 +40,7 @@ pnpm i
   pnpm start
   ```
   开发模式下，所有gadgets都会自动打包输出至[dist/dev/](/dist/dev/)目录，文件发生变动会实时更新（<kbd>Ctrl</kbd>+<kbd>S</kbd>后自动打包）。调试时打开萌百，从对应的实时输出js文件复制到控制台直接运行。
+  仅开发模式中会进行TypeScript类型检查。
 - 开发完毕，打包：
   ```shell
   pnpm build <gadget names>

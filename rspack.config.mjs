@@ -164,7 +164,7 @@ export default (_, args) => defineConfig({
     ],
   },
   plugins: [
-    new TsCheckerRspackPlugin(),
+    args.mode === 'development' && new TsCheckerRspackPlugin(),
     new VueLoaderPlugin(),
   ],
   optimization: {
