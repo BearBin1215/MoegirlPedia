@@ -1,8 +1,8 @@
 {
   "name": "bearbin-moegirlpedia",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "BearBin's gadgets for MoegirlPedia",
-  "main": "build/pack.js",
+  "main": "scripts/build.js",
   "type": "module",
   "scripts": {
     "start": "rspack --watch --mode development",
@@ -25,9 +25,6 @@
     "url": "https://github.com/BearBin1215/MoegirlPedia/issues"
   },
   "homepage": "https://github.com/BearBin1215/MoegirlPedia#readme",
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "dependencies": {
     "clsx": "^2.1.1",
     "dom-to-image": "^2.6.0",
@@ -89,6 +86,5 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.1",
     "vue-loader": "^17.4.2"
-  },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
+  }
 }
