@@ -1,9 +1,8 @@
 import { Configuration, rspack } from '@rspack/core';
 import { sync as glob } from 'glob';
 import chalk from 'chalk';
-import rspackConfig from '../rspack.config.mjs';
+import rspackConfig from '../rspack.config.js';
 
-// eslint-disable-next-line no-undef
 const gadgets = process.argv.slice(2);
 
 let config: Configuration;
@@ -15,7 +14,6 @@ if (!gadgets.length) {
   const sourceFiles = glob(`./src/gadgets/{${gadgets.join(',')},}/index.{js,jsx,ts,tsx}`);
   if (!sourceFiles.length) {
     console.error('未找到指定的源代码，请检查拼写。');
-    // eslint-disable-next-line no-undef
     process.exit(1);
   }
 

@@ -37,7 +37,6 @@
     "node_modules/moment/index.d.ts",
     "node_modules/types-mediawiki",
     "scripts/**/*",
-    ".eslintrc.js",
-    "rspack.config.mjs",
+    "eslint.config.js",
   ]
 }

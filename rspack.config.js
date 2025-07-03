@@ -1,6 +1,6 @@
-import { sync as globSync } from 'glob';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { sync as globSync } from 'glob';
 import { rspack } from '@rspack/core';
 import { defineConfig } from '@rspack/cli';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
