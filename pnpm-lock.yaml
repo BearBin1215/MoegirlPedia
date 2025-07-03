@@ -118,6 +118,9 @@ devDependencies:
   eslint-plugin-vue:
     specifier: ^10.3.0
     version: 10.3.0(@typescript-eslint/parser@8.35.1)(eslint@9.30.1)(vue-eslint-parser@10.2.0)
+  espree:
+    specifier: ^10.4.0
+    version: 10.4.0
   glob:
     specifier: 9.3.5
     version: 9.3.5

@@ -6,17 +6,23 @@ import stylistic from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import reactPlugin from 'eslint-plugin-react';
 import vuePlugin from 'eslint-plugin-vue';
+import * as espree from 'espree';
 
 export default tseslint.config(
   globalIgnores([
-    '**/dist/',
-    '**/node_modules/',
-    '**/lib/',
+    '**/node_modules/', // 依赖文件
+    '**/dist/', // 输出文件
+    '**/lib/', // oojs-ui-react的输出文件等
   ]),
+
+  // #region 配置导入
   eslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
   tseslint.configs.recommended,
   ...vuePlugin.configs['flat/recommended'],
+  // #endregion
+
+  // #region 通用配置
   {
     languageOptions: {
       ecmaVersion: 'latest',
@@ -133,7 +139,9 @@ export default tseslint.config(
       '@stylistic/spaced-comment': 2,
     },
   },
-  /** 全局变量配置 */
+  // #endregion
+
+  // #region 通用全局配置
   {
     files: ['src/**/*'],
     languageOptions: {
@@ -160,20 +168,24 @@ export default tseslint.config(
       },
     },
   },
-  /** Vue */
+  // #endregion
+
+  // #region Vue配置
   {
     files: ['src/gadgets/**/*.vue'],
     rules: {
       'vue/html-quotes': 0, // 不要求双引号
     },
   },
-  /** 小代码 */
+  // #endregion
+
+  // #region 小代码配置
   {
     files: ['src/oddments/**/*.js'],
     languageOptions: {
+      parser: espree,
       ecmaVersion: 5,
       sourceType: 'script',
-      parserOptions: {},
     },
     rules: {
       'prefer-arrow-callback': 0,
@@ -181,7 +193,9 @@ export default tseslint.config(
       'prefer-template': 0,
     },
   },
-  /** 脚本文件 */
+  // #endregion
+
+  // #region 脚本文件配置
   {
     files: ['scripts/**/*.js'],
     languageOptions: {
@@ -190,7 +204,9 @@ export default tseslint.config(
       },
     },
   },
-  /** 根目录下配置文件 */
+  // #endregion
+
+  // #region 根目录下配置文件
   {
     files: ['./*.js', './*.mjs'],
     languageOptions: {
@@ -202,4 +218,5 @@ export default tseslint.config(
       '@stylistic/quote-props': 0, // 不要求key是否带引号
     },
   },
+  // #endregion
 );
