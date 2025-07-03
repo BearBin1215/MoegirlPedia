@@ -10,35 +10,30 @@ import svgToMiniDataURI from 'mini-svg-data-uri';
 /** esm中模拟cjs的__dirname */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** 入口文件 */
-const entry = globSync(
-  process.env.gadgetname
-    ? `./src/gadgets/{${process.env.gadgetname},}/index.{js,jsx,ts,tsx}`
-    : './src/gadgets/**/index.{js,jsx,ts,tsx}',
-  { nocase: true })
-  .map((filename) => filename
-    .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
-    .replace(/^(?:.\/)?(.*)$/, './$1'))
-  .reduce((entries, filepath) => {
-    const et = filepath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
-    entries[et] = filepath;
-    return entries;
-  }, {});
-
-export default (_, args) => defineConfig({
+export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') => defineConfig({
   mode: args.mode || 'development',
   devtool: args.mode === 'development' ? 'eval-source-map' : false,
   experiments: {
     lazyCompilation: true,
   },
 
-  entry,
+  entry: globSync(
+    globString,
+    { nocase: true },
+  ).map((filename) => filename
+    .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
+    .replace(/^(?:.\/)?(.*)$/, './$1'), // 添加./
+  ).reduce((entries, filepath) => {
+    const et = filepath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
+    entries[et] = filepath;
+    return entries;
+  }, {}),
   output: args.mode === 'development' ? {
     filename: '[name].js',
     path: path.resolve(__dirname, './dist/dev'), // 开发模式下输出到dist/dev文件夹，不会提交到仓库
   } : {
     filename: '[name].min.js',
-    path: path.resolve(__dirname, './dist/gadgets'), // 构建模式下输出到dist/gadgets
+    path: path.resolve(__dirname, './dist/gadgets'), // 构建模式下输出到dist/gadgets/[name].mim.js
   },
 
   resolve: {

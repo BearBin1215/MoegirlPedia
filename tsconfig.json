@@ -38,5 +38,6 @@
     "node_modules/types-mediawiki",
     "scripts/**/*",
     "eslint.config.js",
+    "rspack.config.js",
   ]
 }

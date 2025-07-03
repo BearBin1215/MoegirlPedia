@@ -1,9 +1,10 @@
 import { Configuration, rspack } from '@rspack/core';
-import { sync as glob } from 'glob';
+import { sync as globSync } from 'glob';
 import chalk from 'chalk';
-import rspackConfig from '../rspack.config.js';
+import rspackConfig from '../rspack.config';
 
-const gadgets = process.argv.slice(2);
+/** 命令行内输入的要打包的小工具名 */
+const gadgets = [...new Set(process.argv.slice(2))];
 
 let config: Configuration;
 
@@ -11,25 +12,24 @@ if (!gadgets.length) {
   console.log('未指定要打包的工具，即将全部打包……');
   config = rspackConfig(void 0, { mode: 'production' });
 } else {
-  const sourceFiles = glob(`./src/gadgets/{${gadgets.join(',')},}/index.{js,jsx,ts,tsx}`);
-  if (!sourceFiles.length) {
-    console.error('未找到指定的源代码，请检查拼写。');
+  /** 根据输入的工具名生成glob匹配规则 */
+  const entryGlobString = `./src/gadgets/{${gadgets.join(',')},}/index.{js,jsx,ts,tsx}`;
+  /** 能匹配到文件的小工具名 */
+  const matchedGadgets = globSync(entryGlobString).map((file) => file.replace(
+    /src[/\\]gadgets[/\\](.*)[/\\]index\..*$/,
+    '$1',
+  ));
+  // 输入的小工具名和匹配到的不一致，报错并退出
+  if (matchedGadgets.length !== gadgets.length) {
+    const unmatchedGadgets = gadgets.filter((gadget) =>
+      !matchedGadgets.includes(gadget),
+    );
+    console.error(`未找到以下工具的源代码：${unmatchedGadgets.join('、')}`);
     process.exit(1);
   }
 
-  /** 根据命令行输入的工具名，生成入口文件名和路径 */
-  const entry = sourceFiles.reduce<Record<string, string>>((entries, path) => {
-    const normalizedPath = path.replace(/\\/g, '/').replace(/^(?:.\/)?(.*)$/, './$1');
-    const gadgetName = normalizedPath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
-    entries[gadgetName] = normalizedPath;
-    return entries;
-  }, {});
-
-  console.log(`即将打包：${Object.keys(entry).join('、')}`);
-  config = {
-    ...rspackConfig(void 0, { mode: 'production' }),
-    entry,
-  };
+  console.log(`即将打包：${matchedGadgets.join('、')}`);
+  config = rspackConfig(void 0, { mode: 'production' }, entryGlobString);
 }
 
 // Rspack 打包执行
