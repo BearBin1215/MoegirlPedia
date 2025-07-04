@@ -4,8 +4,7 @@ import { rspack } from '@rspack/core';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('@rspack/core').RspackOptions} */
 export default {
@@ -28,11 +27,7 @@ export default {
         type: 'javascript/auto',
       },
       {
-        test: /\.css$/i,
-        type: 'css/auto',
-      },
-      {
-        test: /\.less$/,
+        test: /\.(css|less)$/,
         type: 'css/auto',
         use: ['less-loader'],
       },

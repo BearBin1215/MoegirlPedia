@@ -38,6 +38,11 @@ const ButtonPage: FC = () => {
       <Button framed={false} flags={['progressive']}>framed=false, progressive</Button>
       <Button framed={false} flags={['destructive']}>framed=false, destructive</Button>
 
+      <h2>AccessKey</h2>
+      <p><code>accessKey</code>参数可以通过<kbd>alt</kbd>+对应键聚焦到按钮上，然后可以通过回车点击。</p>
+      <Button accessKey='b'>accessKey=b: <kbd>alt</kbd>+<kbd>B</kbd></Button>
+      <Button accessKey='q'>accessKey=q: <kbd>alt</kbd>+<kbd>Q</kbd></Button>
+
       <h2>ButtonGroup</h2>
       <ButtonGroup>
         <Button>按钮1</Button>

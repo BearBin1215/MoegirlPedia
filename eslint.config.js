@@ -197,7 +197,7 @@ export default tseslint.config(
 
   // #region 脚本文件配置
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.js', 'scripts/**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -208,7 +208,7 @@ export default tseslint.config(
 
   // #region 根目录下配置文件
   {
-    files: ['./*.js', './*.mjs'],
+    files: ['./*.js', './*.mjs', './*.ts'],
     languageOptions: {
       globals: {
         ...globals.node,

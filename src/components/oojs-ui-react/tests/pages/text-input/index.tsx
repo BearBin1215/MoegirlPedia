@@ -37,6 +37,10 @@ const TextInputs: FC = () => {
         label={10 - length}
         onChange={({ value }) => setLength(value.length)}
       />
+
+      <h3>accessKey</h3>
+      <p>通过accessKey参数设置<kbd>alt</kbd>+对应键聚焦</p>
+      <TextInput accessKey='g' label={<><kbd>alt</kbd>+<kbd>G</kbd></>} />
     </>
   );
 };
