@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import IndicatorBase from './Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IndicatorElement } from '../../../types/mixin';
 
@@ -17,7 +17,7 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    processClassNames({ disabled, indicator }, 'indicator'),
+    generateWidgetClassName({ disabled, indicator }, 'indicator'),
   );
 
   return (

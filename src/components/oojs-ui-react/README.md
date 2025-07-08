@@ -240,7 +240,6 @@ export default App;
 
 | 参数         | 说明                                                     | 类型                                                                        |
 | ------------ | -------------------------------------------------------- | --------------------------------------------------------------------------- |
-| defaultValue | 默认值，组件会查找子组件中`data`参数相同的作为默认勾选项 | `string \| number \| boolean`                                               |
 | disabled     | 是否禁用                                                 | `boolean`                                                                   |
 | name         | 参数名                                                   | `string`                                                                    |
 | onChange     | 值变化钩子                                               | [`ChangeHandler<string \| number \| boolean, HTMLInputElement>`](#基本类型) |

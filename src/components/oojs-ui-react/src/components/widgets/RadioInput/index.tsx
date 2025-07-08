@@ -4,14 +4,14 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 
 export interface RadioInputProps extends Omit<InputProps<
   boolean,
   HTMLInputElement,
   HTMLSpanElement
->, 'defaultValue' | 'placeholder'> {
+>, 'placeholder'> {
   selected?: boolean;
 }
 
@@ -29,7 +29,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
 
   const classes = clsx(
     className,
-    processClassNames({ disabled }, 'input', 'radioInput'),
+    generateWidgetClassName({ disabled }, 'input', 'radioInput'),
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

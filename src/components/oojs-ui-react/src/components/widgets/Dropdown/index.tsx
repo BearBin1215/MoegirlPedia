@@ -7,17 +7,17 @@ import React, {
   type Key,
 } from 'react';
 import clsx from 'clsx';
-import MenuSelect from './MenuSelect';
 import type { MenuOptionProps } from '../MenuOption';
 import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../../types/mixin';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionData } from '../Option';
+import MenuSelect from './MenuSelect';
 
 export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & {
   key: Key;
@@ -34,8 +34,6 @@ export interface DropdownProps extends
 
   value?: string | number;
 
-  defaultValue?: string | number;
-
   onChange?: ChangeHandler<any>;
 }
 
@@ -44,7 +42,6 @@ export interface DropdownProps extends
  */
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   className,
-  defaultValue,
   disabled,
   icon,
   label,
@@ -54,12 +51,12 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState<string | number | undefined>();
   const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = clsx(
     className,
-    processClassNames({
+    generateWidgetClassName({
       disabled,
       icon,
       label,

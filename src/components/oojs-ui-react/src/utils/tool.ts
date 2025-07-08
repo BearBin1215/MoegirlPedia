@@ -25,7 +25,7 @@ type ComponentProps =
  * @param props 组件属性
  * @param widgetNames 组件名称，用于生成`oo-ui-{widgetName}Widget`
  */
-export function processClassNames(
+export function generateWidgetClassName(
   { disabled, label, icon, indicator }: ComponentProps,
   ...widgetNames: string[]
 ): string {

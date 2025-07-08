@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ButtonFlag } from '../../../types/utils';
 import type { AccessKeyElement, IconElement, IndicatorElement } from '../../../types/mixin';
@@ -70,7 +70,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   /** 根据参数生成按钮类 */
   const classes = clsx(
     className,
-    processClassNames({
+    generateWidgetClassName({
       disabled,
       icon,
       label: children,

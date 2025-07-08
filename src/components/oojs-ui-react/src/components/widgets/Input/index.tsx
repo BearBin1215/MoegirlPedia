@@ -1,12 +1,11 @@
 import React, {
-  useState,
   forwardRef,
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
-import type { WidgetProps } from '../Widget';
+import Widge, { type WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';
 
 /**
@@ -24,9 +23,6 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   /** 输入提示 */
   placeholder?: string;
 
-  /** 默认值 */
-  defaultValue?: T;
-
   /** 值变化回调函数 */
   onChange?: ChangeHandler<T, P>;
 
@@ -41,24 +37,20 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElem
   accessKey,
   name,
   className,
-  defaultValue,
   disabled,
   onChange,
   placeholder,
   required,
-  value: controlledValue,
+  value,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState(defaultValue);
-
   const classes = clsx(
     className,
-    processClassNames({ disabled }, 'input'),
+    generateWidgetClassName({ disabled }, 'input'),
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
         value: newValue,
@@ -69,7 +61,7 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElem
   };
 
   return (
-    <div
+    <Widge
       {...rest}
       className={classes}
       aria-disabled={!!disabled}
@@ -84,10 +76,10 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElem
         className='oo-ui-inputWidget-input'
         disabled={disabled}
         required={required}
-        value={controlledValue ?? value}
+        value={value}
         placeholder={placeholder}
       />
-    </div>
+    </Widge>
   );
 });
 

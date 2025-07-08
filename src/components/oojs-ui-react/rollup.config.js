@@ -1,3 +1,4 @@
+import { defineConfig } from 'rollup';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
@@ -5,7 +6,7 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import del from 'rollup-plugin-delete';
 
-const external = ['react', 'react-dom', 'clsx', 'lodash-es', 'tslib'];
+const external = ['react', 'react-dom', 'lodash-es', 'clsx', 'tslib'];
 
 /** @type {import('@rollup/plugin-babel').RollupBabelInputPluginOptions} */
 const babelOptions = {
@@ -15,8 +16,7 @@ const babelOptions = {
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
 };
 
-/** @type {import('rollup').RollupOptions[]} */
-export default [
+export default defineConfig([
   {
     input: 'src/index.ts',
     output: {
@@ -85,4 +85,4 @@ export default [
       del({ targets: 'lib/umd' }),
     ],
   },
-];
+]);

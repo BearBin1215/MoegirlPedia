@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { LabelElement, IconElement, IndicatorElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
@@ -42,7 +42,6 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   accessKey,
   name,
   className,
-  defaultValue,
   disabled,
   onChange,
   placeholder,
@@ -53,16 +52,15 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   labelPosition = 'after',
   readOnly,
   required,
-  value: controlledValue,
+  value,
   ...rest
 }, ref) => {
   const [inputStyle, setInputStype] = useState<CSSProperties>({});
-  const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
 
   const classes = clsx(
     className,
-    processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
     (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
@@ -70,7 +68,6 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
-    setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
         value: newValue,
@@ -111,7 +108,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
         disabled={disabled}
-        value={controlledValue ?? value}
+        value={value}
         readOnly={readOnly}
         required={required}
         aria-required={required}

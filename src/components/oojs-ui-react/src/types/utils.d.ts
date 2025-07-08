@@ -20,5 +20,8 @@ export interface ChangeValue<T = any, P = HTMLElement> {
   event?: ChangeEvent<P>;
 }
 
-/** 组件值变化钩子函数 */
+/**
+ * 组件值变化钩子函数
+ * @example <TextInput value={text} onChange={({ value }) => setText(value) />
+ */
 export type ChangeHandler<T = any, P = HTMLElement> = (change: ChangeValue<T, P>) => void;

@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import LabelBase from './Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 
 export type LabelProps = WidgetProps<HTMLSpanElement>;
@@ -14,7 +14,7 @@ const Label = forwardRef<HTMLSpanElement, LabelProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    processClassNames({ disabled, label: children }, 'label'),
+    generateWidgetClassName({ disabled, label: children }, 'label'),
     'oo-ui-labelElement',
   );
 

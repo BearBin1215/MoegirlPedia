@@ -4,7 +4,7 @@ import { omit } from 'lodash-es';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IndicatorElement } from '../../../types/mixin';
 
@@ -23,7 +23,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    processClassNames({
+    generateWidgetClassName({
       disabled,
       label: children,
       icon,

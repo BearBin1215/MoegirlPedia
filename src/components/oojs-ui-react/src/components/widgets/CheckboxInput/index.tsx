@@ -1,11 +1,10 @@
 import React, {
-  useState,
   forwardRef,
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
 import IconWidget from '../Icon';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement } from '../../../types/mixin';
 
@@ -19,21 +18,17 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   className,
   disabled,
   onChange,
-  defaultValue = false,
-  value: controlledValue,
+  value,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState(defaultValue);
-
   const classes = clsx(
     className,
-    processClassNames({ disabled }, 'input', 'checkboxInput'),
+    generateWidgetClassName({ disabled }, 'input', 'checkboxInput'),
   );
 
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.checked;
-    setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
         value: newValue,
@@ -57,7 +52,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         accessKey={accessKey}
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
-        checked={controlledValue ?? value}
+        checked={value}
         disabled={disabled}
         onChange={handleChange}
       />

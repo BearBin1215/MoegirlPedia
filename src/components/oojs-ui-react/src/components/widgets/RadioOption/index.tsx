@@ -5,7 +5,7 @@ import React, {
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
 import type { OptionProps } from '../Option';
 
@@ -29,7 +29,7 @@ const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    processClassNames({ disabled, label: children }, 'option', 'radioOption'),
+    generateWidgetClassName({ disabled, label: children }, 'option', 'radioOption'),
     selected && 'oo-ui-optionWidget-selected',
   );
 

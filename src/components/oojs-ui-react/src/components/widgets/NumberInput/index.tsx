@@ -8,7 +8,7 @@ import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';
@@ -47,7 +47,6 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   name,
   accessKey,
   className,
-  defaultValue,
   disabled,
   onChange,
   icon,
@@ -65,18 +64,18 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   value: controlledValue,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState(controlledValue);
 
   const classes = clsx(
     className,
-    processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
+    generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
     (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );
 
   /** 值变更响应 */
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = +event.target.value;
     setValue(newValue);
     if (typeof onChange === 'function') {
@@ -90,12 +89,26 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 
   /** 点击-按钮按照step减少 */
   const handleMinus = () => {
-    setValue((value || 0) - step);
+    const newValue = (value || 0) - step;
+    setValue(newValue);
+    if (typeof onChange === 'function') {
+      onChange({
+        value: newValue,
+        oldValue: value,
+      });
+    }
   };
 
   /** 点击+按钮按照step增加 */
   const handlePlus = () => {
-    setValue((value || 0) + step);
+    const newValue = (value || 0) + step;
+    setValue(newValue);
+    if (typeof onChange === 'function') {
+      onChange({
+        value: newValue,
+        oldValue: value,
+      });
+    }
   };
 
   /** 失焦时，按照精度四舍五入 */
@@ -138,7 +151,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           min={min}
           max={max}
           step={step}
-          onChange={handleChange}
+          onChange={handleInputChange}
           onBlur={handleBlur}
         />
         {showButtons && (

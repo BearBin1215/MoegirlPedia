@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import MenuOption from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { OptionProps, OptionData } from '../Option';
 
@@ -46,7 +46,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
 
   const classes = clsx(
     className,
-    processClassNames({ disabled }, 'select'),
+    generateWidgetClassName({ disabled }, 'select'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 

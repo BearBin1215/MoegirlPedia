@@ -5,15 +5,12 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ChangeHandler } from '../../../types/utils';
 
 export interface RadioSelectProps extends WidgetProps {
   options: RadioOptionProps[];
-
-  /** 默认要勾选的选项 */
-  defaultValue?: string | number;
 
   name?: string;
 
@@ -23,18 +20,17 @@ export interface RadioSelectProps extends WidgetProps {
 const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   options,
   className,
-  defaultValue,
   disabled,
   name,
   onChange,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState<string | number | undefined>();
   const [pressed, setPressed] = useState(false);
 
   const classes = clsx(
     className,
-    processClassNames({ disabled }, 'select', 'radioSelect'),
+    generateWidgetClassName({ disabled }, 'select', 'radioSelect'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 

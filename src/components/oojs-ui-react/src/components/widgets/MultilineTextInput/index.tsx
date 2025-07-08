@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { processClassNames } from '../../../utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
@@ -28,7 +28,6 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   accessKey,
   name,
   className,
-  defaultValue,
   disabled,
   onChange,
   placeholder,
@@ -42,18 +41,17 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   autosize,
   rows,
   maxRows = 10,
-  value: controlledValue,
+  value,
   ...rest
 }: MultilineTextInputProps, ref) => {
   const [inputStyle, setInputStype] = useState<CSSProperties>({});
-  const [value, setValue] = useState(defaultValue || '');
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
 
   const classes = clsx(
     className,
-    processClassNames({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
     (label !== null && label !== void 0) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
@@ -66,7 +64,6 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = event.target.value;
-    setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
         value: newValue,
@@ -146,7 +143,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         aria-disabled={!!disabled}
         className={inputClasses}
         disabled={disabled}
-        value={controlledValue ?? value}
+        value={value}
         readOnly={readOnly}
         required={required}
         aria-required={required}

@@ -5,6 +5,7 @@ import {
 
 const NumberInputs: FC = () => {
   const [numberValue, setNumberValue] = useState(0);
+  const [numberValue2, setNumberValue2] = useState(123);
 
   return (
     <>
@@ -15,8 +16,12 @@ const NumberInputs: FC = () => {
         onChange={({ value }) => setNumberValue(value)}
       />
       <h2>显示+-按钮</h2>
-      <p>按照<code>step</code>步距增减</p>
-      <NumberInput showButtons />
+      <p>按照<code>step</code>步距增减。当前值：{numberValue2}</p>
+      <NumberInput
+        value={numberValue2}
+        onChange={({ value }) => setNumberValue2(value)}
+        showButtons
+      />
     </>
   );
 };
