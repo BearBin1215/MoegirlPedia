@@ -60,13 +60,13 @@ $(() => (async () => {
   $('#contentSub').remove();
 
   /** “原文字”输入框 */
-  const $editFromBox = $('<textarea name="me-edit-from" rows="4"/>') as JQuery<HTMLTextAreaElement>;
+  const $editFromBox = $('<textarea class="me-textarea" name="me-edit-from" rows="4"/>') as JQuery<HTMLTextAreaElement>;
   /** “替换为”输入框 */
-  const $changeToBox = $('<textarea name="me-change-to" rows="4"/>') as JQuery<HTMLTextAreaElement>;
+  const $changeToBox = $('<textarea class="me-textarea" name="me-change-to" rows="4"/>') as JQuery<HTMLTextAreaElement>;
   /** 页面列表 */
-  const $pageListBox = $('<textarea name="me-page-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
+  const $pageListBox = $('<textarea class="me-textarea" name="me-page-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
   /** 分类列表 */
-  const $categoryListBox = $('<textarea name="me-category-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
+  const $categoryListBox = $('<textarea class="me-textarea" name="me-category-list" rows="12"/>') as JQuery<HTMLTextAreaElement>;
 
   const regexSelect = new OO.ui.CheckboxInputWidget({
     id: 'me-regex-box',
