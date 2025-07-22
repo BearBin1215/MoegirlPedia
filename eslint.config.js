@@ -184,13 +184,11 @@ export default tseslint.config(
     files: ['src/oddments/**/*.js'],
     languageOptions: {
       parser: espree,
-      ecmaVersion: 5,
+      ecmaVersion: 2017,
       sourceType: 'script',
     },
     rules: {
       'prefer-arrow-callback': 0,
-      'no-var': 0,
-      'prefer-template': 0,
     },
   },
   // #endregion

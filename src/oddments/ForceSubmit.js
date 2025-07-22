@@ -8,7 +8,7 @@ if (
   && mw.config.get('wgUserName') === mw.config.get('wgRelevantUserName')
 ) {
   const $wpSave = $('#wpSave');
-  $wpSave.replaceWith($wpSave.clone().on('click', function () {
+  $wpSave.replaceWith($wpSave.clone().on('click', () => {
     $('#editform').trigger('submit');
   }));
 }
