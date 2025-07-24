@@ -11,6 +11,6 @@ mw.loader.using(['vue', 'pinia']).done((require) => {
     const pinia = window.Pinia.createPinia();
     const app = Vue.createApp(App);
     app.use(pinia);
-    app.mount('#bodyContent');
+    app.mount('#mw-content-text');
   });
 });

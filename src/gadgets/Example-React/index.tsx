@@ -7,7 +7,7 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-createRoot(document.getElementById('bodyContent')!).render(
+createRoot(document.getElementById('mw-content-text')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
