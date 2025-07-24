@@ -34,7 +34,7 @@ export function generateWidgetClassName(
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     icon && 'oo-ui-iconElement',
     indicator && 'oo-ui-indicatorElement',
-    (label !== null && label !== void 0) && 'oo-ui-labelElement',
+    (label !== null && label !== void 0 && label !== false) && 'oo-ui-labelElement',
     widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`),
   );
 }

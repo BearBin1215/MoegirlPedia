@@ -24,7 +24,7 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    (label !== null && label !== void 0) && 'oo-ui-labelElement',
+    (label !== null && label !== void 0 && label !== false) && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',
     `oo-ui-fieldLayout-align-${align}`,
   );
