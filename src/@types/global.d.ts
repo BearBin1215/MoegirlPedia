@@ -59,12 +59,14 @@ declare global {
       }
     };
 
+    // eslint-disable-next-line no-unused-private-class-members
     #keyPrefix: string;
 
     constructor(prefix?: string);
 
     get _keyPrefix(): string;
 
+    // eslint-disable-next-line no-unused-private-class-members
     #getAllKeys(): string[];
 
     getAllKeys(): string[];
