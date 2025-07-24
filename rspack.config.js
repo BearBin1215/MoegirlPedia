@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') => defineConfig({
   mode: args.mode || 'development',
-  devtool: args.mode === 'development' ? 'eval-source-map' : false,
+  devtool: args.mode === 'development' ? 'eval-source-map' : 'source-map',
   experiments: {
     lazyCompilation: true,
   },
