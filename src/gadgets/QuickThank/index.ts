@@ -1,5 +1,6 @@
 /**
  * @description 在特殊页面（最近更改、监视列表、用户贡献等）的编辑历史行添加感谢按钮
+ * @deprecated 萌百更新至1.43后，最近更改、监视列表自带感谢按钮
  */
 
 if (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle').replace(/.*\//g, '') !== mw.config.get('wgUserName')) {
