@@ -90,7 +90,14 @@ export default tseslint.config(
       'yoda': 2,
       'import/no-named-as-default': 0,
       'import/no-unresolved': 0,
-      'import/order': 1,
+      'import/order': [1, {
+        pathGroups: [
+          {
+            pattern: '@/**',
+            group: 'parent',
+          },
+        ],
+      }],
       '@typescript-eslint/ban-ts-comment': 0,
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unused-vars': [2, {

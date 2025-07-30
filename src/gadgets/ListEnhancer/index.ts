@@ -31,18 +31,20 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
   const ns = mw.config.get('wgNamespaceNumber');
 
   if (ns === -1) {
+    $(document.head).append($(`<style>${styles}</style>`));
     // Special:链入页面
     const linkshereEnhance = () => $('#mw-whatlinkshere-list').before($('<span class="listenhancer-linkshere" />').append(
       '（',
       $('<a>复制本页</a>').on('click', ({ target }) => {
-        const anchorList = $('#mw-whatlinkshere-list>li>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
+        const anchorList = $('#mw-whatlinkshere-list>li>bdi>a').map((_, ele) => $(ele).text()).get(); // 根据标签文本生成列表
         copyAction(anchorList.join('\n'), $(target));
       }),
-      $('#mw-content-text a[href*="&from="]').length
+      $('#mw-content-text a.mw-nextlink').length
         ? ' | '
         : '',
-      $('#mw-content-text a[href*="&from="]').length
+      $('#mw-content-text a.mw-nextlink').length
         ? $('<a>复制全部</a>').on('click', async ({ target }) => {
+          $(target).text('正在读取……');
           // 理论上应该是可以一个请求全部获取，但这样搞简单，以后再改进吧（
           if (!cacheText) {
             const search = new URLSearchParams(location.search);
@@ -65,7 +67,6 @@ mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {
 
     // Special:搜索
     const searchEnhance = () => {
-      $(document.head).append($(`<style>${styles}</style>`));
       let showDetail = true;
       const anchorList: string[] = [];
 

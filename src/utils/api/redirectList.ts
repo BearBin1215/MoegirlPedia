@@ -10,13 +10,16 @@ const redirectList = async (pagename: string): Promise<string[]> => {
   let rdcontinue: string | undefined = '';
   const pageList: string[] = [];
   while (rdcontinue !== void 0) {
-    const res = await api.post({
+    const body: Record<string, any> = {
       action: 'query',
       prop: 'redirects',
       titles: pagename,
       rdlimit: 'max',
-      rdcontinue,
-    }) as ApiQueryResponse;
+    };
+    if (rdcontinue) {
+      body.rdcontinue = rdcontinue;
+    }
+    const res = await api.post(body) as ApiQueryResponse;
     pageList.push(...(Object.values(res.query.pages)[0].redirects || []).map(({ title }) => title));
     rdcontinue = res.continue?.rdcontinue;
   }
