@@ -1,18 +1,9 @@
-.rootpage-Special_TextDiff {
-    #firstHeading {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: flex-end;
+@import '@/styles/mixins.less';
 
-        > div {
-            font-size: 0.6em;
-        }
-    }
+.rootpage-Special_TextDiff {
+    .overwrite-page();
 
     #bodyContent {
-        padding-right: 0 !important;
-
         #mw-content-text {
             .oo-ui-textInputWidget {
                 max-width: unset;
