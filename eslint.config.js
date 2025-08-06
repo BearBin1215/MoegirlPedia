@@ -101,7 +101,10 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 0,
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unused-vars': [2, {
+        argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^_',
       }],
       'react/jsx-curly-brace-presence': 2,
       'react/jsx-indent': [2, 2],
