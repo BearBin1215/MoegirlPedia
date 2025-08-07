@@ -76,7 +76,7 @@ mw.loader.using('mediawiki.api').then(() => {
 
     $loadDiffButton.on('click', async (e) => {
       e.preventDefault();
-      mw.loader.load('/load.php?modules=mediawiki.diff.styles&only=styles', 'text/css');
+      mw.loader.load(`${mw.config.get('wgScriptPath')}/load.php?modules=mediawiki.diff.styles&only=styles`, 'text/css');
       $gadgetZone.text('加载中……');
       try {
         const response = await api.post({

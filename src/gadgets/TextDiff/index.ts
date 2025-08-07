@@ -35,7 +35,7 @@ $(() => (async () => {
   $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层
   mw.config.set('wgCanonicalSpecialPageName', 'TextDiff');
   document.title = '差异比较 - 萌娘百科_万物皆可萌的百科全书';
-  mw.loader.load('/load.php?modules=mediawiki.diff.styles&only=styles', 'text/css');
+  mw.loader.load(`${mw.config.get('wgScriptPath')}/load.php?modules=mediawiki.diff.styles&only=styles`, 'text/css');
   $('.mw-invalidspecialpage').removeClass('mw-invalidspecialpage');
   $('#firstHeading').html('差异比较<div>By BearBin</div>');
   $('#contentSub').remove();
