@@ -3,8 +3,8 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import LabelBase from '../Label/Base';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';
 

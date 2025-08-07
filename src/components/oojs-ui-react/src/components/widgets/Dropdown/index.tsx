@@ -7,12 +7,12 @@ import React, {
   type Key,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import type { MenuOptionProps } from '../MenuOption';
 import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { AccessKeyElement, IconElement, LabelElement } from '../../../types/mixin';
 import type { ChangeHandler } from '../../../types/utils';

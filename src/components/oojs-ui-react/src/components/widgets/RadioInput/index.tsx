@@ -4,7 +4,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 
 export interface RadioInputProps extends Omit<InputProps<

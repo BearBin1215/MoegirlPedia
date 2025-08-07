@@ -2,6 +2,18 @@ import clsx from 'clsx';
 import type { WidgetProps } from '../components/widgets/Widget';
 import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
 
+/** 确保参数为数组，通常用来处理children */
+export function processArray<T>(elements?: T | T[]) {
+  let processedElements: T[] = [];
+  if (elements) {
+    processedElements = Array.isArray(elements) ? elements.filter((element) => element).map((element, index) => ({
+      ...element,
+      key: index,
+    })) : [{ ...elements, key: 1 }]; // 确保子组件为数组
+  }
+  return processedElements;
+}
+
 type ComponentProps =
   WidgetProps &
   LabelElement &

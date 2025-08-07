@@ -5,10 +5,10 @@ import React, {
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import MenuOption from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { OptionProps, OptionData } from '../Option';
 

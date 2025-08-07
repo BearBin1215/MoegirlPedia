@@ -4,11 +4,11 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { InputProps } from '../Input';
 import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
 import type { LabelPosition } from '../../../types/utils';

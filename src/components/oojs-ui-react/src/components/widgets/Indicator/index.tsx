@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
+import IndicatorBase from './Base';
+import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IndicatorElement } from '../../../types/mixin';
-import IndicatorBase from './Base';
 
 export type IndicatorProps =
   Omit<WidgetProps<HTMLSpanElement>, 'children'> &
