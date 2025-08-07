@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import IconBase from './Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IconFlag } from '../../../types/utils';
 import type { IconElement } from '../../../types/mixin';
+import IconBase from './Base';
 
 export interface IconProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,

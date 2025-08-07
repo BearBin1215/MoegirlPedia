@@ -3,7 +3,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../../utils/tool';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import type { ChangeHandler } from '../../../types/utils';
 import Widge, { type WidgetProps } from '../Widget';
 import type { AccessKeyElement } from '../../../types/mixin';

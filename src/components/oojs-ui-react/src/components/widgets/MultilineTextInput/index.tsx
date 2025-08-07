@@ -7,10 +7,10 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName } from '../../../utils/tool';
 import type { TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {

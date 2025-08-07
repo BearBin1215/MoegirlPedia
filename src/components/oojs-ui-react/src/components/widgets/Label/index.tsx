@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import LabelBase from './Base';
-import { generateWidgetClassName } from '../../../utils/tool';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import type { WidgetProps } from '../Widget';
+import LabelBase from './Base';
 
 export type LabelProps = WidgetProps<HTMLSpanElement>;
 

@@ -4,8 +4,8 @@ import React, {
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
-import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { ChangeHandler } from '../../../types/utils';
 

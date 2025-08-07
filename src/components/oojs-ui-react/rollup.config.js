@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
+import alias from '@rollup/plugin-alias';
 import del from 'rollup-plugin-delete';
 
 const external = ['react', 'react-dom', 'lodash-es', 'clsx', 'tslib'];
@@ -15,6 +16,12 @@ const babelOptions = {
   targets: '> 0.2%, not dead',
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
 };
+
+const moduleAlias = alias({
+  entries: [
+    { find: 'oojs-ui-react', replacement: 'src' },
+  ],
+});
 
 export default defineConfig([
   {
@@ -30,6 +37,7 @@ export default defineConfig([
     plugins: [
       resolve(),
       commonjs(),
+      moduleAlias,
       typescript({
         rootDir: 'src',
         declaration: true,
@@ -52,6 +60,7 @@ export default defineConfig([
     plugins: [
       resolve(),
       commonjs(),
+      moduleAlias,
       typescript({
         rootDir: 'src',
         declaration: true,
@@ -77,6 +86,7 @@ export default defineConfig([
     plugins: [
       resolve(),
       commonjs(),
+      moduleAlias,
       typescript({
         declaration: false,
       }),

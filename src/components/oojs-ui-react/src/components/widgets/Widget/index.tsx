@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../../utils/tool';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import type { ElementProps } from '../../../types/mixin';
 
 export interface WidgetProps<T = HTMLDivElement> extends Omit<ElementProps<T>, 'onChange'> {

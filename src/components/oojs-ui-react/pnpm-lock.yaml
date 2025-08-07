@@ -19,6 +19,9 @@ devDependencies:
   '@eslint/js':
     specifier: ^9.30.1
     version: 9.30.1
+  '@rollup/plugin-alias':
+    specifier: ^5.1.1
+    version: 5.1.1(rollup@4.44.1)
   '@rollup/plugin-babel':
     specifier: ^6.0.4
     version: 6.0.4(@babel/core@7.28.0)(rollup@4.44.1)
@@ -1435,6 +1438,18 @@ packages:
 
   /@polka/url@1.0.0-next.29:
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
+    dev: true
+
+  /@rollup/plugin-alias@5.1.1(rollup@4.44.1):
+    resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      rollup: 4.44.1
     dev: true
 
   /@rollup/plugin-babel@6.0.4(@babel/core@7.28.0)(rollup@4.44.1):

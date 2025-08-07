@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { omit } from 'lodash-es';
+import { generateWidgetClassName } from 'oojs-ui-react/utils/tool';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IndicatorElement } from '../../../types/mixin';
 
