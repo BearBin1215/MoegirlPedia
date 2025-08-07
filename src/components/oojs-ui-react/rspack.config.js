@@ -1,13 +1,13 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { rspack } from '@rspack/core';
+import { defineConfig } from '@rspack/cli';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** @type {import('@rspack/core').RspackOptions} */
-export default {
+export default defineConfig({
   mode: 'development',
   entry: './tests/index.tsx',
   output: {},
@@ -59,4 +59,4 @@ export default {
     open: true,
   },
   devtool: 'source-map',
-};
+});
