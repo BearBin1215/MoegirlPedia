@@ -67,8 +67,8 @@ mw.loader.using('mediawiki.api').then(() => {
   };
 
   if (diff && oldid) {
-    // 查看差异，仅在有显示“返回至XXX”按钮时加载
-    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回至'))) {
+    // 查看差异，仅在有显示“返回XXX”按钮时加载
+    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回'))) {
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
@@ -76,7 +76,7 @@ mw.loader.using('mediawiki.api').then(() => {
 
     $loadDiffButton.on('click', async (e) => {
       e.preventDefault();
-      mw.loader.load(`${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles`, 'text/css');
+      mw.loader.load('/load.php?modules=mediawiki.diff.styles&only=styles', 'text/css');
       $gadgetZone.text('加载中……');
       try {
         const response = await api.post({
@@ -134,32 +134,34 @@ mw.loader.using('mediawiki.api').then(() => {
       } catch (error) {
         $gadgetZone.empty().append(`加载失败：${error}。`);
       }
-      try {
-        const currentHTML = await parsePage({
-          oldid: diff,
-        } as ApiParams);
-        $('#mw-content-text').append(
-          '<hr class="diff-hr" id="mw-oldid">',
-          `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
-        );
-        if (pageContentModel in acceptsLangs) {
-          const $currentContent = $(currentHTML);
-          $('#mw-content-text').append($currentContent);
-          if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
-            pretty($currentContent);
+      if (diff !== 'prev') {
+        try {
+          const currentHTML = await parsePage({
+            oldid: diff,
+          } as ApiParams);
+          $('#mw-content-text').append(
+            '<hr class="diff-hr" id="mw-oldid">',
+            `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
+          );
+          if (pageContentModel in acceptsLangs) {
+            const $currentContent = $(currentHTML);
+            $('#mw-content-text').append($currentContent);
+            if (mw.loader.moduleRegistry['ext.gadget.code-prettify']) {
+              pretty($currentContent);
+            }
+          } else {
+            $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
           }
-        } else {
-          $('#mw-content-text').append($('<div class="mw-parser-output" />').html(currentHTML));
+        } catch (error) {
+          $('#mw-content-text').append(`版本${diff}解析失败：${error}。`);
         }
-      } catch (error) {
-        $('#mw-content-text').append(`版本${diff}解析失败：${error}。`);
       }
     });
 
     $('#mw-returnto').after($gadgetZone.append('您也可以', $loadDiffButton, '。'));
   } else if (oldid) {
     // 查看旧版本
-    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回至'))) {
+    if (!document.getElementById('mw-mod-error') || !($('#mw-returnto').text().includes('返回'))) {
       return;
     }
     const $gadgetZone = $('<div class="bearbintool-historyviewer" />');

@@ -48,7 +48,7 @@ $(() => (async () => {
     },
   ], 'massedit-log', 'h5');
   mw.loader.load('/index.php?title=User:Nzh21/js/QuickDiff.js&action=raw&ctype=text/javascript');
-  mw.loader.load(`${mw.config.get('wgLoadScript')}?debug=false&modules=mediawiki.diff.styles&only=styles`, 'text/css');
+  mw.loader.load('/load.php?debug=false&modules=mediawiki.diff.styles&only=styles', 'text/css');
 
   /**
    * 在Special:MassEdit构建页面
