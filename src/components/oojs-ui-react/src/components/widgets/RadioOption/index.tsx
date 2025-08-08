@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
 import { generateWidgetClassName } from '../../../utils/tool';
-import type { ChangeHandler } from '../../../types/utils';
+import type { ChangeHandler } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'onClick'> {

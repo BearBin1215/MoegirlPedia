@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import type { WidgetProps } from '../components/widgets/Widget';
-import type { LabelElement, IconElement, IndicatorElement } from '../types/mixin';
+import type { LabelElement } from '../components/widgets/Label';
+import type { IconElement } from '../components/widgets/Icon';
+import type { IndicatorElement } from '../components/widgets/Indicator';
 
 /** 确保参数为数组，通常用来处理children */
 export function processArray<T>(elements?: T | T[]) {

@@ -1,6 +1,14 @@
-import React, { forwardRef, type HTMLAttributes } from 'react';
+import React, {
+  forwardRef,
+  type ReactNode,
+  type HTMLAttributes,
+} from 'react';
 import clsx from 'clsx';
-import type { LabelElement } from '../../../types/mixin';
+
+export interface LabelElement {
+  /** 标签显示内容 */
+  label?: ReactNode;
+}
 
 export interface LabelBaseProps extends
   Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,

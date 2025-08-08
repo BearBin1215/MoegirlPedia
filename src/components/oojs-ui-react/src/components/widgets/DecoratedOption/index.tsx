@@ -6,7 +6,8 @@ import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
-import type { IconElement, IndicatorElement } from '../../../types/mixin';
+import type { IconElement } from '../Icon';
+import type { IndicatorElement } from '../Indicator';
 
 export type DecoratedOptionProps =
   WidgetProps<HTMLDivElement> &

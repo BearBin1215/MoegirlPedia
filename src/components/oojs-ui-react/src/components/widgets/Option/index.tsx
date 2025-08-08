@@ -5,8 +5,8 @@ import React, {
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../../utils/tool';
+import type { AccessKeyedElement } from '../../mixins';
 import type { WidgetProps } from '../Widget';
-import type { AccessKeyElement } from '../../../types/mixin';
 
 export interface OptionData {
   /** 选项对应的数据 */
@@ -21,7 +21,7 @@ export interface OptionData {
 
 export type OptionProps<T = HTMLDivElement> =
   WidgetProps<T> &
-  AccessKeyElement &
+  AccessKeyedElement &
   OptionData;
 
 /** 基础选项组件 */

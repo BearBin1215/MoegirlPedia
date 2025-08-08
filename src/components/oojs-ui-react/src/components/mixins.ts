@@ -1,12 +1,13 @@
-import type { ChangeEvent } from 'react';
+import type { HTMLAttributes, ChangeEvent } from 'react';
 
-export type IconFlag = 'progressive' | 'destructive';
+/** 基础元素参数 */
+export type ElementProps<T = HTMLDivElement> = Omit<HTMLAttributes<T>, 'defaultValue' | 'defaultChecked'>;
 
-export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close';
-
-export type LabelPosition = 'before' | 'after';
-
-export type Indicators = 'clear' | 'up' | 'down' | 'required';
+/** 快捷键元素参数 */
+export interface AccessKeyedElement {
+  /** 快捷键 */
+  accessKey?: string;
+}
 
 /** 组件change钩子参数 */
 export interface ChangeValue<T = any, P = HTMLElement> {

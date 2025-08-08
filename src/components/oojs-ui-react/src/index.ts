@@ -49,5 +49,4 @@ export { default as IndexLayout } from './components/layouts/IndexLayout';
 export { default as Dialog } from './components/dialogs/Dialog';
 export { default as MessageDialog } from './components/dialogs/MessageDialog';
 
-// 类型
-export type * from './types';
+export * from './components/mixins';

@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
-import type { ChangeHandler } from '../../../types/utils';
+import type { ChangeHandler } from '../../mixins';
 
 export interface RadioSelectProps extends WidgetProps {
   options: RadioOptionProps[];

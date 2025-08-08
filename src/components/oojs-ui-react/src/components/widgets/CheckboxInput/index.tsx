@@ -5,12 +5,12 @@ import React, {
 import clsx from 'clsx';
 import IconWidget from '../Icon';
 import { generateWidgetClassName } from '../../../utils/tool';
+import type { AccessKeyedElement } from '../../mixins';
 import type { InputProps } from '../Input';
-import type { AccessKeyElement } from '../../../types/mixin';
 
 export type CheckboxInputProps =
   Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'> &
-  AccessKeyElement;
+  AccessKeyedElement;
 
 const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   name,

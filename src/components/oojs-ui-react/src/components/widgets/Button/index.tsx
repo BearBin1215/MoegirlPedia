@@ -10,13 +10,16 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../../utils/tool';
+import type { AccessKeyedElement } from '../../mixins';
 import type { WidgetProps } from '../Widget';
-import type { ButtonFlag } from '../../../types/utils';
-import type { AccessKeyElement, IconElement, IndicatorElement } from '../../../types/mixin';
+import type { IconElement, IconFlag } from '../Icon';
+import type { IndicatorElement } from '../Indicator';
+
+export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close';
 
 export interface ButtonProps extends
   WidgetProps<HTMLSpanElement>,
-  AccessKeyElement,
+  AccessKeyedElement,
   IconElement,
   IndicatorElement {
 

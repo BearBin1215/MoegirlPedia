@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import IconBase from './Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
-import type { IconFlag } from '../../../types/utils';
-import type { IconElement } from '../../../types/mixin';
+import IconBase, { type IconElement } from './Base';
+
+export type IconFlag = 'progressive' | 'destructive';
 
 export interface IconProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children'>,
@@ -41,3 +41,4 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 Icon.displayName = 'Icon';
 
 export default Icon;
+export { IconElement };

@@ -1,9 +1,11 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import IndicatorBase from './Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
-import type { IndicatorElement } from '../../../types/mixin';
+import IndicatorBase, {
+  type IndicatorElement,
+  type Indicators,
+} from './Base';
 
 export type IndicatorProps =
   Omit<WidgetProps<HTMLSpanElement>, 'children'> &
@@ -34,3 +36,4 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
 Indicator.displayName = 'Indicator';
 
 export default Indicator;
+export { IndicatorElement, Indicators };

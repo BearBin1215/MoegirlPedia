@@ -1,8 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import LabelBase from './Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
+import LabelBase, { type LabelElement } from './Base';
+
+export type LabelPosition = 'before' | 'after';
 
 export type LabelProps = WidgetProps<HTMLSpanElement>;
 
@@ -33,3 +35,4 @@ const Label = forwardRef<HTMLSpanElement, LabelProps>(({
 Label.displayName = 'Label';
 
 export default Label;
+export { LabelElement };

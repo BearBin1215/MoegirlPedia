@@ -4,9 +4,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { generateWidgetClassName } from '../../../utils/tool';
-import type { ChangeHandler } from '../../../types/utils';
+import type { AccessKeyedElement, ChangeHandler } from '../../mixins';
 import Widge, { type WidgetProps } from '../Widget';
-import type { AccessKeyElement } from '../../../types/mixin';
 
 /**
  * @template T 输入值类型
@@ -15,7 +14,7 @@ import type { AccessKeyElement } from '../../../types/mixin';
  */
 export interface InputProps<T extends string | number | boolean | undefined, P = HTMLInputElement, S = P> extends
   Omit<WidgetProps<S>, 'children'>,
-  AccessKeyElement {
+  AccessKeyedElement {
 
   /** input元素name属性 */
   name?: string;

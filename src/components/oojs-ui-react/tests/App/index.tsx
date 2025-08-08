@@ -1,7 +1,7 @@
 import React, { useState, type FC, type Key } from 'react';
 import { BookletLayout, ChangeHandler } from 'oojs-ui-react';
-import LazyComponent from './LazyComponent';
 import router from '../config/router';
+import LazyComponent from './LazyComponent';
 // import 'oojs-ui/dist/oojs-ui-wikimediaui.css';
 import './index.less';
 

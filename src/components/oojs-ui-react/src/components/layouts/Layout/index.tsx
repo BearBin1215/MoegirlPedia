@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { omit } from 'lodash-es';
-import type { ElementProps } from '../../../types/mixin';
+import type { ElementProps } from '../../mixins';
 
 export interface LayoutProps extends ElementProps {
   /** 是否隐藏 */

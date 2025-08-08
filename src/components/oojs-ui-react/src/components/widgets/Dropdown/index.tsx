@@ -14,8 +14,9 @@ import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../../utils/tool';
 import type { WidgetProps } from '../Widget';
-import type { AccessKeyElement, IconElement, LabelElement } from '../../../types/mixin';
-import type { ChangeHandler } from '../../../types/utils';
+import type { AccessKeyedElement, ChangeHandler } from '../../mixins';
+import type { LabelElement } from '../Label';
+import type { IconElement } from '../Icon';
 import type { OptionData } from '../Option';
 import MenuSelect from './MenuSelect';
 
@@ -25,7 +26,7 @@ export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & {
 
 export interface DropdownProps extends
   WidgetProps<HTMLDivElement>,
-  AccessKeyElement,
+  AccessKeyedElement,
   IconElement,
   LabelElement {
 

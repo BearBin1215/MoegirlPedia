@@ -1,4 +1,4 @@
-import { type Indicators } from '../../../src/types';
+import { type Indicators } from "oojs-ui-react/components/widgets/Indicator";
 
 interface IconItem {
   title: string;

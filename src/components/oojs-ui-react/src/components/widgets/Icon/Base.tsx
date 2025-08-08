@@ -1,6 +1,14 @@
 import React, { forwardRef, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
-import type { IconElement } from '../../../types/mixin';
+
+/** 图标元素参数 */
+export interface IconElement {
+  /**
+   * 组件图标
+   * @see https://doc.wikimedia.org/oojs-ui/master/demos/?page=icons
+   */
+  icon?: string;
+}
 
 export type IconBaseProps =
   HTMLAttributes<HTMLSpanElement> &

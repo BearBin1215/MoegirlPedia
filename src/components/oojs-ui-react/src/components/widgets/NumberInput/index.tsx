@@ -9,13 +9,15 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../../utils/tool';
+import type { AccessKeyedElement } from '../../mixins';
 import type { InputProps } from '../Input';
-import type { AccessKeyElement, IconElement, IndicatorElement, LabelElement } from '../../../types/mixin';
-import type { LabelPosition } from '../../../types/utils';
+import type { LabelElement, LabelPosition } from '../Label';
+import type { IconElement } from '../Icon';
+import type { IndicatorElement } from '../Indicator';
 
 export interface NumberInputProps extends
   InputProps<number, HTMLDivElement>,
-  AccessKeyElement,
+  AccessKeyedElement,
   IconElement,
   IndicatorElement,
   LabelElement {

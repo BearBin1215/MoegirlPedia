@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
-import type { LabelElement } from '../../../types/mixin';
+import type { LabelElement } from '../../widgets/Label';
 
 export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,
