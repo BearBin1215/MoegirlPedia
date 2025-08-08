@@ -31,9 +31,6 @@
   },
   "exclude": [
     "dist",
-    "src/components/oojs-ui-react/tests",
-    "src/components/oojs-ui-react/lib",
-    "src/components/oojs-ui-react/node_modules"
   ],
   "include": [
     "src/**/*",
