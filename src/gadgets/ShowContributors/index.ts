@@ -37,8 +37,6 @@ $(() => (async () => {
     initialize() {
       super.initialize();
 
-      this.$head.append('1');
-
       this.$body.append(
         $('<div id="show-contributor-header" />').append(
           $('<div id="show-contributor-headline">本页贡献统计</div>'),
