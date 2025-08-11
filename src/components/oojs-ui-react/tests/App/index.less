@@ -3,143 +3,149 @@
 @link-color: #0011ee;
 
 body {
-    font-size: 14px;
-    margin: 0;
-    padding: 0;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
 }
 
 // 页面内的第一个一级标题
 h1:first-child {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 // 标题样式
 h2 {
-    margin: 1.4em 0 0.6em;
+  margin: 1.4em 0 0.6em;
 }
 
 h3 {
-    margin: 1.2em 0 0.4em;
+  margin: 1.2em 0 0.4em;
 }
 
 h4,
 h5,
 h6 {
-    margin: 1em 0 0.4em;
+  margin: 1em 0 0.4em;
 }
 
 p {
-    margin: 0.8em 0;
+  margin: 0.8em 0;
 }
 
 // 链接默认无下划线，悬浮时显示
 a {
-    text-decoration: none;
-    color: @link-color;
+  text-decoration: none;
+  color: @link-color;
 
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 
-    &.link {
-        &:visited {
-            color: darken(@link-color, 10%);
-        }
+  &.link {
+    &:visited {
+      color: darken(@link-color, 10%);
     }
+  }
 }
 
 // 删除线样式
 del,
 s {
-    color: #626262;
-    padding-left: 2px;
-    padding-right: 2px;
+  color: #626262;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 // 代码块
 code {
-    margin: 0 0.25em;
-    padding: 0.2em 0.4em;
-    background: rgba(0, 0, 0, 4%);
-    border: 1px solid rgba(5, 5, 5, 6%);
+  margin: 0 0.25em;
+  padding: 0.2em 0.4em;
+  background: rgba(0, 0, 0, 4%);
+  border: 1px solid rgba(5, 5, 5, 6%);
 }
 
 // 按键
 kbd {
-    display: inline-block;
-    background-color: #f7f7f7;
-    border-radius: 0.25rem;
-    border: 1px solid #cbcccd;
-    padding: 2px 5px;
-    line-height: 1;
-    min-width: 0.75rem;
-    text-align: center;
-    box-shadow: 0 1px 0 0.5px #cbcccd;
-    position: relative;
-    top: -1px;
+  display: inline-block;
+  background-color: #f7f7f7;
+  border-radius: 0.25rem;
+  border: 1px solid #cbcccd;
+  padding: 2px 5px;
+  line-height: 1;
+  min-width: 0.75rem;
+  text-align: center;
+  box-shadow: 0 1px 0 0.5px #cbcccd;
+  position: relative;
+  top: -1px;
 }
 
 // 无序列表
 ul {
-    list-style: none;
-    padding: 0;
-    line-height: 1.6;
+  list-style: none;
+  padding: 0;
+  line-height: 1.6;
 
-    li {
-        list-style-type: circle;
-        margin-inline-start: 20px;
-    }
+  li {
+    list-style-type: circle;
+    margin-inline-start: 20px;
+  }
 }
 
 #root {
-    height: 100vh;
+  height: 100vh;
 }
 
 .oojs-ui-react {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .oojs-ui-react-header {
     display: flex;
-    flex-direction: column;
-    height: 100%;
+    justify-content: space-between;
+    flex: 0 0 48px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #aaa;
 
-    .oojs-ui-react-header {
-        display: flex;
-        flex: 0 0 48px;
-        padding: 10px 16px;
-        box-sizing: border-box;
-        border-bottom: 1px solid #aaa;
-
-        .oojs-ui-react-title {
-            display: flex;
-            align-items: center;
-            font-size: 1.2em;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
+    .oojs-ui-react-header-left {
+      display: flex;
+      align-items: center;
+      font-size: 1.2em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
-    .oojs-ui-react-content {
-        flex: 1 0;
-        position: relative;
+    .oojs-ui-react-header-right {
+      display: flex;
+      align-items: center;
     }
+  }
+
+  .oojs-ui-react-content {
+    flex: 1 0;
+    position: relative;
+  }
 }
 
 .oo-ui-menuLayout {
-    > .oo-ui-menuLayout-menu {
-        width: 17.5em;
+  >.oo-ui-menuLayout-menu {
+    width: 17.5em;
 
-        .oo-ui-outlineOptionWidget {
-            padding-left: 1.75em;
-        }
+    .oo-ui-outlineOptionWidget {
+      padding-left: 1.75em;
+    }
+  }
+
+  >.oo-ui-menuLayout-content {
+    left: 17.5em;
+
+    .oo-ui-inputWidget {
+      margin-right: 0;
     }
 
-    > .oo-ui-menuLayout-content {
-        left: 17.5em;
-
-        .oo-ui-inputWidget {
-            margin-right: 0;
-        }
-
-        .oo-ui-menuSelectWidget {
-            width: 100%;
-        }
+    .oo-ui-menuSelectWidget {
+      width: 100%;
     }
+  }
 }

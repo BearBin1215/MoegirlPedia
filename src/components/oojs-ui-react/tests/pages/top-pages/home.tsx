@@ -1,18 +1,39 @@
 import React, { type FC } from 'react';
 import Link from '../../components/Link';
+import intl from '../../components/intl';
 
 const Home: FC = () => {
   return (
     <>
-      <h1>oojs-ui-react UI组件库测试用工程</h1>
+      <h1>
+        {intl({
+          'zh-cn': 'oojs-ui-react UI组件库测试用工程',
+          en: 'oojs-ui-react UI component library test project',
+        })}
+      </h1>
 
       <p>
-        本组件库基于
-        <Link href='https://reactjs.org/'>React</Link>
-        对
-        <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>
-        进行重新实现，旨在使用react编写萌百小工具（gadgets）时有组件库可用。
-      </p>
+        {intl({
+          'zh-cn': (
+            <>
+              本组件库基于
+              <Link href='https://reactjs.org/'>React</Link>
+              对
+              <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>
+              进行重新实现，旨在使用react编写萌百小工具（gadgets）时有组件库可用。
+            </>
+          ),
+          en: (
+            <>
+              This component library is based on{' '}
+              <Link href='https://reactjs.org/'>React</Link>{' '}
+              to reimplement{' '}
+              <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>{' '}
+              so that component libraries can be used when writing MediaWiki gadgets.
+            </>
+          )
+        })}
+      </p >
       <p>由于目前完成度较低<del>且有许多不符合最佳实践的操作</del>，暂不推送npm，后续闲下来水瓶高点再搞。</p>
 
       <h2>特性</h2>
