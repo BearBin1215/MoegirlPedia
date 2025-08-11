@@ -1,7 +1,4 @@
-import type { HTMLAttributes, ChangeEvent } from 'react';
-
-/** 基础元素参数 */
-export type ElementProps<T = HTMLDivElement> = Omit<HTMLAttributes<T>, 'defaultValue' | 'defaultChecked'>;
+import type { ChangeEvent } from 'react';
 
 /** 快捷键元素参数 */
 export interface AccessKeyedElement {

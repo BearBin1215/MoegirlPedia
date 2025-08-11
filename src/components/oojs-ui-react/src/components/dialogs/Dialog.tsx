@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { debounce } from 'lodash-es';
-import type { ElementProps } from '../mixins';
+import type { ElementProps } from '../Element';
 import WindowManager from './WindowManager';
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {

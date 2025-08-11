@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import type { ElementProps } from '../mixins';
+import type { ElementProps } from '../Element';
 
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;

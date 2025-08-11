@@ -4,7 +4,7 @@ import {
 } from 'oojs-ui-react';
 
 const NumberInputs: FC = () => {
-  const [numberValue, setNumberValue] = useState(0);
+  const [numberValue, setNumberValue] = useState<number | undefined>(void 0);
   const [numberValue2, setNumberValue2] = useState(123);
 
   return (
