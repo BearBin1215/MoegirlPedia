@@ -28,8 +28,7 @@ const Home: FC = () => {
               This component library is based on{' '}
               <Link href='https://reactjs.org/'>React</Link>{' '}
               to reimplement{' '}
-              <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>{' '}
-              so that component libraries can be used when writing MediaWiki gadgets.
+              <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>.
             </>
           )
         })}
