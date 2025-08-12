@@ -1,6 +1,7 @@
 import React, { Fragment, type FC } from 'react';
 import { Icon, Indicator } from 'oojs-ui-react';
-import {iconList, indicatorList} from './icon-list';
+import intl from '../../components/intl';
+import { iconList, indicatorList } from './icon-list';
 import './index.less';
 
 const IconPage: FC = () => {
@@ -15,10 +16,25 @@ const IconPage: FC = () => {
 
   return (
     <>
-      <h1>Icon/Indicator - 图标</h1>
+      <h1>
+        {intl({
+          'zh-cn': 'Icon/Indicator - 图标',
+          en: 'Icon/Indicator',
+        })}
+      </h1>
       <ul>
-        <li>加载对应的CSS后可以使用，需要自定义可以自己添加CSS。</li>
-        <li>点击本页图标可复制React代码。</li>
+        <li>
+          {intl({
+            'zh-cn': '加载对应的CSS后可以使用，需要自定义可以自己添加CSS。',
+            en: 'Import the corresponding CSS to use. And you can add CSS yourself if you need to customize.',
+          })}
+        </li>
+        <li>
+          {intl({
+            'zh-cn': '点击本页图标可复制React代码。',
+            en: 'Click on the icon to copy the React code.',
+          })}
+        </li>
       </ul>
       {iconList.map(({ title, icons }) => (
         <Fragment key={title}>

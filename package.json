@@ -47,7 +47,7 @@
     "@eslint/js": "^9.32.0",
     "@rspack/cli": "^1.4.11",
     "@rspack/core": "^1.4.11",
-    "@stylistic/eslint-plugin": "^5.2.2",
+    "@stylistic/eslint-plugin": "^5.2.3",
     "@svgr/webpack": "^8.1.0",
     "@types/dom-to-image": "^2.6.7",
     "@types/jquery": "^3.5.32",

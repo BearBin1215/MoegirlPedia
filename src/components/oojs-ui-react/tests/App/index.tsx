@@ -3,20 +3,17 @@ import { BookletLayout, Dropdown, type ChangeHandler } from 'oojs-ui-react';
 import router from '../config/router';
 import { LanguageContext, languages, type Languages } from '../components/intl';
 import LazyComponent from './LazyComponent';
-// import 'oojs-ui/dist/oojs-ui-wikimediaui.css';
 import './index.less';
 
-const topPages = ['Home 导航', 'Start 使用'];
+const topPages = ['Overview', 'Start'];
 
 const App: FC = () => {
-  const [activeKey, setActiveKey] = useState<Key>('Home 导航');
+  const [activeKey, setActiveKey] = useState<Key>('Overview');
   const [language, setLanguage] = useState<Languages>('zh-cn');
 
   const handlePageChange: ChangeHandler<Key> = ({ value }) => {
     setActiveKey(value);
   };
-
-  console.log(language);
 
   return (
     <div className='oojs-ui-react'>
@@ -43,22 +40,22 @@ const App: FC = () => {
       <div className='oojs-ui-react-content'>
         <LanguageContext.Provider value={{ language }}>
           <BookletLayout
-            defaultKey='Home 导航'
+            defaultKey='Overview'
             onChange={handlePageChange}
             activeKey={activeKey}
             options={router.map((route) => 'section' in route ? {
-              key: route.title,
-              label: route.title,
+              key: route.key,
+              label: route.title[language] || route.key,
               disabled: true,
             } : {
-              key: route.title,
+              key: route.key,
               label: (
-                <span style={{ paddingLeft: topPages.includes(route.title) ? void 0 : '1em' }}>
-                  {route.title}
+                <span style={{ paddingLeft: topPages.includes(route.key) ? void 0 : '1em' }}>
+                  {route.title[language] || route.key}
                 </span>
               ),
               // 适配懒加载
-              children: activeKey === route.title && <LazyComponent route={route} />,
+              children: activeKey === route.key && <LazyComponent route={route} />,
             })}
           />
         </LanguageContext.Provider>

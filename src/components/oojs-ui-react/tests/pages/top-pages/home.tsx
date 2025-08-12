@@ -30,9 +30,9 @@ const Home: FC = () => {
               to reimplement{' '}
               <Link href='https://www.npmjs.com/package/oojs-ui'>oojs-ui</Link>.
             </>
-          )
+          ),
         })}
-      </p >
+      </p>
       <p>由于目前完成度较低<del>且有许多不符合最佳实践的操作</del>，暂不推送npm，后续闲下来水瓶高点再搞。</p>
 
       <h2>特性</h2>
