@@ -17,7 +17,7 @@ export const LanguageContext = createContext<{ language: Languages }>({
 /** 多语言组件，根据所选语言显示内容 */
 export const IntlComponent: React.FC<{ intlInputs: Partial<Record<Languages, ReactNode>> }> = ({ intlInputs }) => {
   const { language } = useContext(LanguageContext);
-  return intlInputs[language] || intlInputs['zh-cn'];
+  return intlInputs[language] || intlInputs['zh-cn'] || intlInputs.en;
 };
 
 /** 组件封装为函数，便于使用 */
