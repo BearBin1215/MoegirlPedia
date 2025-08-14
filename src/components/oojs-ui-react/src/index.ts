@@ -1,52 +1,52 @@
 // 基础
-export { default as Widget } from './components/widgets/Widget';
-export { default as Label } from './components/widgets/Label';
+export { default as Widget } from './widgets/Widget';
+export { default as Label } from './widgets/Label';
 
 // 图标
-export { default as Icon } from './components/widgets/Icon';
-export { default as Indicator } from './components/widgets/Indicator';
+export { default as Icon } from './widgets/Icon';
+export { default as Indicator } from './widgets/Indicator';
 
 // 按钮
-export { default as Button } from './components/widgets/Button';
-export { default as ButtonGroup } from './components/widgets/ButtonGroup';
+export { default as Button } from './widgets/Button';
+export { default as ButtonGroup } from './widgets/ButtonGroup';
 
 // 输入框
-export { default as Input } from './components/widgets/Input';
-export { default as TextInput } from './components/widgets/TextInput';
-export { default as NumberInput } from './components/widgets/NumberInput';
-export { default as MultilineTextInput } from './components/widgets/MultilineTextInput';
+export { default as Input } from './widgets/Input';
+export { default as TextInput } from './widgets/TextInput';
+export { default as NumberInput } from './widgets/NumberInput';
+export { default as MultilineTextInput } from './widgets/MultilineTextInput';
 
 // 单选框
-export { default as RadioInput } from './components/widgets/RadioInput';
-export { default as RadioOption } from './components/widgets/RadioOption';
-export { default as RadioSelect } from './components/widgets/RadioSelect';
+export { default as RadioInput } from './widgets/RadioInput';
+export { default as RadioOption } from './widgets/RadioOption';
+export { default as RadioSelect } from './widgets/RadioSelect';
 
 // 复选框
-export { default as CheckboxInput } from './components/widgets/CheckboxInput';
+export { default as CheckboxInput } from './widgets/CheckboxInput';
 
 // 下拉选择框
-export { default as Option } from './components/widgets/Option';
-export { default as MenuOption } from './components/widgets/MenuOption';
-export { default as DecoratedOption } from './components/widgets/DecoratedOption';
-export { default as OutlineOption } from './components/widgets/OutlineOption';
-export { default as MenuSectionOption } from './components/widgets/MenuSectionOption';
-export { default as Select } from './components/widgets/Select';
-export { default as OutlineSelect } from './components/widgets/OutlineSelect';
-export { default as Dropdown } from './components/widgets/Dropdown';
+export { default as Option } from './widgets/Option';
+export { default as MenuOption } from './widgets/MenuOption';
+export { default as DecoratedOption } from './widgets/DecoratedOption';
+export { default as OutlineOption } from './widgets/OutlineOption';
+export { default as MenuSectionOption } from './widgets/MenuSectionOption';
+export { default as Select } from './widgets/Select';
+export { default as OutlineSelect } from './widgets/OutlineSelect';
+export { default as Dropdown } from './widgets/Dropdown';
 
 // 布局
-export { default as Layout } from './components/layouts/Layout';
-export { default as PanelLayout } from './components/layouts/PanelLayout';
-export { default as PageLayout } from './components/layouts/PageLayout';
-export { default as StackLayout } from './components/layouts/StackLayout';
-export { default as MenuLayout } from './components/layouts/MenuLayout';
-export { default as BookletLayout } from './components/layouts/BookletLayout';
-export { default as FieldLayout } from './components/layouts/FieldLayout';
-export { default as HorizontalLayout } from './components/layouts/HorizontalLayout';
-export { default as IndexLayout } from './components/layouts/IndexLayout';
+export { default as Layout } from './layouts/Layout';
+export { default as PanelLayout } from './layouts/PanelLayout';
+export { default as PageLayout } from './layouts/PageLayout';
+export { default as StackLayout } from './layouts/StackLayout';
+export { default as MenuLayout } from './layouts/MenuLayout';
+export { default as BookletLayout } from './layouts/BookletLayout';
+export { default as FieldLayout } from './layouts/FieldLayout';
+export { default as HorizontalLayout } from './layouts/HorizontalLayout';
+export { default as IndexLayout } from './layouts/IndexLayout';
 
 // 弹窗
-export { default as Dialog } from './components/dialogs/Dialog';
-export { default as MessageDialog } from './components/dialogs/MessageDialog';
+export { default as Dialog } from './dialogs/Dialog';
+export { default as MessageDialog } from './dialogs/MessageDialog';
 
-export * from './components/mixins';
+export * from './mixins';
