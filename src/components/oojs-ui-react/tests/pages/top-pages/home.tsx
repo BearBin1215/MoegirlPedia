@@ -40,7 +40,7 @@ const Home: FC = () => {
         <li>
           在MediaWiki站点中使用时无需额外引入样式表。使用
           <Link href='https://preactjs.com/guide/v10/switching-to-preact'>Preact兼容层</Link>
-          替代React、利用构建工具合理优化后输出文件大小为22KB+。
+          替代React、利用构建工具合理优化后输出文件大小为23KB+。
         </li>
         <li>可按需引入，在webpack/vite等构建工具中构建时支持Tree Shaking，用多少打包多少。</li>
         <li>使用<Link href='https://www.typescriptlang.org/'>TypeScript</Link>编写，支持类型检查及提示。</li>

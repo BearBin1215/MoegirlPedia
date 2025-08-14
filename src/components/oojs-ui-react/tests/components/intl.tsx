@@ -1,4 +1,8 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, {
+  createContext,
+  useContext,
+  type ReactNode,
+} from 'react';
 
 /** 语言列表 */
 export const languages = {
@@ -17,7 +21,7 @@ export const LanguageContext = createContext<{ language: Languages }>({
 /** 多语言组件，根据所选语言显示内容 */
 export const IntlComponent: React.FC<{ intlInputs: Partial<Record<Languages, ReactNode>> }> = ({ intlInputs }) => {
   const { language } = useContext(LanguageContext);
-  return intlInputs[language] || intlInputs['zh-cn'] || intlInputs.en;
+  return intlInputs[language] || intlInputs.en || intlInputs['zh-cn'];
 };
 
 /** 组件封装为函数，便于使用 */

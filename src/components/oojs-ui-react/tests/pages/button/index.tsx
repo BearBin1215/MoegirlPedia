@@ -65,11 +65,13 @@ const ButtonPage: FC = () => {
       <Button accessKey='q'>accessKey=q: <kbd>alt</kbd>+<kbd>Q</kbd></Button>
 
       <h2>ButtonGroup</h2>
-      <ButtonGroup>
-        <Button>按钮1</Button>
-        <Button>按钮2</Button>
-        <Button disabled>按钮3</Button>
-      </ButtonGroup>
+      <ButtonGroup
+        buttons={[
+          { key: 'one', children: 'one', icon: 'tag' },
+          { key: 'two', children: 'two' },
+          { key: 'three', children: 'three', disabled: true },
+        ]}
+      />
     </>
   );
 };

@@ -1,15 +1,16 @@
-import React, { forwardRef, type ReactElement } from 'react';
+import React, { forwardRef, type Key } from 'react';
 import clsx from 'clsx';
 import Widget, { type WidgetProps } from '../Widget';
-import type { ButtonProps } from '../Button';
+import Button, { type ButtonProps } from '../Button';
 
-export interface ButtonGroupProps extends WidgetProps {
-  children: ReactElement<ButtonProps> | ReactElement<ButtonProps>[];
+export interface ButtonGroupProps extends Omit<WidgetProps, 'children'> {
+  /** 按钮组参数 */
+  buttons?: (ButtonProps & { key: Key})[];
 }
 
 const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   className,
-  children,
+  buttons = [],
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -22,7 +23,7 @@ const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
       className={classes}
       ref={ref}
     >
-      {children}
+      {buttons.map((item) => <Button {...item} />)}
     </Widget>
   );
 });
