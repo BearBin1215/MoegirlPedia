@@ -5,8 +5,7 @@ import React, {
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
-import { generateWidgetClassName } from '../../utils';
-import type { ChangeHandler } from '../../mixins';
+import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
 export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'onClick'> {

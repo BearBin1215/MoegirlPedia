@@ -3,8 +3,11 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
-import type { AccessKeyedElement, ChangeHandler } from '../../mixins';
+import {
+  generateWidgetClassName,
+  type AccessKeyedElement,
+  type ChangeHandler,
+} from '../../utils';
 import Widge, { type WidgetProps } from '../Widget';
 
 /**

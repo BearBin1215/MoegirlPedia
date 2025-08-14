@@ -4,8 +4,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName } from '../../utils';
-import type { AccessKeyedElement } from '../../mixins';
+import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 
 export interface OptionData {

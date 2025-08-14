@@ -49,4 +49,4 @@ export { default as IndexLayout } from './layouts/IndexLayout';
 export { default as Dialog } from './dialogs/Dialog';
 export { default as MessageDialog } from './dialogs/MessageDialog';
 
-export * from './mixins';
+export * from './utils';

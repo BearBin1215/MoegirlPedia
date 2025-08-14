@@ -12,9 +12,12 @@ import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName } from '../../utils';
+import {
+  generateWidgetClassName,
+  type AccessKeyedElement,
+  type ChangeHandler,
+} from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { AccessKeyedElement, ChangeHandler } from '../../mixins';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
 import type { OptionData } from '../Option';

@@ -11,7 +11,7 @@ import OutlineSelect from '../../widgets/OutlineSelect';
 import StackLayout from '../StackLayout';
 import type { OptionData } from '../../widgets/Option';
 import type { PageLayoutProps } from '../PageLayout';
-import type { ChangeHandler } from '../../mixins';
+import type { ChangeHandler } from '../../utils';
 
 interface BookletLayoutOptionProps extends PageLayoutProps {
   /** 菜单选项显示内容 */

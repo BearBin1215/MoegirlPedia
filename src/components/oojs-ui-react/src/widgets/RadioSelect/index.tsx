@@ -5,9 +5,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import RadioOption, { type RadioOptionProps } from '../RadioOption';
-import { generateWidgetClassName } from '../../utils';
+import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { ChangeHandler } from '../../mixins';
 
 export interface RadioSelectProps extends WidgetProps {
   options: RadioOptionProps[];

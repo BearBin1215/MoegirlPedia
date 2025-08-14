@@ -4,8 +4,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import IconWidget from '../Icon';
-import { generateWidgetClassName } from '../../utils';
-import type { AccessKeyedElement } from '../../mixins';
+import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
