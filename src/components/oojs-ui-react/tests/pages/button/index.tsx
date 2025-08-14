@@ -67,9 +67,18 @@ const ButtonPage: FC = () => {
       <h2>ButtonGroup</h2>
       <ButtonGroup
         buttons={[
-          { key: 'one', children: 'one', icon: 'tag' },
-          { key: 'two', children: 'two' },
-          { key: 'three', children: 'three', disabled: true },
+          { key: 1, children: 'One', icon: 'tag' },
+          { key: 2, children: 'Two' },
+          { key: 3, children: 'Three', disabled: true },
+        ]}
+      />
+      <h3>disabled</h3>
+      <ButtonGroup
+        disabled
+        buttons={[
+          { key: 1, children: 'One', icon: 'tag' },
+          { key: 2, children: 'Two' },
+          { key: 3, children: 'Three' },
         ]}
       />
     </>

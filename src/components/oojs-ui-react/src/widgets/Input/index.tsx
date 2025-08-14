@@ -66,7 +66,7 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLDivElem
     <Widge
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      disabled={disabled}
       ref={ref}
     >
       <input

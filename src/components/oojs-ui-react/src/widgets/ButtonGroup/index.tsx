@@ -11,6 +11,7 @@ export interface ButtonGroupProps extends Omit<WidgetProps, 'children'> {
 const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   className,
   buttons = [],
+  disabled,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -23,7 +24,12 @@ const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
       className={classes}
       ref={ref}
     >
-      {buttons.map((item) => <Button {...item} />)}
+      {buttons.map((item) => (
+        <Button
+          {...item}
+          disabled={item.disabled || disabled}
+        />
+      ))}
     </Widget>
   );
 });
