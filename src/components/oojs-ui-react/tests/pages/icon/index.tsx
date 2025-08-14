@@ -46,7 +46,7 @@ const IconPage: FC = () => {
                 className='icon-item'
                 onClick={() => copyIconCode(icon)}
               >
-                <Icon className='icon-icon' icon={icon} />
+                <Icon className='icon-icon' icon={icon} title={icon} />
                 <span className='icon-code'>{icon}</span>
               </div>
             ))}
@@ -61,7 +61,7 @@ const IconPage: FC = () => {
             className='icon-item'
             onClick={() => copyIndicatorCode(indicator)}
           >
-            <Indicator indicator={indicator} />
+            <Indicator indicator={indicator} title={indicator} />
             <span className='icon-code'>{indicator}</span>
           </div>
         ))}

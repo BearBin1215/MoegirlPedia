@@ -32,7 +32,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
       {...rest}
       className={classes}
       icon={icon}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled}
       ref={ref}
     />
   );

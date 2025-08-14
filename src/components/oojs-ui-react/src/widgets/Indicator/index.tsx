@@ -27,7 +27,7 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
       {...rest}
       className={classes}
       indicator={indicator}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled}
       ref={ref}
     />
   );
