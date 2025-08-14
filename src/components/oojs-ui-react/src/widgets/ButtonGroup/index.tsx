@@ -5,7 +5,7 @@ import Button, { type ButtonProps } from '../Button';
 
 export interface ButtonGroupProps extends Omit<WidgetProps, 'children'> {
   /** 按钮组参数 */
-  buttons?: (ButtonProps & { key: Key})[];
+  buttons?: (ButtonProps & { key: Key })[];
 }
 
 const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({

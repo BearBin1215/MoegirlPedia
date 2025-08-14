@@ -4,10 +4,10 @@ import React, {
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
-import Dialog, { type DialogProps } from './Dialog';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
+import Dialog, { type DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;

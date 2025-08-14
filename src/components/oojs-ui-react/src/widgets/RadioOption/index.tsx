@@ -1,15 +1,11 @@
-import React, {
-  forwardRef,
-  type MouseEventHandler,
-} from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import RadioInput from '../RadioInput';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
-export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'onClick'> {
-  onClick?: MouseEventHandler<HTMLLabelElement>;
+export interface RadioOptionProps extends OptionProps<HTMLLabelElement> {
   name?: string;
   onChange?: ChangeHandler<boolean, HTMLInputElement>;
   selected?: boolean;

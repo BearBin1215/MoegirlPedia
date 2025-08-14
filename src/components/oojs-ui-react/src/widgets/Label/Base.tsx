@@ -10,12 +10,7 @@ export interface LabelElement {
   label?: ReactNode;
 }
 
-export interface LabelBaseProps extends
-  Omit<HTMLAttributes<HTMLSpanElement>, 'className'>,
-  LabelElement {
-
-  className?: string;
-}
+export type LabelBaseProps = HTMLAttributes<HTMLSpanElement> & LabelElement;
 
 const LabelBase = forwardRef<HTMLSpanElement, LabelBaseProps>(({
   className,
