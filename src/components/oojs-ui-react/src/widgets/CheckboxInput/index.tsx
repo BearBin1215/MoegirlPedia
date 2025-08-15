@@ -3,7 +3,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import IconWidget from '../Icon';
+import Icon from '../Icon';
 import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import type { InputProps } from '../Input';
 
@@ -55,9 +55,9 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         disabled={disabled}
         onChange={handleChange}
       />
-      <IconWidget
+      <Icon
         icon='check'
-        className='oo-ui-labelElement-invisible oo-ui-image-invert'
+        className='oo-ui-image-invert'
       />
     </span>
   );

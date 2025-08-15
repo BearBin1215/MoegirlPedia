@@ -19,7 +19,7 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, indicator }, 'indicator'),
+    generateWidgetClassName({ disabled, indicator, invisibleLabel: true }, 'indicator'),
   );
 
   return (

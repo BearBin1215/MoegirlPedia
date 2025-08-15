@@ -8,6 +8,8 @@ import clsx from 'clsx';
 export interface LabelElement {
   /** 标签显示内容 */
   label?: ReactNode;
+  /** 标签可视 */
+  invisibleLabel?: boolean;
 }
 
 export type LabelBaseProps = HTMLAttributes<HTMLSpanElement> & LabelElement;

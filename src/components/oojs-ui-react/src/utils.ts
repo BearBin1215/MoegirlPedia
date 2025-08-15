@@ -54,7 +54,7 @@ type ComponentProps =
  * @param widgetNames 组件名称，用于生成`oo-ui-{widgetName}Widget`
  */
 export function generateWidgetClassName(
-  { disabled, label, icon, indicator }: ComponentProps,
+  { disabled, label, invisibleLabel, icon, indicator }: ComponentProps,
   ...widgetNames: string[]
 ): string {
   return clsx(
@@ -62,6 +62,7 @@ export function generateWidgetClassName(
     disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
     icon && 'oo-ui-iconElement',
     indicator && 'oo-ui-indicatorElement',
+    invisibleLabel && 'oo-ui-labelElement-invisible',
     (label !== null && label !== void 0 && label !== false) && 'oo-ui-labelElement',
     widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`),
   );

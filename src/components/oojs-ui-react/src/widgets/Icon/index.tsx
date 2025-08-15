@@ -7,7 +7,7 @@ import IconBase, { type IconElement } from './Base';
 export type IconFlag = 'progressive' | 'destructive';
 
 export interface IconProps extends
-  Omit<WidgetProps<HTMLSpanElement>, 'children'>,
+  WidgetProps<HTMLSpanElement>,
   IconElement {
 
   flags?: IconFlag | IconFlag[];
@@ -23,7 +23,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon }, 'icon'),
+    generateWidgetClassName({ disabled, icon, invisibleLabel: true }, 'icon'),
     (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag} oo-ui-image-${flag}`),
   );
 

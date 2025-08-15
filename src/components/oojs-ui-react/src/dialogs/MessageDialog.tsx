@@ -38,8 +38,8 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
-              <Button framed={false} flags='safe' onClick={onCancel}>取消</Button>
-              <Button framed={false} flags='primary' onClick={onOk}>确定</Button>
+              <Button framed={false} flags='safe' onClick={onCancel}>Cancel</Button>
+              <Button framed={false} flags='primary' onClick={onOk}>OK</Button>
             </>
           )}
         </div>
