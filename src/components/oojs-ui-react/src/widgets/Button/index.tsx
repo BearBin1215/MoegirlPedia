@@ -56,6 +56,8 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   title,
   tabIndex,
   onClick,
+  onMouseDown,
+  onMouseUp,
   onKeyDown,
   onKeyUp,
   ...rest
@@ -97,17 +99,23 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 按住鼠标 */
-  const handlePress: MouseEventHandler<HTMLSpanElement> = () => {
+  /** 按下鼠标，状态变更为pressed */
+  const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled) {
       setPressed(true);
     }
+    if (onMouseDown) {
+      onMouseDown(ev);
+    }
   };
 
-  /** 松开或移出 */
-  const handleUnpress: MouseEventHandler<HTMLSpanElement> = () => {
+  /** 松开鼠标，状态变更为unpressed */
+  const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled) {
       setPressed(false);
+    }
+    if (onMouseUp) {
+      onMouseUp(ev);
     }
   };
 
@@ -117,7 +125,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onKeyDown(ev);
     }
     if (!disabled && ev.key === 'Enter') {
-      handlePress(ev as unknown as MouseEvent<HTMLSpanElement>);
+      setPressed(true);
     }
   };
 
@@ -127,7 +135,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onKeyUp(ev);
     }
     if (!disabled && ev.key === 'Enter') {
-      handleUnpress(ev as unknown as MouseEvent<HTMLSpanElement>);
+      setPressed(false);
       handleClick(ev as unknown as MouseEvent<HTMLSpanElement>);
     }
   };
@@ -138,9 +146,8 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       ref={ref}
       className={classes}
       onClick={handleClick}
-      onMouseUp={handleUnpress}
-      onMouseDown={handlePress}
-      onMouseLeave={handleUnpress}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       aria-disabled={!!disabled}
