@@ -121,22 +121,22 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
 
   /** 按下Enter键等同点击鼠标 */
   const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (onKeyDown) {
-      onKeyDown(ev);
-    }
     if (!disabled && ev.key === 'Enter') {
       setPressed(true);
+    }
+    if (onKeyDown) {
+      onKeyDown(ev);
     }
   };
 
   /** 松开Enter键等同松开鼠标 */
   const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (onKeyUp) {
-      onKeyUp(ev);
-    }
     if (!disabled && ev.key === 'Enter') {
       setPressed(false);
       handleClick(ev as unknown as MouseEvent<HTMLSpanElement>);
+    }
+    if (onKeyUp) {
+      onKeyUp(ev);
     }
   };
 

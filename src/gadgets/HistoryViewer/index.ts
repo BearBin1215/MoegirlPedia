@@ -49,7 +49,7 @@ mw.loader.using('mediawiki.api').then(() => {
   const $userLink = (user: string, userid: number) => {
     return $(`<a href="/User:${user}" class="mw-userlink" />`).append(
       $('<span class="userlink-avatar" />').append(
-        `<img class="userlink-avatar-small" src="https://img.moegirl.org.cn/common/avatars/${userid}/128.png" />`,
+        `<img class="userlink-avatar-small" src="//storage.moegirl.org.cn/moegirl/avatars/${userid}/latest.png!avatar" />`,
       ),
       `<bdi>${user}</bdi>`,
     );
