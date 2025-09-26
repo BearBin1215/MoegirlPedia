@@ -8,6 +8,11 @@ declare module "*.css" {
   export default value;
 }
 
+declare module "*.less" {
+  const value: string;
+  export default value;
+}
+
 /** 以CSS Module导入 */
 declare module "*.module.less" {
   const value: Record<string, string>;
@@ -28,7 +33,7 @@ declare module "*.inline.svg" {
 
 /** 通过svgr导入 */
 declare module '*.svg' {
-  import React from "react";
+  import type React from "react";
   const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
   export default SVG;
 }

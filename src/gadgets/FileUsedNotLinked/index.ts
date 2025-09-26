@@ -82,6 +82,26 @@ $(() => (async () => {
       }) as ApiQueryResponse;
     };
 
+    /** 在字符串中匹配文件名，文件首字母大小写不敏感 */
+    const matchesFileName = (snippet: string, filename: string): boolean => {
+      const cleanFilename = filename.replaceAll('_', ' ');
+      const firstChar = cleanFilename.charAt(0);
+      const restOfString = cleanFilename.slice(1);
+
+      // 构造两种变体：首字母大写和小写
+      const variants = [
+        firstChar.toLowerCase() + restOfString,
+        firstChar.toUpperCase() + restOfString,
+      ];
+
+      // 对每种变体检查三种形式
+      return variants.some((variant) =>
+        snippet.includes(variant) ||
+        snippet.includes(encodeURI(variant)) ||
+        snippet.includes(encodeURI(variant).replaceAll('%20', ' ')),
+      );
+    };
+
     // 搜索
     const searchInSource = async () => {
       // 需要分别搜索未编码和编码后的文件名
@@ -95,11 +115,8 @@ $(() => (async () => {
         // 通过搜索结果的快照，检查搜索文本内是否有此文件名，用于解决大小写敏感问题
         // 但文件名中的符号可能会影响<span class="searchmatch">的位置插到文件名中间，因此要去掉这对标签
         const snippetTemp = item.snippet.replaceAll('_', ' ').replaceAll('<span class="searchmatch">', '').replaceAll('</span>', '');
-        if (
-          snippetTemp.includes(FILENAME.replaceAll('_', ' ')) ||
-          snippetTemp.includes(encodeURI(FILENAME.replaceAll('_', ' '))) ||
-          snippetTemp.includes(encodeURI(FILENAME.replaceAll('_', ' ')).replaceAll('%20', ' '))
-        ) {
+        console.log(snippetTemp, FILENAME);
+        if (matchesFileName(snippetTemp, FILENAME)) {
           notLinkedList.push(item.title); // 合并两个搜索结果并得到页面列表
         }
       });
