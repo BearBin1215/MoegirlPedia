@@ -10,8 +10,8 @@ mw.loader.using([
   const getDisambigList = async () => {
     try {
       const DisambigList = new Set();
-      let gcmcontinue: string | false = '||';
-      while (gcmcontinue !== false) {
+      let gcmcontinue: string | false = false;
+      do {
         const catMembers = await api.post({
           action: 'query',
           generator: 'categorymembers',
@@ -28,7 +28,7 @@ mw.loader.using([
             DisambigList.add(rd.title);
           }
         }
-      }
+      } while (gcmcontinue !== false);
       return DisambigList;
     } catch (error) {
       throw new Error(`获取消歧义页列表出错：${error}`);
@@ -84,7 +84,7 @@ mw.loader.using([
         RequiredDisambig[titleWithouFix].push(item);
       }
     }
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+
     return Object.entries(RequiredDisambig).filter(([_key, value]) => {
       return (
         value.length > 1 &&

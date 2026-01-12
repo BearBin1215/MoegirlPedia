@@ -79,8 +79,8 @@ $(() => {
   const getRedirects = async (): Promise<[string[], string[]]> => {
     const Suffix2Origin: string[] = [];
     const Origin2Suffix: string[] = [];
-    let garcontinue: string | boolean = '|';
-    while (garcontinue !== false) {
+    let garcontinue: string | boolean = false;
+    do {
       try {
         const allRedirects = await api.post({
           action: 'query',
@@ -103,7 +103,7 @@ $(() => {
       } catch (error) {
         throw new Error(`获取重定向页面时出错：${error}`);
       }
-    }
+    } while (garcontinue !== false);
     return [Suffix2Origin, Origin2Suffix];
   };
 

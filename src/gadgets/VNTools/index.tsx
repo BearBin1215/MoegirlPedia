@@ -28,6 +28,7 @@ $(() => {
         }
         $uploadButton.text('正在更新……');
         await updateNavbox();
+        $uploadButton.text('更新');
       } catch (e) {
         mw.notify(`更新失败：${e}`, { type: 'error' });
         $uploadButton.text('更新');

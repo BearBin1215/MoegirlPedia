@@ -13,8 +13,8 @@ $(() => {
   const getDisambigList = async (): Promise<string[]> => {
     try {
       const DisambigList: string[] = [];
-      let gcmcontinue = '||';
-      while (gcmcontinue !== undefined) {
+      let gcmcontinue = undefined;
+      do {
         const catMembers = await api.post({
           action: 'query',
           generator: 'categorymembers',
@@ -31,7 +31,7 @@ $(() => {
             DisambigList.push(rd.title);
           }
         }
-      }
+      } while (gcmcontinue !== undefined);
       return DisambigList;
     } catch (error) {
       throw new Error(`获取消歧义页列表出错：${error}`);
@@ -49,8 +49,8 @@ $(() => {
   const getLinksInTemplates = async (templates: string[], size = 50) => {
     const linksInTemplates: Record<string, string[]> = {};
     for (let i = 0; i < templates.length; i += size) {
-      let plcontinue = '||';
-      while (plcontinue !== undefined) {
+      let plcontinue = undefined;
+      do {
         const response = await api.post({
           action: 'query',
           prop: 'links',
@@ -67,7 +67,7 @@ $(() => {
           }
         }
         await waitInterval(5000);
-      }
+      } while (plcontinue !== undefined);
       console.log(`正在读取模板内的链接（${Math.min(i + size, templates.length)}/${templates.length}）`);
     }
     return linksInTemplates;
