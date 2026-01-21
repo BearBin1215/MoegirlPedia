@@ -259,5 +259,26 @@ mw.loader.using('mediawiki.api').then(() => {
     });
 
     $('#mw-content-text').append($gadgetZone.append('也可能当前页面未通过审核，您可以尝试', $showPageButton, '。'));
+  } else if (mw.config.get('wgAction') === 'edit' && $('#mw-content-text').text().includes('此页面已受到保护')) {
+    const $gadgetZone = $('<div class="bearbintool-historyviewer" />');
+    const $showPageButton = $('<a>查看源代码</a>') as JQuery<HTMLAnchorElement>;
+
+    $showPageButton.on('click', async (e) => {
+      e.preventDefault();
+      $gadgetZone.text('加载中……');
+      try {
+        const source = await pageSource(pageName);
+        const $codeZone = $(`<pre lang="${acceptsLangs[pageContentModel] || pageContentModel}">${source}</pre>`);
+        $('#mw-content-text').empty().append(
+          '源代码加载成功',
+          $codeZone,
+        );
+        pretty($codeZone);
+      } catch (error) {
+        $gadgetZone.empty().append(`加载失败：${error}。`);
+      }
+    });
+
+    $('#mw-content-text').append($gadgetZone.append($showPageButton));
   }
 });
