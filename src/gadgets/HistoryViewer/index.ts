@@ -79,6 +79,7 @@ mw.loader.using('mediawiki.api').then(() => {
       mw.loader.load(`${mw.config.get('wgScriptPath')}/load.php?modules=mediawiki.diff.styles&only=styles`, 'text/css');
       $gadgetZone.text('加载中……');
       try {
+        // MW更新后不再能只用diff请求差异了，所以要根据diff的id去查询对应的oldid，然后再请求差异
         if (oldid === 'prev') {
           const infoResponse = await api.post({
             action: 'query',
