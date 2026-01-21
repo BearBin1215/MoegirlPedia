@@ -24,7 +24,7 @@ import type { Message } from './metaData';
  * @see https://www.mediawiki.org/wiki/API:Continue
  */
 export interface ApiContinue {
-  continue?: string;
+  'continue'?: string;
 
   /** prop=categories */
   clcontinue?: string;
@@ -233,7 +233,7 @@ export interface ApiQueryResponse extends ApiResponse {
   batchcomplete?: '';
 
   /** 用于继续请求 */
-  continue?: ApiContinue;
+  'continue'?: ApiContinue;
 
   /** 请求结果 */
   query: {

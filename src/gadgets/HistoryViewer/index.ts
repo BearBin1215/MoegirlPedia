@@ -1,5 +1,5 @@
 import { formatDiff, pageSource } from '@/utils/api';
-import type { ApiParseResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
+import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
 import './index.less';
 
 declare global {
@@ -10,7 +10,7 @@ declare global {
 
 mw.loader.using('mediawiki.api').then(() => {
   const searchParams = new URLSearchParams(location.search);
-  const oldid = searchParams.get('oldid');
+  let oldid: number | string | null = searchParams.get('oldid');
   const diff = searchParams.get('diff');
   const $moderationNotice = $('#mw-content-text>.moderation-notice');
   const api = new mw.Api();
@@ -79,10 +79,25 @@ mw.loader.using('mediawiki.api').then(() => {
       mw.loader.load(`${mw.config.get('wgScriptPath')}/load.php?modules=mediawiki.diff.styles&only=styles`, 'text/css');
       $gadgetZone.text('加载中……');
       try {
+        if (oldid === 'prev') {
+          const infoResponse = await api.post({
+            action: 'query',
+            utf8: true,
+            prop: 'revisions',
+            rvprop: 'ids',
+            rvlimit: 2,
+            rvstartid: diff,
+            titles: pageName,
+          }) as ApiQueryResponse;
+          const oldRevInfo = Object.values(infoResponse.query.pages)[0]?.revisions?.[1];
+          if (oldRevInfo) {
+            oldid = oldRevInfo.revid;
+          }
+        }
         const response = await api.post({
           action: 'compare',
           utf8: true,
-          fromrev: oldid,
+          fromrev: oldid!,
           ...(/\d+/.test(diff) ? {
             torev: diff,
           } : {
