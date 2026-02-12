@@ -85,7 +85,7 @@ export default tseslint.config(
       'prefer-template': 2,
       'prefer-rest-params': 2,
       'prefer-exponentiation-operator': 2,
-      'prefer-destructuring': 2,
+      'prefer-destructuring': [2, { array: false }],
       'require-await': 2,
       'yoda': 2,
       'import/no-named-as-default': 0,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type FC } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, type ChangeHandler } from 'oojs-ui-react';
-import ConditionLine, { type Condition } from './ConditionLine';
+import ConditionLine, { type Condition, searchCodes } from './ConditionLine';
 import './index.less';
 
 const AdvancedPanel: FC = () => {
@@ -17,14 +17,6 @@ const AdvancedPanel: FC = () => {
   const toggle = () => {
     setShow(!show);
     setFirstOpen(false);
-    const inputValue = document.querySelector<HTMLInputElement>('#searchText input')!.value;
-    if (firstOpen) {
-      setConditions([{
-        index: -1,
-        code: 'none',
-        value: inputValue,
-      }, ...conditions]);
-    }
   };
 
   /** 添加一行 */
@@ -55,6 +47,41 @@ const AdvancedPanel: FC = () => {
         return `${code}:"${String(value).replace(/"/g, ' ')}"`;
       }).filter((item) => item !== null).join(' ');
   }, [conditions]);
+
+  // 解析输入框内文本
+  const parseInputValue = (inputValue: string): Condition[] => {
+    const initConditions: Condition[] = [];
+    const regex = /(\w+):"([^"]*)"|([^ ]+)/g;
+    let match;
+    let index = 0;
+
+    while ((match = regex.exec(inputValue)) !== null) {
+      if (match[1] && match[2]) {
+        // 匹配到 code:"value" 格式
+        const code = match[1] as keyof typeof searchCodes;
+        const value = match[2];
+        if (code in searchCodes) {
+          initConditions.push({ index: index++, code, value });
+        }
+      } else if (match[3]) {
+        // 匹配到普通文本
+        initConditions.push({ index: index++, code: 'none', value: match[3] });
+      }
+    }
+
+    initConditions.push({ index: initConditions.length, code: 'none', value: '' });
+
+    return initConditions;
+  };
+
+  // 初始化时解析输入框内容
+  useEffect(() => {
+    const inputValue = document.querySelector<HTMLInputElement>('#searchText input')?.value || '';
+    if (inputValue) {
+      const parsedConditions = parseInputValue(inputValue);
+      setConditions(parsedConditions);
+    }
+  }, []);
 
   return (
     <div id='advanced-search-panel' className={show ? 'panel-show' : 'panel-hide'}>
