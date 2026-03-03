@@ -20,8 +20,8 @@ $(() => {
    */
   const getAllPages = async (): Promise<Set<string>> => {
     const PageList = new Set<string>();
-    let apcontinue: string | boolean = '';
-    while (apcontinue !== false) {
+    let apcontinue: string | false = false;
+    do {
       try {
         const allPages = await api.post({
           action: 'query',
@@ -37,7 +37,7 @@ $(() => {
       } catch (error) {
         throw new Error(`获取全站主名字空间页面列表出错：${error}`);
       }
-    }
+    } while (apcontinue);
     return PageList;
   };
 
