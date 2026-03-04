@@ -9,16 +9,15 @@
     "jsx": "react",
     "module": "ESNext",
     "rootDir": "./",
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "noImplicitAny": false,
-    "baseUrl": "./",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "oojs-ui-react": [
-        "src/components/oojs-ui-react"
+        "./src/components/oojs-ui-react"
       ]
     },
     "allowJs": true,
@@ -36,6 +35,7 @@
     "src/**/*",
     "node_modules/moment/index.d.ts",
     "node_modules/types-mediawiki",
+    "node_modules/@types/oojs-ui",
     "scripts/**/*",
     "eslint.config.js",
     "rspack.config.js",
