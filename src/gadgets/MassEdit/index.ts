@@ -139,7 +139,7 @@ $(() => (async () => {
     id: 'me-use-retry',
   });
 
-  $('#mw-content-text').empty().append(
+  $('#mw-content-text').addClass('bearbintools-messedit').empty().append(
     '<h5>原文字：</h5>',
     $editFromBox,
     '<h5>替换为：</h5>',
