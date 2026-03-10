@@ -104,21 +104,6 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
             test: /\.(inline|raw)\.(less|css)$/,
             type: 'asset/source',
           },
-          /** import styles from 'foo.module.less'; 时作为CSS Module导入 */
-          {
-            test: /\.module\.(less|css)$/,
-            use: [
-              'style-loader',
-              {
-                loader: 'css-loader',
-                options: {
-                  modules: {
-                    localIdentName: 'beartools__[local]--[hash:base64:5]',
-                  },
-                },
-              },
-            ],
-          },
           {
             use: [
               'style-loader',

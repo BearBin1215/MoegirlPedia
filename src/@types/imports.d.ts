@@ -1,8 +1,3 @@
-declare module "*.module.css" {
-  const value: Record<string, string>;
-  export default value;
-}
-
 declare module "*.css" {
   const value: string;
   export default value;
@@ -10,12 +5,6 @@ declare module "*.css" {
 
 declare module "*.less" {
   const value: string;
-  export default value;
-}
-
-/** 以CSS Module导入 */
-declare module "*.module.less" {
-  const value: Record<string, string>;
   export default value;
 }
 
