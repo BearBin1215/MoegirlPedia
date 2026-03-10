@@ -86,28 +86,36 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
       },
       {
         test: /\.(less|css)$/,
-        // 所有样式表都经过less-loader和lightning-loader的处理
-        use: [
-          {
-            loader: 'builtin:lightningcss-loader',
-            /** @type {import('@rspack/core').LightningcssLoaderOptions} */
-            options: {
-              targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
-              minify: args.mode !== 'development',
-            },
-          },
-          'less-loader',
-        ],
         oneOf: [
           /** import styles from 'foo.inline.less'; 时作为string导入 */
           {
-            test: /\.(inline|raw)\.(less|css)$/,
+            test: /\.inline\.(less|css)$/,
             type: 'asset/source',
+            use: [
+              {
+                loader: 'builtin:lightningcss-loader',
+                /** @type {import('@rspack/core').LightningcssLoaderOptions} */
+                options: {
+                  targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
+                  minify: args.mode !== 'development',
+                },
+              },
+              'less-loader',
+            ],
           },
           {
             use: [
               'style-loader',
               'css-loader',
+              {
+                loader: 'builtin:lightningcss-loader',
+                /** @type {import('@rspack/core').LightningcssLoaderOptions} */
+                options: {
+                  targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
+                  minify: args.mode !== 'development',
+                },
+              },
+              'less-loader',
             ],
           },
         ],
