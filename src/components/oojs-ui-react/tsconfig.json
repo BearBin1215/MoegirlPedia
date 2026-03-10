@@ -7,20 +7,19 @@
     "declaration": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "moduleResolution": "Node10",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "oojs-ui-react": [
-        "src/index.ts"
+        "./src/index.ts"
       ],
       "oojs-ui-react/*": [
-        "src/*"
+        "./src/*"
       ],
     },
     "jsx": "react",
