@@ -7,9 +7,8 @@
       "DOM.Iterable"
     ],
     "module": "ESNext",
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
     "noImplicitAny": false,
-    "baseUrl": "./",
     "allowJs": true,
     "outDir": "dist",
     "esModuleInterop": true,
