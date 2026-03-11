@@ -14,8 +14,6 @@
   - [批量移动页面](#批量移动页面)
   - [Excel表格生成wikitext](#excel表格生成wikitext)
   - [Wikiplus快速摘要](#wikiplus快速摘要)
-  - [新条目分类统计](#新条目分类统计)
-  - [一键提醒投票](#一键提醒投票)
 - [参与完善](#参与完善)
 - [特别鸣谢](#特别鸣谢)
 
@@ -160,30 +158,6 @@ mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist
 ```JavaScript
 mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/WikiplusSummary.min.js");
 // 或 mw.loader.load("/index.php?title=User:BearBin/js/WikiplusSummary.js&action=raw&ctype=text/javascript");
-```
-
-### 新条目分类统计
-
-- 在[Special:最新页面](https://zh.moegirl.org.cn/Special:最新页面)中添加面板，查询过去的新条目中属于某分类或其子分类的数量。
-- 受服务器设置所限，最多统计过去90天的新条目。
-
-使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
-
-```JavaScript
-mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/NewpagesCat.min.js");
-// 或 mw.loader.load("/index.php?title=User:BearBin/js/NewpagesCat.js&action=raw&ctype=text/javascript");
-```
-
-### 一键提醒投票
-
-- 用于提醒相关用户组内的用户参与提案和人事案投票。
-- 若用户拥有[机器用户](https://zh.moegirl.org.cn/萌娘百科:机器用户)，使用此工具发送的消息都会被标记为机器人编辑，不会在最近更改出现。
-
-使用：在[common.js](https://zh.moegirl.org.cn/Special:MyPage/common.js)中加入
-
-```JavaScript
-mw.loader.load("https://cdn.jsdelivr.net/gh/BearBin1215/MoegirlPedia@master/dist/gadgets/VoteRemind.min.js");
-// 或 mw.loader.load("/index.php?title=User:BearBin/js/voteRemind.js&action=raw&ctype=text/javascript");
 ```
 
 
