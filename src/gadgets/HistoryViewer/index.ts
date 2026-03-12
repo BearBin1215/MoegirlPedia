@@ -284,7 +284,7 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const source = await pageSource(pageName);
-        const $codeZone = $(`<pre lang="${acceptsLangs[pageContentModel] || pageContentModel}">${source}</pre>`);
+        const $codeZone = $(`<pre lang="${acceptsLangs[pageContentModel] || pageContentModel}"></pre>`).text(source!);
         $('#mw-content-text').empty().append(
           '源代码加载成功',
           $codeZone,
