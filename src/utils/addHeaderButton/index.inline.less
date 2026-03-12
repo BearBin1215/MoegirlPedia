@@ -1,25 +1,18 @@
-#firstHeading:has(.bearbintool-headerbutton-wrapper) {
+.bearbintool-headerbutton-wrapper {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    gap: 6px;
 
-    .bearbintool-headerbutton-wrapper {
-        display: flex;
-        gap: 6px;
+    .bearbintool-headerbutton {
+        border-radius: 0;
+        background-color: #fff;
+        padding: 4px 8px;
+        font-size: 16px;
+        cursor: pointer;
+        border: 1px solid #aaa;
+        transition: background-color 0.2s ease-out;
 
-        .bearbintool-headerbutton {
-            border-radius: 0;
-            background-color: #fff;
-            padding: 4px 8px;
-            font-size: 16px;
-            cursor: pointer;
-            border: 1px solid #aaa;
-            transition: background-color 0.2s ease-out;
-
-            &:hover {
-                background-color: #eee;
-            }
+        &:hover {
+            background-color: #eee;
         }
     }
 }

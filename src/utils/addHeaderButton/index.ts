@@ -14,7 +14,15 @@ const addHeaderButton = ({
   // 目前没有区域则新建区域
   if ($('.bearbintool-headerbutton-wrapper').length < 1) {
     $buttonZone = $('<div class="bearbintool-headerbutton-wrapper"></div>');
-    $('#firstHeading').append($buttonZone);
+
+    switch(mw.config.get('skin')) {
+      case 'moeskin':
+        $('.header-title-main').append($buttonZone);
+        break;
+      case 'vector-2022':
+      default:
+        $('.vector-page-titlebar').append($buttonZone);
+    }
   }
 
   const $button = $(`<button class="bearbintool-headerbutton">${text}</button>`) as JQuery<HTMLButtonElement>;
