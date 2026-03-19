@@ -1,7 +1,7 @@
 import fs from 'fs';
+import { execSync } from 'child_process';
 import mw from './mw';
 import config from './config';
-import { execSync } from 'child_process';
 
 /** 被WAF禁用的Window对象下的函数 */
 const blackListWindowsFunc = [
