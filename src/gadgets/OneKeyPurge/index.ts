@@ -206,7 +206,7 @@ $(() => (async () => {
           }
           pageList.push(...result);
         }
-      } catch (error) {
+      } catch (_error) {
 
       }
       return [...new Set(pageList)];
