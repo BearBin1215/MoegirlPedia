@@ -39,5 +39,6 @@
     "scripts/**/*",
     "eslint.config.js",
     "rspack.config.js",
+    "stylelint.config.ts",
   ]
 }
