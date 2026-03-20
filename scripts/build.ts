@@ -1,6 +1,6 @@
-import { Configuration, rspack } from '@rspack/core';
 import { sync as globSync } from 'glob';
 import chalk from 'chalk';
+import { type Configuration, rspack } from '@rspack/core';
 import rspackConfig from '../rspack.config';
 
 /** 命令行内输入的要打包的小工具名 */
