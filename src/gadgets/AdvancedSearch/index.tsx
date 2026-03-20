@@ -12,5 +12,5 @@ $(() => {
       <AdvancedPanel />
     </StrictMode>,
   );
-  document.querySelector('#search .mw-search-visualclear')!.after(rootNode);
+  document.querySelector(':is(#search, #powersearch) .mw-search-visualclear')!.after(rootNode);
 });
