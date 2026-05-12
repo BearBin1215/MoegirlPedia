@@ -51,7 +51,7 @@ $(() => (async () => {
           <JSONViewer json={json} />
         </StrictMode>,
       );
-    } catch (e) {
+    } catch (_e) {
       console.log('json格式无效');
     }
   }

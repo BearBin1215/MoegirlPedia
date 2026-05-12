@@ -1,5 +1,6 @@
 import React, { useContext, createElement } from 'react';
 import clsx from 'clsx';
+import { type MomentInput } from 'moment';
 import {
   MWTitle,
   HistoryLink,
@@ -7,7 +8,6 @@ import {
   UserLink,
   UserToolLinks,
 } from '@/components/MediaWiki';
-import { type MomentInput } from 'moment';
 import LogText from './LogText';
 import ChangeslistLineContext from './ChangeslistLineContext';
 
