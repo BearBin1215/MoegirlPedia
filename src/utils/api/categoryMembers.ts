@@ -84,7 +84,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
       }
     };
 
-    await getCategoryMembersByAjax(`/${cmtitle}?useskin=vector&safemode=1&redirect=no`);
+    await getCategoryMembersByAjax(`/${cmtitle}?useskin=vector-2022&safemode=1&redirect=no`);
   }
   return pageList;
 };
