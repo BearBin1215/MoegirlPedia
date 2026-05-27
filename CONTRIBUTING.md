@@ -54,11 +54,12 @@ pnpm i
 
 ```
 主要文件
-│  .eslintrc.js  # eslint配置
-│  .stylelintrc.js  #stylelint配置
+│  eslintrc.config.js  # eslint配置
 │  package.json  # nodejs配置
-│  tsconfig.json  # typescript配置
 │  pnpm-lock.yaml  # lockfile
+│  rspack.config.js  # rspack配置
+│  stylelint.config.js  #stylelint配置
+│  tsconfig.json  # typescript配置
 |
 ├─.github
 │  └─workflows  # GitHub Actions配置
@@ -69,8 +70,8 @@ pnpm i
 │  │      BatchSend.min.js
 │  │      ...
 │  |
-│  └─oddments
-│         CommentLink.js
+│  └─dev  # 本地开发模式中的代码，用于复制到浏览器控制台调试，不推到云端
+│         BatchSend.js
 │         ...
 |
 ├─scripts  # CI脚本
