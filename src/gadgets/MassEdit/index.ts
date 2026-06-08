@@ -340,7 +340,7 @@ $(() => (async () => {
    */
   const editAction = async (title: string, summary: string, editFrom: string | RegExp, changeTo: string): Promise<'nochange' | 'success' | 'failed'> => {
     const retry = retrySelect.isSelected();
-    let retreyTimes = 0;
+    let retryTimes = 0;
     const maxRetryCount = +retryTimesBox.getValue();
     const pageLink = `<a href="/${title}" target="_blank">${title}</a>`;
     do {
@@ -385,8 +385,8 @@ $(() => (async () => {
             errorMessage = '页面不存在';
             break;
           case 'http':
-            retreyTimes++;
-            errorMessage = retry && retreyTimes <= maxRetryCount ? `网络连接出错，正在重试（${retreyTimes}/${maxRetryCount}）` : '网络连接出错';
+            retryTimes++;
+            errorMessage = retry && retryTimes <= maxRetryCount ? `网络连接出错，正在重试（${retryTimes}/${maxRetryCount}）` : '网络连接出错';
             break;
           case 'protectedpage':
             errorMessage = '页面被保护';
@@ -399,7 +399,7 @@ $(() => (async () => {
           return 'failed';
         }
       }
-    } while (retreyTimes <= maxRetryCount);
+    } while (retryTimes <= maxRetryCount);
     return 'failed';
   };
 
