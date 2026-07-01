@@ -1,3 +1,4 @@
+import { uniq } from 'lodash-es';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
 import type { ApiQueryResponse, ApiQueryPageInfo } from '@/@types/api';
@@ -497,9 +498,9 @@ $(() => (async () => {
 
   /** 检查重复生日分类 */
   const duplicateBirthday: PF = (_text, categories, title) => {
-    const birthdayCategories = categories.filter((category) => /\d+月\d+日/.test(category));
+    const birthdayCategories = uniq(categories.filter((category) => /\d+月\d+日/.test(category)));
     if (birthdayCategories.length > 1) {
-      messOutput.addPageToList('多个生日分类', [title, birthdayCategories.join('、')]);
+      messOutput.addPageToList('多个生日分类', [title, birthdayCategories.map((cat) => cat.replace('Category:', '')).join('、')]);
     }
   };
 
