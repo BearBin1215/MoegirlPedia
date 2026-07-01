@@ -495,6 +495,15 @@ $(() => (async () => {
   };
 
 
+  /** 检查重复生日分类 */
+  const duplicateBirthday: PF = (_text, categories, title) => {
+    const birthdayCategories = categories.filter((category) => /\d+月\d+日/.test(category));
+    if (birthdayCategories.length > 1) {
+      messOutput.addPageToList('多个生日分类', [title, birthdayCategories.join('、')]);
+    }
+  };
+
+
   /**
    * ------------------------------
    * 具体检查函数（模板名字空间）
@@ -841,6 +850,7 @@ $(() => (async () => {
       oldCVCategory, // 旧的声优分类格式
       httpColon, // 检查http(s)//（少冒号）
       deprecatedTags, // 检查弃用的标签
+      duplicateBirthday, // 检查重复生日分类
     ], 0, 20);
     console.log('\n主名字空间检查完毕。');
 
