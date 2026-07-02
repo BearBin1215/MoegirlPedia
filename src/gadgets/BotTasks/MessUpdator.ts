@@ -150,6 +150,8 @@ $(() => (async () => {
     },
     旧声优分类格式: [],
     'http(s)少冒号或斜杠': [],
+    多个生日分类: [],
+    单独出现的ヘ和リ: [],
   });
 
 
@@ -496,11 +498,35 @@ $(() => (async () => {
   };
 
 
-  /** 检查重复生日分类 */
+  /** 检查多个生日分类 */
   const duplicateBirthday: PF = (_text, categories, title) => {
-    const birthdayCategories = uniq(categories.filter((category) => /\d+月\d+日/.test(category)));
+    const birthdayCategories = uniq(categories).filter((category) => /\d+月\d+日/.test(category));
     if (birthdayCategories.length > 1) {
       messOutput.addPageToList('多个生日分类', [title, birthdayCategories.map((cat) => cat.replace('Category:', '')).join('、')]);
+    }
+  };
+
+  /** 检查文本片段中是否只有单独出现的片假名“ヘ”或“リ” */
+  const isolatedKatakana: PF = (text, _categories, title) => {
+    if (text.length < 100) {
+      return;
+    }
+
+    const regex = /[ヘリ]/g;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(text)) !== null) {
+      const pos = match.index;
+      const windowSize = 15;
+      const start = Math.max(0, pos - windowSize);
+      const end = Math.min(text.length, pos + match[0].length + windowSize);
+      const fragment = text.substring(start, end);
+
+      const katakanaInFragment = fragment.match(/[\u30A0-\u30FF]/g);
+      if (katakanaInFragment && katakanaInFragment.length === 1) {
+        const context = fragment.replace(/\n/g, ' ');
+        messOutput.addPageToList('单独出现的ヘ和リ', [title, `<code><nowiki>${context}</nowiki></code>`]);
+        break;
+      }
     }
   };
 
@@ -852,6 +878,7 @@ $(() => (async () => {
       httpColon, // 检查http(s)//（少冒号）
       deprecatedTags, // 检查弃用的标签
       duplicateBirthday, // 检查重复生日分类
+      isolatedKatakana, // 检查单独出现的片假名“ヘ”和“リ”
     ], 0, 20);
     console.log('\n主名字空间检查完毕。');
 
