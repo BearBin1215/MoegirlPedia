@@ -10,13 +10,15 @@ const pageSource = async (title: string, params?: Record<string, any>): Promise<
   const res = await api.post({
     action: 'query',
     prop: 'revisions',
+    formatversion: '2',
     titles: title,
     rvprop: 'content',
+    rvslots: 'main',
     ...params,
   }) as ApiQueryResponse;
   const [pageData] = Object.values(res.query.pages);
   if ('revisions' in pageData) {
-    return pageData.revisions?.[0]['*'];
+    return pageData.revisions[0].slots.main.content;
   }
   if ('missing' in pageData) {
     throw ('missingtitle');

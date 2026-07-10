@@ -42,9 +42,14 @@ export interface Moderation {
   user_can_view?: '';
 }
 
-/**
- * `prop=revisions` 获取修订版本信息
- */
+/** 疑似是新版的内容插槽（formatversion=2） */
+export interface ContentSlot {
+  contentmodel: ContentModel;
+  contentformat: ContentFormat;
+  content: string;
+}
+
+/** `prop=revisions` 获取修订版本信息 */
 export interface Revisions {
   /** 修订版本的ID */
   revid: number;
@@ -105,6 +110,8 @@ export interface Revisions {
 
   /** 修订文本 */
   "*": string;
+
+  slots: { main: ContentSlot };
 }
 
 /**
