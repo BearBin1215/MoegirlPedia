@@ -1,3 +1,4 @@
+import type { ContentModel } from '../utils';
 import type { ApiResponse } from './core';
 
 /**

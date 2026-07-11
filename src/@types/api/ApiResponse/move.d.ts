@@ -21,7 +21,7 @@ export interface ApiMoveSubpageInfo {
   errors: ApiMoveError[];
 }
 
-export interface ApiMoveResult extends ApiMoveInfo {
+export interface ApiMoveResult {
   /** 被重命名的页面标题 */
   from: string;
 
