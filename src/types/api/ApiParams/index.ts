@@ -227,5 +227,5 @@ export interface ApiParams {
    */
   includexmlnamespace?: boolean;
 
-  [key: string]: string | string[] | boolean | number | number[];
+  [key: string]: string | string[] | boolean | number | number[] | undefined;
 }

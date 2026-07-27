@@ -18,7 +18,7 @@ import {
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
-import type { ApiQueryResponse, GlobalUsage } from '@/@types/api';
+import type { ApiQueryResponse, GlobalUsage } from '@/types/api';
 
 interface BasicFileData {
   title: string;

@@ -1,5 +1,5 @@
 import { formatDiff, pageSource } from '@/utils/api';
-import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse, ApiParams } from '@/@types/api';
+import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse, ApiParams } from '@/types/api';
 import './index.less';
 
 declare global {

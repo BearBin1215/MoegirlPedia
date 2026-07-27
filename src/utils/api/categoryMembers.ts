@@ -1,4 +1,4 @@
-import type { Cmtype, ApiQueryResponse } from "@/@types/api";
+import type { Cmtype, ApiQueryResponse } from "@/types/api";
 
 /**
  * 获取分类成员，有权限用户使用api，无权限用户使用ajax。

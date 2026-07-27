@@ -1,6 +1,6 @@
 import { chunk } from 'lodash-es';
 import { categoryMembers, pageSource } from '@/utils/api';
-import type { ApiQueryResponse } from '@/@types/api';
+import type { ApiQueryResponse } from '@/types/api';
 
 const api = new mw.Api();
 

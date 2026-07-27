@@ -4,7 +4,7 @@
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import './index.less';
-import type { ApiMoveResponse } from '@/@types/api';
+import type { ApiMoveResponse } from '@/types/api';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:BulkMove') {

@@ -1,7 +1,7 @@
 import { uniq } from 'lodash-es';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
-import type { ApiQueryResponse, ApiQueryPageInfo } from '@/@types/api';
+import type { ApiQueryResponse, ApiQueryPageInfo } from '@/types/api';
 
 type PF = (text: string, categories: string[], title: string) => void;
 

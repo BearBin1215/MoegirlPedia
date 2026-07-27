@@ -1,4 +1,4 @@
-import type { ApiParams, ApiQueryResponse } from "@/@types/api";
+import type { ApiParams, ApiQueryResponse } from "@/types/api";
 
 /**
  * 获取嵌入了指定页面的页面列表

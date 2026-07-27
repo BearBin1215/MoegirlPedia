@@ -1,4 +1,4 @@
-import type { ApiCompareResponse } from '@/@types/api';
+import type { ApiCompareResponse } from '@/types/api';
 
 type $orString = JQuery<HTMLElement> | Element | string;
 

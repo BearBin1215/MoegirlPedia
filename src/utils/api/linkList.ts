@@ -1,4 +1,4 @@
-import type { ApiParams, ApiQueryResponse } from "@/@types/api";
+import type { ApiParams, ApiQueryResponse } from "@/types/api";
 /**
  * 获取链接到指定页面的列表
  * @param pagename 页面名

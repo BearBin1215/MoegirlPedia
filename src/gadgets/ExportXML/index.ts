@@ -10,7 +10,7 @@ import { formatNS14 } from '@/utils/formatNS';
 import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
 import generateBaseinfo from './baseinfo';
-import type { ApiParams, Revisions, ApiQueryResponse } from '@/@types/api';
+import type { ApiParams, Revisions, ApiQueryResponse } from '@/types/api';
 import './index.less';
 
 interface Page {

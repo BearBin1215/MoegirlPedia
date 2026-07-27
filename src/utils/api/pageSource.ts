@@ -1,4 +1,4 @@
-import type { ApiQueryResponse } from '@/@types/api';
+import type { ApiQueryResponse } from '@/types/api';
 
 /**
  * 获取页面源代码

@@ -153,7 +153,7 @@ export interface ApiQueryPageInfo {
   lastrevid: number;
 
   /** 页面长度（字节） */
-  length: string;
+  length: number;
 
   /** 保护信息 */
   protection: Protection[];

@@ -1,4 +1,4 @@
-import type { ApiParams, ApiQueryResponse } from '@/@types/api';
+import type { ApiParams, ApiQueryResponse } from '@/types/api';
 import styles from './index.inline.less';
 
 interface UserContribution {
