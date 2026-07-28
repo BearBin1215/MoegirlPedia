@@ -14,7 +14,7 @@ export interface StackLayoutProps extends PanelLayoutProps {
   /** 是否全显示。优先级高于activeKey设置的显示 */
   continuous?: boolean;
   /** 显示的子组件key */
-  activeKey?: string | number;
+  activeKey?: Key;
   /** 页签集 */
   options: PageOptionProps[];
 }

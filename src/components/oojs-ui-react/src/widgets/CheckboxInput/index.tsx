@@ -8,7 +8,7 @@ import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
-  Omit<InputProps<boolean, HTMLSpanElement>, 'ref' | 'defaultChecked'> &
+  InputProps<boolean, HTMLInputElement, HTMLSpanElement> &
   AccessKeyedElement;
 
 const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({

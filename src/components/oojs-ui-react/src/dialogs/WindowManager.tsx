@@ -6,7 +6,6 @@ import type { ElementProps } from '../Element';
 export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
   full?: boolean;
   modal?: boolean;
-  'aria-hidden'?: boolean | 'true' | 'false';
   /** 要渲染的节点 */
   portal?: Element | DocumentFragment,
 }

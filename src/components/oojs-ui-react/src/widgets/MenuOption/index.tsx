@@ -4,7 +4,7 @@ import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
 
 export type MenuOptionProps =
-  Omit<DecoratedOptionProps, 'labelProps'> &
+  DecoratedOptionProps &
   OptionProps;
 
 /** 选项组件，用于作为`Dropdown`子组件 */

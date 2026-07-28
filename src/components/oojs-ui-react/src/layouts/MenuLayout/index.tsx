@@ -18,7 +18,7 @@ export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   /** 菜单位置 */
   menuPosition?: 'top' | 'after' | 'bottom' | 'before';
   /** 当前选中页签 */
-  activeKey?: any;
+  activeKey?: Key;
   /** 选择列表 */
   menu: ReactNode;
 }

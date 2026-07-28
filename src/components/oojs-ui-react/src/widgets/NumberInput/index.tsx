@@ -15,7 +15,7 @@ import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
 
 export interface NumberInputProps extends
-  InputProps<number, HTMLDivElement>,
+  InputProps<number, HTMLInputElement, HTMLDivElement>,
   AccessKeyedElement,
   IconElement,
   IndicatorElement,

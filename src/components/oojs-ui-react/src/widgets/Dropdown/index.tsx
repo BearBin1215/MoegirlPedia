@@ -38,7 +38,7 @@ export interface DropdownProps extends
 
   value?: string | number;
 
-  onChange?: ChangeHandler<any>;
+  onChange?: ChangeHandler<string | number>;
 }
 
 /**

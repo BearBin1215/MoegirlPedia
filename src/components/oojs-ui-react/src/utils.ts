@@ -31,7 +31,7 @@ export type ChangeHandler<T = any, P = HTMLElement> = (change: ChangeValue<T, P>
 
 
 /** 确保参数为数组，通常用来处理children */
-export function processArray<T>(elements?: T | T[]) {
+export function processArray<T>(elements?: T | T[]): T[] {
   let processedElements: T[] = [];
   if (elements) {
     processedElements = Array.isArray(elements) ? elements.filter((element) => element).map((element, index) => ({

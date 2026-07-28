@@ -21,7 +21,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
   onSelect?: (option: OptionData) => void;
 
   /** 当前值 */
-  value?: any;
+  value?: string | number;
 
   /** 是否渲染OutlineOption */
   outline?: boolean;

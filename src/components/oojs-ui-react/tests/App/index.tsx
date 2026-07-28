@@ -32,7 +32,7 @@ const App: FC = () => {
                 children: langText,
               }))}
               value={language}
-              onChange={({ value }) => setLanguage(value)}
+              onChange={({ value }) => setLanguage(value as Languages)}
             />
           </div>
         </div>

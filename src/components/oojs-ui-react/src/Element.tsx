@@ -1,9 +1,7 @@
-import React, { forwardRef, type HTMLAttributes, type Key } from 'react';
+import React, { forwardRef, type HTMLAttributes } from 'react';
 
 /** 基础元素参数 */
-export interface ElementProps<T = HTMLDivElement> extends Omit<HTMLAttributes<T>, 'defaultValue' | 'defaultChecked'> {
-  key?: Key,
-};
+export type ElementProps<T = HTMLDivElement> = Omit<HTMLAttributes<T>, 'defaultValue' | 'defaultChecked'>;
 
 const Element = forwardRef<HTMLDivElement, ElementProps<HTMLDivElement>>(({
   children,

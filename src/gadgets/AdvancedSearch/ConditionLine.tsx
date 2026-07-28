@@ -89,15 +89,16 @@ const ConditionLine: FC<ConditionLineProps> = ({
   const selectType = identifyType(code);
 
   /** 搜索代码发生变更，更新数据，并按照代码的类型判断要不要清空value */
-  const handleCodeChange: ChangeHandler<SearchCode> = (data) => {
+  const handleCodeChange: ChangeHandler<string | number> = (data) => {
     if (!onChange) {
       return;
     }
+    const newCode = data.value as SearchCode;
     let newValue = value;
-    if (identifyType(data.value) === 'contentmodel' && !contentModels.includes(value as string)) {
+    if (identifyType(newCode) === 'contentmodel' && !contentModels.includes(value as string)) {
       // 若新搜索代码为内容模型，判断其是否为有效的内容模型值，不是则清空value
       newValue = '';
-    } else if (identifyType(data.value) === 'number' && identifyType(code) === 'text') {
+    } else if (identifyType(newCode) === 'number' && identifyType(code) === 'text') {
       // 若新代码为数字类型，判断其是否为有效的数字值，不是则清空value
       if (Number.isFinite(Number(value))) {
         newValue = Number(value);
@@ -106,7 +107,7 @@ const ConditionLine: FC<ConditionLineProps> = ({
       }
     }
     onChange({
-      value: { code: data.value, value: newValue },
+      value: { code: newCode, value: newValue },
       oldValue: { code, value },
     });
   };
