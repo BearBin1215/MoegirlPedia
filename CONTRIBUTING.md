@@ -4,17 +4,9 @@
 
 ## 开发准备
 
-项目使用[pnpm](https://pnpm.io/)管理依赖，因此需在安装（node<18）或启用（node>=18）pnpm：
+需要 node.js 18+ 。
 
-```shell
-# node < 18
-npm i -g pnpm
-
-# node >= 18
-corepack enable pnpm
-```
-
-然后安装依赖
+使用[pnpm](https://pnpm.io/)管理依赖：
 
 ```shell
 pnpm i

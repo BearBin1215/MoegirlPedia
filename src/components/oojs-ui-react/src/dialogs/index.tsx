@@ -1,3 +1,4 @@
+/* eslint-disable */
 import OriginDialog from './Dialog';
 import MessageDialog from './MessageDialog';
 

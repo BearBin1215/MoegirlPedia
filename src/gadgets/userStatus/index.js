@@ -114,12 +114,12 @@ $(() => (async () => {
         windowManager.closeWindow(messageDialog);
         const fMessageDialog = new OO.ui.MessageDialog();
         windowManager.addWindows([fMessageDialog]);
-        const cAction = new OO.ui.ActionWidget({
+        const dismissAction = new OO.ui.ActionWidget({
           action: 'accept',
           label: '我知道了',
           flags: 'primary',
         });
-        cAction.$element[0].addEventListener('click', () => {
+        dismissAction.$element[0].addEventListener('click', () => {
           windowManager.closeWindow(fMessageDialog);
         }, {
           capture: true,
@@ -142,24 +142,24 @@ $(() => (async () => {
           rawStatus = status;
           fMessageDialog.title.$label.html('状态修改完成！');
           fMessageDialog.message.$label.html(`<p>你的状态已修改为：${builtinStatus[status]}</p>`);
-          const action = new OO.ui.ActionWidget({
+          const okAction = new OO.ui.ActionWidget({
             action: 'confirm',
             label: '确定',
             flags: 'primary',
           });
-          action.$element[0].addEventListener('click', () => {
+          okAction.$element[0].addEventListener('click', () => {
             windowManager.closeWindow(fMessageDialog);
           }, {
             capture: true,
           });
           windowManager.openWindow(fMessageDialog, {
-            actions: [action],
+            actions: [okAction],
           });
         } catch (e) {
           fMessageDialog.title.$label.html('状态修改发生错误……');
           fMessageDialog.message.$label.html(`错误信息为：${e}`);
           windowManager.openWindow(fMessageDialog, {
-            actions: [cAction],
+            actions: [dismissAction],
           });
         }
       }, {

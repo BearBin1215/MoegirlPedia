@@ -201,6 +201,7 @@ export default tseslint.config(
     },
     rules: {
       'prefer-arrow-callback': 0,
+      '@typescript-eslint/consistent-type-imports': 0,
     },
   },
   // #endregion
