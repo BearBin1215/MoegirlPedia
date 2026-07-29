@@ -1,26 +1,26 @@
-import React, { type ReactNode, type FC, type PropsWithChildren } from 'react';
+import React, { type ReactNode, type PropsWithChildren } from 'react';
 
 interface EditSectionProps {
   buttons: ReactNode[];
 }
 
-export const EditSectionWrapper: FC<PropsWithChildren> = ({ children }) => {
+export function EditSectionWrapper({ children }: PropsWithChildren) {
   return <span className='mw-editsection'>{children}</span>;
-};
+}
 
-export const BracketStart: FC = () => {
+export function BracketStart() {
   return <span className='mw-editsection-bracket'>[</span>;
-};
+}
 
-export const BracketEnd: FC = () => {
+export function BracketEnd() {
   return <span className='mw-editsection-bracket'>]</span>;
-};
+}
 
-export const Divider: FC = () => {
+export function Divider() {
   return <span className='mw-editsection-divider'> | </span>;
-};
+}
 
-const EditSection: FC<EditSectionProps> = ({ buttons }) => {
+function EditSection({ buttons }: EditSectionProps) {
   return (
     <EditSectionWrapper>
       <BracketStart />
@@ -33,6 +33,6 @@ const EditSection: FC<EditSectionProps> = ({ buttons }) => {
       <BracketEnd />
     </EditSectionWrapper>
   );
-};
+}
 
 export default EditSection;

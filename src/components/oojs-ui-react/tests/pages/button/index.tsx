@@ -1,8 +1,8 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import { Button, ButtonGroup } from 'oojs-ui-react';
 import intl from '../../components/intl';
 
-const ButtonPage: FC = () => {
+function ButtonPage() {
   return (
     <>
       <h1>
@@ -83,7 +83,7 @@ const ButtonPage: FC = () => {
       />
     </>
   );
-};
+}
 
 ButtonPage.displayName = 'ButtonPage';
 

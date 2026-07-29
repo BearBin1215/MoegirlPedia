@@ -1,4 +1,4 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import Approved from './Approved.svg';
 import Rejected from './Rejected.svg';
 import Pending from './Pending.svg';
@@ -9,7 +9,7 @@ interface ModIconProps {
   status: ModerationStatus;
 }
 
-const ModIcon: FC<ModIconProps> = ({ status }) => {
+function ModIcon({ status }: ModIconProps) {
   switch (status) {
     case 1:
       return (
@@ -30,6 +30,6 @@ const ModIcon: FC<ModIconProps> = ({ status }) => {
         </i>
       );
   }
-};
+}
 
 export default ModIcon;

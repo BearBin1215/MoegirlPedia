@@ -1,4 +1,4 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import {
   Button,
   Dropdown,
@@ -65,14 +65,14 @@ interface ConditionLineProps extends Omit<Condition, 'index'> {
 }
 
 /** 搜索条件行 */
-const ConditionLine: FC<ConditionLineProps> = ({
+function ConditionLine({
   code,
   value,
   onChange,
   onRemove,
   onFocus,
   nextLine = false,
-}) => {
+}: ConditionLineProps) {
   const identifyType = (searchCode: SearchCode) => {
     switch (searchCode) {
       case 'filewidth':
@@ -172,6 +172,6 @@ const ConditionLine: FC<ConditionLineProps> = ({
       />
     </div>
   );
-};
+}
 
 export default ConditionLine;

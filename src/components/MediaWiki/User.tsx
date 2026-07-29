@@ -1,7 +1,6 @@
 import React, {
   createContext,
   useContext,
-  type FC,
 } from 'react';
 
 export type CachedUserGroups = Record<string, string[]>;
@@ -27,7 +26,7 @@ export interface UserLinkProps {
 }
 
 /** 用户页链接 */
-export const UserLink: FC<UserLinkProps> = (props) => {
+export function UserLink(props: UserLinkProps) {
   const userLinkContext = useContext(UserLinkContext);
   const {
     user,
@@ -69,31 +68,33 @@ export const UserLink: FC<UserLinkProps> = (props) => {
         ))}
     </>
   );
-};
+}
 
 export interface UserToolLinksProps {
   user: string;
 }
 
 /** （讨论 | 贡献）链接 */
-export const UserToolLinks: FC<UserToolLinksProps> = ({ user }) => (
-  <span className='mw-usertoollinks'>
-    （
-    <a
-      href={wgArticlePath.replace('$1', `User_talk:${user}`)}
-      className='mw-usertoollinks-talk'
-      title={`User talk:${user}`}
-    >
-      讨论
-    </a>
-    {' | '}
-    <a
-      href={wgArticlePath.replace('$1', `Special:用户贡献/${user}`)}
-      className='mw-usertoollinks-contribs'
-      title={`Special:用户贡献/${user}`}
-    >
-      贡献
-    </a>
-    ）
-  </span>
-);
+export function UserToolLinks({ user }: UserToolLinksProps) {
+  return (
+    <span className='mw-usertoollinks'>
+      （
+      <a
+        href={wgArticlePath.replace('$1', `User_talk:${user}`)}
+        className='mw-usertoollinks-talk'
+        title={`User talk:${user}`}
+      >
+        讨论
+      </a>
+      {' | '}
+      <a
+        href={wgArticlePath.replace('$1', `Special:用户贡献/${user}`)}
+        className='mw-usertoollinks-contribs'
+        title={`Special:用户贡献/${user}`}
+      >
+        贡献
+      </a>
+      ）
+    </span>
+  );
+}

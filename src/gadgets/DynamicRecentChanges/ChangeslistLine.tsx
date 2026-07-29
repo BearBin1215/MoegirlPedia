@@ -170,21 +170,23 @@ export const getLineClassName = ({
   'mw-enhanced-rc',
 );
 
-const Separator: React.FC = () => (
-  <>
-    {' '}
-    <span className='mw-changeslist-separator'>. .</span>
-    {' '}
-  </>
-);
+function Separator() {
+  return (
+    <>
+      {' '}
+      <span className='mw-changeslist-separator'>. .</span>
+      {' '}
+    </>
+  );
+}
 
 /** 渲染编辑行的标记 */
-const ChangeFlags: React.FC<ChangeFlagsProps> = ({
+function ChangeFlags({
   'new': isNew,
   minor,
   bot,
   unpatrolled = false,
-}) => {
+}: ChangeFlagsProps) {
   return (
     <>
       {isNew ? <abbr className='newpage' title='该编辑创建了新页面'>新</abbr> : '\u00A0'}
@@ -193,10 +195,10 @@ const ChangeFlags: React.FC<ChangeFlagsProps> = ({
       {unpatrolled ? <abbr className='unpatrolled' title='该编辑尚未巡查'>!</abbr> : '\u00A0'}
     </>
   );
-};
+}
 
 /** 渲染当前编辑字节差异 */
-const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
+function ChangeDiff({ newlen, oldlen }: ChangeDiffProps) {
   const diffLen = newlen - oldlen;
 
   /** 差异字节数元素的类名，按照正、负、零区分 */
@@ -213,11 +215,11 @@ const ChangeDiff: React.FC<ChangeDiffProps> = ({ newlen, oldlen }) => {
     className: diffNumClassName,
     title: `更改后有${newlen.toLocaleString()}字节`,
   }, `（${diffLen > 0 ? '+' : ''}${diffLen.toLocaleString()}）`);
-};
+}
 
-export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
+export function ChangeTagMarkers({
   tags = [],
-}) => {
+}: ChangeTagProps) {
   const { tagMeanings } = useContext(ChangeslistLineContext);
   return tags.length > 0 && (
     <span className='mw-tag-markers'>
@@ -238,9 +240,9 @@ export const ChangeTagMarkers: React.FC<ChangeTagProps> = ({
       ）
     </span>
   );
-};
+}
 
-const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
+function ChangeslistLine(props: ChangeslistLineProps) {
   const {
     type = 'edit',
     title,
@@ -349,7 +351,7 @@ const ChangeslistLine: React.FC<ChangeslistLineProps> = (props) => {
       </tbody>
     </table>
   );
-};
+}
 
 export { Separator, ChangeFlags, ChangeDiff };
 export default ChangeslistLine;

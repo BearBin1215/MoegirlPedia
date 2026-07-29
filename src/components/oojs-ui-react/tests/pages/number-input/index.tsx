@@ -1,9 +1,9 @@
-import React, { useState, type FC } from "react";
+import React, { useState } from "react";
 import {
   NumberInput,
 } from 'oojs-ui-react';
 
-const NumberInputs: FC = () => {
+function NumberInputs() {
   const [numberValue, setNumberValue] = useState<number | undefined>(void 0);
   const [numberValue2, setNumberValue2] = useState(123);
 
@@ -24,7 +24,7 @@ const NumberInputs: FC = () => {
       />
     </>
   );
-};
+}
 
 NumberInputs.displayName = 'NumberInputsPage';
 

@@ -7,7 +7,6 @@ import React, {
   useEffect,
   type MouseEvent,
   type ChangeEvent,
-  type FC,
 } from 'react';
 import { chunk } from 'lodash-es';
 import {
@@ -42,7 +41,7 @@ interface FileData {
   cmused?: boolean;
 }
 
-const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
+function FileInspectorForm({ username }: { username: string }) {
   // 当前状态，就绪/读取失败/查询中/查询完毕
   const [status, setStatus] = useState<'ready' | 'failed' | 'querying' | 'acquired'>('ready');
   // 挂删状态
@@ -345,6 +344,6 @@ const FileInspectorForm: FC<{ username: string }> = ({ username }) => {
       </fieldset>
     </form>
   );
-};
+}
 
 export default FileInspectorForm;

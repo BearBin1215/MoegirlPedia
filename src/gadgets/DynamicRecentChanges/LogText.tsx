@@ -17,12 +17,12 @@ const {
   'wgArticlePath',
 ]);
 
-const LogText: React.FC<LogTextProps> = ({
+function LogText({
   logtype,
   logaction,
   logparams,
   title,
-}) => {
+}: LogTextProps) {
   /** 从上下文读取用户组含义 */
   const { groupMeanings } = useContext(ChangeslistLineContext);
   if (logtype === 'move') {
@@ -176,6 +176,6 @@ const LogText: React.FC<LogTextProps> = ({
       ）
     </>
   );
-};
+}
 
 export default LogText;

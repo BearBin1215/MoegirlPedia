@@ -1,7 +1,7 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import intl from '../../components/intl';
 
-const Start: FC = () => {
+function Start() {
   return (
     <>
       <h1>
@@ -46,7 +46,7 @@ const Start: FC = () => {
       </ul>
     </>
   );
-};
+}
 
 Start.displayName = 'Start';
 

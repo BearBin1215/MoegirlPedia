@@ -1,10 +1,10 @@
-import React, { useState, useEffect, type FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, type ChangeHandler } from 'oojs-ui-react';
 import ConditionLine, { type Condition, searchCodes } from './ConditionLine';
 import './index.less';
 
-const AdvancedPanel: FC = () => {
+function AdvancedPanel() {
   const [show, setShow] = useState(false);
   const [firstOpen, setFirstOpen] = useState(true);
   const [conditions, setConditions] = useState<Condition[]>([{
@@ -126,6 +126,6 @@ const AdvancedPanel: FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default AdvancedPanel;

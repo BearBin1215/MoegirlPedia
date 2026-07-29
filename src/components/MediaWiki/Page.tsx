@@ -1,6 +1,5 @@
 import React, {
   type AnchorHTMLAttributes,
-  type FC,
 } from 'react';
 import clsx from 'clsx';
 
@@ -10,9 +9,9 @@ export interface SpecialPageLinkProps {
   logtype: string;
 }
 
-export const SpecialPageLink: FC<SpecialPageLinkProps> = ({
+export function SpecialPageLink({
   logtype,
-}) => {
+}: SpecialPageLinkProps) {
   const logEventMeaning = {
     move: '移动',
     'delete': '删除',
@@ -33,7 +32,7 @@ export const SpecialPageLink: FC<SpecialPageLinkProps> = ({
       ）
     </>
   );
-};
+}
 
 export interface MWTitleProps {
   title: string;
@@ -41,10 +40,10 @@ export interface MWTitleProps {
 }
 
 /** 页面链接 */
-export const MWTitle = ({
+export function MWTitle({
   title,
   redirect = false,
-}) => {
+}: MWTitleProps) {
   return (
     <span className='mw-title'>
       <a
@@ -57,7 +56,6 @@ export const MWTitle = ({
     </span>
   );
 }
-  ;
 export interface HistoryLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   /** 页面标题 */
   title: string;
@@ -66,11 +64,11 @@ export interface HistoryLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEl
 }
 
 /** 页面历史链接 */
-export const HistoryLink: FC<HistoryLinkProps> = ({
+export function HistoryLink({
   title,
   pageid,
   ...rest
-}) => {
+}: HistoryLinkProps) {
   const wgScript = mw.config.get('wgScript');
   const search = {
     title,
@@ -86,4 +84,4 @@ export const HistoryLink: FC<HistoryLinkProps> = ({
       历史
     </a>
   );
-};
+}

@@ -1,4 +1,4 @@
-import React, { useState, type FC, type Key } from 'react';
+import React, { useState, type Key } from 'react';
 import { BookletLayout, Dropdown, type ChangeHandler } from 'oojs-ui-react';
 import router from '../config/router';
 import { LanguageContext, languages, type Languages } from '../components/intl';
@@ -7,7 +7,7 @@ import './index.less';
 
 const topPages = ['Overview', 'Start'];
 
-const App: FC = () => {
+function App() {
   const [activeKey, setActiveKey] = useState<Key>('Overview');
   const [language, setLanguage] = useState<Languages>('zh-cn');
 
@@ -62,7 +62,7 @@ const App: FC = () => {
       </div>
     </div>
   );
-};
+}
 
 App.displayName = 'App';
 

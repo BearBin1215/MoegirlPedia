@@ -1,10 +1,10 @@
-import React, { Fragment, type FC } from 'react';
+import React, { Fragment } from 'react';
 import { Icon, Indicator } from 'oojs-ui-react';
 import intl from '../../components/intl';
 import { iconList, indicatorList } from './icon-list';
 import './index.less';
 
-const IconPage: FC = () => {
+function IconPage() {
   /** 复制React代码 */
   const copyIconCode = (code: string) => {
     navigator.clipboard.writeText(`<Icon icon="${code}" />`);
@@ -68,7 +68,7 @@ const IconPage: FC = () => {
       </section>
     </>
   );
-};
+}
 
 IconPage.displayName = 'IconPage';
 

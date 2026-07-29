@@ -8,9 +8,9 @@ export interface ConfirmProps {
   content?: ReactNode;
 }
 
-const ConfirmDialog = () => {
+function ConfirmDialog() {
 
-};
+}
 
 const confirm: (props: ConfirmProps) => Promise<boolean> = ({
   title,

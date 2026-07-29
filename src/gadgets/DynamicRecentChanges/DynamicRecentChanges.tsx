@@ -8,10 +8,10 @@ import {
   NumberInput,
   FieldLayout,
 } from 'oojs-ui-react';
+import type { ApiQueryResponse } from '@/types/api';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import ChangeslistLineContext from './ChangeslistLineContext';
-import type { ApiQueryResponse } from '@/types/api';
 import './index.less';
 
 declare global {
@@ -44,7 +44,7 @@ const mergeData = (initData: ChangeslistLineProps[]) => {
   return formattedData;
 };
 
-const RecentChangeList: React.FC = () => {
+function RecentChangeList() {
   // 动态更新间隔
   const [updateInterval, setUpdateInterval] = useState(
     window.realtimeRecentChangeUpdateInterval
@@ -302,6 +302,6 @@ const RecentChangeList: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default RecentChangeList;

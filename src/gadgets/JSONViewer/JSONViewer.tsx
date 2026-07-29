@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactJson from 'react18-json-view';
 import 'react18-json-view/src/style.css';
 import 'react18-json-view/src/dark.css';
@@ -12,7 +12,7 @@ const useDarkTheme = () => {
   return document.documentElement.classList.contains('skin-theme-clientpref-night');
 };
 
-const JSONViewer: FC<{ json: object }> = ({ json }) => {
+function JSONViewer({ json }: { json: object }) {
   // 是否使用暗色模式
   const [dark, setDark] = useState(window.jsonViewerDark || useDarkTheme());
 
@@ -57,6 +57,6 @@ const JSONViewer: FC<{ json: object }> = ({ json }) => {
       dark={dark}
     />
   );
-};
+}
 
 export default JSONViewer;

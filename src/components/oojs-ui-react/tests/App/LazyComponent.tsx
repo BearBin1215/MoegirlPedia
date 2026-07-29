@@ -1,7 +1,7 @@
-import React, { lazy, type FC } from 'react';
+import React, { lazy } from 'react';
 import type { RouterItem } from '../config/router';
 
-const LazyComponent: FC<{ route: RouterItem }> = ({ route }) => {
+function LazyComponent({ route }: { route: RouterItem }) {
   const Component = 'section' in route ? () => '' : lazy(() => route.Component());
 
   return (
@@ -9,7 +9,7 @@ const LazyComponent: FC<{ route: RouterItem }> = ({ route }) => {
       <Component />
     </React.Suspense>
   );
-};
+}
 
 LazyComponent.displayName = 'LazyComponent';
 

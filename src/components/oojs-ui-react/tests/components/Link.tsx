@@ -1,20 +1,22 @@
-import React, { FC, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 interface LinkProps {
   href: string;
   children?: ReactNode;
 }
 
-const Link: FC<LinkProps> = ({ href, children }) => (
-  <a
-    className='link'
-    href={href}
-    target='_blank'
-    rel='noopener noreferrer'
-  >
-    {children}
-  </a>
-);
+function Link({ href, children }: LinkProps) {
+  return (
+    <a
+      className='link'
+      href={href}
+      target='_blank'
+      rel='noopener noreferrer'
+    >
+      {children}
+    </a>
+  );
+}
 
 Link.displayName = 'Link';
 

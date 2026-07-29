@@ -1,7 +1,7 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import { Dropdown } from 'oojs-ui-react';
 
-const DropdownPage: FC = () => {
+function DropdownPage() {
   return (
     <>
       <h1>Dropdown - 下拉选择框</h1>
@@ -71,7 +71,7 @@ const DropdownPage: FC = () => {
       />
     </>
   );
-};
+}
 
 DropdownPage.displayName = 'DropdownPage';
 

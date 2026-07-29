@@ -27,10 +27,10 @@ export interface ChangeslistLineCollapseProps {
 const wgScript = mw.config.get('wgScript');
 
 /** 合并相同页面编辑 */
-const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
+function ChangeslistLineCollapse({
   changes,
   defaultExpanded = false,
-}) => {
+}: ChangeslistLineCollapseProps) {
   // 确保只有超过2条编辑才生成折叠的列表
   if (changes.length === 0) {
     return null;
@@ -275,6 +275,6 @@ const ChangeslistLineCollapse: React.FC<ChangeslistLineCollapseProps> = ({
       </tbody>
     </table>
   );
-};
+}
 
 export default ChangeslistLineCollapse;

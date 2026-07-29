@@ -1,8 +1,8 @@
-import React, { type FC } from 'react';
+import React from 'react';
 import Link from '../../components/Link';
 import intl from '../../components/intl';
 
-const Home: FC = () => {
+function Home() {
   return (
     <>
       <h1>
@@ -61,7 +61,7 @@ const Home: FC = () => {
       </ul>
     </>
   );
-};
+}
 
 Home.displayName = 'Home';
 

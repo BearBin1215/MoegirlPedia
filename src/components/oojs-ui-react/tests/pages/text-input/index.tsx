@@ -1,9 +1,9 @@
-import React, { useState, type FC } from "react";
+import React, { useState } from "react";
 import {
   TextInput,
 } from 'oojs-ui-react';
 
-const TextInputs: FC = () => {
+function TextInputs() {
   const [textValue, setTextValue] = useState('');
   const [length, setLength] = useState(0);
 
@@ -43,7 +43,7 @@ const TextInputs: FC = () => {
       <TextInput accessKey='g' label={<><kbd>alt</kbd>+<kbd>G</kbd></>} />
     </>
   );
-};
+}
 
 TextInputs.displayName = 'TextInputsPage';
 

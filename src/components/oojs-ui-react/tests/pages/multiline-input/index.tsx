@@ -1,9 +1,9 @@
-import React, { type FC } from "react";
+import React from "react";
 import {
   MultilineTextInput,
 } from 'oojs-ui-react';
 
-const TextInputs: FC = () => {
+function TextInputs() {
   return (
     <>
       <h1>MultilineTextInput - 文本域</h1>
@@ -27,7 +27,7 @@ const TextInputs: FC = () => {
       <MultilineTextInput disabled />
     </>
   );
-};
+}
 
 TextInputs.displayName = 'TextInputsPage';
 

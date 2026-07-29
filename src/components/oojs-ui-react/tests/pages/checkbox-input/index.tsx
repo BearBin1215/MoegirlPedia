@@ -1,7 +1,7 @@
-import React, { useState, type FC } from 'react';
+import React, { useState } from 'react';
 import { CheckboxInput } from 'oojs-ui-react';
 
-const CheckboxPage: FC = () => {
+function CheckboxPage() {
   const [value, setValue] = useState(false);
   return (
     <>
@@ -26,7 +26,7 @@ const CheckboxPage: FC = () => {
       </p>
     </>
   );
-};
+}
 
 CheckboxPage.displayName = 'CheckboxPage';
 
