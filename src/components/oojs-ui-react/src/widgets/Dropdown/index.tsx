@@ -113,7 +113,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [elementRef]);
+  }, []);
 
   useImperativeHandle(ref, () => elementRef.current!);
 

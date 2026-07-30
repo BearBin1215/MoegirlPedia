@@ -8,7 +8,7 @@ import {
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
-import Widge, { type WidgetProps } from '../Widget';
+import Widget, { type WidgetProps } from '../Widget';
 
 /**
  * @template T 输入值类型
@@ -63,7 +63,7 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLInputEl
   };
 
   return (
-    <Widge
+    <Widget
       {...rest}
       className={classes}
       disabled={disabled}
@@ -81,7 +81,7 @@ const Input = forwardRef<HTMLDivElement, InputProps<string | number, HTMLInputEl
         value={value}
         placeholder={placeholder}
       />
-    </Widge>
+    </Widget>
   );
 });
 

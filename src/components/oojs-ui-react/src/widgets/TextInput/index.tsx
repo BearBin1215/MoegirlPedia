@@ -56,7 +56,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   value,
   ...rest
 }, ref) => {
-  const [inputStyle, setInputStype] = useState<CSSProperties>({});
+  const [inputStyle, setInputStyle] = useState<CSSProperties>({});
   const labelRef = useRef<HTMLSpanElement>(null);
 
   const classes = clsx(
@@ -90,8 +90,8 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         style.paddingRight = paddingWidth;
       }
     }
-    setInputStype(style);
-  }, [label]);
+    setInputStyle(style);
+  }, [label, labelPosition]);
 
   return (
     <div

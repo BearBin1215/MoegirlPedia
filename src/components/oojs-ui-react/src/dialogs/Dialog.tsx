@@ -117,21 +117,30 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
 
   // 开关动画控制
   useEffect(() => {
+    let closeTimer: ReturnType<typeof setTimeout>;
+    let readyTimer: ReturnType<typeof setTimeout>;
+    let teardownTimer: ReturnType<typeof setTimeout>;
     if (open) {
-      setTimeout(() => {
+      readyTimer = setTimeout(() => {
         setActive(true);
         setSetup(true);
-        setTimeout(() => setReady(true));
+        readyTimer = setTimeout(() => setReady(true));
       });
     } else {
-      setTimeout(() => {
+      closeTimer = setTimeout(() => {
         setReady(false);
-        setTimeout(() => {
+        teardownTimer = setTimeout(() => {
           setSetup(false);
           setActive(false);
         }, 250);
       });
     }
+
+    return () => {
+      clearTimeout(closeTimer);
+      clearTimeout(readyTimer);
+      clearTimeout(teardownTimer);
+    };
   }, [open]);
 
   return (

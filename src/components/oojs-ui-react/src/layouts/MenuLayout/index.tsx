@@ -62,7 +62,7 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {['buttom', 'after'].includes(menuPosition) ? elements.reverse() : elements}
+      {['bottom', 'after'].includes(menuPosition) ? [...elements].reverse() : elements}
     </Layout>
   );
 });

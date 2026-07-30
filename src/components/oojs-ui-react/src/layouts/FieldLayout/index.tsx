@@ -45,7 +45,7 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
       ref={ref}
     >
       <div className='oo-ui-fieldLayout-body'>
-        {align === 'inline' ? child : child.reverse()}
+        {align === 'inline' ? child : [...child].reverse()}
       </div>
     </Layout>
   );

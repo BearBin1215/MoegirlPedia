@@ -44,7 +44,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   value,
   ...rest
 }: MultilineTextInputProps, ref) => {
-  const [inputStyle, setInputStype] = useState<CSSProperties>({});
+  const [inputStyle, setInputStyle] = useState<CSSProperties>({});
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
@@ -85,8 +85,8 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         style.paddingRight = paddingWidth;
       }
     }
-    setInputStype(style);
-  }, [label]);
+    setInputStyle(style);
+  }, [label, labelPosition]);
 
   useEffect(() => {
     if (!autosize) {
