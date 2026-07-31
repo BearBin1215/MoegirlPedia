@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { omit } from 'lodash-es';
+import { omit } from 'es-toolkit/compat';
 import type { ElementProps } from '../../Element';
 
 export interface LayoutProps extends ElementProps {

@@ -6,7 +6,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import { debounce } from 'lodash-es';
+import { debounce } from 'es-toolkit';
 import type { ElementProps } from '../Element';
 import WindowManager from './WindowManager';
 

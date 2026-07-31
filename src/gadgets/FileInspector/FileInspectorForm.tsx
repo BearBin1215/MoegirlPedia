@@ -8,7 +8,7 @@ import React, {
   type MouseEvent,
   type ChangeEvent,
 } from 'react';
-import { chunk } from 'lodash-es';
+import { chunk } from 'es-toolkit';
 import {
   Button,
   NumberInput,

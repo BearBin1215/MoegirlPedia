@@ -1,4 +1,4 @@
-import { uniq } from 'lodash-es';
+import { uniq } from 'es-toolkit';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
 import type { ApiQueryResponse, ApiQueryPageInfo } from '@/types/api';

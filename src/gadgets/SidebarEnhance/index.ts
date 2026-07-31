@@ -1,4 +1,4 @@
-import { throttle } from 'lodash-es';
+import { throttle } from 'es-toolkit';
 import styles from './index.inline.less';
 import folderSvg from './folderIcon.inline.svg';
 

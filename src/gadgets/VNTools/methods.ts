@@ -1,4 +1,4 @@
-import { chunk } from 'lodash-es';
+import { chunk } from 'es-toolkit';
 import { categoryMembers, pageSource } from '@/utils/api';
 import type { ApiQueryResponse } from '@/types/api';
 
