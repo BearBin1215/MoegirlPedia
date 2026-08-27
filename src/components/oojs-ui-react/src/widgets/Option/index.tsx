@@ -46,7 +46,7 @@ const Option = forwardRef<HTMLDivElement, OptionProps>(({
       accessKey={accessKey}
       tabIndex={-1}
       role='option'
-      aria-selected={false}
+      aria-selected={!!selected}
       ref={ref}
     >
       <LabelBase>{children}</LabelBase>

@@ -89,7 +89,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   }, [label, labelPosition]);
 
   useEffect(() => {
-    if (!autosize) {
+    if (!autosize || !inputRef.current || !hiddenInputRef.current) {
       return;
     }
 
@@ -118,15 +118,9 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
       }
     };
 
-    if (inputRef.current && hiddenInputRef.current) {
-      inputRef.current.removeEventListener('input', adjustSize);
-      inputRef.current.addEventListener('input', adjustSize);
-    }
-
-    return () => {
-      inputRef.current?.removeEventListener('input', adjustSize);
-    };
-  }, [autosize, maxRows]);
+    // 受控模式下value变化（含程序化赋值）都触发重算，对齐原版change事件驱动adjustSize的语义
+    adjustSize();
+  }, [autosize, maxRows, rows, value]);
 
   return (
     <div

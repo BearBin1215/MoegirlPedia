@@ -57,7 +57,7 @@ const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
       {...rest}
       disabled={disabled}
       className={classes}
-      aria-selected={false}
+      aria-selected={!!selected}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}

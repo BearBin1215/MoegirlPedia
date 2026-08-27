@@ -25,7 +25,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
     className,
     generateWidgetClassName({ disabled, icon, invisibleLabel: true }, 'icon'),
     !icon && 'oo-ui-iconElement-noIcon',
-    (typeof flags === 'string' ? [flags] : flags).map((flag) => `oo-ui-flaggedElement-${flag} oo-ui-image-${flag}`),
+    (typeof flags === 'string' ? [flags] : flags).flatMap((flag) => [`oo-ui-flaggedElement-${flag}`, `oo-ui-image-${flag}`]),
   );
 
   return (

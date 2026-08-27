@@ -108,7 +108,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     return () => {
       window.removeEventListener('resize', onResize);
     };
-  }, [headRef, bodyRef, footRef]);
+  }, [active, frameWidth]);
 
   // 打开弹窗时初始化弹窗尺寸
   useEffect(() => {

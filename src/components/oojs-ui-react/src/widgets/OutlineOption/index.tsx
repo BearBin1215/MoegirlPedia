@@ -24,6 +24,7 @@ const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
     <DecoratedOption
       {...rest}
       className={classes}
+      aria-selected={!!selected}
       ref={ref}
     />
   );

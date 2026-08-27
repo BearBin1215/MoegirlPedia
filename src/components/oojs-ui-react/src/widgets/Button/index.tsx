@@ -119,9 +119,11 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 按下Enter键等同点击鼠标 */
+  /** 按下Enter或空格键等同按下鼠标 */
   const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && ev.key === 'Enter') {
+    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
+      // 对齐原版onKeyPress的return false：阻止空格滚动页面
+      ev.preventDefault();
       setPressed(true);
     }
     if (onKeyDown) {
@@ -129,9 +131,9 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 松开Enter键等同松开鼠标 */
+  /** 松开Enter或空格键等同松开鼠标 */
   const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && ev.key === 'Enter') {
+    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
       setPressed(false);
       handleClick(ev as unknown as MouseEvent<HTMLSpanElement>);
     }
