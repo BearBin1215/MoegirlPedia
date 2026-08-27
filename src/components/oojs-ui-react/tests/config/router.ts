@@ -121,6 +121,46 @@ const router: RouterItem[] = [
     },
     section: true,
   },
+  {
+    key: 'Dialog',
+    title: {
+      'zh-cn': 'Dialog 弹窗',
+      en: 'Dialog',
+    },
+    Component: () => import('../pages/dialog'),
+  },
+  {
+    key: 'DialogCompare',
+    title: {
+      'zh-cn': 'Dialog 原版对照',
+      en: 'Dialog vs OOUI',
+    },
+    Component: () => import('../pages/dialog-compare'),
+  },
+  {
+    key: 'MultilineCompare',
+    title: {
+      'zh-cn': 'Multiline 原版对照',
+      en: 'Multiline vs OOUI',
+    },
+    Component: () => import('../pages/multiline-compare'),
+  },
+  {
+    key: 'NumberCompare',
+    title: {
+      'zh-cn': 'Number 原版对照',
+      en: 'Number vs OOUI',
+    },
+    Component: () => import('../pages/number-compare'),
+  },
+  {
+    key: 'DropdownCompare',
+    title: {
+      'zh-cn': 'Dropdown 原版对照',
+      en: 'Dropdown vs OOUI',
+    },
+    Component: () => import('../pages/dropdown-compare'),
+  },
 ];
 
 export default router;

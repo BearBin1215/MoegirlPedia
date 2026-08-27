@@ -5,6 +5,7 @@ import React, {
   useImperativeHandle,
   useEffect,
   type Key,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import clsx from 'clsx';
 import type { MenuOptionProps } from '../MenuOption';
@@ -56,6 +57,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 }, ref) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | number | undefined>();
+  const [highlightedKey, setHighlightedKey] = useState<Key>();
   const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = clsx(
@@ -69,6 +71,85 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     open && 'oo-ui-dropdownWidget-open',
   );
 
+  /** 可选项（有data且未禁用），键盘导航的目标集合 */
+  const selectableOptions = options.filter(
+    (option): option is DropdownOptionProps & { data: string | number } => 'data' in option && !option.disabled,
+  );
+
+  /** 移动键盘高亮项（循环） */
+  const moveHighlight = (delta: 1 | -1) => {
+    const keys = selectableOptions.map((o) => o.key);
+    if (!keys.length) {
+      return;
+    }
+    const currentIndex = highlightedKey === undefined ? -1 : keys.indexOf(highlightedKey);
+    const nextIndex = currentIndex === -1
+      ? (delta === 1 ? 0 : keys.length - 1)
+      : (currentIndex + delta + keys.length) % keys.length;
+    setHighlightedKey(keys[nextIndex]);
+  };
+
+  /** 选中指定选项并关闭菜单 */
+  const selectOption = (option: DropdownOptionProps & { data: string | number }) => {
+    if (typeof onChange === 'function') {
+      onChange({
+        value: option.data,
+        oldValue: controlledValue ?? value,
+      });
+    }
+    setValue(option.data);
+    setOpen(false);
+  };
+
+  /** handle键盘导航，对齐原版DropdownWidget.onKeyDown（Enter/Space开合）与SelectWidget键盘选择 */
+  const handleHandleKeyDown = (ev: ReactKeyboardEvent) => {
+    if (disabled) {
+      return;
+    }
+    switch (ev.key) {
+      case 'Enter':
+      case ' ':
+        ev.preventDefault();
+        if (!open) {
+          setOpen(true);
+        } else {
+          const highlighted = selectableOptions.find((o) => o.key === highlightedKey);
+          if (highlighted) {
+            selectOption(highlighted);
+          }
+        }
+        break;
+      case 'ArrowDown':
+        ev.preventDefault();
+        if (!open) {
+          setOpen(true);
+        } else {
+          moveHighlight(1);
+        }
+        break;
+      case 'ArrowUp':
+        ev.preventDefault();
+        if (!open) {
+          setOpen(true);
+        } else {
+          moveHighlight(-1);
+        }
+        break;
+      case 'Home':
+        if (open && selectableOptions.length) {
+          ev.preventDefault();
+          setHighlightedKey(selectableOptions[0].key);
+        }
+        break;
+      case 'End':
+        if (open && selectableOptions.length) {
+          ev.preventDefault();
+          setHighlightedKey(selectableOptions[selectableOptions.length - 1].key);
+        }
+        break;
+    }
+  };
+
   const handleClickLabel = () => {
     if (!disabled) {
       setOpen(!open);
@@ -80,7 +161,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     if (typeof onChange === 'function') {
       onChange({
         value: option.data,
-        oldValue: value,
+        oldValue: controlledValue ?? value,
       });
     }
     setValue(option.data);
@@ -126,11 +207,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       <span
         tabIndex={disabled ? -1 : 0}
         aria-disabled={!!disabled}
+        aria-haspopup='listbox'
         className='oo-ui-dropdownWidget-handle'
         role='combobox'
         aria-autocomplete='list'
         aria-expanded={open}
         onClick={handleClickLabel}
+        onKeyDown={handleHandleKeyDown}
       >
         <IconBase icon={icon} />
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
@@ -141,6 +224,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         value={controlledValue ?? value}
         open={open}
         options={options}
+        highlightedKey={highlightedKey}
       />
     </div>
   );

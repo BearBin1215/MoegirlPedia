@@ -1,7 +1,10 @@
 import React, {
   useState,
+  useEffect,
+  useRef,
   forwardRef,
   type ChangeEvent,
+  type KeyboardEventHandler,
 } from 'react';
 import clsx from 'clsx';
 import Button from '../Button';
@@ -30,8 +33,14 @@ export interface NumberInputProps extends
   /** 最大值 */
   max?: number;
 
-  /** 间距 */
+  /** 合法性步距，值需为其倍数 */
   step?: number;
+
+  /** 点击按钮或按上下方向键时的步距，默认为step */
+  buttonStep?: number;
+
+  /** 按PageUp/PageDown时的步距，默认为buttonStep×10 */
+  pageStep?: number;
 
   /** 精度 */
   precision?: number;
@@ -62,10 +71,66 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   required,
   showButtons,
   step = 1,
+  buttonStep = step,
+  pageStep = buttonStep * 10,
   value: controlledValue,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState(controlledValue);
+  const [value, setValue] = useState<number | ''>(controlledValue ?? '');
+  const currentValue = controlledValue ?? value;
+  const inputRef = useRef<HTMLInputElement>(null);
+  /** 展示值：空值/非数字时显示为空 */
+  const displayValue = typeof currentValue === 'number' && !Number.isNaN(currentValue) ? currentValue : '';
+
+  /** 当前值的数值形态，空值为NaN，对齐原版getNumericValue */
+  const getNumericValue = () => (currentValue === '' ? NaN : currentValue);
+
+  /** 提交新值并触发onChange */
+  const commit = (newValue: number | '') => {
+    setValue(newValue);
+    if (typeof onChange === 'function') {
+      onChange({
+        value: newValue as number,
+        oldValue: typeof currentValue === 'number' ? currentValue : void 0,
+      });
+    }
+  };
+
+  /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */
+  const adjustValue = (delta: number) => {
+    const v = getNumericValue();
+    let n: number;
+    if (isNaN(v)) {
+      n = 0;
+    } else {
+      n = Math.max(Math.min(v + delta, max ?? Infinity), min ?? -Infinity);
+      n = step ? Math.round(n / step) * step : n;
+    }
+    if (n !== v) {
+      commit(n);
+    }
+  };
+
+  // 滚轮步进，对齐原版onWheel：聚焦时按buttonStep调整并阻止页面滚动。
+  // React合成wheel事件是passive的无法preventDefault，需挂原生监听；
+  // 不设依赖数组，保证每轮渲染闭包为最新（随currentValue/buttonStep更新）。
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+    const handleWheel = (ev: WheelEvent) => {
+      if (disabled || readOnly || !ev.deltaY) {
+        return;
+      }
+      ev.preventDefault();
+      adjustValue(ev.deltaY < 0 ? buttonStep : -buttonStep);
+    };
+    input.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      input.removeEventListener('wheel', handleWheel);
+    };
+  });
 
   const classes = clsx(
     className,
@@ -75,47 +140,54 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );
 
-  /** 值变更响应 */
+  /** 值变更响应，对齐原版语义：保留输入不做钓制，空串保持为空 */
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = +event.target.value;
+    const raw = event.target.value;
+    const parsed = +raw;
+    const newValue = raw === '' || Number.isNaN(parsed) ? '' : parsed;
     setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
-        value: (typeof min === 'number' && min > newValue) ? min : newValue,
-        oldValue: value,
+        value: newValue as number,
+        oldValue: typeof currentValue === 'number' ? currentValue : void 0,
         event,
-      });
-    }
-  };
-
-  /** 点击-按钮按照step减少 */
-  const handleMinus = () => {
-    const newValue = (value || 0) - step;
-    setValue(newValue);
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: value,
-      });
-    }
-  };
-
-  /** 点击+按钮按照step增加 */
-  const handlePlus = () => {
-    const newValue = (value || 0) + step;
-    setValue(newValue);
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: value,
       });
     }
   };
 
   /** 失焦时，按照精度四舍五入 */
   const handleBlur = () => {
-    if (typeof precision === 'number') {
-      setValue(Math.round((value || 0) * 10 ** precision) / 10 ** precision);
+    const v = getNumericValue();
+    if (typeof precision === 'number' && !Number.isNaN(v)) {
+      const rounded = Math.round(v * 10 ** precision) / 10 ** precision;
+      if (rounded !== v) {
+        commit(rounded);
+      }
+    }
+  };
+
+  /** 方向键/PageUp/Down步进，对齐原版onKeyDown */
+  const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (ev) => {
+    if (disabled || readOnly) {
+      return;
+    }
+    switch (ev.key) {
+      case 'ArrowUp':
+        ev.preventDefault();
+        adjustValue(buttonStep);
+        break;
+      case 'ArrowDown':
+        ev.preventDefault();
+        adjustValue(-buttonStep);
+        break;
+      case 'PageUp':
+        ev.preventDefault();
+        adjustValue(pageStep);
+        break;
+      case 'PageDown':
+        ev.preventDefault();
+        adjustValue(-pageStep);
+        break;
     }
   };
 
@@ -133,7 +205,10 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           <Button
             className='oo-ui-numberInputWidget-minusButton'
             icon='subtract'
-            onClick={handleMinus}
+            aria-hidden
+            tabIndex={-1}
+            disabled={disabled || readOnly}
+            onClick={() => adjustValue(-buttonStep)}
           />
         )}
         <input
@@ -147,19 +222,24 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           readOnly={readOnly}
           required={required}
           aria-required={required}
-          value={controlledValue ?? value}
+          value={displayValue}
           placeholder={placeholder}
           min={min}
           max={max}
           step={step}
           onChange={handleInputChange}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          ref={inputRef}
         />
         {showButtons && (
           <Button
             className='oo-ui-numberInputWidget-plusButton'
             icon='add'
-            onClick={handlePlus}
+            aria-hidden
+            tabIndex={-1}
+            disabled={disabled || readOnly}
+            onClick={() => adjustValue(buttonStep)}
           />
         )}
       </div>

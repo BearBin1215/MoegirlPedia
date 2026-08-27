@@ -23,8 +23,13 @@ export default defineConfig({
               syntax: 'typescript',
             },
           },
+          type: 'javascript/auto',
         },
-        type: 'javascript/auto',
+      },
+      {
+        // 原版oojs-ui/jquery的dist脚本按静态资源URL引入（对照测试用），不做打包执行
+        test: /[\\/]node_modules[\\/][^\\/]+[\\/](dist[\\/])?(jquery|oojs|oojs-ui|oojs-ui-wikimediaui)\.js$/,
+        type: 'asset/resource',
       },
       {
         test: /\.(css|less)$/,

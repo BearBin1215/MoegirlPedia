@@ -247,12 +247,18 @@ importers:
       globals:
         specifier: ^16.5.0
         version: 16.5.0
+      jquery:
+        specifier: 3.7.1
+        version: 3.7.1
       less:
         specifier: ^4.8.1
         version: 4.8.1
       less-loader:
         specifier: 11.1.4
         version: 11.1.4(less@4.8.1)(webpack@5.109.1(postcss@8.5.23))
+      oojs:
+        specifier: 7.0.1
+        version: 7.0.1
       oojs-ui:
         specifier: ^0.49.2
         version: 0.49.2

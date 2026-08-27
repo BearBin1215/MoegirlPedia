@@ -1,7 +1,7 @@
 import React, {
   forwardRef,
+  useRef,
   type ReactNode,
-  type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
 import Label from '../widgets/Label';
@@ -12,10 +12,10 @@ import Dialog, { type DialogProps } from './Dialog';
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;
 
-  /** 点击确定回调 */
-  onOk?: MouseEventHandler<HTMLSpanElement>;
+  /** 点击确定回调，Ctrl/Cmd+Enter时同样触发 */
+  onOk?: () => void;
   /** 点击取消回调 */
-  onCancel?: MouseEventHandler<HTMLSpanElement>;
+  onCancel?: () => void;
 }
 
 const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
@@ -28,26 +28,34 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   ...rest
 }, ref) => {
   const classes = clsx(className, 'oo-ui-messageDialog');
+  // 对齐原版Dialog.focus()：ready后优先聚焦primary action按钮
+  const okButtonRef = useRef<HTMLSpanElement>(null);
+
+  const focusPrimary = () => {
+    okButtonRef.current?.querySelector('a')?.focus();
+  };
 
   return (
     <Dialog
       {...rest}
       className={classes}
       contentClassName='oo-ui-messageDialog-content'
+      onPrimaryAction={onOk}
+      onReady={foot ? undefined : focusPrimary}
       foot={
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
-              <Button framed={false} flags='safe' onClick={onCancel}>Cancel</Button>
-              <Button framed={false} flags='primary' onClick={onOk}>OK</Button>
+              <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={onCancel}>Cancel</Button>
+              <Button ref={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={onOk}>OK</Button>
             </>
           )}
         </div>
       }
       ref={ref}
     >
-      <PanelLayout className='oo-ui-messageDialog-container' scrollable expanded>
-        <PanelLayout className='oo-ui-messageDialog-text' padded>
+      <PanelLayout className='oo-ui-messageDialog-container' scrollable expanded={false}>
+        <PanelLayout className='oo-ui-messageDialog-text' padded expanded={false}>
           <Label className='oo-ui-messageDialog-title'>{title}</Label>
           <Label>{children}</Label>
         </PanelLayout>

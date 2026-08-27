@@ -16,6 +16,9 @@ export interface OptionData {
 
   /** 是否为已选中项 */
   selected?: boolean;
+
+  /** 是否为键盘导航高亮项 */
+  highlighted?: boolean;
 }
 
 export type OptionProps<T = HTMLDivElement> =
@@ -30,12 +33,14 @@ const Option = forwardRef<HTMLDivElement, OptionProps>(({
   className,
   disabled,
   selected,
+  highlighted,
   ...rest
 }, ref) => {
   const classes = clsx(
     className,
     generateWidgetClassName({ disabled, label: children }, 'option'),
     selected && 'oo-ui-optionWidget-selected',
+    highlighted && 'oo-ui-optionWidget-highlighted',
   );
 
   return (

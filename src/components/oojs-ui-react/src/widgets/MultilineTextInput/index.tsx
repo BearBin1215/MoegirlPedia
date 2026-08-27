@@ -24,6 +24,9 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
   autosize?: boolean;
 }
 
+/** 对齐原版：maxRows || max(2×rows, 10) */
+const getDefaultMaxRows = (rows?: number) => Math.max(2 * (rows || 0), 10);
+
 const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
   name,
@@ -40,10 +43,11 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   required,
   autosize,
   rows,
-  maxRows = 10,
+  maxRows: maxRowsProp,
   value,
   ...rest
 }: MultilineTextInputProps, ref) => {
+  const maxRows = maxRowsProp ?? getDefaultMaxRows(rows);
   const [inputStyle, setInputStyle] = useState<CSSProperties>({});
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -92,34 +96,53 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
     if (!autosize || !inputRef.current || !hiddenInputRef.current) {
       return;
     }
+    const input = inputRef.current;
+    const hidden = hiddenInputRef.current;
 
-    /** 最小高度 */
+    /** 最小行数，对齐原版minRows */
     const minRows = rows === undefined ? '' : String(rows);
-    /** 动态调整输入框高度 */
+    /** 动态调整输入框高度，对齐原版MultilineTextInputWidget.prototype.adjustSize */
     const adjustSize = () => {
-      if (inputRef.current && hiddenInputRef.current) {
-        hiddenInputRef.current.classList.remove('oo-ui-element-hidden');
+      // 排除滚动条对测量的干扰（原版T297963：clone设overflow hidden）
+      hidden.style.overflow = 'hidden';
+      hidden.classList.remove('oo-ui-element-hidden');
 
-        // 将副输入框高度设为0以获取内容高度
-        hiddenInputRef.current.style.height = '0';
-        hiddenInputRef.current.setAttribute('rows', minRows);
-        hiddenInputRef.current.value = inputRef.current.value;
-        const { scrollHeight } = hiddenInputRef.current;
+      // 高度设为0以获取内容的scrollHeight
+      hidden.style.height = '0';
+      hidden.setAttribute('rows', minRows);
+      hidden.value = input.value;
+      const { scrollHeight } = hidden;
 
-        // 将副输入框行数设为maxRows获取最大高度
-        hiddenInputRef.current.style.height = 'auto';
-        hiddenInputRef.current.setAttribute('rows', String(maxRows));
-        hiddenInputRef.current.value = '';
-        const { clientHeight } = hiddenInputRef.current;
+      // 恢复高度读取innerHeight/outerHeight
+      hidden.style.height = '';
+      const innerHeight = hidden.clientHeight;
+      const outerHeight = hidden.offsetHeight;
 
-        inputRef.current.style.height = `${Math.min(scrollHeight, clientHeight) + 2}px`;
+      // 行数设为maxRows、内容清空以获取最大高度
+      hidden.setAttribute('rows', String(maxRows));
+      hidden.style.height = 'auto';
+      hidden.value = '';
+      const maxInnerHeight = hidden.clientHeight;
 
-        hiddenInputRef.current.classList.add('oo-ui-element-hidden');
-      }
+      // Blink缩放下的测量误差补偿（原版T133347）
+      const measurementError = maxInnerHeight - hidden.scrollHeight;
+      const idealHeight = Math.min(maxInnerHeight, scrollHeight + measurementError);
+
+      hidden.classList.add('oo-ui-element-hidden');
+      hidden.style.overflow = '';
+
+      // 内容未超出maxRows时清空inline高度回退rows布局，超出时锁定高度
+      const newHeight = idealHeight > innerHeight ? `${idealHeight + (outerHeight - innerHeight)}px` : '';
+      input.style.height = newHeight;
     };
 
-    // 受控模式下value变化（含程序化赋值）都触发重算，对齐原版change事件驱动adjustSize的语义
+    // 键入即时调整（兼容非受控用法）
+    input.addEventListener('input', adjustSize);
+    // 受控模式下value变化（含程序化赋值）也触发重算，对齐原版change事件驱动adjustSize的语义
     adjustSize();
+    return () => {
+      input.removeEventListener('input', adjustSize);
+    };
   }, [autosize, maxRows, rows, value]);
 
   return (

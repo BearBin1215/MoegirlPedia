@@ -28,6 +28,9 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
 
   /** 选项集 */
   options: SelectOptionProps[];
+
+  /** 键盘导航当前高亮的选项key（由Dropdown等上层组件管理） */
+  highlightedKey?: Key;
 }
 
 /**
@@ -40,6 +43,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
   value,
   outline,
   options,
+  highlightedKey,
   ...rest
 }, ref) => {
   const [pressed, setPressed] = useState(false);
@@ -87,12 +91,14 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             onSelect(option as OptionData);
           }
         };
+        const isHighlighted = highlightedKey === option.key;
         return outline ? (
           <OutlineOption
             {...option}
             key={option.key}
             onClick={handleClick}
             selected={value === option.data}
+            highlighted={isHighlighted}
           >
             {option.children}
           </OutlineOption>
@@ -102,6 +108,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             key={option.key}
             onClick={handleClick}
             selected={value === option.data}
+            highlighted={isHighlighted}
           >
             {option.children}
           </MenuOption>

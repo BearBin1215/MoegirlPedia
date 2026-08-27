@@ -18,6 +18,7 @@ const MenuSectionOption = forwardRef<HTMLDivElement, MenuSectionOptionProps>(({
     <DecoratedOption
       {...rest}
       className={classes}
+      role={undefined}
       ref={ref}
     />
   );
