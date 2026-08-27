@@ -20,9 +20,15 @@
 ## 低优先度实现
 
 - [ ] 滑动（ToggleSwitch）
-- [ ] Tab
+- [x] Tab（IndexLayout/TabSelect/TabOption/TabPanelLayout）
 - [x] Menu
 - [ ] 备选项输入框（ComboBox）
 - [ ] 搜索输入框
 
 其他布局类组件
+
+## 未对齐行为记录
+
+- TabOptionWidget：未实现`scrollIntoViewOnSelect`（移动端选中后水平居中滚动）与`href`链接支持（仅PHP端使用）
+- TabSelect：原版SelectWidget支持按住拖动跨选项选择（mousedown拖拽→mouseup选中），React版简化为onClick选择
+- MenuLayout：菜单可见时原版输出`aria-hidden="false"`，React版省略该属性（语义等价）

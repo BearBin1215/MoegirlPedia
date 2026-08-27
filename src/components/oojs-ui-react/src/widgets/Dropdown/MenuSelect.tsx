@@ -1,8 +1,7 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type Key } from 'react';
 import clsx from 'clsx';
 import Select from '../Select';
 import type { SelectProps } from '../Select';
-import type { Key } from 'react';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;

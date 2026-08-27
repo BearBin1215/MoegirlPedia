@@ -26,7 +26,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
       expanded={expanded}
       scrollable={scrollable}
       className={classes}
-      aria-hidden={hidden}
+      aria-hidden={!!hidden}
       hidden={hidden}
       ref={ref}
     >

@@ -111,7 +111,14 @@ const router: RouterItem[] = [
     },
     section: true,
   },
-
+  {
+    key: 'IndexCompare',
+    title: {
+      'zh-cn': 'IndexLayout 原版对照',
+      en: 'IndexLayout vs OOUI',
+    },
+    Component: () => import('../pages/index-compare'),
+  },
 
   {
     key: 'Dialogs',

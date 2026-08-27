@@ -32,12 +32,14 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
   menu,
   ...rest
 }, ref) => {
+  // 与原版一致：非法位置回退为 before
+  const position = ['top', 'after', 'bottom', 'before'].includes(menuPosition) ? menuPosition : 'before';
   const classes = clsx(
     className,
     'oo-ui-menuLayout',
     expanded ? 'oo-ui-menuLayout-expanded' : 'oo-ui-menuLayout-static',
     showMenu ? 'oo-ui-menuLayout-showMenu' : 'oo-ui-menuLayout-hideMenu',
-    `oo-ui-menuLayout-${menuPosition}`,
+    `oo-ui-menuLayout-${position}`,
   );
 
   const elements = [
@@ -62,7 +64,7 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
       className={classes}
       ref={ref}
     >
-      {['bottom', 'after'].includes(menuPosition) ? [...elements].reverse() : elements}
+      {['bottom', 'after'].includes(position) ? [...elements].reverse() : elements}
     </Layout>
   );
 });

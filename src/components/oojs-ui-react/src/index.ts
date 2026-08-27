@@ -32,12 +32,15 @@ export { default as OutlineOption } from './widgets/OutlineOption';
 export { default as MenuSectionOption } from './widgets/MenuSectionOption';
 export { default as Select } from './widgets/Select';
 export { default as OutlineSelect } from './widgets/OutlineSelect';
+export { default as TabSelect } from './widgets/TabSelect';
+export { default as TabOption } from './widgets/TabOption';
 export { default as Dropdown } from './widgets/Dropdown';
 
 // 布局
 export { default as Layout } from './layouts/Layout';
 export { default as PanelLayout } from './layouts/PanelLayout';
 export { default as PageLayout } from './layouts/PageLayout';
+export { default as TabPanelLayout } from './layouts/TabPanelLayout';
 export { default as StackLayout } from './layouts/StackLayout';
 export { default as MenuLayout } from './layouts/MenuLayout';
 export { default as BookletLayout } from './layouts/BookletLayout';

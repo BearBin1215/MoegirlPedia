@@ -47,6 +47,7 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
     ...option,
     data: option.key,
     children: option.label,
+    hidden: undefined,
   }));
 
   const handleSelect = (option: OptionData) => {
