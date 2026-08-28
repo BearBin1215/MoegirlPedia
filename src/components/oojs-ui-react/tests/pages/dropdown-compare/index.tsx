@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'oojs-ui-react';
-import { ensureOOUI } from '../../components/ooui';
-
-type DropdownWidget = { $element: unknown };
+import { ensureOOUI, unwrapJQuery } from '../../components/ooui';
 
 function OriginalDropdown() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,15 +25,13 @@ function OriginalDropdown() {
         label: 'please select',
         menu: { items },
       });
-      containerRef.current.appendChild(unwrap(dropdown.$element));
+      containerRef.current.appendChild(unwrapJQuery(dropdown.$element));
       setStatus('原版已就绪');
     }).catch(() => setStatus('原版加载失败'));
     return () => {
       cancelled = true;
     };
   }, []);
-
-  const unwrap = ($el: unknown): Node => ($el as { 0: Node })[0];
 
   return (
     <div>

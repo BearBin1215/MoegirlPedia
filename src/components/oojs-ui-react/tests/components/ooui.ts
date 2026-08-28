@@ -45,7 +45,11 @@ const loadScript = (id: string, src: string) => new Promise<void>((resolve, reje
   // 动态脚本默认async按下载完成顺序执行，必须禁用以保证插入顺序（jquery→oojs→ui→theme）
   script.async = false;
   script.onload = () => resolve();
-  script.onerror = () => reject(new Error(`加载失败: ${src}`));
+  script.onerror = () => {
+    // 移除失败标签，否则重试时id去重会误判为已加载
+    script.remove();
+    reject(new Error(`加载失败: ${src}`));
+  };
   document.head.appendChild(script);
 });
 
@@ -61,6 +65,10 @@ export function ensureOOUI(): Promise<OOUI> {
   if (existing?.ui?.MessageDialog) {
     return Promise.resolve(existing);
   }
+  // 并发调用（StrictMode下effect双调用等）复用进行中的加载promise，而非各自新建
+  if (oouiPromise) {
+    return oouiPromise;
+  }
   const promise = (async () => {
     for (const [id, url] of SCRIPT_URLS) {
       await loadScript(id, url);
@@ -72,6 +80,12 @@ export function ensureOOUI(): Promise<OOUI> {
     return oo;
   })();
   oouiPromise = promise;
+  // 失败时清空单例，后续调用可重试（loadScript失败时已移除对应标签）
+  promise.catch(() => {
+    if (oouiPromise === promise) {
+      oouiPromise = null;
+    }
+  });
   return promise;
 }
 

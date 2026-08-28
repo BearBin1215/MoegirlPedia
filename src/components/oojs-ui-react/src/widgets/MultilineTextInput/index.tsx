@@ -92,17 +92,20 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
     setInputStyle(style);
   }, [label, labelPosition]);
 
-  useEffect(() => {
-    if (!autosize || !inputRef.current || !hiddenInputRef.current) {
-      return;
-    }
-    const input = inputRef.current;
-    const hidden = hiddenInputRef.current;
+  /** 最小行数，对齐原版minRows */
+  const minRows = rows === undefined ? '' : String(rows);
 
-    /** 最小行数，对齐原版minRows */
-    const minRows = rows === undefined ? '' : String(rows);
-    /** 动态调整输入框高度，对齐原版MultilineTextInputWidget.prototype.adjustSize */
-    const adjustSize = () => {
+  // 最新adjustSize实现存入ref（每轮渲染后刷新），使input监听不必随value变化重挂，
+  // 避免受控模式下每次键入都remove/addEventListener
+  const adjustSizeRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    adjustSizeRef.current = () => {
+      const input = inputRef.current;
+      const hidden = hiddenInputRef.current;
+      if (!input || !hidden) {
+        return;
+      }
       // 排除滚动条对测量的干扰（原版T297963：clone设overflow hidden）
       hidden.style.overflow = 'hidden';
       hidden.classList.remove('oo-ui-element-hidden');
@@ -135,14 +138,30 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
       const newHeight = idealHeight > innerHeight ? `${idealHeight + (outerHeight - innerHeight)}px` : '';
       input.style.height = newHeight;
     };
+  });
 
-    // 键入即时调整（兼容非受控用法）
-    input.addEventListener('input', adjustSize);
-    // 受控模式下value变化（含程序化赋值）也触发重算，对齐原版change事件驱动adjustSize的语义
-    adjustSize();
+  // 键入即时调整（兼容非受控用法），监听只随autosize挂卸
+  useEffect(() => {
+    if (!autosize) {
+      return;
+    }
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+    const onInput = () => adjustSizeRef.current();
+    input.addEventListener('input', onInput);
     return () => {
-      input.removeEventListener('input', adjustSize);
+      input.removeEventListener('input', onInput);
     };
+  }, [autosize]);
+
+  // 受控模式下value变化（含程序化赋值）也触发重算，对齐原版change事件驱动adjustSize的语义
+  useEffect(() => {
+    if (!autosize) {
+      return;
+    }
+    adjustSizeRef.current();
   }, [autosize, maxRows, rows, value]);
 
   return (

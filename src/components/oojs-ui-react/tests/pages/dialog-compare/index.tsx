@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, MessageDialog } from 'oojs-ui-react';
-import { ensureOOUI, unwrapJQuery } from '../../components/ooui';
-
-type OOUIWindow = {
-  open: (data?: { title?: string; message?: string }) => void;
-};
+import { ensureOOUI, unwrapJQuery, type OOUIWindow } from '../../components/ooui';
 
 function OriginalDialog() {
   const containerRef = useRef<HTMLDivElement>(null);

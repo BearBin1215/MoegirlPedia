@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NumberInput } from 'oojs-ui-react';
-import { ensureOOUI } from '../../components/ooui';
+import { ensureOOUI, unwrapJQuery } from '../../components/ooui';
 
 type NumberWidget = { $element: unknown };
 
@@ -21,15 +21,13 @@ function OriginalNumber() {
         showButtons: true,
         value: 5,
       });
-      containerRef.current.appendChild(unwrap(widget.$element));
+      containerRef.current.appendChild(unwrapJQuery(widget.$element));
       setStatus('原版已就绪（0-10，聚焦后滚轮/↑↓/PgUp/PgDn步进）');
     }).catch(() => setStatus('原版加载失败'));
     return () => {
       cancelled = true;
     };
   }, []);
-
-  const unwrap = ($el: unknown): Node => ($el as { 0: Node })[0];
 
   return (
     <div>

@@ -25,7 +25,8 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
     hidden === true && 'oo-ui-element-hidden',
   );
 
-  // React会把hidden属性值归一化为布尔形式，until-found需手动写入
+  // React 18将hidden归入BOOLEAN属性：任何真值（含'until-found'字符串）都被写成hidden=""，
+  // 故until-found需在commit后手动写入才能生效（React 19起hidden类型已支持'until-found'，届时可移除）
   useEffect(() => {
     if (hidden === 'until-found' && innerRef.current) {
       innerRef.current.setAttribute('hidden', 'until-found');
@@ -36,6 +37,8 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
     <div
       {...omit(rest, 'activeKey')}
       className={classes}
+      // 保留原始值（而非归一化为布尔）传入：React需感知true↔'until-found'切换才会重写DOM属性；
+      // 断言仅为绕过React 18类型定义（hidden仅声明为boolean）
       hidden={(hidden || undefined) as boolean | undefined}
       aria-hidden={hidden ? 'true' : undefined}
       ref={(node) => {
