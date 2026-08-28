@@ -125,7 +125,7 @@ export default App;
 ### 基本用法
 ```jsx
 import React from 'react';
-import { Dropdown, MenuOption } from 'oojs-ui-react';
+import { Dropdown } from 'oojs-ui-react';
 
 const App = () => {
   return (
@@ -157,13 +157,13 @@ const App = () => {
 export default App;
 ```
 
-`MenuOption`组件的**data**字段必须。
+选项对象的**data**字段必须，选项在组件内部渲染为`MenuOption`。
 
 ### 分组
 
 ```jsx
 import React from 'react';
-import { Dropdown, MenuOption, MenuSectionOption } from 'oojs-ui-react';
+import { Dropdown } from 'oojs-ui-react';
 
 const App = () => {
   return (
@@ -204,6 +204,8 @@ const App = () => {
 export default App;
 ```
 
+不带`data`字段的选项渲染为分组标题（内部`MenuSectionOption`）。
+
 ### API
 
 
@@ -215,7 +217,7 @@ export default App;
 
 ```jsx
 import React from 'react';
-import { RadioOption, RadioSelect } from 'oojs-ui-react';
+import { RadioSelect } from 'oojs-ui-react';
 
 const App = () => {
   return (
@@ -232,7 +234,7 @@ const App = () => {
 export default App;
 ```
 
-由多个[`RadioOption`](#RadioOption)作为子组件，其中`data`参数必须且不重复。
+选项在组件内部渲染为`RadioOption`，其中`data`参数必须且不重复。
 
 ### API
 
@@ -244,7 +246,7 @@ export default App;
 | name         | 参数名                                                   | `string`                                                                    |
 | onChange     | 值变化钩子                                               | [`ChangeHandler<string \| number \| boolean, HTMLInputElement>`](#基本类型) |
 
-#### RadioOption
+#### 选项
 
 | 参数      | 说明       | 类型                                                    |
 | --------- | ---------- | ------------------------------------------------------- |
