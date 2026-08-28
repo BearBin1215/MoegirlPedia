@@ -1,7 +1,5 @@
 import React, {
   useState,
-  useRef,
-  useEffect,
   forwardRef,
   type MouseEventHandler,
   type KeyboardEventHandler,
@@ -17,10 +15,10 @@ import type { WidgetProps } from '../Widget';
 import type { IconElement, IconFlag } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
 
-export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close' | 'invert';
+export type ButtonFlag = IconFlag | 'primary' | 'safe' | 'back' | 'close';
 
 export interface ButtonProps extends
-  Omit<WidgetProps<HTMLSpanElement>, 'onClick'>,
+  Omit<WidgetProps<HTMLSpanElement>, 'onClick' | 'rel'>,
   AccessKeyedElement,
   IconElement,
   IndicatorElement {
@@ -34,14 +32,23 @@ export interface ButtonProps extends
   /** 附加给按钮的标志 */
   flags?: ButtonFlag | ButtonFlag[];
 
-  /** 按钮跳转链接 */
+  /** 按钮跳转链接（不做isSafeUrl净化，信任开发者的输入） */
   href?: string;
 
-  /** 内部<a>标签的rel属性列表 */
-  rel?: string;
+  /** 链接打开位置（<a>的target） */
+  target?: string;
+
+  /** 内部<a>标签的rel属性（等价原版ButtonWidget的rel配置，数组以空格拼接） */
+  rel?: string | string[];
 
   /** 内部<a>标签的title */
   title?: string;
+
+  /** 图标title提示（等价原版ButtonElement的iconTitle配置） */
+  iconTitle?: string;
+
+  /** 指示器title提示（等价原版ButtonElement的indicatorTitle配置） */
+  indicatorTitle?: string;
 
   /** 点击回调（键盘Enter/空格触发时ev为KeyboardEvent） */
   onClick?: (ev: MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>) => void;
@@ -56,9 +63,12 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   framed = true,
   flags = [],
   href,
+  target,
   icon,
+  iconTitle,
   indicator,
-  rel = 'nofollow',
+  indicatorTitle,
+  rel = ['nofollow'],
   title,
   tabIndex,
   onClick,
@@ -69,33 +79,10 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   onKeyUp,
   ...rest
 }, ref) => {
+  // 仅维护键盘（Enter/空格）按压态；鼠标按压态由主题CSS的:active实现，无需JS
   const [pressed, setPressed] = useState(false);
-  const clearPressedRef = useRef<(() => void) | null>(null);
   const flagList = typeof flags === 'string' ? [flags] : flags;
-
-  // 卸载时清理document上的释放监听，避免残留
-  useEffect(() => () => clearPressedRef.current?.(), []);
-
-  /**
-   * 进入pressed状态，并在document上捕获式监听释放事件，
-   * 以便焦点/按钮外松开时也能复位
-   */
-  function startPress(releaseType: 'mouseup', match: (e: globalThis.MouseEvent) => boolean): void;
-  function startPress(releaseType: 'keyup', match: (e: globalThis.KeyboardEvent) => boolean): void;
-  // 实现签名用宽松match以兼容两组重载的逆变，实际类型由重载约束
-  function startPress(releaseType: 'mouseup' | 'keyup', match: (e: any) => boolean) {
-    setPressed(true);
-    clearPressedRef.current?.();
-    const clear: EventListener = (e) => {
-      if (match(e)) {
-        setPressed(false);
-        document.removeEventListener(releaseType, clear, true);
-        clearPressedRef.current = null;
-      }
-    };
-    clearPressedRef.current = () => document.removeEventListener(releaseType, clear, true);
-    document.addEventListener(releaseType, clear, true);
-  }
+  const relList = typeof rel === 'string' ? [rel] : rel;
 
   /** 按wikimediaui主题规则生成图标/指示器变体类 */
   let iconClasses: string | undefined;
@@ -106,6 +93,9 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       flagList.includes('progressive') && 'oo-ui-image-progressive',
       flagList.includes('destructive') && 'oo-ui-image-destructive',
       flagList.includes('invert') && 'oo-ui-image-invert',
+      flagList.includes('error') && 'oo-ui-image-error',
+      flagList.includes('warning') && 'oo-ui-image-warning',
+      flagList.includes('success') && 'oo-ui-image-success',
     );
   }
 
@@ -132,12 +122,8 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 按下左键，状态变更为pressed，并在document上监听mouseup以便按钮外松开时复位 */
+  /** 按下左键不阻止默认行为（对齐ButtonWidget覆写cancelButtonMouseDownEvents=false，保留点击聚焦） */
   const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    // 注意：ButtonWidget覆写cancelButtonMouseDownEvents=false，不阻止默认行为以保留点击聚焦
-    if (!disabled && ev.button === 0) {
-      startPress('mouseup', (e) => e.button === 0);
-    }
     if (onMouseDown) {
       onMouseDown(ev);
     }
@@ -153,13 +139,23 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 按下Enter或空格键等同按下鼠标，并在document上监听keyup以便焦点外松开时复位 */
+  /** 按下Enter或空格键等同按下鼠标（键盘按压态无法用CSS实现，需JS维护） */
   const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      startPress('keyup', (e) => e.key === 'Enter' || e.key === ' ');
+      setPressed(true);
     }
     if (onKeyDown) {
       onKeyDown(ev);
+    }
+  };
+
+  /** 松开Enter或空格键，复位键盘按压态 */
+  const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
+    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
+      setPressed(false);
+    }
+    if (onKeyUp) {
+      onKeyUp(ev);
     }
   };
 
@@ -186,24 +182,29 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onMouseUp={handleMouseUp}
       onKeyDown={handleKeyDown}
       onKeyPress={handleKeyPress}
-      onKeyUp={onKeyUp}
+      onKeyUp={handleKeyUp}
       aria-disabled={!!disabled}
-      tabIndex={disabled ? -1 : tabIndex}
     >
       <a
         className='oo-ui-buttonElement-button'
         role='button'
         tabIndex={disabled ? -1 : (tabIndex ?? 0)}
         href={disabled ? undefined : href}
-        rel={rel}
+        target={target}
+        rel={relList.join(' ') || undefined}
         title={title}
         accessKey={accessKey}
       >
-        <IconBase icon={icon} className={clsx(iconClasses, !icon && 'oo-ui-iconElement-noIcon')} />
+        <IconBase
+          icon={icon}
+          className={clsx(iconClasses, !icon && 'oo-ui-iconElement-noIcon')}
+          title={iconTitle}
+        />
         <LabelBase>{children}</LabelBase>
         <IndicatorBase
           indicator={indicator}
           className={clsx(iconClasses, !indicator && 'oo-ui-indicatorElement-noIndicator')}
+          title={indicatorTitle}
         />
       </a>
     </span>

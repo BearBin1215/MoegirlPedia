@@ -32,9 +32,23 @@ function OriginalWidgets() {
         button('primary', { label: 'Primary', flags: 'primary' }),
         button('progressive', { label: 'Progressive', flags: 'progressive' }),
         button('destructive', { label: 'Destructive', flags: 'destructive' }),
+        button('error', { label: 'Error', flags: 'error' }),
         button('无边框destructive', { label: 'Frameless', framed: false, flags: 'destructive' }),
         button('激活', { label: 'Active', active: true }),
         button('禁用带链接', { label: 'Disabled', disabled: true, href: 'https://www.example.com' }),
+        button('target+rel数组', {
+          label: 'Target',
+          href: 'https://www.example.com',
+          target: '_blank',
+          rel: ['noopener', 'noreferrer'],
+        }),
+        button('图标/指示器title', {
+          label: 'Titles',
+          icon: 'help',
+          iconTitle: '图标提示',
+          indicator: 'down',
+          indicatorTitle: '指示器提示',
+        }),
         checkbox('常规', { selected: false }),
         checkbox('选中', { selected: true }),
         checkbox('半选', { indeterminate: true }),
@@ -66,9 +80,10 @@ function ButtonCheckboxComparePage() {
     <div>
       <h1>Button/CheckboxInput 对照 - 原版oojs-ui vs oojs-ui-react</h1>
       <p>
-        对照点：图标/指示器变体类（primary/progressive/destructive/invert、激活、禁用）、
-        禁用时移除href、mousedown阻止焦点转移且按钮外松开复位、
-        Enter/空格触发click（keypress时机）、半选indeterminate、required落点。
+        对照点：图标/指示器变体类（primary/progressive/destructive/error/invert、激活、禁用）、
+        禁用时移除href、target与rel数组拼接、
+        mousedown阻止焦点转移且按钮外松开复位、
+        Enter/空格触发click（keypress时机）、图标/指示器title提示、半选indeterminate、required落点。
       </p>
       <div style={compareLayoutStyle}>
         <div style={{ flex: 1 }}>
@@ -85,12 +100,26 @@ function ButtonCheckboxComparePage() {
           <Button flags='progressive'>Progressive</Button>
           <p>destructive</p>
           <Button flags='destructive'>Destructive</Button>
+          <p>error</p>
+          <Button flags='error'>Error</Button>
           <p>无边框destructive</p>
           <Button framed={false} flags='destructive'>Frameless</Button>
           <p>激活</p>
           <Button active>Active</Button>
           <p>禁用带链接</p>
           <Button disabled href='https://www.example.com'>Disabled</Button>
+          <p>target+rel数组</p>
+          <Button
+            href='https://www.example.com'
+            target='_blank'
+            rel={['noopener', 'noreferrer']}
+          >
+            Target
+          </Button>
+          <p>图标/指示器title</p>
+          <Button icon='help' iconTitle='图标提示' indicator='down' indicatorTitle='指示器提示'>
+            Titles
+          </Button>
           <p>常规</p>
           <CheckboxInput onChange={({ value }) => addLog(`change 常规=${value}`)} />
           <p>选中</p>

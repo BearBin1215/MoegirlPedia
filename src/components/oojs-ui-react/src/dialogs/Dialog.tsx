@@ -134,7 +134,6 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     if (active && setup) {
       updateSize();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- updateSize随渲染闭包更新，此处依赖其输入
   }, [active, setup, frameWidth]);
 
   // 键盘行为，对齐原版Dialog.prototype.onDialogKeyDown：

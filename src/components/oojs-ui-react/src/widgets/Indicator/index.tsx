@@ -9,12 +9,17 @@ import IndicatorBase, {
 
 export type IndicatorProps =
   Omit<WidgetProps<HTMLSpanElement>, 'children'> &
-  IndicatorElement;
+  IndicatorElement & {
+    /** 指示器title提示（等价原版IndicatorElement的indicatorTitle配置） */
+    indicatorTitle?: string;
+  };
 
 const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
   indicator,
   className,
   disabled,
+  indicatorTitle,
+  title,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -27,6 +32,7 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
       {...rest}
       className={classes}
       indicator={indicator}
+      title={title ?? indicatorTitle}
       aria-disabled={disabled}
       ref={ref}
     />

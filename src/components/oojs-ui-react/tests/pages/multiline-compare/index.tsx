@@ -12,7 +12,7 @@ function OriginalMultiline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<MultilineWidget | null>(null);
   const [status, setStatus] = useState('未初始化');
-  const [value, setValue] = useState('');
+  const [, setValue] = useState('');
 
   useEffect(() => {
     let cancelled = false;

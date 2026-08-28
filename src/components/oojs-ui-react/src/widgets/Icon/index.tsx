@@ -4,13 +4,18 @@ import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import IconBase, { type IconElement } from './Base';
 
-export type IconFlag = 'progressive' | 'destructive';
+/** 主题支持的图标变体（对齐wikimediaui主题variants） */
+export type IconFlag = 'progressive' | 'destructive' | 'invert' | 'error' | 'warning' | 'success';
 
 export interface IconProps extends
   WidgetProps<HTMLSpanElement>,
   IconElement {
 
+  /** 附加给图标的标志 */
   flags?: IconFlag | IconFlag[];
+
+  /** 图标title提示（等价原版IconElement的iconTitle配置） */
+  iconTitle?: string;
 }
 
 const Icon = forwardRef<HTMLSpanElement, IconProps>(({
@@ -18,6 +23,8 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
   className,
   disabled,
   flags = [],
+  iconTitle,
+  title,
   ...rest
 }, ref) => {
 
@@ -33,6 +40,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
       {...rest}
       className={classes}
       icon={icon}
+      title={title ?? iconTitle}
       aria-disabled={disabled}
       ref={ref}
     />

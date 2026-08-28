@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import { omit } from 'es-toolkit/compat';
+import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 
 export type PageLayoutProps = PanelLayoutProps;
 
