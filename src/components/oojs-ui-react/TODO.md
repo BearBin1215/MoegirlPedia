@@ -32,3 +32,7 @@
 - TabOptionWidget：未实现`scrollIntoViewOnSelect`（移动端选中后水平居中滚动）与`href`链接支持（仅PHP端使用）
 - TabSelect：原版SelectWidget支持按住拖动跨选项选择（mousedown拖拽→mouseup选中），React版简化为onClick选择
 - MenuLayout：菜单可见时原版输出`aria-hidden="false"`，React版省略该属性（语义等价）
+- Button：未实现`target`属性、`rel`数组写法、`isSafeUrl`链接净化（不安全scheme加`./`前缀）、icon/indicator的title提示
+- Icon：flags未覆盖主题全部变体（缺invert/error/warning/success）；无iconTitle支持
+- Indicator：无indicatorTitle支持
+- CheckboxInput：内层Icon缺`oo-ui-checkboxInputWidget-checkIcon`类（wikimediaui下无视觉影响，apex主题下控制display:none）；`title`/`dir`/`inputId`应落在input元素而非外层span；tabIndex不可自定义

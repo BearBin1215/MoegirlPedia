@@ -168,6 +168,14 @@ const router: RouterItem[] = [
     },
     Component: () => import('../pages/dropdown-compare'),
   },
+  {
+    key: 'ButtonCheckboxCompare',
+    title: {
+      'zh-cn': 'Button/Checkbox 原版对照',
+      en: 'Button/Checkbox vs OOUI',
+    },
+    Component: () => import('../pages/button-checkbox-compare'),
+  },
 ];
 
 export default router;
