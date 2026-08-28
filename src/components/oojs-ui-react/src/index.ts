@@ -15,7 +15,6 @@ export { default as Button } from './widgets/Button';
 export { default as ButtonGroup } from './widgets/ButtonGroup';
 
 // 输入框
-export { default as Input } from './widgets/Input';
 export { default as TextInput } from './widgets/TextInput';
 export { default as NumberInput } from './widgets/NumberInput';
 export { default as MultilineTextInput } from './widgets/MultilineTextInput';
