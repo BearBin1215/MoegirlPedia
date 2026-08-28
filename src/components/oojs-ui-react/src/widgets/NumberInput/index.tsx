@@ -17,8 +17,9 @@ import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
 
+/** 数字输入框属性。值为`number`，空值（清空或键入非数字）为`''`，对齐原版`getValue`语义 */
 export interface NumberInputProps extends
-  InputProps<number, HTMLInputElement, HTMLDivElement>,
+  InputProps<number | '', HTMLInputElement, HTMLDivElement>,
   AccessKeyedElement,
   IconElement,
   IndicatorElement,
@@ -90,7 +91,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
-        value: newValue as number,
+        value: newValue,
         oldValue: typeof currentValue === 'number' ? currentValue : void 0,
       });
     }
@@ -148,7 +149,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     setValue(newValue);
     if (typeof onChange === 'function') {
       onChange({
-        value: newValue as number,
+        value: newValue,
         oldValue: typeof currentValue === 'number' ? currentValue : void 0,
         event,
       });

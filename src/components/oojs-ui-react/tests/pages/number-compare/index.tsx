@@ -40,7 +40,7 @@ function OriginalNumber() {
 }
 
 function NumberComparePage() {
-  const [value, setValue] = useState<number | undefined>(5);
+  const [value, setValue] = useState<number | ''>(5);
 
   return (
     <>
@@ -57,7 +57,7 @@ function NumberComparePage() {
         </div>
         <div style={{ flex: 1 }}>
           <h2>oojs-ui-react</h2>
-          <p>当前值：{value === undefined ? '（空）' : value}</p>
+          <p>当前值：{value === '' ? '（空）' : value}</p>
           <NumberInput
             min={0}
             max={10}

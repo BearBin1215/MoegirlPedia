@@ -11,6 +11,7 @@ const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   className,
   level = 0,
   selected,
+  highlighted,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -18,6 +19,7 @@ const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
     'oo-ui-outlineOptionWidget',
     `oo-ui-outlineOptionWidget-level-${level}`,
     selected && 'oo-ui-optionWidget-selected',
+    highlighted && 'oo-ui-optionWidget-highlighted',
   );
 
   return (

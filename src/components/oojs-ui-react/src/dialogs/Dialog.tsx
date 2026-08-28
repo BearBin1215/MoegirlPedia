@@ -118,7 +118,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     frame.style.height = `${totalHeight}px`;
   };
 
-  // 监听视窗宽度变化
+  // 监听视窗宽度变化（setup需入依赖：updateSize闭包读取setup，漏掉时监听持有旧闭包而早退，打开后resize不再重算高度）
   useEffect(() => {
     const onResize = debounce(updateSize, 200);
     window.addEventListener('resize', onResize);
@@ -126,7 +126,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     return () => {
       window.removeEventListener('resize', onResize);
     };
-  }, [active, frameWidth]);
+  }, [active, setup, frameWidth]);
 
   // setup拍在paint前设置最终高度（对齐原版setup()中updateSize先于addClass的时序）：
   // 动画期间布局即为最终布局，scale缩放纯靠transform，不产生滚动条，复现原版"从中间由小变大"

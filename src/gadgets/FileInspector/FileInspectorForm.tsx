@@ -55,7 +55,7 @@ function FileInspectorForm({ username }: { username: string }) {
   // 复制状态
   const [copyButtonText, setCopyButtonText] = useState('复制文件列表');
   // 删除间隔
-  const [deleteInterval, setDeleteInterval] = useState(6);
+  const [deleteInterval, setDeleteInterval] = useState<number | ''>(6);
   /** 用于记录非链入使用文件 */
   const usedNotLinkdRef = useRef<string[]>([]);
 
@@ -195,7 +195,7 @@ function FileInspectorForm({ username }: { username: string }) {
   }, []);
 
   const handleDelete = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
-    const interval = deleteInterval * 1000;
+    const interval = (deleteInterval || 0) * 1000;
     e.preventDefault(); // 避免触发提交跳转
     const currentUser = mw.config.get('wgUserName');
     const fileList = fileUsageData.filter(({ selected }) => selected);
@@ -251,7 +251,7 @@ function FileInspectorForm({ username }: { username: string }) {
     });
   }, [fileUsageData]);
 
-  const handleIntervalChange: ChangeHandler<number> = ({ value }) => {
+  const handleIntervalChange: ChangeHandler<number | ''> = ({ value }) => {
     setDeleteInterval(value);
   };
 

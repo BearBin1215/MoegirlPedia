@@ -113,7 +113,7 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
       );
       if (index !== -1) {
         const key = options[index].key;
-        onChange?.({ value: key as string | number, oldValue: effectiveKey });
+        onChange?.({ value: key, oldValue: effectiveKey });
         setActiveKey(key);
       }
     };

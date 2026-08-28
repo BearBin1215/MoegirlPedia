@@ -46,7 +46,7 @@ const mergeData = (initData: ChangeslistLineProps[]) => {
 
 function RecentChangeList() {
   // 动态更新间隔
-  const [updateInterval, setUpdateInterval] = useState(
+  const [updateInterval, setUpdateInterval] = useState<number | ''>(
     window.realtimeRecentChangeUpdateInterval
     || Number(localStorage.getItem('realtimeRecentChangeUpdateInterval'))
     || 20,
@@ -206,7 +206,7 @@ function RecentChangeList() {
       }
       taskInterval.current = setInterval(() => {
         queryData();
-      }, Math.max(updateInterval * 1000, 5000));
+      }, Math.max((updateInterval || 0) * 1000, 5000));
     } else {
       clearInterval(taskInterval.current);
       taskInterval.current = undefined;
@@ -222,7 +222,7 @@ function RecentChangeList() {
       clearInterval(taskInterval.current);
       taskInterval.current = setInterval(() => {
         queryData();
-      }, Math.max(updateInterval * 1000, 5000));
+      }, Math.max((updateInterval || 0) * 1000, 5000));
     }
   }, [updateInterval]);
 

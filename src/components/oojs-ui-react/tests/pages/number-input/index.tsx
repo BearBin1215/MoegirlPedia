@@ -4,8 +4,8 @@ import {
 } from 'oojs-ui-react';
 
 function NumberInputs() {
-  const [numberValue, setNumberValue] = useState<number | undefined>(void 0);
-  const [numberValue2, setNumberValue2] = useState(123);
+  const [numberValue, setNumberValue] = useState<number | '' | undefined>(void 0);
+  const [numberValue2, setNumberValue2] = useState<number | ''>(123);
 
   return (
     <>
