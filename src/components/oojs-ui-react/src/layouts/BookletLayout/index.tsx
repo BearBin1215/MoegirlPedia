@@ -2,7 +2,6 @@ import React, {
   useState,
   forwardRef,
   type ReactNode,
-  type Key,
 } from 'react';
 import clsx from 'clsx';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
@@ -16,27 +15,36 @@ import type { ChangeHandler } from '../../utils';
 interface BookletLayoutOptionProps extends PageLayoutProps {
   /** 菜单选项显示内容 */
   label: ReactNode;
-  /** 唯一标识，用于控制显示 */
-  key: Key;
+
+  /** 页签值，同时作为激活匹配依据与列表key */
+  value: string | number;
 }
 
 export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'children' | 'onChange'> {
-  /** 默认激活标签 */
-  defaultKey?: string | number;
+  /** 当前激活页签（受控，传入即受控模式） */
+  value?: string | number;
+
+  /** 非受控初始激活页签 */
+  defaultValue?: string | number;
+
   /** 页签集 */
   options: BookletLayoutOptionProps[];
+
   /** 页签变化钩子 */
-  onChange?: ChangeHandler<Key>;
+  onChange?: ChangeHandler<string | number>;
 }
 
 const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   className,
   options,
-  defaultKey,
+  value,
+  defaultValue,
   onChange,
   ...rest
 }, ref) => {
-  const [activeKey, setActiveKey] = useState(defaultKey);
+  const isControlled = value !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
+  const activeValue = isControlled ? value : innerValue;
 
   const classes = clsx(
     className,
@@ -45,19 +53,20 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
 
   const menuOptions = options.map((option) => ({
     ...option,
-    data: option.key,
     children: option.label,
     hidden: undefined,
   }));
 
   const handleSelect = (option: OptionData) => {
-    if (typeof onChange === 'function' && option.data !== activeKey) {
-      onChange({
-        value: option.data,
-        oldValue: activeKey,
+    if (option.value !== activeValue) {
+      onChange?.({
+        value: option.value,
+        oldValue: activeValue,
       });
+      if (!isControlled) {
+        setInnerValue(option.value);
+      }
     }
-    setActiveKey(option.data);
   };
 
   return (
@@ -65,7 +74,6 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
       {...rest}
       className={classes}
       ref={ref}
-      activeKey={activeKey}
       menu={
         <PanelLayout
           className='oo-ui-bookletLayout-outlinePanel'
@@ -73,7 +81,7 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
           expanded
         >
           <OutlineSelect
-            value={activeKey}
+            value={activeValue}
             onSelect={handleSelect}
             options={menuOptions}
           />
@@ -82,7 +90,7 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
     >
       <StackLayout
         className='oo-ui-bookletLayout-stackLayout'
-        activeKey={activeKey}
+        activeValue={activeValue}
         options={options}
       />
     </MenuLayout>

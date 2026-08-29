@@ -45,6 +45,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   rows,
   maxRows: maxRowsProp,
   value,
+  defaultValue,
   ...rest
 }: MultilineTextInputProps, ref) => {
   const maxRows = maxRowsProp ?? getDefaultMaxRows(rows);
@@ -180,6 +181,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         className={inputClasses}
         disabled={disabled}
         value={value}
+        defaultValue={defaultValue}
         readOnly={readOnly}
         required={required}
         aria-required={required}

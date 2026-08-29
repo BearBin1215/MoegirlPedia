@@ -11,8 +11,6 @@ export interface FieldLayoutProps extends
 
   /** 标签对其方向 */
   align?: 'left' | 'right' | 'top' | 'inline';
-
-  help?: ReactNode;
 }
 
 const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({

@@ -43,9 +43,9 @@ function OriginalDropdown() {
 }
 
 const reactOptions = [
-  { key: 'a', data: 'a', children: 'foo' },
-  { key: 'b', data: 'b', children: 'bar' },
-  { key: 'c', data: 'c', disabled: true, children: 'disabled' },
+  { value: 'a', children: 'foo' },
+  { value: 'b', children: 'bar' },
+  { value: 'c', disabled: true, children: 'disabled' },
 ];
 
 function DropdownComparePage() {

@@ -1,6 +1,5 @@
+/* 原版oojs-ui wikimediaui主题样式，与tests/components/ooui.ts加载的js配套（对照页共用同一份样式） */
 @import "oojs-ui/dist/oojs-ui-wikimediaui.css";
-
-@link-color: #0011ee;
 
 body {
   font-size: 14px;
@@ -8,12 +7,12 @@ body {
   padding: 0;
 }
 
-// 页面内的第一个一级标题
+/* 页面内的第一个一级标题 */
 h1:first-child {
   margin-top: 0;
 }
 
-// 标题样式
+/* 标题样式 */
 h2 {
   margin: 1.4em 0 0.6em;
 }
@@ -32,10 +31,10 @@ p {
   margin: 0.8em 0;
 }
 
-// 链接默认无下划线，悬浮时显示
+/* 链接默认无下划线，悬浮时显示 */
 a {
   text-decoration: none;
-  color: @link-color;
+  color: #0011ee;
 
   &:hover {
     text-decoration: underline;
@@ -43,12 +42,13 @@ a {
 
   &.link {
     &:visited {
-      color: darken(@link-color, 10%);
+      /* 等价less的darken(#0011ee, 10%) */
+      color: #000dbb;
     }
   }
 }
 
-// 删除线样式
+/* 删除线样式 */
 del,
 s {
   color: #626262;
@@ -56,7 +56,7 @@ s {
   padding-right: 2px;
 }
 
-// 代码块
+/* 代码块 */
 code {
   margin: 0 0.25em;
   padding: 0.2em 0.4em;
@@ -64,7 +64,7 @@ code {
   border: 1px solid rgb(5 5 5 / 6%);
 }
 
-// 按键
+/* 按键 */
 kbd {
   display: inline-block;
   background-color: #f7f7f7;
@@ -79,7 +79,7 @@ kbd {
   top: -1px;
 }
 
-// 无序列表
+/* 无序列表 */
 ul {
   list-style: none;
   padding: 0;

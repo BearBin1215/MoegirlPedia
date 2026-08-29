@@ -1,4 +1,5 @@
 import React, {
+  useState,
   forwardRef,
   useEffect,
   useRef,
@@ -25,9 +26,13 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   required,
   onChange,
   value,
+  defaultValue,
   ...rest
 }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const isControlled = value !== undefined;
+  const [innerChecked, setInnerChecked] = useState(!!defaultValue);
+  const checked = isControlled ? value : innerChecked;
 
   // indeterminate不是React受控属性，需手动同步到DOM
   useEffect(() => {
@@ -44,13 +49,14 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.checked;
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: value,
-        event,
-      });
+    if (!isControlled) {
+      setInnerChecked(newValue);
     }
+    onChange?.({
+      value: newValue,
+      oldValue: checked,
+      event,
+    });
   };
 
   return (
@@ -69,7 +75,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         accessKey={accessKey}
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
-        checked={value}
+        checked={checked}
         disabled={disabled}
         onChange={handleChange}
       />

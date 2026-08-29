@@ -5,7 +5,6 @@ import React, {
   useId,
   forwardRef,
   type ReactNode,
-  type Key,
 } from 'react';
 import clsx from 'clsx';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
@@ -18,8 +17,10 @@ import type { ChangeHandler } from '../../utils';
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
   /** 页签显示内容 */
   label: ReactNode;
-  /** 唯一标识，用于控制显示 */
-  key: Key;
+
+  /** 页签值，同时作为激活匹配依据与列表key */
+  value: string | number;
+
   /** 页签是否禁用，禁用页签对应的面板将以hidden完全隐藏 */
   disabled?: boolean;
 }
@@ -27,18 +28,27 @@ export interface IndexLayoutTabProps extends TabPanelLayoutProps {
 export interface IndexLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'menuPosition' | 'children' | 'onChange'> {
   /** 页签集 */
   options: IndexLayoutTabProps[];
+
   /** 页签是否有边框 */
   framed?: boolean;
+
   /** 是否显示全部面板 */
   continuous?: boolean;
+
   /** 切换面板后是否自动聚焦面板内第一个可聚焦元素 */
   autoFocus?: boolean;
+
   /** 是否以hidden="until-found"隐藏面板并支持浏览器查找定位后自动切换页签 */
   openMatchedPanels?: boolean;
-  /** 默认激活页签 */
-  defaultKey?: Key;
+
+  /** 当前激活页签（受控，传入即受控模式） */
+  value?: string | number;
+
+  /** 非受控初始激活页签 */
+  defaultValue?: string | number;
+
   /** 页签变化钩子 */
-  onChange?: ChangeHandler<Key>;
+  onChange?: ChangeHandler<string | number>;
 }
 
 /** @description 页签布局组件，对齐原版`IndexLayout`，菜单固定在顶部 */
@@ -49,14 +59,16 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   continuous = false,
   autoFocus = true,
   openMatchedPanels = true,
-  defaultKey,
+  value,
+  defaultValue,
   onChange,
   expanded = true,
   ...rest
 }, ref) => {
-  const [activeKey, setActiveKey] = useState<Key | undefined>(defaultKey);
+  const isControlled = value !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
   // 未指定时对齐原版自动选中第一个可选页签
-  const effectiveKey = activeKey ?? options[0]?.key;
+  const effectiveValue = (isControlled ? value : innerValue) ?? options[0]?.value;
   const idBase = useId();
   const stackRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(false);
@@ -66,12 +78,17 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     'oo-ui-indexLayout',
   );
 
-  const handleSelect = (option: OptionData) => {
-    const key = option.data as Key;
-    if (key !== effectiveKey) {
-      onChange?.({ value: key, oldValue: effectiveKey });
-      setActiveKey(key);
+  const activate = (key: string | number) => {
+    if (key !== effectiveValue) {
+      onChange?.({ value: key, oldValue: effectiveValue });
+      if (!isControlled) {
+        setInnerValue(key);
+      }
     }
+  };
+
+  const handleSelect = (option: OptionData) => {
+    activate(option.value);
   };
 
   // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦）
@@ -96,7 +113,7 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
       'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
     );
     focusable?.focus();
-  }, [effectiveKey, autoFocus, continuous]);
+  }, [effectiveValue, autoFocus, continuous]);
 
   // 对齐原版openMatchedPanels：浏览器查找命中隐藏面板时自动切换到对应页签
   useEffect(() => {
@@ -112,16 +129,14 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
         (_, i) => `${idBase}-panel-${i}` === (e.target as HTMLElement).id,
       );
       if (index !== -1) {
-        const key = options[index].key;
-        onChange?.({ value: key, oldValue: effectiveKey });
-        setActiveKey(key);
+        activate(options[index].value);
       }
     };
     stack.addEventListener('beforematch', handleBeforeMatch);
     return () => {
       stack.removeEventListener('beforematch', handleBeforeMatch);
     };
-  }, [openMatchedPanels, continuous, options, idBase, effectiveKey, onChange]);
+  }, [openMatchedPanels, continuous, options, idBase, effectiveValue, onChange]);
 
   return (
     <MenuLayout
@@ -133,11 +148,10 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
         <PanelLayout className='oo-ui-indexLayout-tabPanel' expanded={expanded}>
           <TabSelect
             framed={framed}
-            value={effectiveKey as string | number | undefined}
+            value={effectiveValue}
             onSelect={handleSelect}
             options={options.map((option, i) => ({
               ...option,
-              data: option.key as string | number,
               children: option.label,
               hidden: undefined,
               id: `${idBase}-tab-${i}`,
@@ -157,12 +171,12 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
         {options.map((option, i) => (
           <TabPanelLayout
             {...option}
-            key={option.key}
+            key={option.value}
             id={`${idBase}-panel-${i}`}
             aria-labelledby={`${idBase}-tab-${i}`}
-            active={option.key === effectiveKey}
+            active={option.value === effectiveValue}
             hidden={
-              !continuous && option.key !== effectiveKey
+              !continuous && option.value !== effectiveValue
                 ? (openMatchedPanels && !option.disabled ? 'until-found' : true)
                 : undefined
             }

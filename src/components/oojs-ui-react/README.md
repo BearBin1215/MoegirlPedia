@@ -9,7 +9,7 @@
 ## 基本类型
 
 - ChangeValue<T, P>: `{ value: T, oldValue: T | undefined, event?: React.ChangeEvent<P> }`
-- ChangeHandler<T, P>: `(change?: ChangeValue<T, P>) => void;`
+- ChangeHandler<T, P>: `(change: ChangeValue<T, P>) => void;`
 - Indicator: `'clear' | 'up' | 'down' | 'required'`
 - LabelPosition: `'before' | 'after'`
 
@@ -133,19 +133,16 @@ const App = () => {
       label='please select'
       options={[
         {
-          key: 'a',
-          data: 'a',
+          value: 'a',
           children: 'foo',
         },
         {
-          key: 'b',
-          data: 'b',
+          value: 'b',
           icon: 'check',
           children: 'bar',
         },
         {
-          key: 'c',
-          data: 'c',
+          value: 'c',
           disabled: true,
           children: 'disabled',
         },
@@ -157,7 +154,7 @@ const App = () => {
 export default App;
 ```
 
-选项对象的**data**字段必须，选项在组件内部渲染为`MenuOption`。
+选项对象的**value**字段必须，选项在组件内部渲染为`MenuOption`。
 
 ### 分组
 
@@ -171,28 +168,23 @@ const App = () => {
       label='please select'
       options={[
         {
-          key: 'group1',
           icon: 'check',
           children: 'group1',
         },
         {
-          key: 'a',
-          data: 'a',
+          value: 'a',
           children: 'foo',
         },
         {
-          key: 'b',
-          data: 'b',
+          value: 'b',
           children: 'bar',
         },
         {
-          key: 'group2',
           icon: 'cancel',
           children: 'group2',
         },
         {
-          key: 'c',
-          data: 'c',
+          value: 'c',
           disabled: true,
           children: 'disabled',
         },
@@ -204,7 +196,7 @@ const App = () => {
 export default App;
 ```
 
-不带`data`字段的选项渲染为分组标题（内部`MenuSectionOption`）。
+不带`value`字段的选项渲染为分组标题（内部`MenuSectionOption`）。
 
 ### API
 
@@ -223,9 +215,9 @@ const App = () => {
   return (
     <RadioSelect
       options={[
-        { data: 'a' },
-        { data: 'b' },
-        { data: 'c', disabled: true },
+        { value: 'a' },
+        { value: 'b' },
+        { value: 'c', disabled: true },
       ]}
     />
   );
@@ -234,24 +226,26 @@ const App = () => {
 export default App;
 ```
 
-选项在组件内部渲染为`RadioOption`，其中`data`参数必须且不重复。
+选项在组件内部渲染为`RadioOption`，其中`value`参数必须且不重复。
 
 ### API
 
 #### RadioSelect
 
-| 参数         | 说明                                                     | 类型                                                                        |
-| ------------ | -------------------------------------------------------- | --------------------------------------------------------------------------- |
-| disabled     | 是否禁用                                                 | `boolean`                                                                   |
-| name         | 参数名                                                   | `string`                                                                    |
-| onChange     | 值变化钩子                                               | [`ChangeHandler<string \| number \| boolean, HTMLInputElement>`](#基本类型) |
+| 参数         | 说明                               | 类型                                                                          |
+| ------------ | ---------------------------------- | ----------------------------------------------------------------------------- |
+| disabled     | 是否禁用                           | `boolean`                                                                     |
+| name         | 参数名                             | `string`                                                                      |
+| value        | 当前选中值（受控，传入即受控模式） | `string \| number`                                                            |
+| defaultValue | 非受控初始选中值                   | `string \| number`                                                            |
+| onChange     | 值变化钩子                         | [`ChangeHandler<string \| number \| undefined, HTMLInputElement>`](#基本类型) |
 
 #### 选项
 
 | 参数      | 说明       | 类型                                                    |
 | --------- | ---------- | ------------------------------------------------------- |
 | accessKey | 快捷键     | `string`                                                |
-| data      | 选项值     | `string \| number \| boolean`                           |
+| value     | 选项值     | `string \| number`                                      |
 | disabled  | 是否禁用   | `boolean`                                               |
 | onChange  | 值变化钩子 | [`ChangeHandler<boolean, HTMLInputElement>`](#基本类型) |
 
@@ -291,19 +285,22 @@ export default App;
 
 ## BookletLayout (Menu)
 
-子元素由`PageLayout`组成。`PageLayout`的key值必须，会用于切换页签，不填则会导致无法显示。
+页签由`options`组成，选项的`value`值必须，会用于切换页签，不填则会导致无法显示。
 
 ```jsx
 import React from 'react';
-import { BookletLayout, PageLayout } from 'oojs-ui-react';
+import { BookletLayout } from 'oojs-ui-react';
 
 const App = () => {
   return (
-    <BookletLayout defaultKey='2'>
-      <PageLayout key='1' label='page 1'>content 1</PageLayout>
-      <PageLayout key='2' label='page 2'>content 2</PageLayout>
-      <PageLayout key='3' label={<b>page 3</b>}>content 3</PageLayout>
-    </BookletLayout>
+    <BookletLayout
+      defaultValue='2'
+      options={[
+        { value: '1', label: 'page 1', children: 'content 1' },
+        { value: '2', label: 'page 2', children: 'content 2' },
+        { value: '3', label: <b>page 3</b>, children: 'content 3' },
+      ]}
+    />
   );
 };
 

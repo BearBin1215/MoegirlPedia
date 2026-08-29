@@ -1,6 +1,5 @@
 import React, { forwardRef, useEffect, useRef } from 'react';
 import clsx from 'clsx';
-import { omit } from 'es-toolkit/compat';
 import type { ElementProps } from '../../Element';
 
 export interface LayoutProps extends Omit<ElementProps, 'hidden'> {
@@ -35,7 +34,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
 
   return (
     <div
-      {...omit(rest, 'activeKey')}
+      {...rest}
       className={classes}
       // 保留原始值（而非归一化为布尔）传入：React需感知true↔'until-found'切换才会重写DOM属性；
       // 断言仅为绕过React 18类型定义（hidden仅声明为boolean）

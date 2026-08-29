@@ -4,12 +4,9 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useEffect,
-  type Key,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import clsx from 'clsx';
-import type { MenuOptionProps } from '../MenuOption';
-import type { MenuSectionOptionProps } from '../MenuSectionOption';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -21,12 +18,12 @@ import {
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
+import type { IndicatorElement } from '../Indicator';
 import type { OptionData } from '../Option';
+import type { SelectOptionProps } from '../Select';
 import MenuSelect from './MenuSelect';
 
-export type DropdownOptionProps = (MenuOptionProps | MenuSectionOptionProps) & {
-  key: Key;
-};
+export type DropdownOptionProps = SelectOptionProps;
 
 export interface DropdownProps extends
   WidgetProps<HTMLDivElement>,
@@ -37,7 +34,11 @@ export interface DropdownProps extends
   /** 选项集 */
   options: DropdownOptionProps[];
 
+  /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
+
+  /** 非受控初始选中值 */
+  defaultValue?: string | number;
 
   onChange?: ChangeHandler<string | number>;
 }
@@ -53,11 +54,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   onChange,
   options,
   value: controlledValue,
+  defaultValue,
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | number | undefined>();
-  const [highlightedKey, setHighlightedKey] = useState<Key>();
+  const isControlled = controlledValue !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
+  const currentValue = isControlled ? controlledValue : innerValue;
+  const [highlightedValue, setHighlightedValue] = useState<string | number>();
   const elementRef = useRef<HTMLDivElement>(null);
 
   const classes = clsx(
@@ -71,38 +75,38 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     open && 'oo-ui-dropdownWidget-open',
   );
 
-  /** 可选项（有data且未禁用），键盘导航的目标集合 */
+  /** 可选项（有value且未禁用），键盘导航的目标集合 */
   const selectableOptions = options.filter(
-    (option): option is DropdownOptionProps & { data: string | number } => 'data' in option && !option.disabled,
+    (option): option is DropdownOptionProps & { value: string | number } => 'value' in option && !option.disabled,
   );
 
   /** 移动键盘高亮项（循环） */
   const moveHighlight = (delta: 1 | -1) => {
-    const keys = selectableOptions.map((o) => o.key);
-    if (!keys.length) {
+    const values = selectableOptions.map((o) => o.value);
+    if (!values.length) {
       return;
     }
-    const currentIndex = highlightedKey === undefined ? -1 : keys.indexOf(highlightedKey);
+    const currentIndex = highlightedValue === undefined ? -1 : values.indexOf(highlightedValue);
     const nextIndex = currentIndex === -1
-      ? (delta === 1 ? 0 : keys.length - 1)
-      : (currentIndex + delta + keys.length) % keys.length;
-    setHighlightedKey(keys[nextIndex]);
+      ? (delta === 1 ? 0 : values.length - 1)
+      : (currentIndex + delta + values.length) % values.length;
+    setHighlightedValue(values[nextIndex]);
   };
 
-  /** 选中指定选项并关闭菜单 */
-  const selectOption = (option: DropdownOptionProps & { data: string | number }) => {
-    if (typeof onChange === 'function') {
-      onChange({
-        value: option.data,
-        oldValue: controlledValue ?? value,
-      });
+  /** 选中指定选项并关闭菜单（非受控时同步内部state） */
+  const selectOption = (option: OptionData) => {
+    onChange?.({
+      value: option.value,
+      oldValue: currentValue,
+    });
+    if (!isControlled) {
+      setInnerValue(option.value);
     }
-    setValue(option.data);
     setOpen(false);
   };
 
   /** handle键盘导航，对齐原版DropdownWidget.onKeyDown（Enter/Space开合）与SelectWidget键盘选择 */
-  const handleHandleKeyDown = (ev: ReactKeyboardEvent) => {
+  const handleKeyDown = (ev: ReactKeyboardEvent) => {
     if (disabled) {
       return;
     }
@@ -113,7 +117,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         if (!open) {
           setOpen(true);
         } else {
-          const highlighted = selectableOptions.find((o) => o.key === highlightedKey);
+          const highlighted = selectableOptions.find((o) => o.value === highlightedValue);
           if (highlighted) {
             selectOption(highlighted);
           }
@@ -138,13 +142,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       case 'Home':
         if (open && selectableOptions.length) {
           ev.preventDefault();
-          setHighlightedKey(selectableOptions[0].key);
+          setHighlightedValue(selectableOptions[0].value);
         }
         break;
       case 'End':
         if (open && selectableOptions.length) {
           ev.preventDefault();
-          setHighlightedKey(selectableOptions[selectableOptions.length - 1].key);
+          setHighlightedValue(selectableOptions[selectableOptions.length - 1].value);
         }
         break;
     }
@@ -156,22 +160,8 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     }
   };
 
-  /** 选择后回调 */
-  const handleSelect = (option: OptionData) => {
-    if (typeof onChange === 'function') {
-      onChange({
-        value: option.data,
-        oldValue: controlledValue ?? value,
-      });
-    }
-    setValue(option.data);
-    setOpen(false);
-  };
-
   /** 如果有选中的则显示已选，没选则显示label */
-  const displayLabel = options.find((option) => {
-    return 'data' in option && option.data === (controlledValue ?? value);
-  })?.children || label;
+  const displayLabel = options.find((option) => 'value' in option && option.value === currentValue)?.children ?? label;
 
   useEffect(() => {
     /** 点击页面其他地方时关闭下拉菜单 */
@@ -181,18 +171,18 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       }
     };
     /** 按下ESC时关闭下拉菜单 */
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && elementRef.current) {
         setOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleEscape);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, []);
 
@@ -213,18 +203,18 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         aria-autocomplete='list'
         aria-expanded={open}
         onClick={handleClickLabel}
-        onKeyDown={handleHandleKeyDown}
+        onKeyDown={handleKeyDown}
       >
         <IconBase icon={icon} />
         <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
       <MenuSelect
-        onSelect={handleSelect}
-        value={controlledValue ?? value}
+        onSelect={selectOption}
+        value={currentValue}
         open={open}
         options={options}
-        highlightedKey={highlightedKey}
+        highlightedValue={highlightedValue}
       />
     </div>
   );

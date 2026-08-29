@@ -122,13 +122,6 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  /** 按下左键不阻止默认行为（对齐ButtonWidget覆写cancelButtonMouseDownEvents=false，保留点击聚焦） */
-  const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    if (onMouseDown) {
-      onMouseDown(ev);
-    }
-  };
-
   /** 松开鼠标，状态变更为unpressed */
   const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled) {
@@ -178,7 +171,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       ref={ref}
       className={classes}
       onClick={handleClick}
-      onMouseDown={handleMouseDown}
+      onMouseDown={onMouseDown}
       onMouseUp={handleMouseUp}
       onKeyDown={handleKeyDown}
       onKeyPress={handleKeyPress}

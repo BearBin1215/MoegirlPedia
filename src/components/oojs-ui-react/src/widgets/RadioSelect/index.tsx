@@ -13,6 +13,12 @@ export interface RadioSelectProps extends WidgetProps {
 
   name?: string;
 
+  /** 当前选中值（受控，传入即受控模式） */
+  value?: string | number;
+
+  /** 非受控初始选中值 */
+  defaultValue?: string | number;
+
   onChange?: ChangeHandler<string | number | undefined, HTMLInputElement>;
 }
 
@@ -21,10 +27,14 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   className,
   disabled,
   name,
+  value,
+  defaultValue,
   onChange,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState<string | number | undefined>();
+  const isControlled = value !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
+  const currentValue = isControlled ? value : innerValue;
   const [pressed, setPressed] = useState(false);
 
   const classes = clsx(
@@ -55,25 +65,22 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     >
       {options.map((option) => {
         const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {
-          const newValue = option.data;
-          if (typeof option.onChange === 'function') {
-            option.onChange(changeEvent);
+          option.onChange?.(changeEvent);
+          onChange?.({
+            oldValue: currentValue,
+            value: option.value,
+            event: changeEvent?.event,
+          });
+          if (!isControlled) {
+            setInnerValue(option.value);
           }
-          if (typeof onChange === 'function') {
-            onChange({
-              oldValue: value,
-              value: newValue,
-              event: changeEvent?.event,
-            });
-          }
-          setValue(option.data);
         };
         return (
           <RadioOption
             {...option}
             disabled={option.disabled === void 0 ? disabled : option.disabled}
-            selected={value === option.data}
-            key={option.data}
+            selected={currentValue === option.value}
+            key={option.value}
             name={name}
             onChange={handleChange}
           />

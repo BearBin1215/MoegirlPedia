@@ -22,7 +22,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
 
   return (
     <PanelLayout
-      {...omit(rest, 'label')}
+      {...omit(rest, 'label', 'value')}
       expanded={expanded}
       scrollable={scrollable}
       className={classes}

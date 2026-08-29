@@ -67,18 +67,18 @@ function ButtonPage() {
       <h2>ButtonGroup</h2>
       <ButtonGroup
         buttons={[
-          { key: 1, children: 'One', icon: 'tag' },
-          { key: 2, children: 'Two' },
-          { key: 3, children: 'Three', disabled: true },
+          { id: 'one', children: 'One', icon: 'tag' },
+          { id: 'two', children: 'Two' },
+          { id: 'three', children: 'Three', disabled: true },
         ]}
       />
       <h3>disabled</h3>
       <ButtonGroup
         disabled
         buttons={[
-          { key: 1, children: 'One', icon: 'tag' },
-          { key: 2, children: 'Two' },
-          { key: 3, children: 'Three' },
+          { id: 'one', children: 'One', icon: 'tag' },
+          { id: 'two', children: 'Two' },
+          { id: 'three', children: 'Three' },
         ]}
       />
     </>

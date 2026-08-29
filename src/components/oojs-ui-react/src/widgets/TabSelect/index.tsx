@@ -3,7 +3,6 @@ import React, {
   forwardRef,
   useEffect,
   useRef,
-  type Key,
   type FocusEvent,
   type MouseEventHandler,
 } from 'react';
@@ -12,17 +11,21 @@ import TabOption, { type TabOptionProps } from '../TabOption';
 import type { OptionData } from '../Option';
 import type { WidgetProps } from '../Widget';
 
-export type TabSelectOptionProps = TabOptionProps & {
-  key: Key;
-};
+export type TabSelectOptionProps = TabOptionProps;
 
 export interface TabSelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect'> {
   /** 是否有边框 */
   framed?: boolean;
-  /** 当前选中值 */
+
+  /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
+
+  /** 非受控初始选中值 */
+  defaultValue?: string | number;
+
   /** 选项集 */
   options: TabSelectOptionProps[];
+
   /** 选择选项回调函数 */
   onSelect?: (option: OptionData) => void;
 }
@@ -32,20 +35,24 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   className,
   framed = true,
   value,
+  defaultValue,
   options,
   onSelect,
   disabled,
   tabIndex,
   ...rest
 }, ref) => {
+  const isControlled = value !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
+  const currentValue = isControlled ? value : innerValue;
   const [pressed, setPressed] = useState(false);
   const [focused, setFocused] = useState(false);
   const optionsRef = useRef(options);
-  const valueRef = useRef(value);
+  const valueRef = useRef(currentValue);
   const disabledRef = useRef(disabled);
   const onSelectRef = useRef(onSelect);
   optionsRef.current = options;
-  valueRef.current = value;
+  valueRef.current = currentValue;
   disabledRef.current = disabled;
   onSelectRef.current = onSelect;
 
@@ -60,9 +67,12 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   const choose = (option: TabSelectOptionProps) => {
     if (!disabled && !option.disabled) {
       onSelectRef.current?.({
-        data: option.data ?? option.key,
+        value: option.value,
         children: option.children,
       });
+      if (!isControlled) {
+        setInnerValue(option.value);
+      }
     }
   };
 
@@ -79,9 +89,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       if (!selectable.length) {
         return;
       }
-      const currentIndex = selectable.findIndex(
-        (option) => (option.data ?? option.key) === valueRef.current,
-      );
+      const currentIndex = selectable.findIndex((option) => option.value === valueRef.current);
       let next: TabSelectOptionProps | undefined;
       let handled = false;
       switch (e.key) {
@@ -110,7 +118,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       }
       if (next) {
         onSelectRef.current?.({
-          data: next.data ?? next.key,
+          value: next.value,
           children: next.children,
         });
       }
@@ -156,8 +164,8 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       {options.map((option) => (
         <TabOption
           {...option}
-          key={option.key}
-          selected={value === (option.data ?? option.key)}
+          key={option.value}
+          selected={currentValue === option.value}
           onClick={(e) => {
             option.onClick?.(e);
             choose(option);

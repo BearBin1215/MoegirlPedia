@@ -10,24 +10,20 @@ function DropdownPage() {
         label='please select'
         options={[
           {
-            key: 'a',
-            data: 'a',
+            value: 'a',
             children: 'foo',
           },
           {
-            key: 'b',
-            data: 'b',
+            value: 'b',
             children: 'bar',
           },
           {
-            key: 'c',
-            data: 'c',
+            value: 'c',
             disabled: true,
             children: '禁用选项（disabled: "true"）',
           },
           {
-            key: 'check',
-            data: 'check',
+            value: 'check',
             icon: 'check',
             children: '带图标（icon: "check"）',
           },
@@ -36,34 +32,29 @@ function DropdownPage() {
 
       <h2>分组</h2>
       <p>
-        不带<code>data</code>属性的选项将作为分组。
+        不带<code>value</code>属性的选项将作为分组。
       </p>
       <Dropdown
         label='please select'
         options={[
           {
-            key: 'group1',
             icon: 'check',
             children: 'group1',
           },
           {
-            key: 'a',
-            data: 'a',
+            value: 'a',
             children: 'foo',
           },
           {
-            key: 'b',
-            data: 'b',
+            value: 'b',
             children: 'bar',
           },
           {
-            key: 'group2',
             icon: 'cancel',
             children: 'group2',
           },
           {
-            key: 'c',
-            data: 'c',
+            value: 'c',
             disabled: true,
             children: 'disabled',
           },

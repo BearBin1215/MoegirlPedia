@@ -4,6 +4,11 @@
 
 开发过程中可能会要求对其原版，完整指引见 [docs/comparison-guide.md](./docs/comparison-guide.md)。
 
+## 全局协作约定
+
+- 接口规范、最佳实践等方面尚未完全敲定，开发过程中可能存在较多原有实现和React最佳实践冲突的地方，遇到时提出方案让用户选择
+- 此部分代码目前仅实际用于父工程 MoegirlPedia 工程，没有实际发布 npm，暂不用考虑发布相关内容
+
 ## 项目结构
 
 ```
@@ -15,7 +20,7 @@ oojs-ui-react/
 │  ├─ Element.ts             #   基础元素类型（仅类型，无渲染组件）
 │  ├─ utils.ts               #   共享工具（类名生成/ChangeHandler等）
 │  └─ index.ts               #   导出面
-├─ tests/                    # 本地测试工程（pnpm start，端口8090）
+├─ tests/                    # 本地测试工程（pnpm dev，端口8090）
 │  ├─ components/ooui.ts     #   原版oojs-ui加载器（对照页基础设施）
 │  ├─ pages/                 #   测试页；对照页命名 xxx-compare/
 │  └─ config/router.ts       #   侧栏路由注册

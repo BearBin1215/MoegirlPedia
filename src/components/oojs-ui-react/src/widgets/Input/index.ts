@@ -23,6 +23,9 @@ export interface InputProps<T extends string | number | boolean | undefined, P =
   /** 是否必填 */
   required?: boolean;
 
-  /** 输入框值（受控） */
+  /** 输入框值（受控，传入即受控模式） */
   value?: T;
+
+  /** 非受控初始值（不传value时生效） */
+  defaultValue?: T;
 }

@@ -1,14 +1,9 @@
 import React, {
   forwardRef,
   type ReactNode,
-  type Key,
 } from 'react';
 import clsx from 'clsx';
 import Layout, { type LayoutProps } from '../Layout';
-
-export type MenuLayoutOptions = LayoutProps & {
-  key: Key;
-};
 
 export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   /** 是否铺满父元素 */
@@ -17,8 +12,6 @@ export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   showMenu?: boolean;
   /** 菜单位置 */
   menuPosition?: 'top' | 'after' | 'bottom' | 'before';
-  /** 当前选中页签 */
-  activeKey?: Key;
   /** 选择列表 */
   menu: ReactNode;
 }

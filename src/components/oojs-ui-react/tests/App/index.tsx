@@ -1,18 +1,18 @@
-import React, { useState, type Key } from 'react';
+import React, { useState } from 'react';
 import { BookletLayout, Dropdown, type ChangeHandler } from 'oojs-ui-react';
 import router from '../config/router';
 import { LanguageContext, languages, type Languages } from '../components/intl';
 import LazyComponent from './LazyComponent';
-import './index.less';
+import './index.css';
 
 const topPages = ['Overview', 'Start'];
 
 function App() {
-  const [activeKey, setActiveKey] = useState<Key>('Overview');
+  const [activeKey, setActiveKey] = useState('Overview');
   const [language, setLanguage] = useState<Languages>('zh-cn');
 
-  const handlePageChange: ChangeHandler<Key> = ({ value }) => {
-    setActiveKey(value);
+  const handlePageChange: ChangeHandler<string | number> = ({ value }) => {
+    setActiveKey(value as string);
   };
 
   return (
@@ -27,8 +27,7 @@ function App() {
           <div className='oojs-ui-react-title'>
             <Dropdown
               options={Object.entries(languages).map(([lang, langText]) => ({
-                key: lang,
-                data: lang,
+                value: lang,
                 children: langText,
               }))}
               value={language}
@@ -40,15 +39,14 @@ function App() {
       <div className='oojs-ui-react-content'>
         <LanguageContext.Provider value={{ language }}>
           <BookletLayout
-            defaultKey='Overview'
+            value={activeKey}
             onChange={handlePageChange}
-            activeKey={activeKey}
             options={router.map((route) => 'section' in route ? {
-              key: route.key,
+              value: route.key,
               label: route.title[language] || route.key,
               disabled: true,
             } : {
-              key: route.key,
+              value: route.key,
               label: (
                 <span style={{ paddingLeft: topPages.includes(route.key) ? void 0 : '1em' }}>
                   {route.title[language] || route.key}

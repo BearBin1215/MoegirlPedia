@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Icon, Indicator } from 'oojs-ui-react';
 import intl from '../../components/intl';
 import { iconList, indicatorList } from './icon-list';
-import './index.less';
+import './index.css';
 
 function IconPage() {
   /** 复制React代码 */

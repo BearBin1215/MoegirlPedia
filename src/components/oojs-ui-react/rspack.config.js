@@ -32,9 +32,8 @@ export default defineConfig({
         type: 'asset/resource',
       },
       {
-        test: /\.(css|less)$/,
+        test: /\.css$/,
         type: 'css/auto',
-        use: ['less-loader'],
       },
       {
         test: /\.(png|jpe?g|gif)/,

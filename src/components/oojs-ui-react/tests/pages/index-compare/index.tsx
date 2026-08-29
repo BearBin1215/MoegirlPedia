@@ -53,9 +53,9 @@ function IndexComparePage() {
   const [activeKey, setActiveKey] = useState<string>();
 
   const options = [
-    { key: 'one', label: '第一个页签', children: <p>第一个页签内容（纯文本）</p> },
+    { value: 'one', label: '第一个页签', children: <p>第一个页签内容（纯文本）</p> },
     {
-      key: 'two',
+      value: 'two',
       label: '第二个页签',
       children: (
         <>
@@ -66,7 +66,7 @@ function IndexComparePage() {
         </>
       ),
     },
-    { key: 'three', label: '第三个页签', children: <p>第三个页签内容</p> },
+    { value: 'three', label: '第三个页签', children: <p>第三个页签内容</p> },
   ];
 
   return (
@@ -91,7 +91,7 @@ function IndexComparePage() {
           <div style={{ position: 'relative', height: 320 }}>
             <IndexLayout
               options={options}
-              defaultKey='one'
+              defaultValue='one'
               onChange={({ value }) => setActiveKey(value as string)}
             />
           </div>

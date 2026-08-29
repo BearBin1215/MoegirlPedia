@@ -1,12 +1,10 @@
-import React, { forwardRef, type Key } from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import Select from '../Select';
 import type { SelectProps } from '../Select';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;
-  /** 键盘导航当前高亮的选项key */
-  highlightedKey?: Key;
 }
 
 /**
@@ -15,7 +13,6 @@ export interface MenuSelectProps extends SelectProps {
 const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,
   open = false,
-  highlightedKey,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -30,7 +27,6 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
     <Select
       {...rest}
       className={classes}
-      highlightedKey={highlightedKey}
       ref={ref}
     />
   );

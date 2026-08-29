@@ -53,7 +53,7 @@
 
 ## 验收清单
 
-- [ ] `pnpm exec tsc --noEmit` 零错误
+- [ ] `pnpm typecheck` 零错误
 - [ ] 对照页并排：肉眼对比动画观感、焦点行为、键盘全流程
 - [ ] 原版有而 React 版缺的行为：要么补齐，要么记入 TODO.md
 - [ ] a11y 属性（aria-*、role）与原版 DOM 一致

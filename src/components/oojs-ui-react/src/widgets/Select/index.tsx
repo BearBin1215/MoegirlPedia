@@ -1,27 +1,33 @@
 import React, {
   useState,
   forwardRef,
-  type Key,
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
-import MenuOption from '../MenuOption';
+import MenuOption, { type MenuOptionProps } from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { OptionProps, OptionData } from '../Option';
 
-export type SelectOptionProps = (OptionProps | MenuSectionOptionProps) & {
-  key: Key;
-};
+/**
+ * 选择集选项。带`value`的为可选项，不带的为分组标题（MenuSectionOption）；
+ * `value`同时作为选中态匹配依据与列表key
+ */
+export type SelectOptionProps =
+  | MenuOptionProps
+  | (MenuSectionOptionProps & { value?: undefined });
 
 export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect' | 'children'> {
   /** 选中选项回调函数 */
   onSelect?: (option: OptionData) => void;
 
-  /** 当前值 */
+  /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
+
+  /** 非受控初始选中值 */
+  defaultValue?: string | number;
 
   /** 是否渲染OutlineOption */
   outline?: boolean;
@@ -29,8 +35,8 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
   /** 选项集 */
   options: SelectOptionProps[];
 
-  /** 键盘导航当前高亮的选项key（由Dropdown等上层组件管理） */
-  highlightedKey?: Key;
+  /** 键盘导航当前高亮的选项value（由Dropdown等上层组件管理） */
+  highlightedValue?: string | number;
 }
 
 /**
@@ -41,11 +47,15 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
   disabled,
   onSelect,
   value,
+  defaultValue,
   outline,
   options,
-  highlightedKey,
+  highlightedValue,
   ...rest
 }, ref) => {
+  const isControlled = value !== undefined;
+  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
+  const currentValue = isControlled ? value : innerValue;
   const [pressed, setPressed] = useState(false);
 
   const classes = clsx(
@@ -74,12 +84,12 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
       onMouseLeave={handleUnpress}
       ref={ref}
     >
-      {options.map((option) => {
-        if (!('data' in option)) {
+      {options.map((option, i) => {
+        if (!('value' in option) || option.value === undefined) {
           return (
             <MenuSectionOption
               {...option}
-              key={option.key}
+              key={i}
             />
           );
         }
@@ -88,16 +98,20 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             option.onClick(e);
           }
           if (onSelect && !option.disabled) {
-            onSelect(option as OptionData);
+            onSelect(option);
+            if (!isControlled) {
+              setInnerValue(option.value);
+            }
           }
         };
-        const isHighlighted = highlightedKey === option.key;
+        const selected = currentValue === option.value;
+        const isHighlighted = highlightedValue === option.value;
         return outline ? (
           <OutlineOption
             {...option}
-            key={option.key}
+            key={option.value}
             onClick={handleClick}
-            selected={value === option.data}
+            selected={selected}
             highlighted={isHighlighted}
           >
             {option.children}
@@ -105,9 +119,9 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
         ) : (
           <MenuOption
             {...option}
-            key={option.key}
+            key={option.value}
             onClick={handleClick}
-            selected={value === option.data}
+            selected={selected}
             highlighted={isHighlighted}
           >
             {option.children}

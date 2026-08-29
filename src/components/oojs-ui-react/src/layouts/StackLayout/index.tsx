@@ -1,26 +1,24 @@
-import React, {
-  forwardRef,
-  type Key,
-} from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 import PageLayout, { type PageLayoutProps } from '../PageLayout';
 
 interface PageOptionProps extends PageLayoutProps {
-  key: Key;
+  /** 页签值，同时作为激活匹配依据与列表key */
+  value: string | number;
 }
 
 export interface StackLayoutProps extends PanelLayoutProps {
-  /** 是否全显示。优先级高于activeKey设置的显示 */
+  /** 是否全显示。优先级高于activeValue设置的显示 */
   continuous?: boolean;
-  /** 显示的子组件key */
-  activeKey?: Key;
+  /** 当前激活的子组件value */
+  activeValue?: string | number;
   /** 页签集 */
   options: PageOptionProps[];
 }
 
 const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
-  activeKey,
+  activeValue,
   className,
   expanded = true,
   scrollable = true,
@@ -45,8 +43,8 @@ const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
       {options.map((option) => (
         <PageLayout
           {...option}
-          hidden={!continuous && option.key !== activeKey}
-          key={option.key}
+          hidden={!continuous && option.value !== activeValue}
+          key={option.value}
         />
       ))}
     </PanelLayout>

@@ -12,7 +12,7 @@ export interface TabOptionProps extends WidgetProps<HTMLDivElement>, OptionData 
 const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
   children,
   className,
-  data: _data,
+  value: _value,
   disabled,
   highlighted: _highlighted,
   selected,

@@ -7,9 +7,9 @@ function RadioPage() {
       <h1>Radio - 单选框</h1>
       <RadioSelect
         options={[
-          { data: 'a', children: <span style={{ color: 'blue' }}>a</span> },
-          { data: 'b', children: 'b' },
-          { data: 'c', children: 'disabled', disabled: true },
+          { value: 'a', children: <span style={{ color: 'blue' }}>a</span> },
+          { value: 'b', children: 'b' },
+          { value: 'c', children: 'disabled', disabled: true },
         ]}
       />
     </>

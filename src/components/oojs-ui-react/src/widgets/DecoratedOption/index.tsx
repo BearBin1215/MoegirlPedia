@@ -38,7 +38,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'
-      {...omit(rest, 'label', 'data')}
+      {...omit(rest, 'label', 'value')}
       ref={ref}
     >
       <IconBase icon={icon} />

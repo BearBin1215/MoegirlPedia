@@ -25,7 +25,7 @@ const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
 
   return (
     <PanelLayout
-      {...omit(rest, 'label', 'disabled')}
+      {...omit(rest, 'label', 'value', 'disabled')}
       expanded={expanded}
       scrollable={scrollable}
       className={classes}

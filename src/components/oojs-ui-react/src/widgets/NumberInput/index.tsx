@@ -75,10 +75,12 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   buttonStep = step,
   pageStep = buttonStep * 10,
   value: controlledValue,
+  defaultValue,
   ...rest
 }, ref) => {
-  const [value, setValue] = useState<number | ''>(controlledValue ?? '');
-  const currentValue = controlledValue ?? value;
+  const isControlled = controlledValue !== undefined;
+  const [innerValue, setInnerValue] = useState<number | ''>(defaultValue ?? '');
+  const currentValue = isControlled ? controlledValue : innerValue;
   const inputRef = useRef<HTMLInputElement>(null);
   /** 展示值：空值/非数字时显示为空 */
   const displayValue = typeof currentValue === 'number' && !Number.isNaN(currentValue) ? currentValue : '';
@@ -86,15 +88,16 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   /** 当前值的数值形态，空值为NaN，对齐原版getNumericValue */
   const getNumericValue = () => (currentValue === '' ? NaN : currentValue);
 
-  /** 提交新值并触发onChange */
-  const commit = (newValue: number | '') => {
-    setValue(newValue);
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: typeof currentValue === 'number' ? currentValue : void 0,
-      });
+  /** 提交新值并触发onChange（非受控时同步内部state） */
+  const commit = (newValue: number | '', event?: ChangeEvent<HTMLInputElement>) => {
+    if (!isControlled) {
+      setInnerValue(newValue);
     }
+    onChange?.({
+      value: newValue,
+      oldValue: typeof currentValue === 'number' ? currentValue : undefined,
+      event,
+    });
   };
 
   /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */
@@ -146,14 +149,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     const raw = event.target.value;
     const parsed = +raw;
     const newValue = raw === '' || Number.isNaN(parsed) ? '' : parsed;
-    setValue(newValue);
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: typeof currentValue === 'number' ? currentValue : void 0,
-        event,
-      });
-    }
+    commit(newValue, event);
   };
 
   /** 失焦时，按照精度四舍五入 */

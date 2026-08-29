@@ -9,7 +9,6 @@ export interface RadioOptionProps extends OptionProps<HTMLLabelElement> {
   name?: string;
   onChange?: ChangeHandler<boolean, HTMLInputElement>;
   selected?: boolean;
-  data: number | string;
 }
 
 const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
@@ -20,6 +19,7 @@ const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
   name,
   onChange,
   selected,
+  value: _value,
   ...rest
 }, ref) => {
   const classes = clsx(

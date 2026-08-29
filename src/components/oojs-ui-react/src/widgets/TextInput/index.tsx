@@ -54,6 +54,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   readOnly,
   required,
   value,
+  defaultValue,
   ...rest
 }, ref) => {
   const [inputStyle, setInputStyle] = useState<CSSProperties>({});
@@ -110,6 +111,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         className='oo-ui-inputWidget-input'
         disabled={disabled}
         value={value}
+        defaultValue={defaultValue}
         readOnly={readOnly}
         required={required}
         aria-required={required}

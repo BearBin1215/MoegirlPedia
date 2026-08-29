@@ -4,8 +4,11 @@ import type { AccessKeyedElement } from '../../utils';
 
 /** 选项数据（对齐原版OptionWidget的config，供options prop与内部选项组件共用） */
 export interface OptionData {
-  /** 选项对应的数据 */
-  data: string | number;
+  /**
+   * 选项值，同时作为选中态匹配依据与列表key
+   * （原版OptionWidget的`data`配置；按React惯例命名value，不支持object类型）
+   */
+  value: string | number;
 
   /** 选项文本 */
   children?: ReactNode;
