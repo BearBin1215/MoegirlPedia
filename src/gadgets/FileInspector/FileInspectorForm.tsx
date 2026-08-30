@@ -6,6 +6,7 @@ import React, {
   useRef,
   useEffect,
   type MouseEvent,
+  type KeyboardEvent,
   type ChangeEvent,
 } from 'react';
 import { chunk } from 'es-toolkit';
@@ -40,6 +41,12 @@ interface FileData {
   /** 是否在共享站使用 */
   cmused?: boolean;
 }
+
+/**
+ * Button组件的点击事件参数
+ * 鼠标点击为MouseEvent，键盘Enter/空格触发时为KeyboardEvent
+ */
+type ButtonClickEvent = MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>;
 
 function FileInspectorForm({ username }: { username: string }) {
   // 当前状态，就绪/读取失败/查询中/查询完毕
@@ -169,7 +176,7 @@ function FileInspectorForm({ username }: { username: string }) {
   }, []);
 
   /** 执行查询 */
-  const queryUserFilesUsage = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+  const queryUserFilesUsage = useCallback(async (e: ButtonClickEvent) => {
     e.preventDefault(); // 避免触发提交跳转
     try {
       setStatus('querying');
@@ -194,7 +201,7 @@ function FileInspectorForm({ username }: { username: string }) {
     ));
   }, []);
 
-  const handleDelete = useCallback(async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleDelete = useCallback(async (e: ButtonClickEvent) => {
     const interval = (deleteInterval || 0) * 1000;
     e.preventDefault(); // 避免触发提交跳转
     const currentUser = mw.config.get('wgUserName');
@@ -242,7 +249,7 @@ function FileInspectorForm({ username }: { username: string }) {
   }, [fileUsageData]);
 
   /** 复制列表 */
-  const handleCopy = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+  const handleCopy = useCallback((e: ButtonClickEvent) => {
     e.preventDefault(); // 避免触发提交跳转
     copyText(fileUsageData.map(({ fileName }) => `* ${fileName}`).join('\n')).then(() => {
       setCopyButtonText('复制成功');

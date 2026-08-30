@@ -9,7 +9,7 @@ const queryLimit = mw.config.get('wgUserGroups')!.some((group) => {
 }) ? 500 : 50;
 
 export const updateCVLastUpdateDate = async () => {
-  const cvList = await categoryMembers('Category:R-18作品声优');
+  const cvList = await categoryMembers('Category:R-18作品配音演员');
   const titleChunks = chunk(cvList, queryLimit);
   const lastUpdateData: { title: string, timestamp: string }[] = [];
   for (const titleChunk of titleChunks) {

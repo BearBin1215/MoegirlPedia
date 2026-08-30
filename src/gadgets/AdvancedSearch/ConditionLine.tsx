@@ -129,8 +129,7 @@ function ConditionLine({
         onChange={handleCodeChange}
         onFocus={onFocus}
         options={Object.entries(searchCodes).map(([searchCode, searchText]) => ({
-          key: searchCode,
-          data: searchCode,
+          value: searchCode,
           children: searchText,
         }))}
       />
@@ -157,8 +156,7 @@ function ConditionLine({
           onChange={handleValueChange}
           onFocus={onFocus}
           options={contentModels.map((model) => ({
-            key: model,
-            data: model,
+            value: model,
             children: model,
           }))}
         />

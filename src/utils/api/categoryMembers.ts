@@ -12,8 +12,8 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
   const pageList: string[] = [];
   // 有api权限的用户通过API获取，无权限用户通过ajax获取
   if (mw.config.get('wgUserGroups')!.some((group) => ['bot', 'flood', 'patroller', 'sysop'].includes(group))) {
-    let cmcontinue: string | undefined = '';
-    while (cmcontinue !== undefined) {
+    let cmcontinue: string | undefined = void 0;
+    do {
       const result = await api.post({
         action: 'query',
         format: 'json',
@@ -29,7 +29,8 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         pageList.push(...result.query.categorymembers.map(({ title }) => title));
       }
       cmcontinue = result.continue?.cmcontinue;
-    }
+
+    } while (cmcontinue);
   } else {
     /**
      * 对于未持有对应用户组的用户，通过ajax递归获取分类成员
