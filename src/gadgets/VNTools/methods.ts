@@ -8,8 +8,31 @@ const queryLimit = mw.config.get('wgUserGroups')!.some((group) => {
   return ['bot', 'flood', 'sysop'].includes(group);
 }) ? 500 : 50;
 
+/** 页面标题规范化（首字母大写、下划线转空格），用于标题匹配 */
+const normalizeTitle = (title: string) => (title.charAt(0).toUpperCase() + title.slice(1)).replace(/_/g, ' ');
+
+/**
+ * 从R-18作品声优索引模板源代码中解析引退声优（引退者以skewX斜体样式标记）
+ * @param source 模板源代码
+ * @returns 引退声优的条目标题集合
+ */
+const parseRetiredCVs = (source: string) => {
+  const retiredCVs = new Set<string>();
+  const spanPattern = /<span[^>]*transform:\s*skewX\(-10deg\)[^>]*>([\s\S]*?)<\/span>/g;
+  for (const [, content] of source.matchAll(spanPattern)) {
+    for (const [, target] of content.matchAll(/\[\[([^\]|#]+)/g)) {
+      retiredCVs.add(normalizeTitle(target.trim()));
+    }
+  }
+  return retiredCVs;
+};
+
 export const updateCVLastUpdateDate = async () => {
-  const cvList = await categoryMembers('Category:R-18作品配音演员');
+  const [cvList, templateSource] = await Promise.all([
+    categoryMembers('Category:R-18作品配音演员'),
+    pageSource('Template:R-18作品声优索引'),
+  ]);
+  const retiredCVs = parseRetiredCVs(templateSource ?? '');
   const titleChunks = chunk(cvList, queryLimit);
   const lastUpdateData: { title: string, timestamp: string }[] = [];
   for (const titleChunk of titleChunks) {
@@ -27,7 +50,10 @@ export const updateCVLastUpdateDate = async () => {
   }
   const listText = lastUpdateData.sort((a, b) => {
     return (new Date(a.timestamp)) < (new Date(b.timestamp)) ? -1 : 1;
-  }).map(({ title, timestamp }) => `* [[${title}]]：${moment(timestamp).format('YYYY-MM-DD HH:mm:ss')}`).join('\n');
+  }).map(({ title, timestamp }) => {
+    const item = `[[${title}]]：${moment(timestamp).format('YYYY-MM-DD HH:mm:ss')}`;
+    return retiredCVs.has(normalizeTitle(title)) ? `* ''${item}''` : `* ${item}`;
+  }).join('\n');
   await api.postWithToken('csrf', {
     action: 'edit',
     title: 'User:BearBin/VNData/里界声优条目更新时间',
@@ -35,6 +61,7 @@ export const updateCVLastUpdateDate = async () => {
       '{{用户 允许他人编辑|[[Template:萌百视觉小说研究会|视研会]]成员}}',
       '本页面统计[[:Category:R-18作品声优]]内页面的最后更新时间，提示可能需要更新的页面。\n',
       '您可以使用[[User:BearBin/VNData#VNTools|VNTools]]更新本页面。\n',
+      "引退声优使用''斜体''表示。\n",
       `本页面最后一次由{{User|${mw.config.get('wgUserName')}}}更新于~~~~~。\n`,
       listText,
     ].join('\n'),
