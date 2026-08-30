@@ -4,7 +4,7 @@
 
 ## 开发准备
 
-需要 node.js 18+ 。
+需要 node.js 18.12+ 。
 
 使用[pnpm](https://pnpm.io/)管理依赖：
 
