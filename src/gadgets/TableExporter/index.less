@@ -23,6 +23,12 @@ table.wikitable {
             width: 14px;
             height: 14px;
         }
+
+        /** 正在加载SheetJS，同时阻止重复点击 */
+        &.export-table-button-loading {
+            opacity: .5;
+            cursor: progress;
+        }
     }
 
     &:hover {

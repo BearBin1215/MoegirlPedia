@@ -41,7 +41,6 @@
     "react-dom": "npm:@preact/compat@^17.1.2",
     "react18-json-view": "^0.2.10",
     "vue": "3.4.27",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zustand": "^4.5.7"
   },
   "devDependencies": {
