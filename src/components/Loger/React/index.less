@@ -15,15 +15,11 @@
     .loger-filter {
         float: right;
         padding: 0.4em;
-        display: flex;
-        flex-direction: column;
 
-        > button {
-            border: 0;
+        > div {
             border-radius: 0.3em;
             margin-bottom: 0.2em;
-            padding: 0.2em;
-            background-color: transparent;
+            padding-right: 0.2em;
             cursor: pointer;
 
             &.loger-filter-selected {
@@ -50,5 +46,10 @@
             color: inherit;
             text-decoration: underline dotted;
         }
+    }
+
+    .loger-record-omitted {
+        font-style: italic;
+        color: #888;
     }
 }
