@@ -1,5 +1,5 @@
 import { throttle } from 'es-toolkit';
-import styles from './index.inline.less';
+import styles from './index.inline.css';
 import folderSvg from './folderIcon.inline.svg';
 
 $(() => {

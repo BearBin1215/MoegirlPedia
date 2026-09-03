@@ -1,7 +1,7 @@
 import Loger from '@/components/Loger';
 import { categoryMembers, pageSource, compare } from '@/utils/api';
 import { splitList } from '@/utils/string';
-import './index.less';
+import './index.css';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:MassEdit') {

@@ -1,6 +1,4 @@
 #one-key-purge {
-    @borderStyle: 1px solid #bbb;
-
     >.oo-ui-window {
         z-index: 100;
     }
@@ -12,7 +10,7 @@
 
     .okp-header {
         display: flex;
-        border-bottom: @borderStyle;
+        border-bottom: 1px solid #bbb;
 
         .okp-header-text {
             flex: 1 0;
@@ -24,7 +22,7 @@
     }
 
     .okp-footer {
-        border-top: @borderStyle;
+        border-top: 1px solid #bbb;
     }
 
     .okp-note {

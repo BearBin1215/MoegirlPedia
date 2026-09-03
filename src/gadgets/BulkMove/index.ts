@@ -3,7 +3,7 @@
  */
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
-import './index.less';
+import './index.css';
 import type { ApiMoveResponse } from '@/types/api';
 
 $(() => (async () => {

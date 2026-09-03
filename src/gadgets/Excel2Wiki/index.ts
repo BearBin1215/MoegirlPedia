@@ -1,4 +1,4 @@
-import './index.less';
+import './index.css';
 
 if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   mw.loader.using('oojs-ui').done(() => {

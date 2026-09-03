@@ -1,4 +1,4 @@
-import stretchStyle from './stretchStyle.inline.less';
+import stretchStyle from './stretchStyle.inline.css';
 import markupIcon from './markup.inline.svg';
 
 if (mw.config.get('skin') === 'moeskin') {

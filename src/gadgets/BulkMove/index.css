@@ -1,9 +1,18 @@
-@import '@/styles/mixins.less';
-
 .rootpage-Special_BulkMove {
-    .overwrite-page();
+    #firstHeading {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        > div {
+            font-size: 0.6em;
+        }
+    }
 
     #bodyContent {
+        padding-right: 0 !important;
+
         #mw-content-text {
             h3 {
                 margin-bottom: 0;

@@ -22,7 +22,7 @@ import {
   type LogerRef,
   type LogerType,
 } from './types';
-import './index.less';
+import './index.css';
 
 /** 距底部小于该值（px）即视为“已贴底”，此时新日志才会自动跟随滚动 */
 const STICK_TO_BOTTOM_THRESHOLD = 24;

@@ -21,7 +21,6 @@ const { text } = storeToRefs(store);
 
 <style
   scoped
-  lang='less'
 >
 .vue-component-example {
   color: blue;

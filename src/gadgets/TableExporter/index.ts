@@ -1,4 +1,4 @@
-import './index.less';
+import './index.css';
 import exportIcon from './exportIcon.inline.svg';
 
 /**

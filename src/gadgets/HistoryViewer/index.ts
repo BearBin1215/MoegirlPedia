@@ -1,6 +1,6 @@
 import { formatDiff, pageSource } from '@/utils/api';
 import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse, ApiParams } from '@/types/api';
-import './index.less';
+import './index.css';
 
 declare global {
   interface Window {

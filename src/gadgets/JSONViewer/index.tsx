@@ -2,7 +2,7 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { pageSource } from '@/utils/api';
 import JSONViewer from './JSONViewer';
-import './index.less';
+import './index.css';
 
 declare global {
   interface Window {

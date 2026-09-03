@@ -1,5 +1,5 @@
 import createElement from '@/utils/dom';
-import './index.less';
+import './index.css';
 
 /**
  * Loger对象的日志类型基础接口

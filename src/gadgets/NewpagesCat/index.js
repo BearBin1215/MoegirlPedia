@@ -3,7 +3,7 @@
  * @todo 容错（try catch等）
  * @todo 支持多分类同时查询以减少请求数
  */
-import './index.less';
+import './index.css';
 
 $(() => (async () => {
   if (mw.config.get('wgCanonicalSpecialPageName') !== 'Newpages') {

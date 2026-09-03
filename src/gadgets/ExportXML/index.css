@@ -1,0 +1,34 @@
+.bearbingadget-exportxml {
+    #firstHeading {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        > div {
+            font-size: 0.6em;
+        }
+    }
+
+    #bodyContent {
+        padding-right: 0 !important;
+    }
+}
+
+#exportxml-exportbutton {
+    margin-top: 0.6em;
+}
+
+#exportxml-log {
+    .loger-headline {
+        display: none;
+    }
+
+    .loger-body {
+        min-height: 5em;
+    }
+
+    .loger-filter {
+        display: none;
+    }
+}

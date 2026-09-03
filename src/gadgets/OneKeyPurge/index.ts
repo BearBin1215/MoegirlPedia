@@ -1,7 +1,7 @@
 import Snake from '@/components/Snake';
 import { linkList, includeList, categoryMembers } from '@/utils/api';
 import waitInterval from '@/utils/wait';
-import './index.less';
+import './index.css';
 
 $(() => (async () => {
   if (

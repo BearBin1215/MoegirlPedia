@@ -34,7 +34,7 @@ p {
 /* 链接默认无下划线，悬浮时显示 */
 a {
   text-decoration: none;
-  color: #0011ee;
+  color: #01e;
 
   &:hover {
     text-decoration: underline;

@@ -85,11 +85,11 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
         exclude: /node_modules/,
       },
       {
-        test: /\.(less|css)$/,
+        test: /\.css$/,
         oneOf: [
-          /** import styles from 'foo.inline.less'; 时作为string导入 */
+          /** import styles from 'foo.inline.css'; 时作为string导入 */
           {
-            test: /\.inline\.(less|css)$/,
+            test: /\.inline\.css$/,
             type: 'asset/source',
             use: [
               {
@@ -100,7 +100,6 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
                   minify: args.mode !== 'development',
                 },
               },
-              'less-loader',
             ],
           },
           {
@@ -115,7 +114,6 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
                   minify: args.mode !== 'development',
                 },
               },
-              'less-loader',
             ],
           },
         ],

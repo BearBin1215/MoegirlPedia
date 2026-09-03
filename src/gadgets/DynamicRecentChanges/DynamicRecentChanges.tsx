@@ -12,7 +12,7 @@ import type { ApiQueryResponse } from '@/types/api';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import ChangeslistLineContext from './ChangeslistLineContext';
-import './index.less';
+import './index.css';
 
 declare global {
   interface Window {

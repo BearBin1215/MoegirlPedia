@@ -11,7 +11,7 @@ import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
 import generateBaseinfo from './baseinfo';
 import type { ApiParams, Revisions, ApiQueryResponse } from '@/types/api';
-import './index.less';
+import './index.css';
 
 interface Page {
   title?: string;

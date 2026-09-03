@@ -3,13 +3,8 @@ declare module "*.css" {
   export default value;
 }
 
-declare module "*.less" {
-  const value: string;
-  export default value;
-}
-
 /** 以string导入 */
-declare module "*.inline.less" {
+declare module "*.inline.css" {
   const value: string;
   export default value;
 }

@@ -2,7 +2,7 @@ import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import { formatNS3 } from '@/utils/formatNS';
 import type { ApiEditResponse, ApiParseResponse } from '@/types/api';
-import './index.less';
+import './index.css';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:BatchSend') {

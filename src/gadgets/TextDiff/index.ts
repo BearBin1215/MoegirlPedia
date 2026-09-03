@@ -1,6 +1,6 @@
 import domtoimage from 'dom-to-image';
 import { pageSource, compare } from '@/utils/api';
-import './index.less';
+import './index.css';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:TextDiff') {

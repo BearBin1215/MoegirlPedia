@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, type ChangeHandler } from 'oojs-ui-react';
 import ConditionLine, { type Condition, searchCodes } from './ConditionLine';
-import './index.less';
+import './index.css';
 
 function AdvancedPanel() {
   const [show, setShow] = useState(false);
