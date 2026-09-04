@@ -1,4 +1,4 @@
-import React, { forwardRef, type ReactNode } from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import LabelBase from '../../widgets/Label/Base';
 import Layout from '../Layout';

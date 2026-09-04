@@ -9,7 +9,7 @@ import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOp
 import OutlineOption from '../OutlineOption';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { OptionProps, OptionData } from '../Option';
+import type { OptionData } from '../Option';
 
 /**
  * 选择集选项。带`value`的为可选项，不带的为分组标题（MenuSectionOption）；

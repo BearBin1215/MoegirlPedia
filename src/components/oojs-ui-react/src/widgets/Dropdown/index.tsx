@@ -18,7 +18,6 @@ import {
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
 import type { OptionData } from '../Option';
 import type { SelectOptionProps } from '../Select';
 import MenuSelect from './MenuSelect';
