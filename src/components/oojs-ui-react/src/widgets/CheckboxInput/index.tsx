@@ -19,12 +19,16 @@ export type CheckboxInputProps =
     /** 非受控初始勾选态 */
     defaultChecked?: boolean;
 
+    /** input元素id（配合label的htmlFor使用），对齐原版inputId */
+    inputId?: string;
+
     /** 半选状态 */
     indeterminate?: boolean;
   };
 
 const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   name,
+  inputId,
   accessKey,
   className,
   disabled,
@@ -33,6 +37,9 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   onChange,
   checked,
   defaultChecked,
+  title,
+  dir,
+  tabIndex,
   ...rest
 }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,13 +75,17 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
       aria-disabled={!!disabled}
       ref={ref}
     >
+      {/* title/dir/tabIndex/accessKey/name等对齐原版InputWidget：均落在input元素上 */}
       <input
         ref={inputRef}
         name={name}
+        id={inputId}
         type='checkbox'
         required={required}
-        tabIndex={disabled ? -1 : 0}
+        title={title}
+        dir={dir}
         accessKey={accessKey}
+        tabIndex={tabIndex ?? (disabled ? -1 : 0)}
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
         checked={isChecked}
@@ -83,7 +94,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
       />
       <Icon
         icon='check'
-        className='oo-ui-image-invert'
+        className='oo-ui-checkboxInputWidget-checkIcon oo-ui-image-invert'
       />
     </span>
   );

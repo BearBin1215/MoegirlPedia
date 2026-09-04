@@ -32,7 +32,7 @@ export interface ButtonProps extends
   /** 附加给按钮的标志 */
   flags?: ButtonFlag | ButtonFlag[];
 
-  /** 按钮跳转链接（不做isSafeUrl净化，信任开发者的输入） */
+  /** 按钮跳转链接。原版会执行isSafeUrl净化，本工程省略 */
   href?: string;
 
   /** 链接打开位置（<a>的target） */
@@ -79,7 +79,11 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   onKeyUp,
   ...rest
 }, ref) => {
-  // 仅维护键盘（Enter/空格）按压态；鼠标按压态由主题CSS的:active实现，无需JS
+  /**
+   * 按压态，由JS维护并输出`oo-ui-buttonElement-pressed`类，对齐原版ButtonElement：
+   * 键盘为Enter/空格按下与抬起（CSS无法实现键盘按压）；鼠标为左键按下加类，
+   * mouseup可能发生在按钮外，通过document级capture监听复位（原版onDocumentMouseUp同款）
+   */
   const [pressed, setPressed] = useState(false);
   const flagList = typeof flags === 'string' ? [flags] : flags;
   const relList = typeof rel === 'string' ? [rel] : rel;
@@ -132,6 +136,21 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
+  /** 对齐原版onMouseDown/onDocumentMouseUp：左键按下进入按压态；mouseup可能发生在按钮外，用document级capture监听确保复位 */
+  const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
+    if (!disabled && ev.button === 0) {
+      setPressed(true);
+      const onDocumentMouseUp = () => {
+        setPressed(false);
+        document.removeEventListener('mouseup', onDocumentMouseUp, true);
+      };
+      document.addEventListener('mouseup', onDocumentMouseUp, true);
+    }
+    if (onMouseDown) {
+      onMouseDown(ev);
+    }
+  };
+
   /** 按下Enter或空格键等同按下鼠标（键盘按压态无法用CSS实现，需JS维护） */
   const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -171,7 +190,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       ref={ref}
       className={classes}
       onClick={handleClick}
-      onMouseDown={onMouseDown}
+      onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onKeyDown={handleKeyDown}
       onKeyPress={handleKeyPress}

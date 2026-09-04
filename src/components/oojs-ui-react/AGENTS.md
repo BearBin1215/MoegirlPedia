@@ -42,7 +42,8 @@ oojs-ui-react/
 - **在复刻原版组件时，如果有和React最佳实践冲突的地方，不要直接实现，告知用户确认**
 - 原版通过多个set控制组件状态，以`setDisabled`为例，本工程使用React标准的`disabled`属性控制状态
 - 原版ooui使用`classes`参数传入字符串数组，本工程采用React标准的`className`属性
-- 多层组件场景，原版ooui将子组件作为父组件的参数传入，如`DropdownWidget`组件将多个`MenuOptionWidget`实例作为参数传入；本工程采取React标准常见的通过props传入数据options数组方案。
+- 原版组件的元素插槽使用`$<slot>`命名，如`$head`，本工程实现时不带`$`前缀
+- 多层组件场景，原版ooui将子组件作为父组件的参数传入，如`DropdownWidget`组件将多个`MenuOptionWidget`实例作为参数传入；本工程采取React标准常见的通过props传入声明式props数组方案。
 
 ## 高频踩坑速查（详见指南）
 

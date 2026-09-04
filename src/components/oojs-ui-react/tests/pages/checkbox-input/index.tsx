@@ -24,6 +24,11 @@ function CheckboxPage() {
         <CheckboxInput disabled checked style={{ marginRight: '0.5em' }} />
         勾选
       </p>
+      <h2>title/inputId/tabIndex</h2>
+      <p>
+        <CheckboxInput title='悬停提示' inputId='checkbox-demo' tabIndex={2} style={{ marginRight: '0.5em' }} />
+        <label htmlFor='checkbox-demo'>inputId关联的label</label>
+      </p>
     </>
   );
 }
