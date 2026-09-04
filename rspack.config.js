@@ -51,6 +51,7 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
     moment: 'moment',
     vue: 'Vue',
     pinia: 'window.Pinia',
+    '@wikimedia/codex': 'window.Codex',
   },
 
   module: {

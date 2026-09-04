@@ -7,6 +7,7 @@ declare global {
 
   interface Window {
     Pinia: typeof Pinia;
+    Codex: typeof import('@wikimedia/codex');
   }
 
   const moment: typeof import('moment');
@@ -85,5 +86,14 @@ declare global {
     clear(): void;
 
     key(index: number): string | undefined;
+  }
+}
+
+/** Codex组件全局类型声明，使所有Vue模板中的<cdx-*>标签获得类型提示（运行时组件由各工具在.vue内本地导入） */
+declare module 'vue' {
+  interface GlobalComponents {
+    CdxButton: typeof import('@wikimedia/codex')['CdxButton'];
+    CdxTextInput: typeof import('@wikimedia/codex')['CdxTextInput'];
+    CdxToggleSwitch: typeof import('@wikimedia/codex')['CdxToggleSwitch'];
   }
 }

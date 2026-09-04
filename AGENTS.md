@@ -13,7 +13,7 @@
 - **框架**：JQuery / React / Vue 3
   - JQuery 用于轻量工具
   - React 用于复杂度较高的工具，在本仓库使用 preact 兼容层控制打包体积
-  - Vue 因萌百网络不佳，`mw.loader.using('vue')`响应慢，一般不使用
+  - Vue 通常和 Codex 一起使用，见 [Example-Vue](src/gadgets/Example-Vue/index.ts)
 - **构建**：Rspack
 
 ## 约束与运行注意事项
