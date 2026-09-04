@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import TabOption, { type TabOptionProps } from '../TabOption';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { type ChangeHandler } from '../../utils';
 import type { WidgetProps } from '../Widget';
 
 export type TabSelectOptionProps = TabOptionProps;

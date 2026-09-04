@@ -9,8 +9,8 @@ import waitInterval from '@/utils/wait';
 import { formatNS14 } from '@/utils/formatNS';
 import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
-import generateBaseinfo from './baseinfo';
 import type { ApiParams, Revisions, ApiQueryResponse } from '@/types/api';
+import generateBaseinfo from './baseinfo';
 import './index.css';
 
 interface Page {

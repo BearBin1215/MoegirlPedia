@@ -166,7 +166,7 @@ export interface Usercontrib extends PageProps, UserProps {
   timestamp: string;
 
   /** 是否为新页面 */
-  new?: '';
+  "new"?: '';
 
   /** 是否为小编辑 */
   minor?: '';

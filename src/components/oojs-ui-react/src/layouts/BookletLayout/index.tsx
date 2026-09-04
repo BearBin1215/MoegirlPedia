@@ -56,11 +56,11 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
     hidden: undefined,
   }));
 
-  const handleSelect = (value: string | number) => {
-    if (value !== activeValue) {
-      onChange?.(value);
+  const handleSelect = (selectedValue: string | number) => {
+    if (selectedValue !== activeValue) {
+      onChange?.(selectedValue);
       if (!isControlled) {
-        setInnerValue(value);
+        setInnerValue(selectedValue);
       }
     }
   };

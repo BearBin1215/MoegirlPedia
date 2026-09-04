@@ -32,8 +32,6 @@ export default tseslint.config(
           jsx: true,
         },
         requireConfigFile: false,
-        project: './tsconfig.json',
-        extraFileExtensions: ['.vue'],
       },
     },
     plugins: {
@@ -178,6 +176,11 @@ export default tseslint.config(
         html2canvas: 'readonly',
         Vue: 'readonly',
       },
+      parserOptions: {
+        // 类型感知lint仅用于tsconfig包含的src文件
+        project: './tsconfig.json',
+        extraFileExtensions: ['.vue'],
+      },
     },
   },
   // #endregion
@@ -185,8 +188,19 @@ export default tseslint.config(
   // #region Vue配置
   {
     files: ['src/gadgets/**/*.vue'],
+    languageOptions: {
+      parserOptions: {
+        // vue-eslint-parser解析模板，script部分委托给TS解析器并转发工程信息
+        parser: '@typescript-eslint/parser',
+        project: './tsconfig.json',
+        extraFileExtensions: ['.vue'],
+      },
+    },
     rules: {
-      'vue/html-quotes': 0, // 不要求双引号
+      'vue/html-quotes': 0,
+      'vue/multi-word-component-names': 0,
+      'vue/no-v-html': 0,
+      'import/named': 0,
     },
   },
   // #endregion
@@ -212,6 +226,10 @@ export default tseslint.config(
     languageOptions: {
       globals: {
         ...globals.node,
+      },
+      parserOptions: {
+        // 类型感知lint仅用于tsconfig包含的scripts文件
+        project: './tsconfig.json',
       },
     },
   },

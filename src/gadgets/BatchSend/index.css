@@ -1,3 +1,4 @@
+/* 以下样式作用于Vue挂载根之外的页面元素 */
 .rootpage-Special_BatchSend {
     #firstHeading {
         display: flex;
@@ -12,56 +13,5 @@
 
     #bodyContent {
         padding-right: 0 !important;
-
-        #mw-content-text {
-            h3 {
-                margin-bottom: 0;
-            }
-
-            ul.bearbintools-notelist {
-                margin: 0.4em 0 0 1.6em;
-            }
-
-            .oo-ui-textInputWidget {
-                max-width: unset;
-            }
-        }
     }
-}
-
-#bs-submit-panel {
-    display: flex;
-    gap: 0.1rem;
-    margin-top: 0.8em;
-
-    #bs-interval {
-        flex: 0 0 5.5em;
-    }
-
-    #bs-summary {
-        max-width: unset;
-    }
-}
-
-#bs-previewzone {
-    border: 1px solid #ccc;
-    background: rgb(255 255 255 / 70%);
-
-    .mw-parser-output {
-        padding: 0 1em 1em;
-    }
-
-    .oo-ui-pendingElement-pending {
-        padding: 1em 0;
-        text-align: center;
-        font-size: 1.2em;
-    }
-
-    .mw-editsection {
-        display: none;
-    }
-}
-
-#bs-previewsummary {
-    margin-top: 0.4em;
 }

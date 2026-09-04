@@ -3,10 +3,9 @@ import clsx from 'clsx';
 import { omit } from 'es-toolkit/compat';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../utils';
-import type { WidgetProps } from '../Widget';
 import type { OptionProps } from '../Option';
 
-export interface TabOptionProps extends OptionProps {}
+export type TabOptionProps = OptionProps;
 
 /** 选项组件，用于作为`TabSelect`子组件，对齐原版`TabOptionWidget`（不可高亮） */
 const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({

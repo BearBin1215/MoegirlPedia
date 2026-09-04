@@ -50,13 +50,13 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
             tr.querySelectorAll<HTMLTableCellElement>('td, th').forEach((td, index) => {
               // 对于每一个td，判断其是否有大于1的colspan或rowspan属性并加入
               tableRow.push(
-                /* eslint-disable prefer-template */
+
                 (index > 0 && useDouble ? ' || ' : '| ') +
                 (td.colSpan > 1 ? `colspan="${td.colSpan}" ` : '') +
                 (td.rowSpan > 1 ? `rowspan="${td.rowSpan}" ` : '') +
                 (td.colSpan + td.rowSpan > 2 ? '| ' : '') +
                 td.innerText,
-                /* eslint-enable prefer-template */
+
               );
             });
             wikitable.push(tableRow.join(useDouble ? '' : '<br>'));
