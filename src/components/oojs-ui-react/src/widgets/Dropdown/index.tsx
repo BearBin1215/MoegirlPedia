@@ -18,9 +18,8 @@ import {
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
-import type { OptionData } from '../Option';
 import type { SelectOptionProps } from '../Select';
-import MenuSelect from './MenuSelect';
+import MenuSelect from '../MenuSelect';
 
 export type DropdownOptionProps = SelectOptionProps;
 
@@ -93,13 +92,10 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   };
 
   /** 选中指定选项并关闭菜单（非受控时同步内部state） */
-  const selectOption = (option: OptionData) => {
-    onChange?.({
-      value: option.value,
-      oldValue: currentValue,
-    });
+  const selectOption = (value: string | number) => {
+    onChange?.(value);
     if (!isControlled) {
-      setInnerValue(option.value);
+      setInnerValue(value);
     }
     setOpen(false);
   };
@@ -118,7 +114,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         } else {
           const highlighted = selectableOptions.find((o) => o.value === highlightedValue);
           if (highlighted) {
-            selectOption(highlighted);
+            selectOption(highlighted.value);
           }
         }
         break;
@@ -209,7 +205,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         <IndicatorBase indicator='down' />
       </span>
       <MenuSelect
-        onSelect={selectOption}
+        onChange={selectOption}
         value={currentValue}
         open={open}
         options={options}

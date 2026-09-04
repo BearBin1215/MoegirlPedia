@@ -11,23 +11,11 @@ export interface AccessKeyedElement {
   accessKey?: string;
 }
 
-/** 组件change钩子参数 */
-export interface ChangeValue<T = any, P = HTMLElement> {
-  /** 变更后新值 */
-  value: T;
-
-  /** 变更前旧值 */
-  oldValue?: T;
-
-  /** 发生变化的dom事件 */
-  event?: ChangeEvent<P>;
-}
-
 /**
- * 组件值变化钩子函数
- * @example <TextInput value={text} onChange={({ value }) => setText(value) />
+ * 组件值变化回调（值优先；第二参数为触发变更的原生change事件，仅输入类组件提供）
+ * @example <TextInput value={text} onChange={setText} />
  */
-export type ChangeHandler<T = any, P = HTMLElement> = (change: ChangeValue<T, P>) => void;
+export type ChangeHandler<T = any, P = HTMLElement> = (value: T, event?: ChangeEvent<P>) => void;
 
 type ComponentProps =
   WidgetProps &

@@ -121,9 +121,9 @@ function ButtonCheckboxComparePage() {
             Titles
           </Button>
           <p>常规</p>
-          <CheckboxInput onChange={({ value }) => addLog(`change 常规=${value}`)} />
+          <CheckboxInput onChange={(value) => addLog(`change 常规=${value}`)} />
           <p>选中</p>
-          <CheckboxInput value onChange={({ value }) => addLog(`change 选中=${value}`)} />
+          <CheckboxInput checked onChange={(value) => addLog(`change 选中=${value}`)} />
           <p>
             半选
             {' '}
@@ -135,7 +135,7 @@ function ButtonCheckboxComparePage() {
           <p>必填</p>
           <CheckboxInput required />
           <p>禁用</p>
-          <CheckboxInput disabled value />
+          <CheckboxInput disabled checked />
         </div>
       </div>
       <h2>事件日志</h2>

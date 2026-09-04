@@ -11,7 +11,7 @@ function App() {
   const [activeKey, setActiveKey] = useState('Overview');
   const [language, setLanguage] = useState<Languages>('zh-cn');
 
-  const handlePageChange: ChangeHandler<string | number> = ({ value }) => {
+  const handlePageChange: ChangeHandler<string | number> = (value) => {
     setActiveKey(value as string);
   };
 
@@ -31,7 +31,7 @@ function App() {
                 children: langText,
               }))}
               value={language}
-              onChange={({ value }) => setLanguage(value as Languages)}
+              onChange={(value) => setLanguage(value as Languages)}
             />
           </div>
         </div>

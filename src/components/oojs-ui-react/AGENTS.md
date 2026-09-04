@@ -35,6 +35,15 @@ oojs-ui-react/
 - 对照页放 `tests/pages/xxx-compare/` 并在 `tests/config/router.ts` 注册；原版库通过 `tests/components/ooui.ts` 的 `ensureOOUI()` 加载（不要自行打包引入原版库，勿把原版 dist 文件拷入仓库）。
 - 对照后无法对齐的低频行为记入 `TODO.md`。
 
+## 设计规则
+
+因原版oojs-ui和常见React组件库的设计哲学、命名习惯有较大出入，本工程遵循如下规则：
+
+- **在复刻原版组件时，如果有和React最佳实践冲突的地方，不要直接实现，告知用户确认**
+- 原版通过多个set控制组件状态，以`setDisabled`为例，本工程使用React标准的`disabled`属性控制状态
+- 原版ooui使用`classes`参数传入字符串数组，本工程采用React标准的`className`属性
+- 多层组件场景，原版ooui将子组件作为父组件的参数传入，如`DropdownWidget`组件将多个`MenuOptionWidget`实例作为参数传入；本工程采取React标准常见的通过props传入数据options数组方案。
+
 ## 高频踩坑速查（详见指南）
 
 - frame 过渡只做 `opacity + transform`，不要 `all`；高度测量在 `useLayoutEffect` 内钳 0 后进行，且仅在 `active && setup` 时执行。

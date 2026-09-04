@@ -47,4 +47,4 @@ export { default as Dialog } from './dialogs/Dialog';
 export { default as MessageDialog } from './dialogs/MessageDialog';
 
 // 类型
-export type { AccessKeyedElement, ChangeValue, ChangeHandler } from './utils';
+export type { AccessKeyedElement, ChangeHandler } from './utils';

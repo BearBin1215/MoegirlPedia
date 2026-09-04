@@ -93,7 +93,7 @@ function ConditionLine({
     if (!onChange) {
       return;
     }
-    const newCode = data.value as SearchCode;
+    const newCode = data as SearchCode;
     let newValue = value;
     if (identifyType(newCode) === 'contentmodel' && !contentModels.includes(value as string)) {
       // 若新搜索代码为内容模型，判断其是否为有效的内容模型值，不是则清空value
@@ -106,18 +106,12 @@ function ConditionLine({
         newValue = void 0;
       }
     }
-    onChange({
-      value: { code: newCode, value: newValue },
-      oldValue: { code, value },
-    });
+    onChange({ code: newCode, value: newValue });
   };
 
   const handleValueChange: ChangeHandler<any> = (data) => {
     if (onChange) {
-      onChange({
-        value: { code, value: data.value },
-        oldValue: { code, value },
-      });
+      onChange({ code, value: data });
     }
   };
 

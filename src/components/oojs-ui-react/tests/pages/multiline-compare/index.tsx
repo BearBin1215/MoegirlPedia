@@ -80,7 +80,7 @@ function ComparePage() {
             maxRows={10}
             placeholder='React版autosize'
             value={value}
-            onChange={({ value: v }) => setValue(v)}
+            onChange={(v) => setValue(v)}
           />
           <p>
             <button

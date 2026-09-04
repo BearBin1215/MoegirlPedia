@@ -12,6 +12,12 @@ import Dialog, { type DialogProps } from './Dialog';
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;
 
+  /** 确认按钮文本 */
+  okLabel?: ReactNode;
+
+  /** 取消按钮文本 */
+  cancelLabel?: ReactNode;
+
   /** 点击确定或按Ctrl/Cmd+Enter时触发，不携带事件参数 */
   onOk?: () => void;
   /** 点击取消时触发，不携带事件参数 */
@@ -22,6 +28,8 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   children,
   className,
   title,
+  okLabel = 'OK',
+  cancelLabel = 'Cancel',
   foot,
   onOk,
   onCancel,
@@ -46,8 +54,8 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
-              <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>Cancel</Button>
-              <Button ref={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>OK</Button>
+              <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{cancelLabel}</Button>
+              <Button ref={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{okLabel}</Button>
             </>
           )}
         </div>

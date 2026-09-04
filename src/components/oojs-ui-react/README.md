@@ -8,8 +8,7 @@
 
 ## 基本类型
 
-- ChangeValue<T, P>: `{ value: T, oldValue: T | undefined, event?: React.ChangeEvent<P> }`
-- ChangeHandler<T, P>: `(change: ChangeValue<T, P>) => void;`
+- ChangeHandler<T, P>: `(value: T, event?: React.ChangeEvent<P>) => void`，值优先；第二参数为触发变更的原生change事件，仅输入类组件提供
 - Indicator: `'clear' | 'up' | 'down' | 'required'`
 - LabelPosition: `'before' | 'after'`
 

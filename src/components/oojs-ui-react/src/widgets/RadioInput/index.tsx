@@ -12,11 +12,11 @@ export interface RadioInputProps extends Omit<InputProps<
   HTMLInputElement,
   HTMLSpanElement
 >, 'placeholder' | 'value' | 'defaultValue'> {
-  /** 是否选中（受控，传入即受控模式） */
-  selected?: boolean;
+  /** 是否勾选（受控，传入即受控模式） */
+  checked?: boolean;
 
-  /** 非受控初始选中态 */
-  defaultSelected?: boolean;
+  /** 非受控初始勾选态 */
+  defaultChecked?: boolean;
 }
 
 const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
@@ -26,13 +26,13 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   name,
   onChange,
   required,
-  selected,
-  defaultSelected,
+  checked,
+  defaultChecked,
   ...rest
 }, ref) => {
-  const isControlled = selected !== undefined;
-  const [innerSelected, setInnerSelected] = useState(!!defaultSelected);
-  const checked = isControlled ? selected : innerSelected;
+  const isControlled = checked !== undefined;
+  const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
+  const isChecked = isControlled ? checked : innerChecked;
 
   const classes = clsx(
     className,
@@ -40,16 +40,11 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const oldValue = checked;
-    const value = event.target.checked;
+    const newValue = event.target.checked;
     if (!isControlled) {
-      setInnerSelected(value);
+      setInnerChecked(newValue);
     }
-    onChange?.({
-      value,
-      oldValue,
-      event,
-    });
+    onChange?.(newValue, event);
   };
 
   return (
@@ -64,7 +59,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         className='oo-ui-inputWidget-input'
         accessKey={accessKey}
         disabled={disabled}
-        checked={checked}
+        checked={isChecked}
         name={name}
         onChange={handleChange}
         required={required}

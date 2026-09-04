@@ -4,9 +4,9 @@ import { omit } from 'es-toolkit/compat';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { OptionData } from '../Option';
+import type { OptionProps } from '../Option';
 
-export interface TabOptionProps extends WidgetProps<HTMLDivElement>, OptionData {}
+export interface TabOptionProps extends OptionProps {}
 
 /** 选项组件，用于作为`TabSelect`子组件，对齐原版`TabOptionWidget`（不可高亮） */
 const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({

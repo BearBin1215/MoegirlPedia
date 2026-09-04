@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import TabOption, { type TabOptionProps } from '../TabOption';
-import type { OptionData } from '../Option';
+import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { WidgetProps } from '../Widget';
 
 export type TabSelectOptionProps = TabOptionProps;
@@ -26,8 +26,8 @@ export interface TabSelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSel
   /** 选项集 */
   options: TabSelectOptionProps[];
 
-  /** 选择选项回调函数 */
-  onSelect?: (option: OptionData) => void;
+  /** 选中选项回调函数（值优先） */
+  onChange?: ChangeHandler<string | number>;
 }
 
 /** 选项卡选择组件，对齐原版`TabSelectWidget`（role=tablist，聚焦后←→环绕选择） */
@@ -37,7 +37,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   value,
   defaultValue,
   options,
-  onSelect,
+  onChange,
   disabled,
   tabIndex,
   ...rest
@@ -50,11 +50,11 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   const optionsRef = useRef(options);
   const valueRef = useRef(currentValue);
   const disabledRef = useRef(disabled);
-  const onSelectRef = useRef(onSelect);
+  const onChangeRef = useRef(onChange);
   optionsRef.current = options;
   valueRef.current = currentValue;
   disabledRef.current = disabled;
-  onSelectRef.current = onSelect;
+  onChangeRef.current = onChange;
 
   const classes = clsx(
     className,
@@ -66,10 +66,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
 
   const choose = (option: TabSelectOptionProps) => {
     if (!disabled && !option.disabled) {
-      onSelectRef.current?.({
-        value: option.value,
-        children: option.children,
-      });
+      onChangeRef.current?.(option.value);
       if (!isControlled) {
         setInnerValue(option.value);
       }
@@ -117,10 +114,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
           break;
       }
       if (next) {
-        onSelectRef.current?.({
-          value: next.value,
-          children: next.children,
-        });
+        onChangeRef.current?.(next.value);
       }
       if (handled) {
         e.preventDefault();

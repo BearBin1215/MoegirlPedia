@@ -11,7 +11,6 @@ import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import PanelLayout from '../PanelLayout';
 import TabPanelLayout, { type TabPanelLayoutProps } from '../TabPanelLayout';
 import TabSelect from '../../widgets/TabSelect';
-import type { OptionData } from '../../widgets/Option';
 import type { ChangeHandler } from '../../utils';
 
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
@@ -80,15 +79,11 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
 
   const activate = (key: string | number) => {
     if (key !== effectiveValue) {
-      onChange?.({ value: key, oldValue: effectiveValue });
+      onChange?.(key);
       if (!isControlled) {
         setInnerValue(key);
       }
     }
-  };
-
-  const handleSelect = (option: OptionData) => {
-    activate(option.value);
   };
 
   // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦）
@@ -149,7 +144,7 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
           <TabSelect
             framed={framed}
             value={effectiveValue}
-            onSelect={handleSelect}
+            onChange={activate}
             options={options.map((option, i) => ({
               ...option,
               children: option.label,

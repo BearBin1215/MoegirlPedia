@@ -64,13 +64,9 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
       ref={ref}
     >
       {options.map((option) => {
-        const handleChange: ChangeHandler<boolean, HTMLInputElement> = (changeEvent) => {
-          option.onChange?.(changeEvent);
-          onChange?.({
-            oldValue: currentValue,
-            value: option.value,
-            event: changeEvent?.event,
-          });
+        const handleChange: ChangeHandler<boolean, HTMLInputElement> = (checked, event) => {
+          option.onChange?.(checked, event);
+          onChange?.(option.value, event);
           if (!isControlled) {
             setInnerValue(option.value);
           }

@@ -43,7 +43,7 @@ const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
         disabled={disabled}
         name={name}
         onChange={onChange}
-        selected={selected}
+        checked={selected}
       />
       <LabelBase>{children}</LabelBase>
     </label>

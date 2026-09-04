@@ -12,8 +12,8 @@ function CheckboxPage() {
         当前值：{`${value}`}
       </p>
       <CheckboxInput
-        value={value}
-        onChange={(v) => setValue(v.value)}
+        checked={value}
+        onChange={(v) => setValue(v)}
       />
       <h2>禁用</h2>
       <p>
@@ -21,7 +21,7 @@ function CheckboxPage() {
         未勾选
       </p>
       <p>
-        <CheckboxInput disabled value style={{ marginRight: '0.5em' }} />
+        <CheckboxInput disabled checked style={{ marginRight: '0.5em' }} />
         勾选
       </p>
     </>

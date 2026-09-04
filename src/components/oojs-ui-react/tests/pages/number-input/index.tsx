@@ -13,13 +13,13 @@ function NumberInputs() {
       <p>当前内容：<u>{numberValue}</u></p>
       <NumberInput
         value={numberValue}
-        onChange={({ value }) => setNumberValue(value)}
+        onChange={(value) => setNumberValue(value)}
       />
       <h2>显示+-按钮</h2>
       <p>按照<code>step</code>步距增减。当前值：{numberValue2}</p>
       <NumberInput
         value={numberValue2}
-        onChange={({ value }) => setNumberValue2(value)}
+        onChange={(value) => setNumberValue2(value)}
         showButtons
       />
     </>

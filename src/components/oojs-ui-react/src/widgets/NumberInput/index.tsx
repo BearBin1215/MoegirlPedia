@@ -93,11 +93,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     if (!isControlled) {
       setInnerValue(newValue);
     }
-    onChange?.({
-      value: newValue,
-      oldValue: typeof currentValue === 'number' ? currentValue : undefined,
-      event,
-    });
+    onChange?.(newValue, event);
   };
 
   /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */

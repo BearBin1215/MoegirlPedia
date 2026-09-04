@@ -92,7 +92,7 @@ function IndexComparePage() {
             <IndexLayout
               options={options}
               defaultValue='one'
-              onChange={({ value }) => setActiveKey(value as string)}
+              onChange={(value) => setActiveKey(value as string)}
             />
           </div>
         </div>

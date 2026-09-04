@@ -37,6 +37,8 @@ function DialogPage() {
       <MessageDialog
         open={messageOpen}
         title='Confirm'
+        okLabel='确定'
+        cancelLabel='取消'
         onEscape={() => setMessageOpen(false)}
         onOk={() => setMessageOpen(false)}
         onCancel={() => setMessageOpen(false)}

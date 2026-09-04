@@ -65,22 +65,17 @@ function ButtonPage() {
       <Button accessKey='q'>accessKey=q: <kbd>alt</kbd>+<kbd>Q</kbd></Button>
 
       <h2>ButtonGroup</h2>
-      <ButtonGroup
-        buttons={[
-          { id: 'one', children: 'One', icon: 'tag' },
-          { id: 'two', children: 'Two' },
-          { id: 'three', children: 'Three', disabled: true },
-        ]}
-      />
+      <ButtonGroup>
+        <Button icon='tag'>One</Button>
+        <Button>Two</Button>
+        <Button disabled>Three</Button>
+      </ButtonGroup>
       <h3>disabled</h3>
-      <ButtonGroup
-        disabled
-        buttons={[
-          { id: 'one', children: 'One', icon: 'tag' },
-          { id: 'two', children: 'Two' },
-          { id: 'three', children: 'Three' },
-        ]}
-      />
+      <ButtonGroup disabled>
+        <Button icon='tag'>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
     </>
   );
 }

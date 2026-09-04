@@ -68,14 +68,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
 
   /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = event.target.value;
-    if (typeof onChange === 'function') {
-      onChange({
-        value: newValue,
-        oldValue: value,
-        event,
-      });
-    }
+    onChange?.(event.target.value, event);
   };
 
   // input的内边距是用内联样式控制的，要根据label判定

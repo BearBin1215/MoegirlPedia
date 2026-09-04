@@ -258,7 +258,7 @@ function FileInspectorForm({ username }: { username: string }) {
     });
   }, [fileUsageData]);
 
-  const handleIntervalChange: ChangeHandler<number | ''> = ({ value }) => {
+  const handleIntervalChange: ChangeHandler<number | ''> = (value) => {
     setDeleteInterval(value);
   };
 

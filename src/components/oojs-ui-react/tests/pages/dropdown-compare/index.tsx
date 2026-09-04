@@ -70,7 +70,7 @@ function DropdownComparePage() {
             label='please select'
             options={reactOptions}
             value={value}
-            onChange={({ value: v }) => setValue(v)}
+            onChange={(v) => setValue(v)}
           />
         </div>
       </div>

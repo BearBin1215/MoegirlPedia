@@ -11,8 +11,14 @@ import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
-  InputProps<boolean, HTMLInputElement, HTMLSpanElement> &
+  Omit<InputProps<boolean, HTMLInputElement, HTMLSpanElement>, 'value' | 'defaultValue'> &
   AccessKeyedElement & {
+    /** 是否勾选（受控，传入即受控模式） */
+    checked?: boolean;
+
+    /** 非受控初始勾选态 */
+    defaultChecked?: boolean;
+
     /** 半选状态 */
     indeterminate?: boolean;
   };
@@ -25,14 +31,14 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   indeterminate,
   required,
   onChange,
-  value,
-  defaultValue,
+  checked,
+  defaultChecked,
   ...rest
 }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const isControlled = value !== undefined;
-  const [innerChecked, setInnerChecked] = useState(!!defaultValue);
-  const checked = isControlled ? value : innerChecked;
+  const isControlled = checked !== undefined;
+  const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
+  const isChecked = isControlled ? checked : innerChecked;
 
   // indeterminate不是React受控属性，需手动同步到DOM
   useEffect(() => {
@@ -52,11 +58,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
     if (!isControlled) {
       setInnerChecked(newValue);
     }
-    onChange?.({
-      value: newValue,
-      oldValue: checked,
-      event,
-    });
+    onChange?.(newValue, event);
   };
 
   return (
@@ -75,7 +77,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         accessKey={accessKey}
         aria-disabled={!!disabled}
         className='oo-ui-inputWidget-input'
-        checked={checked}
+        checked={isChecked}
         disabled={disabled}
         onChange={handleChange}
       />

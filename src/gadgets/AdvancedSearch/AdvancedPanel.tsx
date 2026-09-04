@@ -99,12 +99,12 @@ function AdvancedPanel() {
           };
 
           /** 搜索内容发生变化回调 */
-          const handleChange: ChangeHandler = (data) => {
+          const handleChange: ChangeHandler = (value) => {
             setConditions(conditions.map((condition) => {
               if (condition.index === index) {
                 return {
                   index,
-                  ...data.value,
+                  ...value,
                 };
               }
               return condition;

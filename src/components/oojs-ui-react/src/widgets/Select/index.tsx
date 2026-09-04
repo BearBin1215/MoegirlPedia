@@ -7,9 +7,8 @@ import clsx from 'clsx';
 import MenuOption, { type MenuOptionProps } from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
-import { generateWidgetClassName } from '../../utils';
+import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { OptionData } from '../Option';
 
 /**
  * 选择集选项。带`value`的为可选项，不带的为分组标题（MenuSectionOption）；
@@ -19,9 +18,9 @@ export type SelectOptionProps =
   | MenuOptionProps
   | (MenuSectionOptionProps & { value?: undefined });
 
-export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect' | 'children'> {
-  /** 选中选项回调函数 */
-  onSelect?: (option: OptionData) => void;
+export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
+  /** 选中选项回调函数（值优先） */
+  onChange?: ChangeHandler<string | number>;
 
   /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
@@ -45,7 +44,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSelect
 const Select = forwardRef<HTMLDivElement, SelectProps>(({
   className,
   disabled,
-  onSelect,
+  onChange,
   value,
   defaultValue,
   outline,
@@ -97,8 +96,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
           if (option.onClick) {
             option.onClick(e);
           }
-          if (onSelect && !option.disabled) {
-            onSelect(option);
+          if (onChange && !option.disabled) {
+            onChange(option.value);
             if (!isControlled) {
               setInnerValue(option.value);
             }

@@ -258,8 +258,8 @@ function RecentChangeList() {
             align='inline'
           >
             <CheckboxInput
-              value={defaultActive}
-              onChange={({ value }) => setDefaultActive(value)}
+              checked={defaultActive}
+              onChange={(value) => setDefaultActive(value)}
             />
           </FieldLayout>
         </div>
@@ -270,7 +270,7 @@ function RecentChangeList() {
               name='updateInterval'
               className='dynamic-rc-config-input'
               value={updateInterval}
-              onChange={({ value }) => setUpdateInterval(value)}
+              onChange={(value) => setUpdateInterval(value)}
               min={5}
               placeholder='不低于5秒'
             />

@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
-import type { OptionData } from '../Option';
+import type { OptionProps } from '../Option';
 
-export interface OutlineOptionProps extends DecoratedOptionProps, OptionData {
+export interface OutlineOptionProps extends DecoratedOptionProps, OptionProps {
   level?: number;
 }
 

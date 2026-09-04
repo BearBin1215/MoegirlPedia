@@ -8,7 +8,6 @@ import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import PanelLayout from '../PanelLayout';
 import OutlineSelect from '../../widgets/OutlineSelect';
 import StackLayout from '../StackLayout';
-import type { OptionData } from '../../widgets/Option';
 import type { PageLayoutProps } from '../PageLayout';
 import type { ChangeHandler } from '../../utils';
 
@@ -57,14 +56,11 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
     hidden: undefined,
   }));
 
-  const handleSelect = (option: OptionData) => {
-    if (option.value !== activeValue) {
-      onChange?.({
-        value: option.value,
-        oldValue: activeValue,
-      });
+  const handleSelect = (value: string | number) => {
+    if (value !== activeValue) {
+      onChange?.(value);
       if (!isControlled) {
-        setInnerValue(option.value);
+        setInnerValue(value);
       }
     }
   };
@@ -82,7 +78,7 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
         >
           <OutlineSelect
             value={activeValue}
-            onSelect={handleSelect}
+            onChange={handleSelect}
             options={menuOptions}
           />
         </PanelLayout>

@@ -15,7 +15,7 @@ function TextInputs() {
       <p>当前内容：<u>{textValue}</u></p>
       <TextInput
         value={textValue}
-        onChange={({ value }) => setTextValue(value)}
+        onChange={(value) => setTextValue(value)}
         placeholder='输入文本'
         label='label'
       />
@@ -35,7 +35,7 @@ function TextInputs() {
       <TextInput
         maxLength={10}
         label={10 - length}
-        onChange={({ value }) => setLength(value.length)}
+        onChange={(value) => setLength(value.length)}
       />
 
       <h3>accessKey</h3>

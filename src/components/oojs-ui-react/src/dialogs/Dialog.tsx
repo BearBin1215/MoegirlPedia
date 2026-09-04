@@ -15,7 +15,7 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
   /** 弹窗大小 */
   size?: 'small' | 'medium' | 'large' | 'larger' | 'full';
   /** 弹窗是否为打开状态 */
-  open?: boolean;
+  open: boolean;
   /** 弹窗头部 */
   head?: ReactNode,
   /** 弹窗尾部 */

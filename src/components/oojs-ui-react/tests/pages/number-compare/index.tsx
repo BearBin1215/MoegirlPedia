@@ -62,7 +62,7 @@ function NumberComparePage() {
             step={1}
             showButtons
             value={value}
-            onChange={({ value: v }) => setValue(v)}
+            onChange={(v) => setValue(v)}
           />
         </div>
       </div>

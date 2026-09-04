@@ -8,7 +8,7 @@ export interface MenuSelectProps extends SelectProps {
 }
 
 /**
- * Dropdown组件内包裹的中间组件
+ * 对齐原版MenuSelectWidget（DropdownWidget的菜单面板；原版中亦被LookupElement/ComboBoxInputWidget等复用）
  */
 const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,

@@ -1,36 +1,29 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import Widget, { type WidgetProps } from '../Widget';
-import Button, { type ButtonProps } from '../Button';
 
-export interface ButtonGroupProps extends Omit<WidgetProps, 'children'> {
-  /** 按钮组参数。`id`为按钮DOM id，同时作为列表key */
-  buttons?: (ButtonProps & { id?: string })[];
-}
+/** 按钮组（children为Button元素；disabled仅作用于组容器样式，按钮禁用需在各Button上声明） */
+export type ButtonGroupProps = WidgetProps;
 
 const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   className,
-  buttons = [],
   disabled,
+  children,
   ...rest
 }, ref) => {
   const classes = clsx(
     className,
     'oo-ui-buttonGroupWidget',
   );
+
   return (
     <Widget
       {...rest}
       className={classes}
+      disabled={disabled}
       ref={ref}
     >
-      {buttons.map((item, i) => (
-        <Button
-          key={item.id ?? i}
-          {...item}
-          disabled={item.disabled || disabled}
-        />
-      ))}
+      {children}
     </Widget>
   );
 });
