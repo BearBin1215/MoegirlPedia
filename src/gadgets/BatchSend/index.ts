@@ -12,7 +12,7 @@ $(() => {
     return;
   }
 
-  void mw.loader.using(['vue', '@wikimedia/codex', 'mediawiki.api']).then((require) => {
+  void mw.loader.using(['vue', '@wikimedia/codex', 'mediawiki.api', 'oojs-ui']).then((require) => {
     // Codex组件运行时由window.Codex提供（rspack externals），与Example-Vue相同的模式
     window.Codex = require('@wikimedia/codex');
 

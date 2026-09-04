@@ -21,7 +21,7 @@ User talk前缀加不加都可以，支持发送至子页面'
         action='progressive'
         weight='primary'
         :disabled='sending'
-        @click='openConfirm'
+        @click='onSubmit'
       >
         提交
       </cdx-button>
@@ -75,23 +75,12 @@ User talk前缀加不加都可以，支持发送至子页面'
       v-once
       ref='logRef'
     />
-    <cdx-dialog
-      v-model:open='confirmOpen'
-      title='提醒'
-      hide-title
-      :primary-action='{ label: "确认发送", actionType: "progressive" }'
-      :default-action='{ label: "取消" }'
-      @primary='confirmSend'
-      @default='confirmOpen = false'
-    >
-      <p>请确认您要发送的内容是否有误。若因输入不当而产生错误，请自行<ruby><rb>承担后果</rb><rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>
-    </cdx-dialog>
   </div>
 </template>
 
 <script setup lang='ts'>
 // Codex组件运行时由window.Codex提供（rspack externals），IDE类型提示来自npm包
-import { CdxButton, CdxDialog, CdxProgressBar, CdxTextArea, CdxTextInput } from '@wikimedia/codex';
+import { CdxButton, CdxProgressBar, CdxTextArea, CdxTextInput } from '@wikimedia/codex';
 import { onMounted, ref, watch } from 'vue';
 import Loger from '@/components/Loger';
 import type { ApiEditResponse, ApiParseResponse } from '@/types/api';
@@ -164,26 +153,6 @@ const doPreview = async () => {
   }
 };
 
-/** 确认弹窗是否显示 */
-const confirmOpen = ref(false);
-
-/** 点击提交：先做非空校验，通过后弹出确认框 */
-const openConfirm = () => {
-  if (pageList.value.split('\n').filter((s) => s && s.trim()).length === 0) {
-    loger.record('请输入要发送的目标页面。', 'warn');
-    return;
-  }
-  if (headline.value.trim().length === 0) {
-    loger.record('请输入章节标题。', 'warn');
-    return;
-  }
-  if (content.value.trim().length === 0) {
-    loger.record('请输入内容。', 'warn');
-    return;
-  }
-  confirmOpen.value = true;
-};
-
 /**
  * 在目标用户讨论（子）页面新增章节
  *
@@ -214,7 +183,6 @@ const send = async (title: string, sectiontitle: string, text: string, editSumma
 
 /** 确认后执行批量发送 */
 const confirmSend = async () => {
-  confirmOpen.value = false;
   sending.value = true;
 
   const pageItems = [...new Set(pageList.value.split('\n').filter((s) => s && s.trim()))]; // 页面列表，分割、删空、去重
@@ -242,6 +210,29 @@ const confirmSend = async () => {
   loger.record('发送完毕。');
   sending.value = false;
   dirty.value = false;
+};
+
+/** 点击提交：先做非空校验，通过后弹出ooui确认框，确认后执行批量发送 */
+const onSubmit = async () => {
+  if (pageList.value.split('\n').filter((s) => s && s.trim()).length === 0) {
+    loger.record('请输入要发送的目标页面。', 'warn');
+    return;
+  }
+  if (headline.value.trim().length === 0) {
+    loger.record('请输入章节标题。', 'warn');
+    return;
+  }
+  if (content.value.trim().length === 0) {
+    loger.record('请输入内容。', 'warn');
+    return;
+  }
+  const confirmed = await OO.ui.confirm(
+    $('<p>请确认您要发送的内容是否有误。若因输入不当而产生错误，请自行<ruby><rb>承担后果</rb><rp>(</rp><rt>料理后事</rt><rp>)</rp></ruby>。</p>'),
+    { title: '提醒', size: 'small' },
+  );
+  if (confirmed) {
+    await confirmSend();
+  }
 };
 </script>
 
