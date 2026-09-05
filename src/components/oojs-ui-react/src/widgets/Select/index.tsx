@@ -11,6 +11,7 @@ import MenuOption, { type MenuOptionProps } from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 /**
@@ -72,15 +73,20 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
   onKeyDown,
   ...rest
 }, ref) => {
-  const isControlled = value !== undefined;
-  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
-  const currentValue = isControlled ? value : innerValue;
+  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   // 高亮半受控：传入highlightedValue即由上层管理（如Dropdown的键盘导航），独立使用时内部维护
-  const isHighlightedControlled = highlightedValue !== undefined;
-  const [innerHighlighted, setInnerHighlighted] = useState<string | number | undefined>();
-  const currentHighlighted = isHighlightedControlled ? highlightedValue : innerHighlighted;
+  // （undefined也是合法写入值：Escape/Tab清除高亮）
+  const { value: currentHighlighted, commit: setHighlighted } = useControlledValue<string | number | undefined>({ value: highlightedValue });
   const [pressed, setPressed] = useState(false);
+  // 拖拽选择态：mousedown起点的可选项，拖动跨项时更新，mouseup时选中（对齐原版selecting）
+  const selectingRef = useRef<string | number | null>(null);
+  // 拖拽过程中被按压的选项值，驱动选项的pressed类（对齐原版pressItem）
+  const [pressedValue, setPressedValue] = useState<string | number>();
+  // 卸载时中止未完成的拖拽监听
+  const cleanupDragRef = useRef<(() => void) | null>(null);
   const itemRefs = useRef(new Map<string | number, HTMLDivElement>());
+  // DOM元素→选项值的反向索引，供拖拽时从事件target定位选项（对齐原版findTargetItem）
+  const itemEls = useRef(new Map<Element, string | number>());
   const keyPressBufferRef = useRef<{ buffer: string; timer: number }>({ buffer: '', timer: 0 });
 
   const classes = clsx(
@@ -89,26 +95,87 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 
-  const handlePress: MouseEventHandler<HTMLDivElement> = () => {
-    setPressed(true);
-  };
-
   const handleUnpress: MouseEventHandler<HTMLDivElement> = () => {
     setPressed(false);
   };
 
-  const setHighlighted = (optionValue: string | number | undefined) => {
-    if (!isHighlightedControlled) {
-      setInnerHighlighted(optionValue);
+  /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
+  const findItemFromNode = (node: EventTarget | null): string | number | null => {
+    let el = node instanceof Element ? node : null;
+    while (el) {
+      const optionValue = itemEls.current.get(el);
+      if (optionValue !== undefined) {
+        return optionValue;
+      }
+      el = el.parentElement;
     }
+    return null;
   };
 
-  const choose = (optionValue: string | number) => {
-    onChange?.(optionValue);
-    if (!isControlled) {
-      setInnerValue(optionValue);
+  const isValueSelectable = (optionValue: string | number) =>
+    options.some((option) => option.value === optionValue && isSelectable(option));
+
+  /**
+   * 拖拽选择，对齐原版SelectWidget.onMouseDown/onDocumentMouseMove/onDocumentMouseUp：
+   * 左键在可选项上按下进入拖拽态，拖动跨项时按压项随之移动，mouseup时选中目标项
+   * （拖拽未落在选项上时，mouseup落在的可选项也参与选择）
+   */
+  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    // 原版onMouseDown恒返回false：阻止拖动过程中选中文本
+    e.preventDefault();
+    setPressed(true);
+    if (disabled || e.button !== 0) {
+      return;
     }
+    // 重置上一次拖拽的残留状态（原版selecting同样存在丢失mouseup后的残留缺陷，此处有意改良）
+    selectingRef.current = null;
+    setPressedValue(undefined);
+    const start = findItemFromNode(e.target);
+    if (start !== null && isValueSelectable(start)) {
+      selectingRef.current = start;
+      setPressedValue(start);
+    }
+    const onMove = (ev: MouseEvent) => {
+      const optionValue = findItemFromNode(ev.target);
+      if (optionValue !== null && optionValue !== selectingRef.current && isValueSelectable(optionValue)) {
+        selectingRef.current = optionValue;
+        setPressedValue(optionValue);
+      }
+    };
+    const onUp = (ev: MouseEvent) => {
+      cleanupDragRef.current?.();
+      setPressed(false);
+      setPressedValue(undefined);
+      let optionValue = selectingRef.current;
+      selectingRef.current = null;
+      if (optionValue === null) {
+        const target = findItemFromNode(ev.target);
+        optionValue = target !== null && isValueSelectable(target) ? target : null;
+      }
+      if (optionValue !== null) {
+        commit(optionValue);
+      }
+    };
+    // 拖拽被系统中断（如触屏滚动接管）时仅清理，不提交选择
+    const onPointercancel = () => {
+      cleanupDragRef.current?.();
+      setPressed(false);
+      setPressedValue(undefined);
+      selectingRef.current = null;
+    };
+    const cleanupDrag = () => {
+      document.removeEventListener('mousemove', onMove, true);
+      document.removeEventListener('mouseup', onUp, true);
+      document.removeEventListener('pointercancel', onPointercancel, true);
+      cleanupDragRef.current = null;
+    };
+    cleanupDragRef.current = cleanupDrag;
+    document.addEventListener('mousemove', onMove, true);
+    document.addEventListener('mouseup', onUp, true);
+    document.addEventListener('pointercancel', onPointercancel, true);
   };
+
+  useEffect(() => () => cleanupDragRef.current?.(), []);
 
   const clearKeyPressBuffer = () => {
     clearTimeout(keyPressBufferRef.current.timer);
@@ -189,7 +256,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     switch (e.key) {
       case 'Enter':
         if (current !== undefined) {
-          choose(current);
+          commit(current);
           handled = true;
         }
         break;
@@ -273,7 +340,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
       tabIndex={tabIndex ?? (disabled ? -1 : 0)}
       onKeyDown={handleKeyDown}
       onMouseUp={handleUnpress}
-      onMouseDown={handlePress}
+      onMouseDown={handleMouseDown}
       onMouseLeave={handleUnpress}
       ref={ref}
     >
@@ -286,23 +353,17 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             />
           );
         }
-        const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
-          if (option.onClick) {
-            option.onClick(e);
-          }
-          if (onChange && !option.disabled) {
-            onChange(option.value);
-            if (!isControlled) {
-              setInnerValue(option.value);
-            }
-          }
-        };
         const selected = currentValue === option.value;
         const isHighlighted = currentHighlighted === option.value;
         const itemRef = (el: HTMLDivElement | null) => {
           if (el) {
             itemRefs.current.set(option.value, el);
+            itemEls.current.set(el, option.value);
           } else {
+            const registered = itemRefs.current.get(option.value);
+            if (registered) {
+              itemEls.current.delete(registered);
+            }
             itemRefs.current.delete(option.value);
           }
         };
@@ -311,8 +372,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             {...option}
             key={option.value}
             ref={itemRef}
-            onClick={handleClick}
             selected={selected}
+            pressed={pressedValue === option.value}
             highlighted={isHighlighted}
           >
             {option.children}
@@ -322,8 +383,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
             {...option}
             key={option.value}
             ref={itemRef}
-            onClick={handleClick}
             selected={selected}
+            pressed={pressedValue === option.value}
             highlighted={isHighlighted}
           >
             {option.children}

@@ -1,13 +1,14 @@
 import React, {
-  useState,
   forwardRef,
   useEffect,
   useRef,
   type ChangeEvent,
+  type Ref,
 } from 'react';
 import clsx from 'clsx';
 import Icon from '../Icon';
-import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { generateWidgetClassName, mergeRefs, type AccessKeyedElement } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
@@ -24,6 +25,9 @@ export type CheckboxInputProps =
 
     /** 半选状态 */
     indeterminate?: boolean;
+
+    /** 获取内部input元素引用（组件ref指向外层span，需要直接操作input时使用） */
+    inputRef?: Ref<HTMLInputElement>;
   };
 
 const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
@@ -40,12 +44,14 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   title,
   dir,
   tabIndex,
+  inputRef: inputRefProp,
   ...rest
 }, ref) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const isControlled = checked !== undefined;
-  const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
-  const isChecked = isControlled ? checked : innerChecked;
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { value: isChecked, commit } = useControlledValue<boolean, ChangeEvent<HTMLInputElement>>(
+    { value: checked, defaultValue: defaultChecked ?? false },
+    onChange,
+  );
 
   // indeterminate不是React受控属性，需手动同步到DOM
   useEffect(() => {
@@ -59,14 +65,12 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
     generateWidgetClassName({ disabled }, 'input', 'checkboxInput'),
   );
 
-  /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.checked;
-    if (!isControlled) {
-      setInnerChecked(newValue);
-    }
-    onChange?.(newValue, event);
+    commit(event.target.checked, event);
   };
+
+  /** 同时服务内部indeterminate同步与外部inputRef */
+  const setInputRef = mergeRefs(inputRef, inputRefProp);
 
   return (
     <span
@@ -77,7 +81,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
     >
       {/* title/dir/tabIndex/accessKey/name等对齐原版InputWidget：均落在input元素上 */}
       <input
-        ref={inputRef}
+        ref={setInputRef}
         name={name}
         id={inputId}
         type='checkbox'

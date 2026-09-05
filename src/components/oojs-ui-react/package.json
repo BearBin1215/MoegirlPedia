@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "rspack serve",
     "start": "pnpm dev",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\""
   },
   "main": "./src/index.ts",
   "module": "./src/index.ts",
@@ -36,7 +37,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-refresh": "^0.17.0",
-    "ts-checker-rspack-plugin": "^1.6.0",
-    "tslib": "^2.8.1"
+    "ts-checker-rspack-plugin": "^1.6.0"
   }
 }

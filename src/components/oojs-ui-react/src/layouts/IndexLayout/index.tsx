@@ -1,5 +1,4 @@
 import React, {
-  useState,
   useEffect,
   useRef,
   useId,
@@ -12,6 +11,7 @@ import PanelLayout from '../PanelLayout';
 import TabPanelLayout, { type TabPanelLayoutProps } from '../TabPanelLayout';
 import TabSelect from '../../widgets/TabSelect';
 import type { ChangeHandler } from '../../utils';
+import { useControlledValue } from '../../hooks';
 
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
   /** 页签显示内容 */
@@ -64,10 +64,9 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   expanded = true,
   ...rest
 }, ref) => {
-  const isControlled = value !== undefined;
-  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
   // 未指定时对齐原版自动选中第一个可选页签
-  const effectiveValue = (isControlled ? value : innerValue) ?? options[0]?.value;
+  const { value: innerActive, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
+  const effectiveValue = innerActive ?? options[0]?.value;
   const idBase = useId();
   const stackRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(false);
@@ -79,10 +78,7 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
 
   const activate = (key: string | number) => {
     if (key !== effectiveValue) {
-      onChange?.(key);
-      if (!isControlled) {
-        setInnerValue(key);
-      }
+      commit(key);
     }
   };
 

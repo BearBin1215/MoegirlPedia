@@ -89,8 +89,7 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   const relList = typeof rel === 'string' ? [rel] : rel;
 
   /** 按wikimediaui主题规则生成图标/指示器变体类 */
-  let iconClasses: string | undefined;
-  if (framed && (active || disabled || flagList.includes('primary'))) {
+  let iconClasses: string | undefined; if (framed && (active || disabled || flagList.includes('primary'))) {
     iconClasses = 'oo-ui-image-invert';
   } else if (!disabled) {
     iconClasses = clsx(
@@ -103,7 +102,6 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     );
   }
 
-  /** 根据参数生成按钮类 */
   const classes = clsx(
     className,
     generateWidgetClassName({
@@ -119,14 +117,12 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );
 
-  /** 点击回调（键盘Enter/空格触发时ev为KeyboardEvent） */
   const handleClick: ButtonProps['onClick'] = (ev) => {
     if (!disabled && onClick) {
       onClick(ev);
     }
   };
 
-  /** 松开鼠标，状态变更为unpressed */
   const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
     if (!disabled) {
       setPressed(false);

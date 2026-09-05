@@ -104,6 +104,14 @@ const router: RouterItem[] = [
 
 
   {
+    key: 'CheckboxMultiselect',
+    title: {
+      'zh-cn': 'CheckboxMultiselect 多选框组',
+      en: 'CheckboxMultiselect',
+    },
+    Component: () => import('../pages/checkbox-multiselect'),
+  },
+  {
     key: 'Layouts',
     title: {
       'zh-cn': 'Layouts 布局',
@@ -118,6 +126,55 @@ const router: RouterItem[] = [
       en: 'IndexLayout vs OOUI',
     },
     Component: () => import('../pages/index-compare'),
+  },
+  {
+    key: 'FieldsetLayout',
+    title: {
+      'zh-cn': 'FieldsetLayout 字段集',
+      en: 'FieldsetLayout',
+    },
+    Component: () => import('../pages/fieldset-layout'),
+  },
+  {
+    key: 'FieldsetCompare',
+    title: {
+      'zh-cn': 'FieldsetLayout 原版对照',
+      en: 'FieldsetLayout vs OOUI',
+    },
+    Component: () => import('../pages/fieldset-compare'),
+  },
+  {
+    key: 'Booklet',
+    title: {
+      'zh-cn': 'BookletLayout 册页',
+      en: 'BookletLayout',
+    },
+    Component: () => import('../pages/booklet'),
+  },
+
+  {
+    key: 'Popup',
+    title: {
+      'zh-cn': 'Popup 弹出层',
+      en: 'Popup',
+    },
+    Component: () => import('../pages/popup'),
+  },
+  {
+    key: 'PopupCompare',
+    title: {
+      'zh-cn': 'Popup 原版对照',
+      en: 'Popup vs OOUI',
+    },
+    Component: () => import('../pages/popup-compare'),
+  },
+  {
+    key: 'ToolbarDemo',
+    title: {
+      'zh-cn': 'Toolbar 原版示例',
+      en: 'Toolbar (OOUI demo)',
+    },
+    Component: () => import('../pages/toolbar-demo'),
   },
 
   {

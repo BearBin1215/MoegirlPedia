@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import LabelBase from '../../widgets/Label/Base';
+import { hasLabel } from '../../utils';
 import Layout from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
 import type { LabelElement } from '../../widgets/Label';
@@ -22,7 +23,7 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    (label !== null && label !== void 0 && label !== false) && 'oo-ui-labelElement',
+    hasLabel(label) && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',
     `oo-ui-fieldLayout-align-${align}`,
   );

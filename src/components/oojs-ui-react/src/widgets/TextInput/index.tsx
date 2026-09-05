@@ -1,16 +1,14 @@
 import React, {
-  useState,
   useRef,
-  useEffect,
   forwardRef,
-  type CSSProperties,
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName } from '../../utils';
+import { generateWidgetClassName, hasLabel } from '../../utils';
+import { useLabelPadding } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
@@ -37,7 +35,6 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
 
 /**
  * 文本输入框
- * @returns
  */
 const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   accessKey,
@@ -57,35 +54,19 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   defaultValue,
   ...rest
 }, ref) => {
-  const [inputStyle, setInputStyle] = useState<CSSProperties>({});
   const labelRef = useRef<HTMLSpanElement>(null);
+  const inputStyle = useLabelPadding(labelRef, label, labelPosition);
 
   const classes = clsx(
     className,
     generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
-    (label !== null && label !== void 0 && label !== false) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );
 
-  /** 值变更响应 */
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.target.value, event);
   };
-
-  // input的内边距是用内联样式控制的，要根据label判定
-  // 在第一次渲染完成后用useEffect检测labelRef才不会为空，label发生变化后重新计算
-  useEffect(() => {
-    const style: CSSProperties = {};
-    if (labelRef.current) {
-      const paddingWidth = `${labelRef.current.offsetWidth + 2}px`;
-      if (labelPosition === 'before') {
-        style.paddingLeft = paddingWidth;
-      } else {
-        style.paddingRight = paddingWidth;
-      }
-    }
-    setInputStyle(style);
-  }, [label, labelPosition]);
 
   return (
     <div
@@ -114,7 +95,7 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
       />
       <IconBase icon={icon} />
       <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
-      {(label !== null && label !== void 0 && label !== false) && <LabelBase ref={labelRef}>{label}</LabelBase>}
+      {hasLabel(label) && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );
 });

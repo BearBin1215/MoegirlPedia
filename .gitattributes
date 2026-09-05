@@ -1,0 +1,17 @@
+# 行尾统一为LF（与.editorconfig的end_of_line=lf一致），文本文件检出时不做CRLF转换
+* text=auto eol=lf
+
+# Windows专用脚本保持CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制文件不做任何转换
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

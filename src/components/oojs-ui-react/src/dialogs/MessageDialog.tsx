@@ -15,7 +15,7 @@ export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   /** 确认按钮文本 */
   okLabel?: ReactNode;
 
-  /** 取消按钮文本 */
+  /** 取消按钮文本，传`null`隐藏取消按钮（如alert场景） */
   cancelLabel?: ReactNode;
 
   /** 点击确定或按Ctrl/Cmd+Enter时触发，不携带事件参数 */
@@ -54,7 +54,7 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
-              <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{cancelLabel}</Button>
+              {cancelLabel !== null && <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{cancelLabel}</Button>}
               <Button ref={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{okLabel}</Button>
             </>
           )}

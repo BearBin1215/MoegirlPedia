@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Dialog, MessageDialog } from 'oojs-ui-react';
+import { alert, Button, confirm, Dialog, MessageDialog } from 'oojs-ui-react';
 
 const sizes = ['small', 'medium', 'large', 'full'] as const;
 
 function DialogPage() {
   const [openSize, setOpenSize] = useState<string | undefined>(void 0);
   const [messageOpen, setMessageOpen] = useState(false);
+  const [staticResult, setStaticResult] = useState<string>('（尚未操作）');
 
   return (
     <>
@@ -45,6 +46,27 @@ function DialogPage() {
       >
         message content（按ESC或Ctrl+Enter测试）
       </MessageDialog>
+
+      <h2>命令式confirm/alert</h2>
+      <p>
+        <Button
+          onClick={async () => {
+            const result = await confirm('确定要执行吗？', { title: '确认' });
+            setStaticResult(`confirm结果：${result}`);
+          }}
+        >
+          confirm
+        </Button>{' '}
+        <Button
+          onClick={async () => {
+            await alert('操作已完成。', { title: '提示' });
+            setStaticResult('alert已关闭');
+          }}
+        >
+          alert
+        </Button>
+      </p>
+      <p>最近一次结果：{staticResult}</p>
     </>
   );
 }

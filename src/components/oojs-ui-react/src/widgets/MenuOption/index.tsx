@@ -5,16 +5,19 @@ import type { OptionProps } from '../Option';
 
 export type MenuOptionProps =
   DecoratedOptionProps &
-  OptionProps;
+  OptionProps & {
+    /** 是否为鼠标按压中的选项（由Select系父组件拖拽逻辑驱动，对齐原版pressItem） */
+    pressed?: boolean;
+  };
 
 /** 选项组件，用于作为`Dropdown`子组件 */
 const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   disabled,
   selected,
   highlighted,
+  pressed,
   ...rest
 }, ref) => {
-  const [pressed, setPressed] = useState(false);
   const [hoverHighlighted, setHoverHighlighted] = useState(false);
 
   const classes = clsx(
@@ -24,32 +27,15 @@ const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
     selected && 'oo-ui-optionWidget-selected',
   );
 
-  /** 按住鼠标 */
-  const handlePress = () => {
-    if (!disabled) {
-      setPressed(true);
-    }
-  };
-
-  /** 松开或移出 */
-  const handleUnpress = () => {
-    if (!disabled) {
-      setPressed(false);
-    }
-  };
-
-  /** 鼠标悬浮 */
   const handleMouseOver = () => {
     if (!disabled) {
       setHoverHighlighted(true);
     }
   };
 
-  /** 鼠标移出 */
   const handleMouseOut = () => {
     if (!disabled) {
       setHoverHighlighted(false);
-      setPressed(false);
     }
   };
 
@@ -59,9 +45,6 @@ const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
       disabled={disabled}
       className={classes}
       aria-selected={!!selected}
-      onMouseUp={handleUnpress}
-      onMouseDown={handlePress}
-      onMouseLeave={handleUnpress}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
       ref={ref}

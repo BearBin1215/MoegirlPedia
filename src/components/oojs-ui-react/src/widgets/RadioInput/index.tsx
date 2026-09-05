@@ -1,10 +1,10 @@
 import React, {
-  useState,
   forwardRef,
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
 import { generateWidgetClassName } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
 
 export interface RadioInputProps extends Omit<InputProps<
@@ -37,9 +37,10 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   tabIndex,
   ...rest
 }, ref) => {
-  const isControlled = checked !== undefined;
-  const [innerChecked, setInnerChecked] = useState(!!defaultChecked);
-  const isChecked = isControlled ? checked : innerChecked;
+  const { value: isChecked, commit } = useControlledValue<boolean, ChangeEvent<HTMLInputElement>>(
+    { value: checked, defaultValue: defaultChecked ?? false },
+    onChange,
+  );
 
   const classes = clsx(
     className,
@@ -47,11 +48,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.checked;
-    if (!isControlled) {
-      setInnerChecked(newValue);
-    }
-    onChange?.(newValue, event);
+    commit(event.target.checked, event);
   };
 
   return (

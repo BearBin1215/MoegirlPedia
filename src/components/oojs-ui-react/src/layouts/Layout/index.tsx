@@ -1,5 +1,6 @@
 import React, { forwardRef, useEffect, useRef } from 'react';
 import clsx from 'clsx';
+import { mergeRefs } from '../../utils';
 import type { ElementProps } from '../../Element';
 
 export interface LayoutProps extends Omit<ElementProps, 'hidden'> {
@@ -40,14 +41,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
       // 断言仅为绕过React 18类型定义（hidden仅声明为boolean）
       hidden={(hidden || undefined) as boolean | undefined}
       aria-hidden={hidden ? 'true' : undefined}
-      ref={(node) => {
-        innerRef.current = node;
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        }
-      }}
+      ref={mergeRefs(innerRef, ref)}
     >
       {children}
     </div>

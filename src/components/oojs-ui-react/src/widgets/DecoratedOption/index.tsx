@@ -1,6 +1,5 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import { omit } from 'es-toolkit/compat';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
@@ -12,7 +11,11 @@ import type { IndicatorElement } from '../Indicator';
 export type DecoratedOptionProps =
   WidgetProps<HTMLDivElement> &
   IconElement &
-  IndicatorElement;
+  IndicatorElement & {
+    /** 选项集复用时随对象透入的标签/值，仅供组件吞掉以避免落成DOM属性（渲染用children） */
+    label?: ReactNode;
+    value?: string | number;
+  };
 
 const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   children,
@@ -20,6 +23,8 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   disabled,
   icon,
   indicator,
+  label: _label,
+  value: _value,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -38,7 +43,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
       aria-disabled={!!disabled}
       tabIndex={-1}
       role='option'
-      {...omit(rest, 'label', 'value')}
+      {...rest}
       ref={ref}
     >
       <IconBase icon={icon} />

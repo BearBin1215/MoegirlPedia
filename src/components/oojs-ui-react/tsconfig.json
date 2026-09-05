@@ -4,7 +4,6 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "strict": true,
-    "importHelpers": true,
     "isolatedModules": true,
     "moduleResolution": "bundler",
     "skipLibCheck": true,

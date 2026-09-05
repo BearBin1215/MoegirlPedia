@@ -13,6 +13,10 @@ export { default as Indicator } from './widgets/Indicator';
 // 按钮
 export { default as Button } from './widgets/Button';
 export { default as ButtonGroup } from './widgets/ButtonGroup';
+export { default as PopupButton } from './widgets/PopupButton';
+
+// 弹出层
+export { default as Popup } from './widgets/Popup';
 
 // 输入框
 export { default as TextInput } from './widgets/TextInput';
@@ -23,6 +27,7 @@ export { default as MultilineTextInput } from './widgets/MultilineTextInput';
 export { default as RadioInput } from './widgets/RadioInput';
 export { default as RadioSelect } from './widgets/RadioSelect';
 export { default as CheckboxInput } from './widgets/CheckboxInput';
+export { default as CheckboxMultiselect } from './widgets/CheckboxMultiselect';
 
 // 选择框。Select系可独立使用（也作为Dropdown/BookletLayout/IndexLayout的内部构建件）
 export { default as Dropdown } from './widgets/Dropdown';
@@ -39,12 +44,16 @@ export { default as StackLayout } from './layouts/StackLayout';
 export { default as MenuLayout } from './layouts/MenuLayout';
 export { default as BookletLayout } from './layouts/BookletLayout';
 export { default as FieldLayout } from './layouts/FieldLayout';
+export { default as FieldsetLayout } from './layouts/FieldsetLayout';
 export { default as HorizontalLayout } from './layouts/HorizontalLayout';
 export { default as IndexLayout } from './layouts/IndexLayout';
 
 // 弹窗
 export { default as Dialog } from './dialogs/Dialog';
 export { default as MessageDialog } from './dialogs/MessageDialog';
+// confirm/alert对齐原版OO.ui.confirm/OO.ui.alert：独立命令式API，非MessageDialog静态方法
+export { confirm, alert } from './dialogs/statics';
+export type { ConfirmAlertOptions, AlertOptions } from './dialogs/statics';
 
 // 类型
 export type { AccessKeyedElement, ChangeHandler } from './utils';

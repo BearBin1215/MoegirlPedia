@@ -15,6 +15,7 @@ import {
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
@@ -51,16 +52,16 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   label,
   onChange,
   options,
-  value: controlledValue,
+  value,
   defaultValue,
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
-  const isControlled = controlledValue !== undefined;
-  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
-  const currentValue = isControlled ? controlledValue : innerValue;
+  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   const [highlightedValue, setHighlightedValue] = useState<string | number>();
   const elementRef = useRef<HTMLDivElement>(null);
+  // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const classes = clsx(
     className,
@@ -92,11 +93,8 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   };
 
   /** 选中指定选项并关闭菜单（非受控时同步内部state） */
-  const selectOption = (value: string | number) => {
-    onChange?.(value);
-    if (!isControlled) {
-      setInnerValue(value);
-    }
+  const selectOption = (optionValue: string | number) => {
+    commit(optionValue);
     setOpen(false);
   };
 
@@ -159,11 +157,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   const displayLabel = options.find((option) => 'value' in option && option.value === currentValue)?.children ?? label;
 
   useEffect(() => {
-    /** 点击页面其他地方时关闭下拉菜单 */
+    /** 点击页面其他地方时关闭下拉菜单（菜单面板portal在body上，同样不计入"外部"） */
     const handleClickOutside = (event: MouseEvent) => {
-      if (elementRef.current && !elementRef.current.contains(event.target as Node)) {
-        setOpen(false);
+      const target = event.target as Node;
+      if (elementRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
     };
     /** 按下ESC时关闭下拉菜单 */
     const handleEscape = (event: KeyboardEvent) => {
@@ -205,6 +205,8 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         <IndicatorBase indicator='down' />
       </span>
       <MenuSelect
+        ref={menuRef}
+        container={elementRef}
         onChange={selectOption}
         value={currentValue}
         open={open}

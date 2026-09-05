@@ -44,6 +44,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   onEscape,
   onPrimaryAction,
   onReady,
+  onKeyDown,
   ...rest
 }, ref) => {
   const [full, setFull] = useState(false);
@@ -89,7 +90,6 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     }
   })();
 
-  // 更新弹窗尺寸
   const updateSize = () => {
     const frame = frameRef.current;
     if (!frame) {
@@ -124,6 +124,8 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     window.addEventListener('resize', onResize);
 
     return () => {
+      // 卸载后取消trailing调用，避免操作已卸载组件的ref
+      onResize.cancel();
       window.removeEventListener('resize', onResize);
     };
   }, [active, setup, frameWidth]);
@@ -136,30 +138,25 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     }
   }, [active, setup, frameWidth]);
 
-  // 键盘行为，对齐原版Dialog.prototype.onDialogKeyDown：
+  // 键盘行为，对齐原版Dialog.prototype.onDialogKeyDown：原版将keydown绑定在弹窗自身
+  // $element上（焦点须在弹窗内才生效），故此处用React的onKeyDown而非document级监听，
+  // 也因此不会与Popup的document级捕获ESC监听（如弹窗内FieldsetLayout帮助弹层）互相触发。
   // ESC触发onEscape（配合escapable），Ctrl/Cmd+Enter触发primary action
-  useEffect(() => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (ev) => {
     if (!active) {
       return;
     }
-    const handleKeyDown = (ev: KeyboardEvent) => {
-      if (ev.key === 'Escape' && escapable) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        onEscape?.();
-      } else if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
-        if (onPrimaryAction) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          onPrimaryAction();
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [active, escapable, onEscape, onPrimaryAction]);
+    if (ev.key === 'Escape' && escapable) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      onEscape?.();
+    } else if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey) && onPrimaryAction) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      onPrimaryAction();
+    }
+    onKeyDown?.(ev);
+  };
 
   // 对齐原版：ready时先聚焦弹窗内容，再交由onReady自定义聚焦（如MessageDialog聚焦primary按钮）
   useEffect(() => {
@@ -212,6 +209,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
       <div
         {...rest}
         className={classes}
+        onKeyDown={handleKeyDown}
         ref={ref}
       >
         <div

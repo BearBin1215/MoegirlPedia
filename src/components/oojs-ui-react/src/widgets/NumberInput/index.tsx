@@ -1,5 +1,4 @@
 import React, {
-  useState,
   useEffect,
   useRef,
   forwardRef,
@@ -11,7 +10,8 @@ import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
-import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { generateWidgetClassName, hasLabel, type AccessKeyedElement } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
@@ -78,23 +78,16 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   defaultValue,
   ...rest
 }, ref) => {
-  const isControlled = controlledValue !== undefined;
-  const [innerValue, setInnerValue] = useState<number | ''>(defaultValue ?? '');
-  const currentValue = isControlled ? controlledValue : innerValue;
+  const { value: currentValue, commit } = useControlledValue<number | '', ChangeEvent<HTMLInputElement>>(
+    { value: controlledValue, defaultValue: defaultValue ?? '' },
+    onChange,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   /** 展示值：空值/非数字时显示为空 */
   const displayValue = typeof currentValue === 'number' && !Number.isNaN(currentValue) ? currentValue : '';
 
   /** 当前值的数值形态，空值为NaN，对齐原版getNumericValue */
   const getNumericValue = () => (currentValue === '' ? NaN : currentValue);
-
-  /** 提交新值并触发onChange（非受控时同步内部state） */
-  const commit = (newValue: number | '', event?: ChangeEvent<HTMLInputElement>) => {
-    if (!isControlled) {
-      setInnerValue(newValue);
-    }
-    onChange?.(newValue, event);
-  };
 
   /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */
   const adjustValue = (delta: number) => {
@@ -135,12 +128,12 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   const classes = clsx(
     className,
     generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
-    (label !== null && label !== void 0 && label !== false) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
   );
 
-  /** 值变更响应，对齐原版语义：保留输入不做钓制，空串保持为空 */
+  /** 值变更，对齐原版语义：保留输入不做钳制，空串保持为空 */
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const raw = event.target.value;
     const parsed = +raw;
@@ -236,7 +229,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           />
         )}
       </div>
-      {(label !== null && label !== void 0 && label !== false) && <LabelBase>{label}</LabelBase>}
+      {hasLabel(label) && <LabelBase>{label}</LabelBase>}
     </div>
   );
 });

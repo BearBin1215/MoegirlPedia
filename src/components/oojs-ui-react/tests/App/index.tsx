@@ -39,6 +39,7 @@ function App() {
       <div className='oojs-ui-react-content'>
         <LanguageContext.Provider value={{ language }}>
           <BookletLayout
+            outlined
             value={activeKey}
             onChange={handlePageChange}
             options={router.map((route) => 'section' in route ? {

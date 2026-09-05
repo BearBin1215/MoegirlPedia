@@ -15,6 +15,8 @@ export interface StackLayoutProps extends PanelLayoutProps {
   activeValue?: string | number;
   /** 页签集 */
   options: PageOptionProps[];
+  /** 页面内获得焦点时触发（React onFocus冒泡），携带页面value */
+  onPageFocus?: (value: string | number, event: React.FocusEvent<HTMLDivElement>) => void;
 }
 
 const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
@@ -24,6 +26,7 @@ const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
   scrollable = true,
   continuous,
   options,
+  onPageFocus,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -44,6 +47,8 @@ const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
         <PageLayout
           {...option}
           hidden={!continuous && option.value !== activeValue}
+          active={option.value === activeValue}
+          onFocus={(event) => onPageFocus?.(option.value, event)}
           key={option.value}
         />
       ))}

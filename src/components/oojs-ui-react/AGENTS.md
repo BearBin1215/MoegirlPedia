@@ -8,6 +8,7 @@
 
 - 接口规范、最佳实践等方面尚未完全敲定，开发过程中可能存在较多原有实现和React最佳实践冲突的地方，遇到时提出方案让用户选择
 - 此部分代码目前仅实际用于父工程 MoegirlPedia 工程，没有实际发布 npm，暂不用考虑发布相关内容
+- 本工程现阶段依附于父工程MoegirlPedia仓库，eslint等规则以父工程为准
 
 ## 项目结构
 
@@ -45,8 +46,7 @@ oojs-ui-react/
 - 原版组件的元素插槽使用`$<slot>`命名，如`$head`，本工程实现时不带`$`前缀
 - 多层组件场景，原版ooui将子组件作为父组件的参数传入，如`DropdownWidget`组件将多个`MenuOptionWidget`实例作为参数传入；本工程采取React标准常见的通过props传入声明式props数组方案。
 
-## 高频踩坑速查（详见指南）
 
-- frame 过渡只做 `opacity + transform`，不要 `all`；高度测量在 `useLayoutEffect` 内钳 0 后进行，且仅在 `active && setup` 时执行。
-- 键盘/滚轮需要 `preventDefault` 时使用原生监听（React 合成 wheel 为 passive）；注意 React 的 `KeyboardEvent` 类型与 DOM 同名类型的遮蔽问题。
-- 输入类组件副作用需同时兼容非受控（`input` 事件）与受控（`value` 依赖）两条触发通道。
+## 代码审查和修复
+
+- 修复代码审查到的问题后，除非仅修改注释等不实际产生影响的内容，若工具支持内置浏览器测试，应当测试无误

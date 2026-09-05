@@ -19,6 +19,25 @@ type OOUI = {
       setValue: (v: string) => void;
       getValue: () => string;
     };
+    ButtonWidget: new (config?: Record<string, unknown>) => {
+      $element: unknown;
+      on: (event: string, handler: () => void) => void;
+    };
+    PopupButtonWidget: new (config?: Record<string, unknown>) => {
+      $element: unknown;
+      getPopup: () => { $body: { append: (el: Node) => void } };
+    };
+    PopupWidget: new (config?: Record<string, unknown>) => {
+      $element: unknown;
+      toggle: (show?: boolean) => void;
+    };
+    FieldsetLayout: new (config?: Record<string, unknown>) => {
+      $element: unknown;
+      addItems: (items: unknown[]) => void;
+    };
+    FieldLayout: new (field: unknown, config?: Record<string, unknown>) => { $element: unknown };
+    TextInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
+    CheckboxInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
   };
 };
 

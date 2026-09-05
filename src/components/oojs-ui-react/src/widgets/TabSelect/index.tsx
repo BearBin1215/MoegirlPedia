@@ -9,6 +9,7 @@ import React, {
 import clsx from 'clsx';
 import TabOption, { type TabOptionProps } from '../TabOption';
 import { type ChangeHandler } from '../../utils';
+import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 export type TabSelectOptionProps = TabOptionProps;
@@ -42,19 +43,27 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   tabIndex,
   ...rest
 }, ref) => {
-  const isControlled = value !== undefined;
-  const [innerValue, setInnerValue] = useState<string | number | undefined>(defaultValue);
-  const currentValue = isControlled ? value : innerValue;
+  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   const [pressed, setPressed] = useState(false);
   const [focused, setFocused] = useState(false);
+  // DOM元素↔选项值索引，供拖拽时从事件target定位选项（对齐原版findTargetItem）
+  const itemRefs = useRef(new Map<string | number, HTMLDivElement>());
+  const itemEls = useRef(new Map<Element, string | number>());
+  // 拖拽选择态：mousedown起点的可选项，拖动跨项时更新，mouseup时选中（对齐原版selecting）
+  const selectingRef = useRef<string | number | null>(null);
+  // 拖拽过程中被按压的选项值，驱动TabOption的pressed类（对齐原版pressItem）
+  const [pressedValue, setPressedValue] = useState<string | number>();
+  // 卸载时中止未完成的拖拽监听
+  const cleanupDragRef = useRef<(() => void) | null>(null);
   const optionsRef = useRef(options);
+  // document级keydown监听仅在focus时绑定，需经ref读取最新值状态（避免闭包过期）
   const valueRef = useRef(currentValue);
   const disabledRef = useRef(disabled);
-  const onChangeRef = useRef(onChange);
+  const commitRef = useRef(commit);
   optionsRef.current = options;
   valueRef.current = currentValue;
   disabledRef.current = disabled;
-  onChangeRef.current = onChange;
+  commitRef.current = commit;
 
   const classes = clsx(
     className,
@@ -64,12 +73,9 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
     framed ? 'oo-ui-tabSelectWidget-framed' : 'oo-ui-tabSelectWidget-frameless',
   );
 
-  const choose = (option: TabSelectOptionProps) => {
-    if (!disabled && !option.disabled) {
-      onChangeRef.current?.(option.value);
-      if (!isControlled) {
-        setInnerValue(option.value);
-      }
+  const chooseValue = (optionValue: string | number) => {
+    if (!disabled) {
+      commit(optionValue);
     }
   };
 
@@ -114,7 +120,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
           break;
       }
       if (next) {
-        onChangeRef.current?.(next.value);
+        commitRef.current(next.value);
       }
       if (handled) {
         e.preventDefault();
@@ -127,9 +133,84 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
     };
   }, [focused]);
 
-  const handlePress: MouseEventHandler<HTMLDivElement> = () => {
-    setPressed(true);
+  /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
+  const findItemFromNode = (node: EventTarget | null): string | number | null => {
+    let el = node instanceof Element ? node : null;
+    while (el) {
+      const optionValue = itemEls.current.get(el);
+      if (optionValue !== undefined) {
+        return optionValue;
+      }
+      el = el.parentElement;
+    }
+    return null;
   };
+
+  /**
+   * 拖拽选择，对齐原版SelectWidget.onMouseDown/onDocumentMouseMove/onDocumentMouseUp
+   * （TabSelectWidget继承SelectWidget）：左键按下进入拖拽态，拖动跨项时按压项随之移动，
+   * mouseup时选中目标项；不可高亮（static.highlightable=false），仅按压态跟手
+   */
+  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    // 原版onMouseDown恒返回false：阻止拖动过程中选中文本并保持焦点在tablist上
+    e.preventDefault();
+    setPressed(true);
+    if (disabled || e.button !== 0) {
+      return;
+    }
+    const isValueSelectable = (optionValue: string | number) => {
+      const option = optionsRef.current.find((o) => o.value === optionValue);
+      return !!option && !option.disabled;
+    };
+    // 重置上一次拖拽的残留状态（原版selecting同样存在丢失mouseup后的残留缺陷，此处有意改良）
+    selectingRef.current = null;
+    setPressedValue(undefined);
+    const start = findItemFromNode(e.target);
+    if (start !== null && isValueSelectable(start)) {
+      selectingRef.current = start;
+      setPressedValue(start);
+    }
+    const onMove = (ev: MouseEvent) => {
+      const optionValue = findItemFromNode(ev.target);
+      if (optionValue !== null && optionValue !== selectingRef.current && isValueSelectable(optionValue)) {
+        selectingRef.current = optionValue;
+        setPressedValue(optionValue);
+      }
+    };
+    const onUp = (ev: MouseEvent) => {
+      cleanupDragRef.current?.();
+      setPressed(false);
+      setPressedValue(undefined);
+      let optionValue = selectingRef.current;
+      selectingRef.current = null;
+      if (optionValue === null) {
+        const target = findItemFromNode(ev.target);
+        optionValue = target !== null && isValueSelectable(target) ? target : null;
+      }
+      if (optionValue !== null) {
+        chooseValue(optionValue);
+      }
+    };
+    // 拖拽被系统中断（如触屏滚动接管）时仅清理，不提交选择
+    const onPointercancel = () => {
+      cleanupDragRef.current?.();
+      setPressed(false);
+      setPressedValue(undefined);
+      selectingRef.current = null;
+    };
+    const cleanupDrag = () => {
+      document.removeEventListener('mousemove', onMove, true);
+      document.removeEventListener('mouseup', onUp, true);
+      document.removeEventListener('pointercancel', onPointercancel, true);
+      cleanupDragRef.current = null;
+    };
+    cleanupDragRef.current = cleanupDrag;
+    document.addEventListener('mousemove', onMove, true);
+    document.addEventListener('mouseup', onUp, true);
+    document.addEventListener('pointercancel', onPointercancel, true);
+  };
+
+  useEffect(() => () => cleanupDragRef.current?.(), []);
 
   const handleUnpress: MouseEventHandler<HTMLDivElement> = () => {
     setPressed(false);
@@ -150,7 +231,7 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
         setFocused(false);
         rest.onBlur?.(e);
       }}
-      onMouseDown={handlePress}
+      onMouseDown={handleMouseDown}
       onMouseUp={handleUnpress}
       onMouseLeave={handleUnpress}
       ref={ref}
@@ -159,10 +240,22 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
         <TabOption
           {...option}
           key={option.value}
+          ref={(el) => {
+            if (el) {
+              itemRefs.current.set(option.value, el);
+              itemEls.current.set(el, option.value);
+            } else {
+              const registered = itemRefs.current.get(option.value);
+              if (registered) {
+                itemEls.current.delete(registered);
+              }
+              itemRefs.current.delete(option.value);
+            }
+          }}
           selected={currentValue === option.value}
+          pressed={pressedValue === option.value}
           onClick={(e) => {
             option.onClick?.(e);
-            choose(option);
           }}
         >
           {option.children}
