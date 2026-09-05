@@ -118,7 +118,7 @@ export const updateNavbox = async () => {
         ususers: listChunk.join('|'),
         usprop: 'groups',
       });
-      users.forEach(({ name, groups }) => {
+      users.forEach(({ name, groups }: { name: string; groups: string[] }) => {
         result[name] = groups;
       });
     }

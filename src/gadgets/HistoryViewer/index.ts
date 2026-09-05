@@ -18,7 +18,7 @@ mw.loader.using('mediawiki.api').then(() => {
   const pageName = mw.config.get('wgPageName');
 
   /** 页面模型语言映射 */
-  const acceptsLangs = {
+  const acceptsLangs: Record<string, string> = {
     javascript: "js",
     json: "json",
     css: "css",

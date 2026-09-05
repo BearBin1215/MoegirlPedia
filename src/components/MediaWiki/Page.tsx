@@ -12,7 +12,7 @@ export interface SpecialPageLinkProps {
 export function SpecialPageLink({
   logtype,
 }: SpecialPageLinkProps) {
-  const logEventMeaning = {
+  const logEventMeaning: Record<string, string> = {
     move: '移动',
     'delete': '删除',
     block: '封禁',

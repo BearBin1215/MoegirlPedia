@@ -70,7 +70,7 @@ class Api {
 
   /** 将请求参数加上默认参数，并将数组参数转换为竖线分隔格式 */
   formatRequestJSON(data: Record<string, any> = {}) {
-    const defaultParams = { ...this.defaultParams };
+    const defaultParams: Record<string, any> = { ...this.defaultParams };
     for (const [key, value] of Object.entries(data)) {
       if (Array.isArray(value)) {
         defaultParams[key] = value.join('|');
@@ -172,7 +172,7 @@ class Api {
         cmcontinue,
       });
       if (result.query.categorymembers[0]) {
-        pageList.push(...result.query.categorymembers.map(({ title }) => title));
+        pageList.push(...result.query.categorymembers.map(({ title }: { title: string }) => title));
       }
       cmcontinue = result.continue?.cmcontinue;
     }
