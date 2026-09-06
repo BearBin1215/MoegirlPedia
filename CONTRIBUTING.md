@@ -4,7 +4,7 @@
 
 ## 开发准备
 
-需要 node.js 18.12+ 。
+需要 Node.js 20.19+（不支持 Node.js 21；也可使用 Node.js 22.12+）。
 
 使用[pnpm](https://pnpm.io/)管理依赖：
 
@@ -12,7 +12,7 @@
 pnpm i
 ```
 
-- 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js、[ts](https://www.typescriptlang.org/)和[vue3](https://vuejs.org/)编写都可以，项目会通过rspack处理依赖并打包为单一的可执行js文件。对于需要引用样式表的工具，使用[less](https://github.com/less/less.js)编写样式表，通过`import`语句在js或ts文件中调用。
+- 小工具源代码位于[src/gadgets/](/src/gadgets/)目录，使用js、[ts](https://www.typescriptlang.org/)和[vue3](https://vuejs.org/)编写都可以，项目会通过rspack处理依赖并打包为单一的可执行js文件。对于需要引用样式表的工具，使用原生CSS（支持CSS嵌套），通过`import`语句在js或ts文件中调用。
   - 使用React和Vue编写的简单实例分别参考[Example-React](/src/gadgets/Example-React)和[Example-Vue](/src/gadgets/Example-Vue)。
   - 项目使用[preact](https://preactjs.com/)的兼容层取代react以减小打包体积、优化性能，在实际编写中请自行查阅文档查看区别。
   - ~~如非技术限制，建议使用react而非vue编写，在使用preact后打包体积为22KB+，而使用vue编写后打包体积为58KB+，已经接近了萌娘百科提交超时界限。~~
@@ -20,10 +20,9 @@ pnpm i
     > ~~- dist/gadgets/Example-Vue.min.js: 63.229KB (64746字节)~~
   - 随着萌百升级MediaWiki版本，本项目支持在代码中编写Vue[单文件组件](https://cn.vuejs.org/api/sfc-spec.html)，经过编译后调用萌百的`mw.loader.using('vue')`加载Vue依赖。但由于依赖加载时间极长（7~15s），仍不推荐使用此方法编写，而推荐使用React。
   - 由于首先考虑支持react，本项目**不支持使用jsx编写vue**。如有需要，请使用[渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)。
-- 样式表有3种导入方式：
-  - 使用`import './foo.less'`，样式表经过rspack的处理会在代码运行时自动加载到`<head>`中。
-  - 使用`import styles from './foo.module.less';`，样式表将作为[CSS Modules](https://github.com/css-modules/css-modules)导入。
-  - 使用`import styles from './foo.inline.less';`，该情况下会将样式表内容作为字符串导入，less则会在编译后作为字符串导入。
+- 样式表有2种导入方式：
+  - 使用`import './foo.css'`，样式表经过rspack处理后会在代码运行时自动加载到`<head>`中。CSS文件支持原生CSS嵌套语法。
+  - 使用`import styles from './foo.inline.css'`，该方式会将样式表内容作为字符串导入，适用于需要将样式注入其他位置的场景。
 - 小代码于[src/oddments/](/src/oddments/)目录，并设定了专门的eslint规则使其仅适用es5语法。
 
 ## 开发流程
@@ -46,11 +45,11 @@ pnpm i
 
 ```
 主要文件
-│  eslintrc.config.js  # eslint配置
+│  eslint.config.js  # eslint配置
 │  package.json  # nodejs配置
 │  pnpm-lock.yaml  # lockfile
-│  rspack.config.js  # rspack配置
-│  stylelint.config.js  #stylelint配置
+│  rspack.config.ts  # rspack配置
+│  stylelint.config.ts  # stylelint配置
 │  tsconfig.json  # typescript配置
 |
 ├─.github
@@ -77,7 +76,7 @@ pnpm i
     ├─gadgets  # 工具源代码
     │  ├─BatchSend
     │  │      index.ts  # 脚本代码
-    │  │      index.less  # 样式表（不一定有）
+    │  │      index.css  # 样式表（不一定有）
     │  |
     │  ├─BulkMove
     │  |

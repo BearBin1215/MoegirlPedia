@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { sync as globSync } from 'glob';
-import { rspack } from '@rspack/core';
+import { type Mode, rspack } from '@rspack/core';
 import { defineConfig } from '@rspack/cli';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { VueLoaderPlugin } from 'vue-loader';
@@ -10,12 +10,15 @@ import svgToMiniDataURI from 'mini-svg-data-uri';
 /** esm中模拟cjs的__dirname */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') => defineConfig({
+/** 生成 Rspack 构建配置。 */
+export default (
+  _env: Record<string, unknown> | undefined,
+  args: { mode?: Mode },
+  globString = './src/gadgets/**/index.{js,jsx,ts,tsx}',
+) => defineConfig({
   mode: args.mode || 'development',
   devtool: args.mode === 'development' ? 'eval-source-map' : 'source-map',
-  experiments: {
-    lazyCompilation: true,
-  },
+  lazyCompilation: true,
 
   entry: globSync(
     globString,
@@ -23,7 +26,7 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
   ).map((filename) => filename
     .replace(/\\/g, '/') // windows下会输出反斜杠，需要替换
     .replace(/^(?:.\/)?(.*)$/, './$1'), // 添加./
-  ).reduce((entries, filepath) => {
+  ).reduce<Record<string, string>>((entries, filepath) => {
     const et = filepath.replace('./src/gadgets/', '').replace(/\/index\.(js|jsx|ts|tsx)$/, '');
     entries[et] = filepath;
     return entries;
@@ -139,7 +142,7 @@ export default (_, args, globString = './src/gadgets/**/index.{js,jsx,ts,tsx}') 
           {
             type: 'asset/inline',
             generator: {
-              dataUrl: (content) => svgToMiniDataURI(content.toString()),
+              dataUrl: (content: Buffer) => svgToMiniDataURI(content.toString()),
             },
           },
         ],

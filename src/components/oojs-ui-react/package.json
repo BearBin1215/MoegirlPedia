@@ -4,9 +4,6 @@
   "description": "React implementation of oojs-ui",
   "version": "0.1.0",
   "license": "MIT",
-  "engines": {
-    "node": ">=16"
-  },
   "type": "module",
   "scripts": {
     "dev": "rspack serve",
@@ -25,9 +22,10 @@
     "es-toolkit": "^1.50.0"
   },
   "devDependencies": {
-    "@rspack/cli": "^1.7.12",
-    "@rspack/core": "^1.7.12",
-    "@rspack/plugin-react-refresh": "^1.6.2",
+    "@rspack/cli": "^2.2.2",
+    "@rspack/core": "^2.2.2",
+    "@rspack/dev-server": "^2.2.1",
+    "@rspack/plugin-react-refresh": "^2.0.2",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",

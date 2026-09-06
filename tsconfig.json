@@ -36,6 +36,7 @@
     "node_modules/types-mediawiki",
     "node_modules/@types/oojs-ui",
     "scripts/**/*",
+    "rspack.config.ts",
     "stylelint.config.ts",
   ]
 }
