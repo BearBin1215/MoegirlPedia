@@ -1,17 +1,17 @@
 import React, {
   useEffect,
   useRef,
-  useId,
   forwardRef,
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
+import { omit } from 'es-toolkit';
 import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
 import PanelLayout from '../PanelLayout';
 import TabPanelLayout, { type TabPanelLayoutProps } from '../TabPanelLayout';
 import TabSelect from '../../widgets/TabSelect';
-import type { ChangeHandler } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { type ChangeHandler } from '../../utils';
+import { useAutoFocusPanel, useCleanId, useLayoutSelection } from '../../hooks';
 
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
   /** 页签显示内容 */
@@ -50,7 +50,7 @@ export interface IndexLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'menuPo
   onChange?: ChangeHandler<string | number>;
 }
 
-/** @description 页签布局组件，对齐原版`IndexLayout`，菜单固定在顶部 */
+/** 页签布局组件，对齐原版`IndexLayout`，菜单固定在顶部 */
 const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   className,
   options,
@@ -64,12 +64,11 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   expanded = true,
   ...rest
 }, ref) => {
-  // 未指定时对齐原版自动选中第一个可选页签
-  const { value: innerActive, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
-  const effectiveValue = innerActive ?? options[0]?.value;
-  const idBase = useId();
+  // 未指定时自动选中第一个可选页签（受控回写/非受控提交，见useLayoutSelection）
+  const { effectiveValue, select } = useLayoutSelection<string | number>({ value, defaultValue, onChange, options });
+  // id片段经useCleanId剥离`:`，可安全用于CSS选择器与aria关联
+  const idBase = useCleanId();
   const stackRef = useRef<HTMLDivElement>(null);
-  const mountedRef = useRef(false);
 
   const classes = clsx(
     className,
@@ -78,33 +77,18 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
 
   const activate = (key: string | number) => {
     if (key !== effectiveValue) {
-      commit(key);
+      select(key);
     }
   };
 
   // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦）
-  useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true;
-      return;
-    }
-    if (!autoFocus || continuous) {
-      return;
-    }
-    const stack = stackRef.current;
-    const activePanel = stack?.querySelector<HTMLElement>('.oo-ui-tabPanelLayout-active');
-    if (!activePanel) {
-      return;
-    }
-    const { activeElement } = activePanel.ownerDocument;
-    if (activeElement && activePanel.contains(activeElement)) {
-      return;
-    }
-    const focusable = activePanel.querySelector<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    );
-    focusable?.focus();
-  }, [effectiveValue, autoFocus, continuous]);
+  useAutoFocusPanel({
+    activeValue: effectiveValue,
+    enabled: autoFocus,
+    rootRef: stackRef,
+    activeSelector: '.oo-ui-tabPanelLayout-active',
+    skipInitialFocus: true,
+  });
 
   // 对齐原版openMatchedPanels：浏览器查找命中隐藏面板时自动切换到对应页签
   useEffect(() => {
@@ -115,19 +99,24 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     if (!stack) {
       return undefined;
     }
+    // beforematch在浏览器页内查找（Ctrl+F）命中hidden="until-found"元素时派发：
+    // 按命中面板id反查页签并激活，使查找结果所在面板可见
     const handleBeforeMatch = (e: Event) => {
       const index = options.findIndex(
         (_, i) => `${idBase}-panel-${i}` === (e.target as HTMLElement).id,
       );
       if (index !== -1) {
-        activate(options[index].value);
+        const matched = options[index].value;
+        if (matched !== effectiveValue) {
+          select(matched);
+        }
       }
     };
     stack.addEventListener('beforematch', handleBeforeMatch);
     return () => {
       stack.removeEventListener('beforematch', handleBeforeMatch);
     };
-  }, [openMatchedPanels, continuous, options, idBase, effectiveValue, onChange]);
+  }, [openMatchedPanels, continuous, options, idBase, effectiveValue, select]);
 
   return (
     <MenuLayout
@@ -142,9 +131,13 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
             value={effectiveValue}
             onChange={activate}
             options={options.map((option, i) => ({
-              ...option,
+              // 对齐原版：页签仅承接label/disabled与元素级属性（原版经tabItemConfig），
+              // 面板属性（active/scrollable/padded/framed/expanded等）不透入页签，
+              // 否则经TabOption的...rest落成div未知属性触发React开发期告警
+              ...omit(option, ['active', 'hidden', 'scrollable', 'padded', 'framed', 'expanded', 'label']),
+              value: option.value,
+              disabled: option.disabled,
               children: option.label,
-              hidden: undefined,
               id: `${idBase}-tab-${i}`,
               'aria-controls': `${idBase}-panel-${i}`,
             }))}

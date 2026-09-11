@@ -9,7 +9,7 @@ import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName, hasLabel } from '../../utils';
-import { useLabelPadding } from '../../hooks';
+import { useControlledValue, useLabelPadding, useMergedRefs } from '../../hooks';
 import type { TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
@@ -23,9 +23,14 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
   autosize?: boolean;
 }
 
-/** 对齐原版：maxRows || max(2×rows, 10) */
+/** 缺省maxRows：2×rows与10取大（对齐原版autosize缺省规则） */
 const getDefaultMaxRows = (rows?: number) => Math.max(2 * (rows || 0), 10);
 
+/**
+ * 多行文本输入框，对齐原版OO.ui.MultilineTextInputWidget：autosize时经隐藏测量textarea
+ * 实测内容与maxRows高度并回写真实input高度（测量流程见useEffect内注释），
+ * 受控/非受控语义与其余输入类组件一致
+ */
 const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
   name,
@@ -43,15 +48,26 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   autosize,
   rows,
   maxRows: maxRowsProp,
+  // title/dir对齐原版InputWidget的落点（TitledElement的$titled与setDir均为$input），不放外层div
+  title,
+  dir,
   value,
   defaultValue,
+  // inputRef透传到内部textarea（父类型TextInputProps的泛型已参数化为HTMLTextAreaElement）
+  inputRef: inputRefProp,
   ...rest
 }: MultilineTextInputProps, ref) => {
   const maxRows = maxRowsProp ?? getDefaultMaxRows(rows);
   const labelRef = useRef<HTMLSpanElement>(null);
   const inputStyle = useLabelPadding(labelRef, label, labelPosition);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
+  const setTextareaRef = useMergedRefs(textareaRef, inputRefProp);
+  // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
+  const { value: currentValue, commit } = useControlledValue<string, ChangeEvent<HTMLTextAreaElement>>(
+    { value, defaultValue: defaultValue ?? '' },
+    onChange,
+  );
 
   const classes = clsx(
     className,
@@ -66,10 +82,10 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
   );
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    onChange?.(event.target.value, event);
+    commit(event.target.value, event);
   };
 
-  /** 最小行数，对齐原版minRows */
+  /** 最小行数 */
   const minRows = rows === undefined ? '' : String(rows);
 
   // 最新adjustSize实现存入ref（每轮渲染后刷新），使input监听不必随value变化重挂，
@@ -78,7 +94,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
 
   useEffect(() => {
     adjustSizeRef.current = () => {
-      const input = inputRef.current;
+      const input = textareaRef.current;
       const hidden = hiddenInputRef.current;
       if (!input || !hidden) {
         return;
@@ -122,7 +138,7 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
     if (!autosize) {
       return;
     }
-    const input = inputRef.current;
+    const input = textareaRef.current;
     if (!input) {
       return;
     }
@@ -133,19 +149,19 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
     };
   }, [autosize]);
 
-  // 受控模式下value变化（含程序化赋值）也触发重算，对齐原版change事件驱动adjustSize的语义
+  // value变化（含程序化赋值与非受控键入回流）触发重算，对齐原版change事件驱动adjustSize的语义
   useEffect(() => {
     if (!autosize) {
       return;
     }
     adjustSizeRef.current();
-  }, [autosize, maxRows, rows, value]);
+  }, [autosize, maxRows, rows, currentValue]);
 
   return (
     <div
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
       <textarea
@@ -153,27 +169,25 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
         name={name}
         onChange={handleChange}
         tabIndex={disabled ? -1 : 0}
-        aria-disabled={!!disabled}
+        aria-disabled={disabled || undefined}
         className={inputClasses}
         disabled={disabled}
-        value={value}
-        defaultValue={defaultValue}
+        value={currentValue}
         readOnly={readOnly}
         required={required}
         aria-required={required}
         placeholder={placeholder}
         maxLength={maxLength}
+        title={title}
+        dir={dir}
         style={inputStyle}
         rows={rows}
-        ref={inputRef}
+        ref={setTextareaRef}
       />
       {autosize && (
+        // 测量用隐藏节点：不挂可聚焦属性（accessKey/tabIndex）与表单语义，避免主题CSS未就绪时进入tab序
         <textarea
-          accessKey={accessKey}
-          tabIndex={disabled ? -1 : 0}
-          aria-disabled={!!disabled}
           className='oo-ui-inputWidget-input oo-ui-element-hidden'
-          readOnly={readOnly}
           style={{ paddingRight: '0px', height: 'auto' }}
           aria-hidden='true'
           rows={maxRows}

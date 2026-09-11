@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { WidgetProps } from '../Widget';
 import type { AccessKeyedElement } from '../../utils';
 
-/** 选项数据（对齐原版OptionWidget的config，供options prop传入） */
+/** 选项数据（供options prop传入） */
 export interface OptionData {
   /**
    * 选项值，同时作为选中态匹配依据与列表key

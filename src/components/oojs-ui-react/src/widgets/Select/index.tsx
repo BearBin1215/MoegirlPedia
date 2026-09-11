@@ -1,7 +1,7 @@
 import React, {
-  useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEventHandler,
@@ -11,7 +11,7 @@ import MenuOption, { type MenuOptionProps } from '../MenuOption';
 import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
 import OutlineOption from '../OutlineOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { useCleanId, useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 /**
@@ -24,7 +24,8 @@ export type SelectOptionProps =
 
 type SelectableOption = MenuOptionProps & { value: string | number };
 
-const isSelectable = (option: SelectOptionProps): option is SelectableOption =>
+/** 可选项判定（带value且未禁用）；键盘导航与选中目标集合共用（Select/Dropdown/ComboBoxInput一致） */
+export const isSelectableOption = (option: SelectOptionProps): option is SelectableOption =>
   'value' in option && option.value !== undefined && !option.disabled;
 
 export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
@@ -46,6 +47,9 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
   /** 键盘导航高亮值（受控，传入即由上层如Dropdown管理；独立使用时组件内部维护） */
   highlightedValue?: string | number;
 
+  /** 高亮变化回调；传入highlightedValue时须经此回写父级，使鼠标悬停高亮与键盘高亮统一（Dropdown等读此值作键盘选择目标） */
+  onHighlightedChange?: ChangeHandler<string | number | undefined>;
+
   /** 是否处理Home/End/PageUp/PageDown导航键。对齐原版static.handleNavigationKeys：基础SelectWidget为false，MenuSelectWidget为true */
   handleNavigationKeys?: boolean;
 
@@ -54,7 +58,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
 }
 
 /**
- * @description 选择组件，根据传入的子组件生成`MenuOption`或其他子组件。
+ * 选择组件，根据传入的子组件生成`MenuOption`或其他子组件。
  * 键盘行为对齐原版SelectWidget：聚焦后↑↓←→环绕移动高亮（无高亮时回退选中项）、
  * Enter选中、Home/End/PageUp/PageDown可选、字符前缀跳转（1500ms缓冲）、Escape/Tab清除高亮
  */
@@ -67,27 +71,35 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
   outline,
   options,
   highlightedValue,
+  onHighlightedChange,
   handleNavigationKeys = false,
   listWrapsAround = true,
   tabIndex,
   onKeyDown,
+  onMouseLeave,
   ...rest
 }, ref) => {
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
-  // 高亮半受控：传入highlightedValue即由上层管理（如Dropdown的键盘导航），独立使用时内部维护
-  // （undefined也是合法写入值：Escape/Tab清除高亮）
-  const { value: currentHighlighted, commit: setHighlighted } = useControlledValue<string | number | undefined>({ value: highlightedValue });
-  const [pressed, setPressed] = useState(false);
-  // 拖拽选择态：mousedown起点的可选项，拖动跨项时更新，mouseup时选中（对齐原版selecting）
-  const selectingRef = useRef<string | number | null>(null);
-  // 拖拽过程中被按压的选项值，驱动选项的pressed类（对齐原版pressItem）
-  const [pressedValue, setPressedValue] = useState<string | number>();
-  // 卸载时中止未完成的拖拽监听
-  const cleanupDragRef = useRef<(() => void) | null>(null);
-  const itemRefs = useRef(new Map<string | number, HTMLDivElement>());
-  // DOM元素→选项值的反向索引，供拖拽时从事件target定位选项（对齐原版findTargetItem）
-  const itemEls = useRef(new Map<Element, string | number>());
+  // 高亮半受控：传入highlightedValue即由上层管理（如Dropdown的键盘导航与hover高亮），
+  // 独立使用时内部维护。undefined也是合法写入值（Escape/Tab清除高亮）
+  const { value: currentHighlighted, commit: setHighlighted } = useControlledValue<string | number | undefined>(
+    { value: highlightedValue },
+    onHighlightedChange,
+  );
+  // 选项DOM双向索引（值→元素供前缀匹配/滚动，元素→值供拖拽定位），供拖拽与滚动共用
+  const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>();
   const keyPressBufferRef = useRef<{ buffer: string; timer: number }>({ buffer: '', timer: 0 });
+
+  /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
+  const isValueSelectable = (optionValue: string | number) =>
+    options.some((option) => option.value === optionValue && isSelectableOption(option));
+
+  const { pressed, pressedValue, handleMouseDown, handleUnpress } = useOptionDrag<string | number>({
+    disabled,
+    isValueSelectable,
+    findItemFromNode,
+    onCommit: commit,
+  });
 
   const classes = clsx(
     className,
@@ -95,87 +107,26 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 
-  const handleUnpress: MouseEventHandler<HTMLDivElement> = () => {
-    setPressed(false);
-  };
-
-  /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
-  const findItemFromNode = (node: EventTarget | null): string | number | null => {
-    let el = node instanceof Element ? node : null;
-    while (el) {
-      const optionValue = itemEls.current.get(el);
-      if (optionValue !== undefined) {
-        return optionValue;
-      }
-      el = el.parentElement;
-    }
-    return null;
-  };
-
-  const isValueSelectable = (optionValue: string | number) =>
-    options.some((option) => option.value === optionValue && isSelectable(option));
-
   /**
-   * 拖拽选择，对齐原版SelectWidget.onMouseDown/onDocumentMouseMove/onDocumentMouseUp：
-   * 左键在可选项上按下进入拖拽态，拖动跨项时按压项随之移动，mouseup时选中目标项
-   * （拖拽未落在选项上时，mouseup落在的可选项也参与选择）
+   * 鼠标悬停高亮，对齐原版SelectWidget.onMouseOver/onMouseLeave：
+   * 悬停可高亮项即高亮、离开清除；悬停高亮与键盘高亮共用同一状态，
+   * 非受控时改内部state，受控时经onHighlightedChange回写（Dropdown/ComboBoxInput依赖）
    */
-  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
-    // 原版onMouseDown恒返回false：阻止拖动过程中选中文本
-    e.preventDefault();
-    setPressed(true);
-    if (disabled || e.button !== 0) {
+  const handleMouseOver: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (disabled) {
       return;
     }
-    // 重置上一次拖拽的残留状态（原版selecting同样存在丢失mouseup后的残留缺陷，此处有意改良）
-    selectingRef.current = null;
-    setPressedValue(undefined);
-    const start = findItemFromNode(e.target);
-    if (start !== null && isValueSelectable(start)) {
-      selectingRef.current = start;
-      setPressedValue(start);
-    }
-    const onMove = (ev: MouseEvent) => {
-      const optionValue = findItemFromNode(ev.target);
-      if (optionValue !== null && optionValue !== selectingRef.current && isValueSelectable(optionValue)) {
-        selectingRef.current = optionValue;
-        setPressedValue(optionValue);
-      }
-    };
-    const onUp = (ev: MouseEvent) => {
-      cleanupDragRef.current?.();
-      setPressed(false);
-      setPressedValue(undefined);
-      let optionValue = selectingRef.current;
-      selectingRef.current = null;
-      if (optionValue === null) {
-        const target = findItemFromNode(ev.target);
-        optionValue = target !== null && isValueSelectable(target) ? target : null;
-      }
-      if (optionValue !== null) {
-        commit(optionValue);
-      }
-    };
-    // 拖拽被系统中断（如触屏滚动接管）时仅清理，不提交选择
-    const onPointercancel = () => {
-      cleanupDragRef.current?.();
-      setPressed(false);
-      setPressedValue(undefined);
-      selectingRef.current = null;
-    };
-    const cleanupDrag = () => {
-      document.removeEventListener('mousemove', onMove, true);
-      document.removeEventListener('mouseup', onUp, true);
-      document.removeEventListener('pointercancel', onPointercancel, true);
-      cleanupDragRef.current = null;
-    };
-    cleanupDragRef.current = cleanupDrag;
-    document.addEventListener('mousemove', onMove, true);
-    document.addEventListener('mouseup', onUp, true);
-    document.addEventListener('pointercancel', onPointercancel, true);
+    const optionValue = findItemFromNode(e.target);
+    setHighlighted(optionValue !== null && isValueSelectable(optionValue) ? optionValue : undefined);
   };
 
-  useEffect(() => () => cleanupDragRef.current?.(), []);
+  const handleMouseLeave: MouseEventHandler<HTMLDivElement> = (e) => {
+    handleUnpress();
+    if (!disabled) {
+      setHighlighted(undefined);
+    }
+    onMouseLeave?.(e);
+  };
 
   const clearKeyPressBuffer = () => {
     clearTimeout(keyPressBufferRef.current.timer);
@@ -195,6 +146,16 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     itemRefs.current.get(optionValue)?.scrollIntoView({ block: 'nearest' });
   };
 
+  // 高亮项变化时滚动到可见区（对齐原版键盘导航的滚动行为）。统一在此处理而非仅在
+  // handleKeyDown里调用：受控高亮（上层如ComboBoxInput经MenuSelect传入，键盘事件
+  // 不冒泡经过本组件）时仅靠handleKeyDown会漏掉滚动。
+  // scrollItemIntoView经itemRefs读取最新元素，无过期闭包，无需列入依赖
+  useLayoutEffect(() => {
+    if (currentHighlighted !== undefined) {
+      scrollItemIntoView(currentHighlighted);
+    }
+  }, [currentHighlighted]);
+
   /** 对齐原版findRelativeSelectableItem：从start（不含）按offset取可选值，支持环绕与过滤 */
   const findRelative = (
     start: string | number | undefined,
@@ -202,7 +163,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     filter?: (optionValue: string | number) => boolean,
     wrap = listWrapsAround,
   ): string | number | undefined => {
-    const selectable = options.filter(isSelectable);
+    const selectable = options.filter(isSelectableOption);
     if (!selectable.length) {
       return undefined;
     }
@@ -211,10 +172,12 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
       ? -1
       : selectable.findIndex((o) => o.value === start);
     if (startIndex === -1) {
+      // start不在可选集内：正向自首项、反向自末项起步，不满足filter则视为无目标
       const candidate = offset > 0 ? selectable[0] : selectable[selectable.length - 1];
       return candidate && (!filter || filter(candidate.value)) ? candidate.value : undefined;
     }
     let index = startIndex;
+    // 环绕时上限一整圈保证可终止，否则最多走|offset|步
     const maxSteps = wrap ? selectable.length : Math.abs(offset);
     for (let i = 0; i < maxSteps; i++) {
       let nextIndex = index + step;
@@ -230,6 +193,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
         return candidate.value;
       }
       if (wrap && index === startIndex) {
+        // 绕回起点仍未命中filter：可选集内无满足条件的项
         return undefined;
       }
     }
@@ -242,7 +206,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     if (disabled) {
       return;
     }
-    const selectable = options.filter(isSelectable);
+    const selectable = options.filter(isSelectableOption);
     if (!selectable.length) {
       return;
     }
@@ -321,8 +285,8 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     }
 
     if (next !== undefined) {
+      // 滚动由高亮变化的layout effect统一处理（含受控高亮路径）
       setHighlighted(next);
-      scrollItemIntoView(next);
     }
     if (handled) {
       e.preventDefault();
@@ -330,18 +294,30 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     }
   };
 
+  // 选项元素id（对齐原版OptionWidget.getElementId）：调用方未显式给id时按数组下标生成
+  // （useCleanId去`:`），供aria-activedescendant指向高亮项；下标口径与highlightedIndex一致
+  const optionIdBase = useCleanId();
+  const optionElementId = (index: number) => options[index]?.id ?? `${optionIdBase}-${index}`;
+  const highlightedIndex = currentHighlighted === undefined
+    ? -1
+    : options.findIndex((option) => option.value === currentHighlighted);
+
   return (
     <div
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       role='listbox'
       aria-multiselectable={false}
+      // 高亮项关联：对齐原版SelectWidget.highlightItem将高亮项id写入$focusOwner（本工程为listbox根）
+      // 的aria-activedescendant；无高亮时不输出
+      aria-activedescendant={highlightedIndex >= 0 ? optionElementId(highlightedIndex) : undefined}
       tabIndex={tabIndex ?? (disabled ? -1 : 0)}
       onKeyDown={handleKeyDown}
       onMouseUp={handleUnpress}
       onMouseDown={handleMouseDown}
-      onMouseLeave={handleUnpress}
+      onMouseOver={handleMouseOver}
+      onMouseLeave={handleMouseLeave}
       ref={ref}
     >
       {options.map((option, i) => {
@@ -355,21 +331,11 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
         }
         const selected = currentValue === option.value;
         const isHighlighted = currentHighlighted === option.value;
-        const itemRef = (el: HTMLDivElement | null) => {
-          if (el) {
-            itemRefs.current.set(option.value, el);
-            itemEls.current.set(el, option.value);
-          } else {
-            const registered = itemRefs.current.get(option.value);
-            if (registered) {
-              itemEls.current.delete(registered);
-            }
-            itemRefs.current.delete(option.value);
-          }
-        };
+        const itemRef = registerItem(option.value);
         return outline ? (
           <OutlineOption
             {...option}
+            id={optionElementId(i)}
             key={option.value}
             ref={itemRef}
             selected={selected}
@@ -381,6 +347,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
         ) : (
           <MenuOption
             {...option}
+            id={optionElementId(i)}
             key={option.value}
             ref={itemRef}
             selected={selected}

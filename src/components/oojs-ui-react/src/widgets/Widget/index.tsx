@@ -20,7 +20,7 @@ const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
     <div
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
       {children}

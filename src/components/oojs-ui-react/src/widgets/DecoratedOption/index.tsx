@@ -40,7 +40,7 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   return (
     <div
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       tabIndex={-1}
       role='option'
       {...rest}

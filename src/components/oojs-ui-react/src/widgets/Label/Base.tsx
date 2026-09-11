@@ -14,6 +14,7 @@ export interface LabelElement {
 
 export type LabelBaseProps = HTMLAttributes<HTMLSpanElement> & LabelElement;
 
+/** 标签基础元素（无Widget包装），输出oo-ui-labelElement-label类，供各组件内嵌复用 */
 const LabelBase = forwardRef<HTMLSpanElement, LabelBaseProps>(({
   className,
   children,

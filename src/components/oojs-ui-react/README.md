@@ -13,7 +13,7 @@
 
 - [组件使用示例与API](./docs/components.md)
 - [对照开发方法论](./docs/comparison-guide.md)
-- [未实现/未对齐行为清单](./TODO.md)
+- [未实现/未对齐行为清单](./docs/TODO.md)
 
 ## 开发
 

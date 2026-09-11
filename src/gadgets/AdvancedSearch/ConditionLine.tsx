@@ -139,6 +139,7 @@ function ConditionLine({
         <NumberInput
           className='condition-text'
           value={value as number}
+          showButtons={false}
           onChange={handleValueChange}
           onFocus={onFocus}
         />

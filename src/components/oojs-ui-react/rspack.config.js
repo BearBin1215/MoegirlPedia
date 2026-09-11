@@ -9,8 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   mode: 'development',
-  entry: './tests/index.tsx',
-  output: {},
+  entry: './playground/index.tsx',
   module: {
     rules: [
       {
@@ -27,16 +26,23 @@ export default defineConfig({
         },
       },
       {
-        // 原版oojs-ui/jquery的dist脚本按静态资源URL引入（对照测试用），不做打包执行
-        test: /[\\/]node_modules[\\/][^\\/]+[\\/](dist[\\/])?(jquery|oojs|oojs-ui|oojs-ui-wikimediaui)\.js$/,
+        // 原版oojs-ui/jquery的dist脚本（含两个主题脚本）按静态资源URL引入（对照工程用），不做打包执行
+        test: /[\\/]node_modules[\\/][^\\/]+[\\/](dist[\\/])?(jquery|oojs|oojs-ui|oojs-ui-wikimediaui|oojs-ui-apex)\.js$/,
         type: 'asset/resource',
       },
       {
+        // 普通css正常打包；原版oojs-ui主题样式被exclude后命中下方asset/source规则
         test: /\.css$/,
+        exclude: /[\\/]node_modules[\\/].*oojs-ui[\\/]dist[\\/]/,
         type: 'css/auto',
       },
       {
-        test: /\.(png|jpe?g|gif)/,
+        // 原版主题CSS以文本导出（图标url经require.context重写为构建资源URL后以Blob注入）
+        test: /oojs-ui-(wikimediaui|apex)\.css$/,
+        type: 'asset/source',
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg|webp)$/i,
         type: 'asset/resource',
       },
     ],
@@ -52,7 +58,7 @@ export default defineConfig({
   },
   plugins: [
     new rspack.HtmlRspackPlugin({
-      template: './tests/index.html',
+      template: './playground/index.html',
     }),
     new ReactRefreshRspackPlugin(),
     new rspack.HotModuleReplacementPlugin(),

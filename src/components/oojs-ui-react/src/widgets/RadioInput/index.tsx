@@ -18,7 +18,7 @@ export interface RadioInputProps extends Omit<InputProps<
   /** 非受控初始勾选态 */
   defaultChecked?: boolean;
 
-  /** input元素id（配合label的htmlFor使用），对齐原版inputId */
+  /** input元素id（配合label的htmlFor使用） */
   inputId?: string;
 }
 
@@ -35,6 +35,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   title,
   dir,
   tabIndex,
+  role,
   ...rest
 }, ref) => {
   const { value: isChecked, commit } = useControlledValue<boolean, ChangeEvent<HTMLInputElement>>(
@@ -55,10 +56,10 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
     <span
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
-      {/* title/dir/tabIndex/accessKey/name等对齐原版InputWidget：均落在input元素上 */}
+      {/* title/dir/tabIndex/accessKey/name等均落在input元素上 */}
       <input
         type='radio'
         className='oo-ui-inputWidget-input'
@@ -69,6 +70,7 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         id={inputId}
         title={title}
         dir={dir}
+        role={role}
         onChange={handleChange}
         required={required}
         tabIndex={tabIndex ?? (disabled ? -1 : 0)}

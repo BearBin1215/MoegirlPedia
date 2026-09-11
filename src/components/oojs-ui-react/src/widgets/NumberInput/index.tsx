@@ -6,6 +6,7 @@ import React, {
   type KeyboardEventHandler,
 } from 'react';
 import clsx from 'clsx';
+import { clamp } from 'es-toolkit';
 import Button from '../Button';
 import IconBase from '../Icon/Base';
 import IndicatorBase from '../Indicator/Base';
@@ -17,7 +18,7 @@ import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
 
-/** 数字输入框属性。值为`number`，空值（清空或键入非数字）为`''`，对齐原版`getValue`语义 */
+/** 数字输入框属性。值为`number`，空值（清空或键入非数字）为`''` */
 export interface NumberInputProps extends
   InputProps<number | '', HTMLInputElement, HTMLDivElement>,
   AccessKeyedElement,
@@ -37,14 +38,17 @@ export interface NumberInputProps extends
   /** 合法性步距，值需为其倍数 */
   step?: number;
 
+  /** 是否仅允许整数（原版已废弃的兼容配置，等价于强制step=1；isInteger为其别名，同样支持） */
+  allowInteger?: boolean;
+
+  /** allowInteger的别名 */
+  isInteger?: boolean;
+
   /** 点击按钮或按上下方向键时的步距，默认为step */
   buttonStep?: number;
 
   /** 按PageUp/PageDown时的步距，默认为buttonStep×10 */
   pageStep?: number;
-
-  /** 精度 */
-  precision?: number;
 
   /** 标签位置 */
   labelPosition?: LabelPosition;
@@ -67,17 +71,23 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   min,
   max,
   placeholder,
-  precision,
   readOnly,
   required,
-  showButtons,
-  step = 1,
-  buttonStep = step,
-  pageStep = buttonStep * 10,
+  showButtons = true,
+  step: stepProp = 1,
+  allowInteger,
+  isInteger,
+  buttonStep: buttonStepProp,
+  pageStep: pageStepProp,
   value: controlledValue,
   defaultValue,
   ...rest
 }, ref) => {
+  // 对齐原版构造逻辑：allowInteger/isInteger为废弃兼容配置，置位时强制step=1（覆盖显式传入值）；
+  // buttonStep缺省取step、pageStep缺省取buttonStep×10（原版setStep：buttonStep=step||1，pageStep=10*buttonStep）
+  const step = allowInteger || isInteger ? 1 : stepProp;
+  const buttonStep = buttonStepProp ?? step;
+  const pageStep = pageStepProp ?? buttonStep * 10;
   const { value: currentValue, commit } = useControlledValue<number | '', ChangeEvent<HTMLInputElement>>(
     { value: controlledValue, defaultValue: defaultValue ?? '' },
     onChange,
@@ -86,7 +96,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   /** 展示值：空值/非数字时显示为空 */
   const displayValue = typeof currentValue === 'number' && !Number.isNaN(currentValue) ? currentValue : '';
 
-  /** 当前值的数值形态，空值为NaN，对齐原版getNumericValue */
+  /** 当前值的数值形态，空值为NaN */
   const getNumericValue = () => (currentValue === '' ? NaN : currentValue);
 
   /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */
@@ -96,7 +106,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     if (isNaN(v)) {
       n = 0;
     } else {
-      n = Math.max(Math.min(v + delta, max ?? Infinity), min ?? -Infinity);
+      n = clamp(v + delta, min ?? -Infinity, max ?? Infinity);
       n = step ? Math.round(n / step) * step : n;
     }
     if (n !== v) {
@@ -113,11 +123,21 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
       return;
     }
     const handleWheel = (ev: WheelEvent) => {
-      if (disabled || readOnly || !ev.deltaY) {
+      if (disabled || readOnly) {
+        return;
+      }
+      // 对齐原版onWheel：deltaY为0时回退取deltaX（横向滚轮/触摸板横滑）
+      const delta = ev.deltaY ? -ev.deltaY : ev.deltaX;
+      if (!delta) {
+        return;
+      }
+      // 对齐原版onWheel前置条件（$input.is(':focus')）：仅聚焦时步进并阻止页面滚动，
+      // 悬停未聚焦时不拦截，避免滚动页面误改数值
+      if (document.activeElement !== input) {
         return;
       }
       ev.preventDefault();
-      adjustValue(ev.deltaY < 0 ? buttonStep : -buttonStep);
+      adjustValue(delta < 0 ? -buttonStep : buttonStep);
     };
     input.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
@@ -141,18 +161,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     commit(newValue, event);
   };
 
-  /** 失焦时，按照精度四舍五入 */
-  const handleBlur = () => {
-    const v = getNumericValue();
-    if (typeof precision === 'number' && !Number.isNaN(v)) {
-      const rounded = Math.round(v * 10 ** precision) / 10 ** precision;
-      if (rounded !== v) {
-        commit(rounded);
-      }
-    }
-  };
-
-  /** 方向键/PageUp/Down步进，对齐原版onKeyDown */
+  /** 方向键/PageUp/Down步进 */
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (ev) => {
     if (disabled || readOnly) {
       return;
@@ -181,7 +190,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     <div
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
       <IconBase icon={icon} />
@@ -202,7 +211,7 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           type='number'
           name={name}
           tabIndex={disabled ? -1 : 0}
-          aria-disabled={!!disabled}
+          aria-disabled={disabled || undefined}
           className='oo-ui-inputWidget-input'
           disabled={disabled}
           readOnly={readOnly}
@@ -214,7 +223,6 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           max={max}
           step={step}
           onChange={handleInputChange}
-          onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           ref={inputRef}
         />

@@ -13,7 +13,7 @@ export interface PanelLayoutProps extends LayoutProps {
   framed?: boolean;
 }
 
-/** @description 面板组件，用于制作各类布局组件 */
+/** 面板组件，用于制作各类布局组件 */
 const PanelLayout = forwardRef<HTMLDivElement, PanelLayoutProps>(({
   className,
   children,

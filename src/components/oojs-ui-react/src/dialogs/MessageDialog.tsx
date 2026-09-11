@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useCallback,
   useRef,
   type ReactNode,
 } from 'react';
@@ -7,6 +8,7 @@ import clsx from 'clsx';
 import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
+import { useCleanId } from '../hooks';
 import Dialog, { type DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
@@ -28,34 +30,50 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   children,
   className,
   title,
+  size = 'small',
   okLabel = 'OK',
   cancelLabel = 'Cancel',
   foot,
   onOk,
   onCancel,
+  onReady,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
   const classes = clsx(className, 'oo-ui-messageDialog');
-  // 对齐原版Dialog.focus()：ready后优先聚焦primary action按钮
-  const okButtonRef = useRef<HTMLSpanElement>(null);
+  // 标题元素id：使弹窗根（role='dialog'）的aria-labelledby关联标题
+  const titleId = useCleanId();
+  // 对齐原版MessageDialog.getReadyProcess：ready后优先聚焦primary action按钮
+  // （经Button的anchorRef直接持有可聚焦链接，不依赖其内部DOM结构）
+  const okButtonRef = useRef<HTMLAnchorElement>(null);
 
-  const focusPrimary = () => {
-    okButtonRef.current?.querySelector('a')?.focus();
-  };
+  const focusPrimary = useCallback(() => {
+    okButtonRef.current?.focus();
+  }, []);
+
+  // Dialog以onReady为effect依赖：引用不稳定会导致open期间每次重渲染都重跑聚焦
+  const handleReady = useCallback(() => {
+    if (!foot) {
+      focusPrimary();
+    }
+    onReady?.();
+  }, [foot, focusPrimary, onReady]);
 
   return (
     <Dialog
       {...rest}
+      size={size}
       className={classes}
       contentClassName='oo-ui-messageDialog-content'
+      aria-labelledby={ariaLabelledBy ?? titleId}
       onPrimaryAction={onOk}
-      onReady={foot ? undefined : focusPrimary}
+      onReady={handleReady}
       foot={
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
               {cancelLabel !== null && <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{cancelLabel}</Button>}
-              <Button ref={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{okLabel}</Button>
+              <Button anchorRef={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{okLabel}</Button>
             </>
           )}
         </div>
@@ -64,8 +82,10 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
     >
       <PanelLayout className='oo-ui-messageDialog-container' scrollable expanded={false}>
         <PanelLayout className='oo-ui-messageDialog-text' padded expanded={false}>
-          <Label className='oo-ui-messageDialog-title'>{title}</Label>
-          <Label>{children}</Label>
+          <Label id={titleId} className='oo-ui-messageDialog-title'>{title}</Label>
+          {/* message须带oo-ui-messageDialog-message类：主题CSS将其display:block，
+              缺失时保持inline，内部FieldLayout等块级内容宽度会被收缩 */}
+          <Label className='oo-ui-messageDialog-message'>{children}</Label>
         </PanelLayout>
       </PanelLayout>
     </Dialog>

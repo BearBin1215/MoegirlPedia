@@ -6,9 +6,6 @@ import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
 export interface CheckboxMultioptionProps extends Omit<OptionProps<HTMLLabelElement>, 'highlighted'> {
-  /** 是否勾选 */
-  checked?: boolean;
-
   /** 表单提交字段名，透传给内部CheckboxInput */
   name?: string;
 
@@ -27,7 +24,7 @@ const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProp
   disabled,
   children,
   name,
-  checked,
+  selected,
   onChange,
   inputRef,
   checkboxProps,
@@ -37,17 +34,17 @@ const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProp
   const classes = clsx(
     className,
     generateWidgetClassName({ disabled, label: children }, 'option', 'checkboxMultioption'),
-    checked && 'oo-ui-optionWidget-selected',
+    selected && 'oo-ui-optionWidget-selected',
   );
 
   return (
     <label
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       tabIndex={-1}
       role='checkbox'
-      aria-checked={!!checked}
+      aria-checked={!!selected}
       ref={ref}
     >
       <CheckboxInput
@@ -55,7 +52,7 @@ const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProp
         accessKey={accessKey}
         disabled={disabled}
         name={name}
-        checked={checked}
+        checked={selected}
         onChange={onChange}
         inputRef={inputRef}
       />

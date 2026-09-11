@@ -14,17 +14,17 @@ export interface FieldsetLayoutProps extends
   LabelElement,
   IconElement {
 
-  /** 帮助文本（对齐原版help配置） */
+  /** 帮助文本 */
   help?: React.ReactNode;
 
   /**
-   * 帮助文本是否内联显示。对齐原版：`true`时以`oo-ui-inline-help`标签显示在字段集头部之后；
+   * 帮助文本是否内联显示。`true`时以`oo-ui-inline-help`标签显示在字段集头部之后；
    * `false`时渲染为帮助图标，点击弹出说明
    */
   helpInline?: boolean;
 }
 
-/** @description 字段集布局，对齐原版OO.ui.FieldsetLayout（fieldset元素 + legend头部 + group分组） */
+/** 字段集布局，对齐原版OO.ui.FieldsetLayout（fieldset元素 + legend头部 + group分组） */
 const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
   children,
   className,

@@ -270,6 +270,7 @@ function RecentChangeList() {
               name='updateInterval'
               className='dynamic-rc-config-input'
               value={updateInterval}
+              showButtons={false}
               onChange={(value) => setUpdateInterval(value)}
               min={5}
               placeholder='不低于5秒'

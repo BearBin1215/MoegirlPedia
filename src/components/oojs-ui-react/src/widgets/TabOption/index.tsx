@@ -1,27 +1,25 @@
-import React, { forwardRef, type MouseEventHandler, type ReactNode } from 'react';
+import React, { forwardRef, type MouseEventHandler } from 'react';
 import clsx from 'clsx';
+import { omit } from 'es-toolkit';
 import LabelBase from '../Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import type { OptionProps } from '../Option';
 
 export type TabOptionProps = OptionProps & {
-  /** 是否为鼠标按压中的选项（由TabSelect拖拽逻辑驱动，对齐原版pressItem） */
+  /** 是否为鼠标按压中的选项（由TabSelect拖拽逻辑驱动） */
   pressed?: boolean;
 
   /** 页签集复用时随对象透入的标签，仅供组件吞掉以避免落成DOM属性（渲染用children） */
-  label?: ReactNode;
+  label?: React.ReactNode;
 };
 
 /** 选项组件，用于作为`TabSelect`子组件，对齐原版`TabOptionWidget`（不可高亮） */
 const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
   children,
   className,
-  value: _value,
   disabled,
-  highlighted: _highlighted,
   selected,
   pressed,
-  label: _label,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -38,9 +36,9 @@ const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
 
   return (
     <div
-      {...rest}
+      {...omit(rest, ['value', 'highlighted', 'label'])}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       tabIndex={-1}
       role='tab'
       aria-selected={!!selected}

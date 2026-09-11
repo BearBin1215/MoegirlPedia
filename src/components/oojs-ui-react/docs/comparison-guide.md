@@ -19,14 +19,25 @@
 - 原版库依赖全局 `jQuery`/`OO`，其 dist 是 IIFE（`this` 挂载），不能直接打包 import。
 - `rspack.config.js` 中有 `asset/resource` 规则，把 node_modules 内原版 dist 文件按 URL 引入（文件不入库、随依赖升级）：
   `import oouiUrl from 'oojs-ui/dist/oojs-ui.js'` → 得到 URL 字符串。
-- `tests/components/ooui.ts` 提供：
+- `playground/components/ooui.ts` 提供：
   - `ensureOOUI()`：按序注入 `jquery → oojs → oojs-ui → 主题` 四个脚本到全局，返回 OO 命名空间。
     - 脚本注入必须 `script.async = false`（动态脚本默认按**下载完成顺序**执行，大文件会乱序）；
     - 每个脚本带 id 去重（防 HMR/StrictMode 双跑导致 `customElements.define` 重复注册）；
     - 模块级 promise 单例（StrictMode effect 双调用只注入一次）。
   - `unwrapJQuery($el)`：jQuery 对象 → 真实 DOM 节点（appendChild 用）。
   - `compareLayoutStyle`：左右并排布局样式。
-- 对照页命名约定：`tests/pages/xxx-compare/index.tsx`，并在 `tests/config/router.ts` 注册。
+- 对照页命名约定：`playground/pages/xxx-compare/index.tsx`，并在 `playground/config/router.ts` 注册。
+
+## 原版主题切换机制（对照页基础设施）
+
+playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主题 = JS 类实例 + 样式表两部分，机制与踩坑如下：
+
+- **主题 CSS 以文本导入，不走 css 打包**：`rspack.config.js` 对 `oojs-ui-(wikimediaui|apex).css` 单独设 `asset/source` 规则（普通 `css/auto` 会把两份主题样式无条件打进文档，无法作为整体切换），`ooui.ts` 顶部 `import oouiWikimediaCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.css'` 直接得到文本字符串。
+- **图标 url 运行时重写后经 Blob 注入**：主题 CSS 内图标是相对路径（`themes/wikimediaui/images/icons/xxx.svg`），做成 Blob URL 后相对引用会以 `blob:` 为 base 而全部失效。`ooui.ts` 用 rspack 的 `require.context('oojs-ui/dist/themes', true, /\.(svg|png)$/)` 把图标目录批量注册为构建资源，正则将 CSS 文本内的相对 url 重写为构建资源 URL，再 `new Blob([...])` + `URL.createObjectURL` 生成样式表地址（按主题缓存，避免重复生成）。
+  - 已知限制：`require.context` 会把两主题上千个 svg 全部纳入构建图（dev 首次构建/HMR 开销）。两主题都要支持切换，难以按需收窄，属有意取舍。
+- **切换样式表用整节点替换，不用 `link.disabled` 互斥**：在样式表**加载完成前**设置 `disabled` 会中止加载，之后翻转标志位也不会恢复（浏览器行为）。`applyThemeCss(theme)` 直接移除旧 `<link>`、追加新节点，同一时刻只存在当前主题一个节点。
+- **JS 侧：主题类共存，切换即重建实例**：两份主题脚本加载后主题类共存于 `OO.ui`（`WikimediaUITheme`/`ApexTheme`），`setOOTheme(theme)` 懒加载对应主题脚本后以 `ui.theme = new ThemeClass()` 重建实例（apex 按需懒加载，wikimediaui 随 `ensureOOUI()` 主流程注入）。原版控件在**构造时**读取主题实例，切换只影响此后新建的控件。
+- **已挂载控件靠 remount 重建**：时序为先 `setOOTheme`（切 JS）→ `applyThemeCss`（切 CSS）→ `setTheme` 触发渲染；`App/index.tsx` 内容区以 `key={theme}` 强制 remount，使两侧（原版与 React 版）已挂载控件在新主题下全部重建。
 
 ## 关键经验（踩坑沉淀）
 
@@ -41,7 +52,37 @@
 - **React 合成 `wheel` 事件是 passive 的**，`preventDefault()` 无效。需要阻止默认行为的滚轮处理必须用原生监听：`element.addEventListener('wheel', fn, { passive: false })`。
 - `import { type KeyboardEvent } from 'react'` 会遮蔽 DOM 的 `KeyboardEvent`，导致 `document.addEventListener('keydown', ...)` 类型报错。规避：`import { type KeyboardEvent as ReactKeyboardEvent }`，或以 `globalThis.KeyboardEvent` 引用 DOM 类型。
 - **非受控用法兼容**：类输入组件不能只依赖 `value` prop 变化触发副作用（非受控时 value 恒 undefined，effect 只跑一次）。用 `input` 事件监听（键入即时）+ `value` 依赖（程序化赋值/受控回流）双通道。
+- **浮层的 Escape 统一在捕获阶段处理并 `stopPropagation`**（`hooks.ts` 的 `useDismissablePopover`）：Popup/MenuSelect/PopupToolGroup 都经它关闭。Dialog 的 ESC 是 React `onKeyDown`（冒泡阶段、绑在弹窗根），故弹窗内嵌套浮层的 ESC 只会关最内层浮层。新增浮层时必须复用该 hook，不要各自写 document 监听——否则 ESC 会同时关掉浮层与弹窗。
 - a11y 布尔属性（`aria-selected`/`aria-checked` 等）写实际布尔值，不要写死 `false`。
+
+### 共享抽象（改动前先查是否已有对应 hook）
+
+`src/hooks.ts` 与 `src/utils.ts` 收敛了跨组件重复逻辑，新增/修改组件应优先复用而非再写一份：
+
+- `useControlledValue` / `useControlledValueFallback`：受控/非受控值状态。
+- `useMergedRefs`：同时持有元素引用并向外转发 ref（替代 `useImperativeHandle` 手工桥接）。
+- `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。
+- `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。
+- `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。
+- `useAnchoredPanelLayout` + `VIEWPORT_SPACING`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup）。
+- `useAutoFocusPanel`：切换激活面板后聚焦其内首个可聚焦元素（IndexLayout/BookletLayout）。
+- `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略。
+- `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。
+- `FOCUSABLE_SELECTOR` / `getFocusableElements` / `getFirstFocusable`：可聚焦元素判定，全库统一口径。
+- `toFlagArray`：标志参数归一化为数组。
+- `es-toolkit` 的 `omit`：剥离仅供父级布局使用的选项元数据，避免落成 DOM 未知属性（布局类组件的 options 条目同时携带 `value` 等元数据与页面 props，渲染前经 `omit(option, [...])` 挡下）。`clamp`（数值钳制）与 `debounce` 等通用工具同样取自 `es-toolkit`，不要另行手写。
+
+**选项选中态命名**：`Select` 系选项统一用基类 `OptionProps.selected`（含 Radio/Checkbox 型选项），内层原生控件再映射为 `checked`；不要给选项另起 `checked` prop。
+
+**鼠标悬停高亮由父级持有**：Select 系选项自身不维护 hover 高亮，由 Select 统一经 `onMouseOver`/`onMouseLeave` 驱动 `highlighted`，使悬停高亮、键盘高亮、`aria-activedescendant` 与滚动进入视口指向同一条目。受控高亮（Dropdown/ComboBoxInput）须经 `Select.onHighlightedChange` 回写父级。
+- **原版 `Tool.active` 兼作瞬时按压视觉态**：`ToolGroup` 在 mousedown 时 `pressed.setActive(true)`、松开复位，故原版 `onSelect` 内不能以 `isActive()` 取反实现切换（读到的是按压态），须用应用自有标志（官方 Demo 的 `reallyActive` 模式）。React 版已将两者分离：`pressed` prop 承载瞬时按压，`active` prop 为受控激活态，二者都映射到 `oo-ui-tool-active` 类。
+- **工具组的 `align`**：原版 `Toolbar.insertItemElements` 把 `align:'after'` 的工具组移到 `$after` 容器（主题 CSS `.oo-ui-toolbar-after { float: right }`）。React 版由 `Toolbar` 按子元素的 `align` prop 分组渲染；工具组本体需把 `align` 解构掉，避免落成 DOM 属性。
+- **工具按压视觉随指针/焦点移出清除**：原版 `ToolGroup` 把 `mouseover/mouseout/focus/blur` 一并委托在 `$group` 上，经 `onMouseOutBlur` 仅清除按压视觉，按压流本身继续（在同工具上松开仍会触发选择）。React 版中 `useToolGroupPressed` 返回的 `pressedName` 在被移出时上报 `null`，组容器经 `getToolHoverHandlers` 接入四个事件。
+
+### 对照排查提醒
+
+- **`OO.ui.isMobile()` 在本版本（0.49.2）dist 中是恒返回 `false` 的桩函数**。原版所有依赖它的移动端分支（TabOption 选中后居中滚动、`DropdownInputWidget` 切原生 select、`IndexLayout.autoFocus` 抑制等）在这版 OOUI 里都不会进入。遇到这类「原版有、React 版没有」的差异时，先确认原版该分支是否真的可达，再决定是否补实现或按对齐处理。
+- 原版 `FloatableElement` 的 `hideWhenOutOfView` 只给浮层加 `oo-ui-element-hidden` 类，并**不**改写 `aria-expanded`。React 版的 `outOfView` 收敛在组件内部、由调用方维持 `aria-expanded`，两者行为一致，不是差异。
 
 ## 浏览器自动化验证注意（trae 浏览器桥限制）
 

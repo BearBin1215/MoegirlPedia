@@ -10,7 +10,7 @@ type MultiselectValue = Array<string | number>;
 export interface CheckboxMultiselectProps extends WidgetProps {
   options: CheckboxMultioptionProps[];
 
-  /** 表单提交字段名，透传给每个选项的checkbox（对齐原版CheckboxMultiselectInputWidget的name配置） */
+  /** 表单提交字段名，透传给每个选项的checkbox */
   name?: string;
 
   /** 当前选中值集合（受控，传入即受控模式） */
@@ -23,7 +23,7 @@ export interface CheckboxMultiselectProps extends WidgetProps {
   onChange?: ChangeHandler<MultiselectValue, HTMLInputElement>;
 }
 
-/** @description 多选框组，对齐原版OO.ui.CheckboxMultiselectWidget：支持Shift+点击范围选择与方向键焦点导航 */
+/** 多选框组，对齐原版OO.ui.CheckboxMultiselectWidget：支持Shift+点击范围选择与方向键焦点导航 */
 const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>(({
   options,
   className,
@@ -40,7 +40,7 @@ const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>
   );
   // 各选项的checkbox input引用（value → input），供方向键焦点导航聚焦
   const inputRefs = useRef(new Map<string | number, HTMLInputElement>());
-  // 上一次点击的选项value，供Shift+点击范围选择的起点定位（对齐原版$lastClicked）
+  // 上一次点击的选项value，供Shift+点击范围选择的起点定位
   const lastClickedRef = useRef<string | number | null>(null);
 
   const classes = clsx(
@@ -59,7 +59,7 @@ const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>
         const nextValue = [...currentValue];
         for (let i = start; i <= end; i++) {
           const option = options[i];
-          // 区间内禁用项保持原状（对齐原版isDisabled跳过）
+          // 区间内禁用项保持原状
           if (option.disabled) {
             continue;
           }
@@ -107,16 +107,16 @@ const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>
     <div
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
       {options.map((option) => {
-        const checked = currentValue.includes(option.value);
+        const isSelected = currentValue.includes(option.value);
         return (
           <CheckboxMultioption
             {...option}
             disabled={option.disabled === void 0 ? disabled : option.disabled}
-            checked={checked}
+            selected={isSelected}
             key={option.value}
             name={name}
             inputRef={(node) => {

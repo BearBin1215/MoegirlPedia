@@ -10,7 +10,7 @@ export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,
   LabelElement {
 
-  /** 标签对其方向 */
+  /** 标签对齐方向 */
   align?: 'left' | 'right' | 'top' | 'inline';
 }
 
@@ -18,6 +18,8 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
   align = 'left',
   children,
   className,
+  disabled,
+  invisibleLabel,
   label,
   ...rest
 }, ref) => {
@@ -26,6 +28,8 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
     hasLabel(label) && 'oo-ui-labelElement',
     'oo-ui-fieldLayout',
     `oo-ui-fieldLayout-align-${align}`,
+    // disabled须从rest剥离，否则泄漏为div的非法DOM属性
+    disabled && 'oo-ui-fieldLayout-disabled',
   );
 
   const child = [
@@ -33,7 +37,8 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
       {children}
     </span>,
     <span className='oo-ui-fieldLayout-header' key='header'>
-      <LabelBase>{label}</LabelBase>
+      {/* invisibleLabel的裁剪类落在label元素上 */}
+      <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
     </span>,
   ];
 

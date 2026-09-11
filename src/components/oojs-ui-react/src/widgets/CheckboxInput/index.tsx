@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import Icon from '../Icon';
-import { generateWidgetClassName, mergeRefs, type AccessKeyedElement } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { useControlledValue, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
@@ -20,7 +20,10 @@ export type CheckboxInputProps =
     /** 非受控初始勾选态 */
     defaultChecked?: boolean;
 
-    /** input元素id（配合label的htmlFor使用），对齐原版inputId */
+    /** 表单提交值（写入input的value属性，不影响勾选状态） */
+    value?: string | number;
+
+    /** input元素id（配合label的htmlFor使用） */
     inputId?: string;
 
     /** 半选状态 */
@@ -41,6 +44,7 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   onChange,
   checked,
   defaultChecked,
+  value,
   title,
   dir,
   tabIndex,
@@ -70,13 +74,13 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   };
 
   /** 同时服务内部indeterminate同步与外部inputRef */
-  const setInputRef = mergeRefs(inputRef, inputRefProp);
+  const setInputRef = useMergedRefs(inputRef, inputRefProp);
 
   return (
     <span
       {...rest}
       className={classes}
-      aria-disabled={!!disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     >
       {/* title/dir/tabIndex/accessKey/name等对齐原版InputWidget：均落在input元素上 */}
@@ -85,12 +89,13 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         name={name}
         id={inputId}
         type='checkbox'
+        value={value === undefined ? undefined : String(value)}
         required={required}
         title={title}
         dir={dir}
         accessKey={accessKey}
         tabIndex={tabIndex ?? (disabled ? -1 : 0)}
-        aria-disabled={!!disabled}
+        aria-disabled={disabled || undefined}
         className='oo-ui-inputWidget-input'
         checked={isChecked}
         disabled={disabled}

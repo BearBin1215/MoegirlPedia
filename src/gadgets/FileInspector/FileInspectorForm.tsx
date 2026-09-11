@@ -337,7 +337,7 @@ function FileInspectorForm({ username }: { username: string }) {
                 </Button>
               )}
               挂删间隔（s）：
-              <NumberInput min={0} value={deleteInterval} onChange={handleIntervalChange} style={{ width: '5em' }} />
+              <NumberInput min={0} value={deleteInterval} onChange={handleIntervalChange} showButtons={false} style={{ width: '5em' }} />
               <br />
               <Button onClick={handleCopy} style={{ marginTop: '0.4em' }}>{copyButtonText}</Button>
             </div>

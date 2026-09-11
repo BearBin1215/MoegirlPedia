@@ -1,5 +1,6 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
+import { omit } from 'es-toolkit';
 import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
 
 export interface TabPanelLayoutProps extends PanelLayoutProps {
@@ -12,16 +13,13 @@ export interface TabPanelLayoutProps extends PanelLayoutProps {
   disabled?: boolean;
 }
 
-/** @description 页签面板组件，用于`IndexLayout`组件的分页 */
+/** 页签面板组件，用于`IndexLayout`组件的分页 */
 const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
   className,
   children,
   active,
   expanded = true,
   scrollable = true,
-  label: _label,
-  value: _value,
-  disabled: _disabled,
   ...rest
 }, ref) => {
   const classes = clsx(
@@ -32,7 +30,7 @@ const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
 
   return (
     <PanelLayout
-      {...rest}
+      {...omit(rest, ['label', 'value', 'disabled'])}
       expanded={expanded}
       scrollable={scrollable}
       className={classes}

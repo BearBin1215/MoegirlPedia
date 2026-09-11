@@ -2,8 +2,9 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import Select, { type SelectProps } from '../Select';
 
-export type OutlineSelectProps = SelectProps;
+export type OutlineSelectProps = Omit<SelectProps, 'outline'>;
 
+/** 大纲样式选择组件，对齐原版OO.ui.OutlineSelectWidget：委托Select输出outline类，经其渲染OutlineOption */
 const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
   className,
   ...rest
@@ -17,8 +18,9 @@ const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
     <Select
       ref={ref}
       className={classes}
-      outline
       {...rest}
+      // outline置于spread之后：OutlineSelect恒为大纲样式，调用方不可覆盖
+      outline
     />
   );
 });

@@ -1,17 +1,17 @@
 import React, { forwardRef, useEffect, useRef } from 'react';
 import clsx from 'clsx';
-import { mergeRefs } from '../../utils';
+import { useMergedRefs } from '../../hooks';
 import type { ElementProps } from '../../Element';
 
 export interface LayoutProps extends Omit<ElementProps, 'hidden'> {
   /**
-   * 是否隐藏。对齐原版：`true`渲染`hidden`属性并附加`oo-ui-element-hidden`；
+   * 是否隐藏。`true`渲染`hidden`属性并附加`oo-ui-element-hidden`；
    * `'until-found'`仅渲染`hidden="until-found"`（可被浏览器查找定位后触发beforematch）
    */
   hidden?: boolean | 'until-found';
 }
 
-/** @description 布局组件基础 */
+/** 布局组件基础 */
 const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
   className,
   children,
@@ -19,6 +19,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
   ...rest
 }, ref) => {
   const innerRef = useRef<HTMLDivElement | null>(null);
+  const mergedRef = useMergedRefs(innerRef, ref);
   const classes = clsx(
     className,
     'oo-ui-layout',
@@ -41,7 +42,7 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
       // 断言仅为绕过React 18类型定义（hidden仅声明为boolean）
       hidden={(hidden || undefined) as boolean | undefined}
       aria-hidden={hidden ? 'true' : undefined}
-      ref={mergeRefs(innerRef, ref)}
+      ref={mergedRef}
     >
       {children}
     </div>

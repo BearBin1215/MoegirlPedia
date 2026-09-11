@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import Icon from '../Icon';
 import Button from '../Button';
-import { generateWidgetClassName, resolveElement } from '../../utils';
+import { generateWidgetClassName, getFocusableElements, resolveElement, VIEWPORT_SPACING } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { LabelElement } from '../Label';
@@ -102,7 +102,7 @@ const OPPOSITE: Record<PopupPosition, PopupPosition> = {
   below: 'above', above: 'below', before: 'after', after: 'before',
 };
 
-/** @description 弹出层，对齐原版OO.ui.PopupWidget（浮动定位+锚点箭头+自动翻转+自动关闭+ClippableElement裁剪+Tab边界关闭）。容器探测与翻转空间比较为简化实现，见TODO.md */
+/** 弹出层，对齐原版OO.ui.PopupWidget（浮动定位+锚点箭头+自动翻转+自动关闭+ClippableElement裁剪+Tab边界关闭）。容器探测与翻转空间比较为简化实现，见docs/TODO.md */
 const Popup = forwardRef<HTMLDivElement, PopupProps>(({
   open,
   container,
@@ -117,6 +117,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
   head,
   hideCloseButton,
   padded,
+  invisibleLabel,
   width = 320,
   height,
   footer,
@@ -140,7 +141,9 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     (!open || outOfView) && 'oo-ui-element-hidden',
   );
 
-  // 对齐原版computePosition：按container与popup尺寸计算绝对定位与锚点偏移（页面坐标，portal至body）
+  // 对齐原版computePosition：按container与popup尺寸计算绝对定位与锚点偏移（页面坐标，portal至body）。
+  // 影响布局的props变化时须重新计算（含open期间切换container/anchor），对齐原版setFloatableContainer/
+  // setPosition等setter的即时重定位语义
   useLayoutEffect(() => {
     if (!open) {
       return;
@@ -189,8 +192,8 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
 
       const vertical = position === 'above' || position === 'below';
       const ANCHOR_SIZE = 9;
-      // 箭头占位由CSS的anchored-{top,bottom,start,end} margin实现（9px）。below/after用top/left定位时
-      // margin参与margin box偏移而自动生效；above/before需按原版改用bottom/right定位的效果手动补偏移
+      // 箭头占位：CSS 用 anchored-{top,bottom,start,end} 的 9px margin 实现。below/after 以 top/left
+      // 定位时该 margin 自动生效；above/before 原版以 bottom/right 定位，本工程统一用 top/left，需手动补
       const anchorShift = anchor ? ANCHOR_SIZE : 0;
       let top = 0;
       let left = 0;
@@ -280,14 +283,18 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     setLayout(initial);
     // 滚动/缩放后重新计算定位（含翻转判定）；对齐原版position()在滚动时同时更新裁剪与滚出隐藏
     const recompute = () => setLayout(compute());
+    // 壳尺寸变化（open期间切换head/footer、内容增减）触发重定位与重钳制；
+    // 观察壳而非把head/footer等加入deps，内联节点每渲染新引用不会引发重定位。
+    // 裁剪变化引起的壳尺寸回流会在同一帧内被裁剪effect复原，不会形成观察循环
+    const shellObserver = new ResizeObserver(recompute);
+    shellObserver.observe(popup);
     window.addEventListener('resize', recompute);
     document.addEventListener('scroll', recompute, true);
     return () => {
+      shellObserver.disconnect();
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-    // 对齐原版setFloatableContainer/setPopupPosition等setter即时重定位的语义：
-    // 影响布局的props变化时（含open期间切换container/anchor）须重新计算
   }, [open, positionProp, alignProp, autoFlip, width, height, containerPadding, container, anchor]);
 
   // 对齐原版onDocumentMouseDown：点击popup与忽略元素之外时请求关闭
@@ -333,9 +340,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     if (!root) {
       return;
     }
-    const focusables = [...root.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    )];
+    const focusables = getFocusableElements(root);
     const first = focusables[0];
     const last = focusables[focusables.length - 1];
     const handleFirst = (event: KeyboardEvent) => {
@@ -373,7 +378,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     const body = root.querySelector<HTMLElement>('.oo-ui-popupWidget-body');
     const containerEl = resolveElement(container);
     const scroller = findScrollableContainer(containerEl);
-    const spacing = 5;
+    const spacing = VIEWPORT_SPACING;
     const buffer = 7;
     const applyVisualBounds = () => {
       // 滚出隐藏：锚定容器与可视区（就近滚动容器，缺省视口）无交集时隐藏
@@ -432,7 +437,9 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       const extraSize = verticalClip
         ? popupRect.height - bodyRect.height
         : popupRect.width - bodyRect.width;
-      const alloted = Math.ceil(availSize - extraSize);
+      // 钳0：锚点贴近视口边缘时availSize不足以覆盖弹层壳，alloted为负是非法CSS值
+      // 会被浏览器丢弃导致裁剪静默失效（与MenuSelect的钳0口径一致）
+      const alloted = Math.max(0, Math.ceil(availSize - extraSize));
       const natural = verticalClip ? body.scrollHeight : body.scrollWidth;
       if (alloted < natural) {
         body.style.overflow = 'auto';
@@ -481,7 +488,8 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
         {head && (
           <div className='oo-ui-popupWidget-head'>
             <Icon icon={icon} />
-            <LabelBase>{label}</LabelBase>
+            {/* invisibleLabel的裁剪类落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
+            <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
             {head && !hideCloseButton && (
               <Button
                 framed={false}

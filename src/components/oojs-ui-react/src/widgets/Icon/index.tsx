@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
+import { generateWidgetClassName, toFlagArray } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import IconBase, { type IconElement } from './Base';
 
@@ -14,10 +14,11 @@ export interface IconProps extends
   /** 附加给图标的标志 */
   flags?: IconFlag | IconFlag[];
 
-  /** 图标title提示（等价原版IconElement的iconTitle配置） */
+  /** 图标title提示 */
   iconTitle?: string;
 }
 
+/** 独立图标组件，对齐原版OO.ui.IconWidget：基于IconBase附加Widget类名与flag变体 */
 const Icon = forwardRef<HTMLSpanElement, IconProps>(({
   icon,
   className,
@@ -30,9 +31,11 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon, invisibleLabel: true }, 'icon'),
-    !icon && 'oo-ui-iconElement-noIcon',
-    (typeof flags === 'string' ? [flags] : flags).flatMap((flag) => [`oo-ui-flaggedElement-${flag}`, `oo-ui-image-${flag}`]),
+    generateWidgetClassName({ disabled, icon }, 'icon'),
+    // 单元素组件：根元素即label元素（原版IconWidget混入LabelElement时$label指向根），
+    // invisibleLabel的裁剪类按原版落在label（根）上
+    'oo-ui-labelElement-invisible',
+    toFlagArray(flags).flatMap((flag) => [`oo-ui-flaggedElement-${flag}`, `oo-ui-image-${flag}`]),
   );
 
   return (
@@ -41,7 +44,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
       className={classes}
       icon={icon}
       title={title ?? iconTitle}
-      aria-disabled={disabled}
+      aria-disabled={disabled || undefined}
       ref={ref}
     />
   );
