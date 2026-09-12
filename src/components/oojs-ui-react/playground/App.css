@@ -1,0 +1,137 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* 覆盖浏览器默认8px边距：否则文档高度超出视口，body层多出一条滚动条。
+   font-size与font-family须设在body级而非内容区：popup/dialog类组件portal至body，
+   设在内容区会使portal浮层与文档内控件（antd布局会注入自身字体栈）字号/字体不一致 */
+body {
+  margin: 0;
+  font-size: 14px;
+  font-family: sans-serif;
+}
+
+/* 整体骨架：头部固定、侧栏固定宽、内容区滚动 */
+.playground {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.playground-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.playground-title {
+  color: rgba(0 0 0 / 88%);
+  font-size: 1.2em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.playground-sider {
+  /* 视口较矮时侧栏菜单自身滚动，不撑破骨架 */
+  overflow-y: auto;
+  border-right: 1px solid #f0f0f0;
+
+  /* 分组标题与首组顶格 */
+  .ant-menu-item-group-title {
+    padding-top: 12px;
+  }
+}
+
+.playground-content {
+  overflow: auto;
+  padding: 16px 24px;
+  /* antd经组件根样式注入自身字体栈，会盖过body的继承；!important压过注入，
+     保证文档内控件与portal浮层（继承body字体）字体一致，行高度量才可比 */
+  font-family: sans-serif !important;
+}
+
+.playground-loading {
+  display: flex;
+  justify-content: center;
+  padding: 4em 0;
+}
+
+/* #region 对照页排版（限定内容区，避免影响壳层） */
+.playground-content {
+  h1:first-child {
+    margin-top: 0;
+  }
+
+  h2 {
+    margin: 1.4em 0 0.6em;
+  }
+
+  h3 {
+    margin: 1.2em 0 0.4em;
+  }
+
+  h4,
+  h5,
+  h6 {
+    margin: 1em 0 0.4em;
+  }
+
+  p {
+    margin: 0.8em 0;
+  }
+
+  /* 链接默认无下划线，悬浮时显示 */
+  a {
+    text-decoration: none;
+    color: #01e;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* 删除线样式 */
+  del,
+  s {
+    color: #626262;
+    padding-inline: 2px;
+  }
+
+  /* 代码块 */
+  code {
+    margin: 0 0.25em;
+    padding: 0.2em 0.4em;
+    background: rgb(0 0 0 / 4%);
+    border: 1px solid rgb(5 5 5 / 6%);
+  }
+
+  /* 按键 */
+  kbd {
+    display: inline-block;
+    background-color: #f7f7f7;
+    border-radius: 0.25rem;
+    border: 1px solid #cbcccd;
+    padding: 2px 5px;
+    line-height: 1;
+    min-width: 0.75rem;
+    text-align: center;
+    box-shadow: 0 1px 0 0.5px #cbcccd;
+    position: relative;
+    top: -1px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    line-height: 1.6;
+
+    li {
+      list-style-type: circle;
+      margin-inline-start: 20px;
+    }
+  }
+}
+/* #endregion */

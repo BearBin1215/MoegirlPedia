@@ -10,7 +10,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import LabelBase from '../Label/Base';
-import Icon from '../Icon';
+import IconBase from '../Icon/Base';
 import Button from '../Button';
 import { generateWidgetClassName, getFocusableElements, resolveElement, VIEWPORT_SPACING } from '../../utils';
 import type { WidgetProps } from '../Widget';
@@ -487,13 +487,15 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       >
         {head && (
           <div className='oo-ui-popupWidget-head'>
-            <Icon icon={icon} />
+            {/* 原版head图标是IconElement裸span（非IconWidget）：带widget盒子类会撑高head */}
+            <IconBase icon={icon} />
             {/* invisibleLabel的裁剪类落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
             <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
             {head && !hideCloseButton && (
               <Button
                 framed={false}
                 icon='close'
+                className='oo-ui-popupWidget-closeButton'
                 aria-label='关闭'
                 onClick={() => onClose?.()}
               />

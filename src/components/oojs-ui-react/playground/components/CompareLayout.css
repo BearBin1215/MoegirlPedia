@@ -1,0 +1,11 @@
+/* 左右并排对照布局：min-width防原版宽弹层把列撑破文档流 */
+.compare-columns {
+  display: flex;
+  gap: 2em;
+  align-items: flex-start;
+}
+
+.compare-pane {
+  flex: 1;
+  min-width: 0;
+}

@@ -1,23 +1,22 @@
-import type { CSSProperties } from 'react';
-
-// 原版dist脚本经rspack asset/resource规则以URL引入（文件保留在node_modules，不入库）
-import jqueryUrl from 'jquery/dist/jquery.js';
-import oojsUrl from 'oojs/dist/oojs.js';
-import oouiUrl from 'oojs-ui/dist/oojs-ui.js';
-import oouiThemeUrl from 'oojs-ui/dist/oojs-ui-wikimediaui.js';
-import oouiApexThemeUrl from 'oojs-ui/dist/oojs-ui-apex.js';
-// 主题CSS以文本导出（rspack asset/source规则），图标url运行时重写为构建资源URL
-import oouiWikimediaCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.css';
-import oouiApexCssText from 'oojs-ui/dist/oojs-ui-apex.css';
+// 原版dist脚本以?url引入（文件保留在node_modules，不入库），运行时按序注入<script>
+import jqueryUrl from 'jquery/dist/jquery.js?url';
+import oojsUrl from 'oojs/dist/oojs.js?url';
+import oouiUrl from 'oojs-ui/dist/oojs-ui.js?url';
+import oouiThemeUrl from 'oojs-ui/dist/oojs-ui-wikimediaui.js?url';
+import oouiApexThemeUrl from 'oojs-ui/dist/oojs-ui-apex.js?url';
+// 主题CSS以?inline文本导出：走Vite CSS管线，图标相对url已被重写为构建资源URL
+import oouiWikimediaCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.css?inline';
+import oouiApexCssText from 'oojs-ui/dist/oojs-ui-apex.css?inline';
 
 type OOUIWindow = {
-  open: (data?: { title?: string; message?: string }) => void;
+  // size仅在open的data中生效（MessageDialog.getSetupProcess每次open覆盖构造配置）
+  open: (data?: { title?: string; message?: string; size?: string }) => void;
 };
 
 type OOUI = {
   ui: Record<string, unknown> & {
     WindowManager: new () => { $element: unknown; addWindows: (w: unknown[]) => void };
-    MessageDialog: new () => OOUIWindow;
+    MessageDialog: new (config?: Record<string, unknown>) => OOUIWindow;
     MultilineTextInputWidget: new (config?: Record<string, unknown>) => {
       $element: unknown;
       setValue: (v: string) => void;
@@ -174,15 +173,11 @@ export function createOOUIWidgets() {
   };
 }
 
-/** 左右对照布局的简单样式 */
-export const compareLayoutStyle: CSSProperties = {
-  display: 'flex',
-  gap: '2em',
-  alignItems: 'flex-start',
-};
-
 /** 演示工程可切换的原版主题 */
 export type OOUITheme = 'wikimediaui' | 'apex';
+
+/** 默认主题：选项列表、state初值与首帧applyThemeCss共用同一来源 */
+export const DEFAULT_THEME: OOUITheme = 'wikimediaui';
 
 // 主题脚本内含主题类定义并在末尾实例化OO.ui.theme，两份脚本加载后类共存于OO.ui，可随时重建实例切换
 const THEME_CLASSES: Record<OOUITheme, string> = {
@@ -201,26 +196,13 @@ const THEME_CSS_TEXT: Record<OOUITheme, string> = {
   apex: oouiApexCssText,
 };
 
-// 主题CSS内引用的图标资源批量注册为构建资源（key形如'./wikimediaui/images/icons/user.svg'）
-const themeAssetContext = require.context('oojs-ui/dist/themes', true, /\.(svg|png)$/);
-
 const themeCssUrls = new Map<OOUITheme, string>();
 
-/** 主题CSS文本：图标相对url重写为构建资源URL后包成Blob URL（结果缓存） */
+/** 主题CSS文本（图标url已被构建期重写为资源URL）包成Blob URL（结果缓存） */
 function getThemeCssUrl(theme: OOUITheme): string {
   let url = themeCssUrls.get(theme);
   if (!url) {
-    const css = THEME_CSS_TEXT[theme].replace(
-      /url\((['"]?)(themes\/[^)'"]+)\1\)/g,
-      (match, quote: string, relPath: string) => {
-        const key = `./${relPath.slice('themes/'.length)}`;
-        if (!themeAssetContext.keys().includes(key)) {
-          return match;
-        }
-        return `url(${quote}${themeAssetContext(key)}${quote})`;
-      },
-    );
-    url = URL.createObjectURL(new Blob([css], { type: 'text/css' }));
+    url = URL.createObjectURL(new Blob([THEME_CSS_TEXT[theme]], { type: 'text/css' }));
     themeCssUrls.set(theme, url);
   }
   return url;

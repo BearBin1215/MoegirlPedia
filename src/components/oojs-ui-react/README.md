@@ -18,7 +18,8 @@
 ## 开发
 
 ```bash
-pnpm dev        # 启动本地测试工程（端口8090，含各组件示例与原版对照页）
+pnpm dev        # 启动本地对照工程（端口8090，各组件与原版oojs-ui左右对照页）
+pnpm build      # 构建对照工程产物（playground/dist，验证资源管线）
 pnpm typecheck  # TypeScript类型检查
 pnpm lint       # ESLint检查（复用父工程MoegirlPedia的eslint配置）
 ```

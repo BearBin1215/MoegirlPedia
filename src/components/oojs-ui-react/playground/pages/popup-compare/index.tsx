@@ -1,125 +1,104 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Popup, PopupButton } from 'oojs-ui-react';
-import { createOOUIWidgets, ensureOOUI, unwrapJQuery } from '../../components/ooui';
+import { unwrapJQuery } from '../../components/ooui';
+import { useOriginalWidgets } from '../../components/original';
+import { CompareColumns, CompareLayout } from '../../components/CompareLayout';
 
-/** 原版侧：PopupButtonWidget + 手动toggle的PopupWidget */
+/** 原版侧：PopupButtonWidget + 手动toggle的PopupWidget（各方位/无箭头/悬浮） */
 function OriginalPopups() {
   const buttonHostRef = useRef<HTMLDivElement>(null);
-  const popupHostRef = useRef<HTMLDivElement>(null);
+  const aboveHostRef = useRef<HTMLDivElement>(null);
   const sideHostRef = useRef<HTMLDivElement>(null);
   const noArrowHostRef = useRef<HTMLDivElement>(null);
   const hoverHostRef = useRef<HTMLDivElement>(null);
-  const [status, setStatus] = useState('未初始化');
-
-  useEffect(() => {
-    let cancelled = false;
-    const host = createOOUIWidgets();
-    ensureOOUI().then((OO) => {
-      if (cancelled || !buttonHostRef.current || !popupHostRef.current
-        || !sideHostRef.current || !noArrowHostRef.current) {
-        return;
-      }
-      // 与React版等价：带头部/关闭按钮、padded、autoClose并忽略按钮
-      const button = new OO.ui.PopupButtonWidget({
-        label: '原版弹层按钮',
-        icon: 'help',
-        popup: {
-          padded: true,
-          head: true,
-        },
-      });
-      host.add(button);
-      button.getPopup().$body.append(
-        Object.assign(document.createElement('p'), { textContent: '这是原版PopupButtonWidget的内容。' }),
-      );
-      buttonHostRef.current.appendChild( unwrapJQuery( button.$element ) );
-
-      // 原版PopupWidget的$content要求jQuery对象
-      const $ = (window as unknown as { $: (arg: Node) => unknown }).$;
-      const anchorButton = new OO.ui.ButtonWidget({ label: '原版上方弹出' });
-      host.add(anchorButton);
-      popupHostRef.current.appendChild( unwrapJQuery( anchorButton.$element ) );
-      const popup = new OO.ui.PopupWidget( {
-        $content: $(Object.assign(document.createElement('p'), { textContent: '原版受控Popup，上方弹出。' })),
+  useOriginalWidgets((oo, _container, register) => {
+    const $ = (window as unknown as { $: (arg: Node) => unknown }).$;
+    // 与React版等价：带头部/关闭按钮、padded
+    const button = new oo.ui.PopupButtonWidget({
+      label: '原版弹层按钮',
+      icon: 'help',
+      popup: {
         padded: true,
-        $floatableContainer: anchorButton.$element,
-        position: 'above',
-        autoClose: true,
-        $autoCloseIgnore: anchorButton.$element,
-      } );
-      host.add(popup);
-      popupHostRef.current.appendChild( unwrapJQuery( popup.$element ) );
-      anchorButton.on( 'click', () => popup.toggle( true ) );
-
-      // 侧面弹出对照：before（LTR下左侧）/after（LTR下右侧）
-      ( [ { label: '原版左侧弹出', position: 'before' }, { label: '原版右侧弹出', position: 'after' } ] as const )
-        .forEach( ( { label, position } ) => {
-          const sideButton = new OO.ui.ButtonWidget( { label } );
-          const sidePopup = new OO.ui.PopupWidget( {
-            $content: $(Object.assign(document.createElement('p'), { textContent: `原版${label}内容。` })),
-            padded: true,
-            $floatableContainer: sideButton.$element,
-            position,
-            autoClose: true,
-            $autoCloseIgnore: sideButton.$element,
-          } );
-          host.add(sideButton, sidePopup);
-          sideHostRef.current!.appendChild( unwrapJQuery( sideButton.$element ) );
-          sideHostRef.current!.appendChild( unwrapJQuery( sidePopup.$element ) );
-          sideButton.on( 'click', () => sidePopup.toggle() );
-        } );
-
-      // 无箭头对照：原版anchor:false，React对应anchor={false}
-      const noArrowButton = new OO.ui.ButtonWidget( { label: '原版无箭头弹层' } );
-      const noArrowPopup = new OO.ui.PopupWidget( {
-        $content: $(Object.assign(document.createElement('p'), { textContent: '原版无箭头Popup，下方弹出。' })),
-        padded: true,
-        anchor: false,
-        $floatableContainer: noArrowButton.$element,
-        autoClose: true,
-        $autoCloseIgnore: noArrowButton.$element,
-      } );
-      host.add(noArrowButton, noArrowPopup);
-      noArrowHostRef.current.appendChild( unwrapJQuery( noArrowButton.$element ) );
-      noArrowHostRef.current.appendChild( unwrapJQuery( noArrowPopup.$element ) );
-      noArrowButton.on( 'click', () => noArrowPopup.toggle() );
-
-      // 悬浮触发对照：原版无内置封装，容器mouseenter/mouseleave手动toggle（两侧等价接线）
-      const hoverButton = new OO.ui.ButtonWidget( { label: '悬浮我试试（原版）' } );
-      const hoverPopup = new OO.ui.PopupWidget( {
-        $content: $(Object.assign(document.createElement('p'), { textContent: '原版悬浮弹层，移开后消失。' })),
-        padded: true,
-        $floatableContainer: hoverButton.$element,
-        position: 'below',
-      } );
-      host.add(hoverButton, hoverPopup);
-      const hoverHost = hoverHostRef.current;
-      if (!hoverHost) {
-        return;
-      }
-      hoverHost.appendChild( unwrapJQuery( hoverButton.$element ) );
-      hoverHost.appendChild( unwrapJQuery( hoverPopup.$element ) );
-      hoverHost.addEventListener( 'mouseenter', () => hoverPopup.toggle( true ) );
-      hoverHost.addEventListener( 'mouseleave', () => hoverPopup.toggle( false ) );
-
-      setStatus('原版已就绪');
-    }).catch(() => {
-      setStatus('原版加载失败');
+        head: true,
+      },
     });
-    return () => {
-      cancelled = true;
-      // PopupWidget等普通widget无destroy，destroyAll为幂等空操作；弹层若在打开态卸载
-      // 由autoClose监听随DOM清理，这里统一走登记器避免遗漏未来有destroy的控件
-      host.destroyAll();
-    };
-  }, []);
+    register(button);
+    button.getPopup().$body.append(
+      Object.assign(document.createElement('p'), { textContent: '这是原版PopupButtonWidget的内容。' }),
+    );
+    buttonHostRef.current?.appendChild(unwrapJQuery(button.$element));
+
+    // 原版PopupWidget的$content要求jQuery对象
+    const anchorButton = new oo.ui.ButtonWidget({ label: '原版上方弹出' });
+    const popup = new oo.ui.PopupWidget({
+      $content: $(Object.assign(document.createElement('p'), { textContent: '原版受控Popup，上方弹出。' })),
+      padded: true,
+      $floatableContainer: anchorButton.$element,
+      position: 'above',
+      autoClose: true,
+      $autoCloseIgnore: anchorButton.$element,
+    });
+    register(anchorButton, popup);
+    aboveHostRef.current?.appendChild(unwrapJQuery(anchorButton.$element));
+    aboveHostRef.current?.appendChild(unwrapJQuery(popup.$element));
+    anchorButton.on('click', () => popup.toggle(true));
+
+    // 侧面弹出对照：before（LTR下左侧）/after（LTR下右侧）
+    ([{ label: '原版左侧弹出', position: 'before' }, { label: '原版右侧弹出', position: 'after' }] as const)
+      .forEach(({ label, position }) => {
+        const sideButton = new oo.ui.ButtonWidget({ label });
+        const sidePopup = new oo.ui.PopupWidget({
+          $content: $(Object.assign(document.createElement('p'), { textContent: `原版${label}内容。` })),
+          padded: true,
+          $floatableContainer: sideButton.$element,
+          position,
+          autoClose: true,
+          $autoCloseIgnore: sideButton.$element,
+        });
+        register(sideButton, sidePopup);
+        sideHostRef.current?.appendChild(unwrapJQuery(sideButton.$element));
+        sideHostRef.current?.appendChild(unwrapJQuery(sidePopup.$element));
+        sideButton.on('click', () => sidePopup.toggle());
+      });
+
+    // 无箭头对照：原版anchor:false，React对应anchor={false}
+    const noArrowButton = new oo.ui.ButtonWidget({ label: '原版无箭头弹层' });
+    const noArrowPopup = new oo.ui.PopupWidget({
+      $content: $(Object.assign(document.createElement('p'), { textContent: '原版无箭头Popup，下方弹出。' })),
+      padded: true,
+      anchor: false,
+      $floatableContainer: noArrowButton.$element,
+      autoClose: true,
+      $autoCloseIgnore: noArrowButton.$element,
+    });
+    register(noArrowButton, noArrowPopup);
+    noArrowHostRef.current?.appendChild(unwrapJQuery(noArrowButton.$element));
+    noArrowHostRef.current?.appendChild(unwrapJQuery(noArrowPopup.$element));
+    noArrowButton.on('click', () => noArrowPopup.toggle());
+
+    // 悬浮触发对照：原版无内置封装，容器mouseenter/mouseleave手动toggle（两侧等价接线）
+    const hoverButton = new oo.ui.ButtonWidget({ label: '悬浮我试试（原版）' });
+    const hoverPopup = new oo.ui.PopupWidget({
+      $content: $(Object.assign(document.createElement('p'), { textContent: '原版悬浮弹层，移开后消失。' })),
+      padded: true,
+      $floatableContainer: hoverButton.$element,
+      position: 'below',
+    });
+    register(hoverButton, hoverPopup);
+    const hoverHost = hoverHostRef.current;
+    if (hoverHost) {
+      hoverHost.appendChild(unwrapJQuery(hoverButton.$element));
+      hoverHost.appendChild(unwrapJQuery(hoverPopup.$element));
+      hoverHost.addEventListener('mouseenter', () => hoverPopup.toggle(true));
+      hoverHost.addEventListener('mouseleave', () => hoverPopup.toggle(false));
+    }
+  });
 
   return (
     <div>
-      <p>{status}</p>
       <div ref={buttonHostRef} />
       <div style={{ height: '1em' }} />
-      <div ref={popupHostRef} />
+      <div ref={aboveHostRef} />
       <div style={{ height: '1em' }} />
       <div ref={sideHostRef} />
       <div style={{ height: '1em' }} />
@@ -220,7 +199,6 @@ function ReactPopups() {
 
   return (
     <div>
-      <p>React版已就绪</p>
       <PopupButton padded head icon='help' popupContent={<p>这是React版PopupButton的内容。</p>}>
         React弹层按钮
       </PopupButton>
@@ -257,30 +235,77 @@ function ReactPopups() {
   );
 }
 
-function ComparePage() {
-  return (
-    <>
-      <h1>Popup对照 - 原版oojs-ui vs oojs-ui-react</h1>
-      <p>
-        左侧为本地安装的原版oojs-ui，右侧为本组件库实现。
-        两者行为对照点：点击开合、锚点箭头指向、position/align定位（含before/after侧面弹出）、
-        无箭头弹层、autoFlip翻转、autoClose（点击外部关闭且忽略触发按钮）、头部关闭按钮、容器边缘钳制（就近滚动容器+containerPadding，钳制后锚点仍指向触发器中心）。
-      </p>
+/** 原版侧：靠近视口底部的PopupButton，autoFlip默认开启应向上翻转 */
+function OriginalAutoFlip() {
+  const { containerRef } = useOriginalWidgets((oo, container, register) => {
+    const $ = (window as unknown as { $: (arg: Node) => unknown }).$;
+    const button = new oo.ui.PopupButtonWidget({
+      label: '原版接近底部',
+      popup: {
+        padded: true,
+        $content: $(Object.assign(document.createElement('p'), { textContent: '我应该向上翻转显示。' })),
+      },
+    });
+    register(button);
+    container.appendChild(unwrapJQuery(button.$element));
+  });
 
-      <div style={{ display: 'flex', gap: '2em', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, minHeight: 220, position: 'relative' }}>
-          <h2>原版oojs-ui</h2>
-          <OriginalPopups />
-        </div>
-        <div style={{ flex: 1, minHeight: 220, position: 'relative' }}>
-          <h2>oojs-ui-react</h2>
-          <ReactPopups />
-        </div>
-      </div>
-    </>
+  return (
+    <div>
+      <p style={{ marginTop: '60vh' }} ref={containerRef} />
+    </div>
   );
 }
 
-ComparePage.displayName = 'PopupComparePage';
+/** React侧：靠近视口底部的PopupButton（受控开关），验证autoFlip翻转 */
+function ReactAutoFlip() {
+  const [open, setOpen] = useState(false);
 
-export default ComparePage;
+  return (
+    <div>
+      <p style={{ marginTop: '60vh' }}>
+        <PopupButton
+          label='接近底部'
+          padded
+          position='below'
+          open={open}
+          onClick={() => setOpen((v) => !v)}
+          onClose={() => setOpen(false)}
+          popupContent='我应该向上翻转显示。'
+        >
+          接近底部
+        </PopupButton>
+      </p>
+    </div>
+  );
+}
+
+function PopupComparePage() {
+  return (
+    <CompareLayout
+      title='Popup对照 - 原版oojs-ui vs oojs-ui-react'
+      description={(
+        <>
+          左侧为本地安装的原版oojs-ui，右侧为本组件库实现。
+          两者行为对照点：点击开合、锚点箭头指向、position/align定位（含before/after侧面弹出）、
+          无箭头弹层、autoFlip翻转、autoClose（点击外部关闭且忽略触发按钮）、头部关闭按钮、
+          容器边缘钳制（就近滚动容器+containerPadding，钳制后锚点仍指向触发器中心）。
+        </>
+      )}
+    >
+      <h2>各方位与形态</h2>
+      <CompareColumns original={<OriginalPopups />}>
+        <ReactPopups />
+      </CompareColumns>
+
+      <h2>接近视口底部自动翻转</h2>
+      <CompareColumns original={<OriginalAutoFlip />}>
+        <ReactAutoFlip />
+      </CompareColumns>
+    </CompareLayout>
+  );
+}
+
+PopupComparePage.displayName = 'PopupComparePage';
+
+export default PopupComparePage;

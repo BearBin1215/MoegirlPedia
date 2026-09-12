@@ -248,7 +248,9 @@ const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
             controlsDisabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
             'oo-ui-indicatorElement',
             'oo-ui-buttonElement',
-            'oo-ui-buttonElement-frameless',
+            // 对齐原版默认framed按钮（主题CSS的下拉按钮边框/背景样式依赖该类）
+            'oo-ui-buttonElement-framed',
+            controlsDisabled && 'oo-ui-buttonElement-disabled',
             'oo-ui-buttonWidget',
           )}
         >
