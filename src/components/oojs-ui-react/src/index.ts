@@ -23,7 +23,11 @@ export { Popup, type PopupProps, type PopupPosition } from './widgets/Popup';
 
 // 输入框
 // PromptOptions.textInput按名引用TextInputProps，需随导出面提供
-export { TextInput, type TextInputProps } from './widgets/TextInput';
+export {
+  TextInput,
+  type TextInputProps,
+  type TextInputValidate,
+} from './widgets/TextInput';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 
@@ -116,4 +120,4 @@ export type { MessageKey, MessageValue } from './i18n';
 export { zhHans } from './locales/zh-hans';
 
 // 类型
-export type { AccessKeyedElement, ChangeHandler } from './utils';
+export type { AccessKeyedElement, ChangeHandler, FlaggedElement } from './utils';

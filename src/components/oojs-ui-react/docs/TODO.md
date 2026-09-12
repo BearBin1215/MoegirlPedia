@@ -66,16 +66,14 @@
 
 ### 暂不实现
 
-- **TabOption 未实现移动端选中后的水平居中滚动**。`scrollIntoViewOnSelect` 的滚动进视野行为已对齐（选中项变化时 `scrollIntoView({ block: 'nearest', inline: 'nearest' })`），但原版在移动端还会按容器宽度加左右 padding 把页签居中，这部分未实现。注：移动端形态经 `OOUIProvider.isMobile` 配置后分支可达，行为仍待补齐。
 - **Popup 的容器探测与翻转判定是简化版**：
   - 容器钳制：原版会按 `$container`（默认就近滚动容器）和 `containerPadding` 把弹层钳制在容器内；React 版只向上找第一个 `overflow: auto/scroll` 祖先，未完整复刻 `getClosestScrollableElementContainer`。
   - 自动翻转：React 版按预计算的两侧空间比较，原版是先定位再测量。
 - **MenuSelect（Dropdown 菜单）的浮动定位是简化版**：
-  - 定位方式：原版 `FloatableElement` 基于 offsetParent 做相对定位，并计入 RTL 方向与滚动条沟槽；React 版直接 portal 至 body，用页面坐标定位。
+  - 定位方式：原版 `FloatableElement` 基于 offsetParent 做相对定位，并计入 RTL 方向与滚动条沟槽；React 版直接 portal 至 body，用页面坐标定位（RTL 起始边对齐已对齐，滚动条沟槽未计入）。
   - 裁剪锚点：原版 `ClippableElement` 锚定就近滚动容器；React 版锚定视口，`hideWhenOutOfView` 也简化成视口判定，未复刻基于 `$floatableClosestScrollable` 的精确判定。
-  - 不支持原版 `DropdownWidget` 的 `$overlay` 配置。
+  - `$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
 - **ComboBoxInput 的菜单浮层定位同上**（MenuSelect 简化版）。菜单展开时机是等效实现：原版 `onEdit` 监听多种事件后再 toggle。
-- **DropdownInput 未实现原版的移动端形态**：`oo-ui-isMobile` 时应隐藏 DropdownWidget、直接显示原生 `<select>`。注：移动端形态经 `OOUIProvider.isMobile` 配置后分支可达，行为仍待补齐。
 - **工具栏的以下能力未实现**：
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定左对齐；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体，定位与钳高和 MenuSelect 共用同一实现。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
@@ -86,8 +84,4 @@
   - 已对齐：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
   - 未实现：原版 `toggleIsolation` 会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程的 Popup、MenuSelect 等浮层 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互），需等浮层 portal 容器支持豁免标记后再做。
   - 另外，裸 `Dialog` 没有内置标题，调用方需自行用 `aria-labelledby` 关联。
-- **ProcessDialog 的 pending 态只实现了头部条纹**（原版 `PendingElement`），ActionWidget 级的 pending 未实现。点击防护已对齐原版 `onActionClick` 的 isPending 判定。
-- **ProcessDialog 的错误面板渲染在 body 内**，原版挂在 `$content` 上、绝对定位覆盖整个对话框。
-- **ProcessDialog 的 ESC 由 `onEscape` 回调承担**，对齐原版「ESC 执行空动作流程」的关闭语义；但遇到不可恢复错误时不恢复动作能力，原版 `setAbilities` 的禁用会持续到关闭。
-- **TextInput/NumberInput 未实现 `setValidation`/`validateNumber` 的合法性标记**。原版在 allowInteger/step/min/max/required 等约束不满足时会给出软校验反馈（输出 `aria-invalid` 与 `flaggedElement-invalid` 类，不改写值），React 版暂无这个反馈途径。
 - **FieldLayout 未复刻原版 `align='inline'` 在字段非内联时降级为 `'top'` 的校验**。原因与 `ActionFieldLayout` 的 `fieldInline` 同源：React 无法探测子组件的元素类型。

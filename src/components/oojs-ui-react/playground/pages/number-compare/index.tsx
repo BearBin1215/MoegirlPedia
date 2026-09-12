@@ -6,7 +6,8 @@ import { CompareColumns, CompareLayout } from '../../components/CompareLayout';
 
 function OriginalNumber() {
   const { containerRef } = useOriginalWidgets((oo, container, register) => {
-    const widget = new (oo.ui.NumberInputWidget as unknown as new (config?: Record<string, unknown>) => { $element: unknown })({
+    const NumberInputWidget = oo.ui.NumberInputWidget as unknown as new (config?: Record<string, unknown>) => { $element: unknown };
+    const widget = new NumberInputWidget({
       min: 0,
       max: 10,
       step: 1,
@@ -15,6 +16,17 @@ function OriginalNumber() {
     });
     register(widget);
     container.appendChild(unwrapJQuery(widget.$element));
+
+    // 软校验样本：required空值加载即标红，键入合法值后清除
+    const requiredWidget = new NumberInputWidget({
+      required: true,
+      showButtons: false,
+      placeholder: '必填',
+    });
+    register(requiredWidget);
+    const label = document.createElement('p');
+    label.textContent = 'required（空值/越界/非step倍数标红）';
+    container.append(label, unwrapJQuery(requiredWidget.$element));
   });
 
   return (
@@ -35,7 +47,8 @@ function NumberComparePage() {
         <>
           对照点：键入越界值保留、清空为空、空值时+/-从0起步、
           ↑↓按buttonStep、PgUp/PgDn按pageStep步进、聚焦时滚轮步进、
-          +/-按钮不抢焦点（aria-hidden）。
+          +/-按钮不抢焦点（aria-hidden）；软校验反馈（required/min/max/step不满足时
+          aria-invalid+invalid标志类标红，值变更防抖/失焦触发、聚焦清除）。
         </>
       )}
     >
@@ -50,6 +63,8 @@ function NumberComparePage() {
             value={value}
             onChange={(v) => setValue(v)}
           />
+          <p>required（空值/越界/非step倍数标红）</p>
+          <NumberInput required showButtons={false} placeholder='必填' />
         </div>
       </CompareColumns>
     </CompareLayout>

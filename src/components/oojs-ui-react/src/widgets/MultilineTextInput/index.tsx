@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useRef,
+  useMemo,
   forwardRef,
   type ChangeEvent,
 } from 'react';
@@ -8,9 +9,9 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName, hasLabel } from '../../utils';
-import { useControlledValue, useLabelPadding, useMergedRefs } from '../../hooks';
-import type { TextInputProps } from '../TextInput';
+import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, toFlagArray } from '../../utils';
+import { useControlledValue, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
+import { resolveValidate, type TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
   /** 行数 */
@@ -45,6 +46,8 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   labelPosition = 'after',
   readOnly,
   required,
+  validate,
+  flags,
   autosize,
   rows,
   maxRows: maxRowsProp,
@@ -68,12 +71,20 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     { value, defaultValue: defaultValue ?? '' },
     onChange,
   );
+  // 软校验反馈与TextInput一致（原版MultilineTextInputWidget继承TextInputWidget的校验能力）
+  const validateFn = useMemo(() => resolveValidate(validate), [validate]);
+  const { invalid, handleBlur, handleFocus } = useValidityFlag({
+    inputRef: textareaRef,
+    value: currentValue,
+    validate: validateFn,
+  });
 
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
+    flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
 
   const inputClasses = clsx(
@@ -168,8 +179,11 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
         accessKey={accessKey}
         name={name}
         onChange={handleChange}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
         tabIndex={disabled ? -1 : 0}
         aria-disabled={disabled || undefined}
+        aria-invalid={invalid || undefined}
         className={inputClasses}
         disabled={disabled}
         value={currentValue}

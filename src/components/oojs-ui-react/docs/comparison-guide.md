@@ -67,9 +67,10 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `useAutoFocusPanel`：切换激活面板后聚焦其内首个可聚焦元素（IndexLayout/BookletLayout）。
 - `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略。
 - `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。
+- `useValidityFlag`：输入类组件的软校验反馈（输入元素 `aria-invalid` + 根元素 invalid 标志类，不改写值）。触发时机对齐原版 `setValidityFlag`：值变更防抖 250ms、失焦立即校验、聚焦清除；初始值不主动校验（NumberInput 的挂载期校验由组件经 `revalidate` 补齐，对齐原版 setRange/setStep 的构造期校验）。
 - `FOCUSABLE_SELECTOR` / `getFocusableElements` / `getFirstFocusable`：可聚焦元素判定，全库统一口径。
 - `toFlagArray`：标志参数归一化为数组。
-- **类生成模块（mixin贡献器）**：`getWidgetClassName` 折叠自 `widgetClasses`/`iconElementClasses`/`indicatorElementClasses`/`labelElementClasses`/`flaggedElementClasses`/`widgetNameClasses`，每个贡献器对齐原版一个 Element mixin（如 `labelElementClasses` 含原版 setInvisibleLabel 的"视同无标签"规则）。需要单个 mixin 的类时直接调贡献器，整组输出用折叠层；契约由 `src/utils.test.ts` 锁定，改期望值前先核对原版对应 mixin。
+- **类生成模块（mixin贡献器）**：`getWidgetClassName` 折叠自 `widgetClasses`/`iconElementClasses`/`indicatorElementClasses`/`labelElementClasses`/`flaggedElementClasses`/`widgetNameClasses`，每个贡献器对齐原版一个 Element mixin（如 `labelElementClasses` 含原版 setInvisibleLabel 的"视同无标签"规则）。需要单个 mixin 的类时直接调贡献器，整组输出用折叠层；契约由 `src/utils.test.ts` 锁定，改期望值前先核对原版对应 mixin。TextInput 系组件的 `flags` prop（`FlaggedElement` 类型，utils.ts）经 `flaggedElementClasses` 输出，软校验的 invalid 标志经 `mergeInvalidFlag` 叠加其上（配置 flags 为声明式基线，不随校验通过移除——原版 config.flags 与 setFlags 共享存储的移除语义不适用于声明式 props）。
 - `es-toolkit` 的 `omit`：剥离仅供父级布局使用的选项元数据，避免落成 DOM 未知属性（布局类组件的 options 条目同时携带 `value` 等元数据与页面 props，渲染前经 `omit(option, [...])` 挡下）。`clamp`（数值钳制）与 `debounce` 等通用工具同样取自 `es-toolkit`，不要另行手写。
 
 **选项选中态命名**：`Select` 系选项统一用基类 `OptionProps.selected`（含 Radio/Checkbox 型选项），内层原生控件再映射为 `checked`；不要给选项另起 `checked` prop。

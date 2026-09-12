@@ -34,10 +34,23 @@ body {
     Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* 头部右侧开关组（文案语言/原版主题） */
+/* 头部右侧开关组（文案语言/原版主题/移动端形态）。
+   align-items防子项按stretch拉伸：antd头部line-height为64px，若组内混入继承该行高的
+   文本节点，容器被撑高后Select等控件会跟着拉满头部高度 */
 .playground-header-switches {
   display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+/* 移动端形态开关：Switch与说明文字同行；line-height隔断antd头部的64px行高继承 */
+.playground-header-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(0 0 0 / 88%);
+  font-size: 12px;
+  line-height: normal;
 }
 
 .playground-sider {

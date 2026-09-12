@@ -12,6 +12,25 @@ export interface AccessKeyedElement {
 }
 
 /**
+ * FlaggedElement mixin的props类型（对齐原版OO.ui.mixin.FlaggedElement，仅类型，无渲染组件）：
+ * 每个标志输出`oo-ui-flaggedElement-{flag}`类（类生成走flaggedElementClasses）。
+ * 原版config.flags的对象形态为setFlags命令式toggle所用，声明式props仅收字符串/数组
+ */
+export interface FlaggedElement {
+  /** 附加标志集；组件内部机制（如软校验的invalid）在其上叠加输出 */
+  flags?: string | string[];
+}
+
+/**
+ * 合并软校验的invalid标志与配置flags（对齐原版setValidityFlag的setFlags({invalid})合并语义）：
+ * 校验非法时invalid标志叠加在配置flags之上，合法时仅保留配置flags——配置flags为声明式
+ * 基线，不随校验通过移除（原版config.flags与setFlags共享存储的移除语义不适用于声明式props）
+ */
+export function mergeInvalidFlag(flags: string[], invalid: boolean): string[] {
+  return invalid && !flags.includes('invalid') ? [...flags, 'invalid'] : flags;
+}
+
+/**
  * 组件值变化回调（值优先；第二参数为触发变更的原生change事件，仅输入类组件提供）
  * @example <TextInput value={text} onChange={setText} />
  */

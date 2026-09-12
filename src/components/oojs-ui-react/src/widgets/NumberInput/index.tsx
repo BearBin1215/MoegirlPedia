@@ -11,8 +11,8 @@ import { Button } from '../Button';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName, hasLabel, type AccessKeyedElement } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray, type AccessKeyedElement, type FlaggedElement } from '../../utils';
+import { useControlledValue, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
@@ -24,7 +24,8 @@ export interface NumberInputProps extends
   AccessKeyedElement,
   IconElement,
   IndicatorElement,
-  LabelElement {
+  LabelElement,
+  FlaggedElement {
 
   /** 是否显示左右按钮 */
   showButtons?: boolean;
@@ -35,7 +36,7 @@ export interface NumberInputProps extends
   /** 最大值 */
   max?: number;
 
-  /** 合法性步距，值需为其倍数 */
+  /** 合法性步距，值需为其倍数；缺省不限制（对齐原版无step配置时输入任意数值，attr输出'any'） */
   step?: number;
 
   /** 是否仅允许整数（原版已废弃的兼容配置，等价于强制step=1；isInteger为其别名，同样支持） */
@@ -74,19 +75,20 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   readOnly,
   required,
   showButtons = true,
-  step: stepProp = 1,
+  step: stepProp,
   allowInteger,
   isInteger,
   buttonStep: buttonStepProp,
   pageStep: pageStepProp,
+  flags,
   value: controlledValue,
   defaultValue,
   ...rest
 }, ref) => {
   // 对齐原版构造逻辑：allowInteger/isInteger为废弃兼容配置，置位时强制step=1（覆盖显式传入值）；
-  // buttonStep缺省取step、pageStep缺省取buttonStep×10（原版setStep：buttonStep=step||1，pageStep=10*buttonStep）
+  // buttonStep缺省取step（无step时1）、pageStep缺省取buttonStep×10（原版setStep：buttonStep=step||1，pageStep=10*buttonStep）
   const step = allowInteger || isInteger ? 1 : stepProp;
-  const buttonStep = buttonStepProp ?? step;
+  const buttonStep = buttonStepProp ?? (step ?? 1);
   const pageStep = pageStepProp ?? buttonStep * 10;
   const { value: currentValue, commit } = useControlledValue<number | '', ChangeEvent<HTMLInputElement>>(
     { value: controlledValue, defaultValue: defaultValue ?? '' },
@@ -98,6 +100,35 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 
   /** 当前值的数值形态，空值为NaN */
   const getNumericValue = () => (currentValue === '' ? NaN : currentValue);
+
+  /**
+   * 数值合法性判定（对齐原版validateNumber）：空值看required，非有限值/非step倍数/超出
+   * [min,max]均非法。作为软校验的判定函数，不改写值
+   */
+  const validateNumber = (value: number | '') => {
+    if (value === '') {
+      return !required;
+    }
+    if (Number.isNaN(value) || !Number.isFinite(value)) {
+      return false;
+    }
+    if (step !== undefined && Math.floor(value / step) !== value / step) {
+      return false;
+    }
+    return (min === undefined || value >= min) && (max === undefined || value <= max);
+  };
+
+  // 软校验反馈（对齐原版TextInputWidget.setValidityFlag，NumberInput经setValidation接入validateNumber）
+  const { invalid, handleBlur, handleFocus, revalidate } = useValidityFlag({
+    inputRef,
+    value: currentValue,
+    validate: validateNumber,
+  });
+  // 约束配置变化立即重校验（对齐原版setRange/setStep的setValidityFlag；挂载期同样校验一次，
+  // 复现原版构造期行为：空值+required在加载时即输出非法标记）
+  useEffect(() => {
+    revalidate();
+  }, [min, max, step, required, revalidate]);
 
   /** 调整数值，对齐原版adjustValue：空值从0起步，非空钳制到[min,max]并按step取整 */
   const adjustValue = (delta: number) => {
@@ -151,6 +182,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
+    flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
 
   /** 值变更，对齐原版语义：保留输入不做钳制，空串保持为空 */
@@ -194,7 +226,8 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
       ref={ref}
     >
       <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator} />
+      {/* required指示器回退对齐原版RequiredElement：未显式声明indicator时输出required */}
+      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
           <Button
@@ -212,6 +245,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           name={name}
           tabIndex={disabled ? -1 : 0}
           aria-disabled={disabled || undefined}
+          aria-invalid={invalid || undefined}
           className='oo-ui-inputWidget-input'
           disabled={disabled}
           readOnly={readOnly}
@@ -221,9 +255,12 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           placeholder={placeholder}
           min={min}
           max={max}
-          step={step}
+          // step缺省'any'（不限制小数），对齐原版setStep的attr输出
+          step={step ?? 'any'}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
           ref={inputRef}
         />
         {showButtons && (

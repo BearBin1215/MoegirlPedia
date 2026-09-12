@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -31,6 +32,12 @@ export interface ProcessDialogActionProps {
 
   /** 是否禁用 */
   disabled?: boolean;
+
+  /**
+   * 是否处于pending态（按钮叠加条纹动画）。对齐原版ActionWidget混入PendingElement的能力：
+   * 宿主在自定义流程中pushPending单个动作按钮的声明式对应（不影响点击，点击防护在弹窗级）
+   */
+  pending?: boolean;
 
   /** 按钮tooltip */
   title?: string;
@@ -99,7 +106,8 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
   // this.pendingCount，防止同一任务内的连续点击绕过防护）
   const pendingCountRef = useRef(0);
   const [errors, setErrors] = useState<ProcessDialogErrorItem[] | null>(null);
-  // 不可恢复错误时禁用的动作符号名
+  // 不可恢复错误时禁用的动作符号名；重试/再次执行均不恢复，持续到弹窗关闭
+  // （对齐原版setAbilities的禁用语义，hideErrors不清除）
   const [disabledAction, setDisabledAction] = useState<string | null>(null);
   // 重试目标（最近一次执行的动作）；用state而非ref：retryAction在渲染期派生，
   // 且重试按钮点击需读到最新值
@@ -135,11 +143,19 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
 
   const hideErrors = () => {
     setErrors(null);
-    setDisabledAction(null);
   };
 
+  // 关闭时清除错误面板与不可恢复禁用（对齐原版getTeardownProcess的hideErrors；
+  // setAbilities禁用语义为"持续到关闭"，React版以open翻转作为关闭时点）
+  useEffect(() => {
+    if (!open) {
+      setErrors(null);
+      setDisabledAction(null);
+    }
+  }, [open]);
+
   const executeAction = useCallback((action: string) => {
-    // 执行前清除错误面板并恢复被禁用的动作，流程每次运行都从干净态开始
+    // 执行前清除错误面板，流程每次运行都从干净态开始（不可恢复禁用不受影响）
     hideErrors();
     setCurrentAction(action);
     pendingCountRef.current += 1;
@@ -242,7 +258,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     return (
       <Button
         key={action.action}
-        className='oo-ui-actionWidget'
+        className={clsx('oo-ui-actionWidget', action.pending && 'oo-ui-pendingElement-pending')}
         framed
         flags={flags}
         icon={iconOnlyIcon}
@@ -296,33 +312,36 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
           {otherActions.map(renderAction)}
         </div>
       }
+      overlay={
+        errors && (
+          // 对齐原版挂载于$content的错误面板：绝对定位覆盖整个弹窗（含头部与尾部动作区）
+          <div className='oo-ui-processDialog-errors'>
+            <div className='oo-ui-processDialog-errors-title'>{errorTitle}</div>
+            {errors.map((item) => (
+              // 对齐原版showErrors：警告错误以warning形态渲染
+              <Message key={item.id} type={item.warning ? 'warning' : 'error'}>{item.message}</Message>
+            ))}
+            <div className='oo-ui-processDialog-errors-actions'>
+              <Button onClick={hideErrors}>{backLabel}</Button>
+              {recoverable && (
+                <Button
+                  flags={retryAction?.flags}
+                  onClick={() => {
+                    // 重试目标恒为最近一次执行的动作（错误面板仅在执行后出现）
+                    if (currentAction !== null) {
+                      executeAction(currentAction);
+                    }
+                  }}
+                >
+                  {warning ? continueLabel : retryLabel}
+                </Button>
+              )}
+            </div>
+          </div>
+        )
+      }
       ref={ref}
     >
-      {errors && (
-        <div className='oo-ui-processDialog-errors'>
-          <div className='oo-ui-processDialog-errors-title'>{errorTitle}</div>
-          {errors.map((item) => (
-            // 对齐原版showErrors：警告错误以warning形态渲染
-            <Message key={item.id} type={item.warning ? 'warning' : 'error'}>{item.message}</Message>
-          ))}
-          <div className='oo-ui-processDialog-errors-actions'>
-            <Button onClick={hideErrors}>{backLabel}</Button>
-            {recoverable && (
-              <Button
-                flags={retryAction?.flags}
-                onClick={() => {
-                  // 重试目标恒为最近一次执行的动作（错误面板仅在执行后出现）
-                  if (currentAction !== null) {
-                    executeAction(currentAction);
-                  }
-                }}
-              >
-                {warning ? continueLabel : retryLabel}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
       {children}
     </Dialog>
   );

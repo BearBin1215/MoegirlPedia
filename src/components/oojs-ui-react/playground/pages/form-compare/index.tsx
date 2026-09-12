@@ -208,6 +208,7 @@ function OriginalTextInputVariants() {
     row(TextInputWidget, 'label before', { placeholder: 'before', label: 'before', labelPosition: 'before' });
     row(TextInputWidget, '图标+指示器', { icon: 'search', indicator: 'required' });
     row(TextInputWidget, 'maxLength=10', { maxLength: 10 });
+    row(TextInputWidget, 'validate=integer', { placeholder: '整数', validate: 'integer' });
     row(TextInputWidget, '禁用', { disabled: true });
   });
 
@@ -231,6 +232,7 @@ function ReactTextInputVariants() {
         maxLength=10（label配合onChange显示剩余长度）
         <TextInput maxLength={10} label={10 - length} onChange={(value) => setLength(value.length)} />
       </p>
+      <p>validate=integer（键入非整数或失焦时标红，聚焦清除）<TextInput placeholder='整数' validate='integer' /></p>
       <p>禁用<TextInput disabled /></p>
     </div>
   );

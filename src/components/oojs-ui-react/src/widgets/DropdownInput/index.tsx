@@ -1,9 +1,11 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Dropdown, type DropdownOptionProps } from '../Dropdown';
+import { Indicator } from '../Indicator';
 import { isSelectableOption, type SelectOptionProps } from '../Select';
 import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useControlledValueFallback } from '../../hooks';
+import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';
 
 export type DropdownInputOption = DropdownOptionProps;
@@ -61,7 +63,9 @@ const groupOptions = (options: DropdownInputOption[]): OptionGroup[] => {
 
 /**
  * 表单下拉选择，对齐原版OO.ui.DropdownInputWidget：DropdownWidget展示 + 隐藏`<select>`承载
- * 表单提交。value只能是可选项之一，否则回退为第一个可选值（对齐原版setValue的选项校验）
+ * 表单提交。value只能是可选项之一，否则回退为第一个可选值（对齐原版setValue的选项校验）。
+ * 移动端形态（OOUIProvider.isMobile）：根元素输出`oo-ui-isMobile`，主题CSS隐藏Dropdown、
+ * 显示原生`<select>`与下箭头指示器（对齐原版构造函数的分支）
  */
 export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   options,
@@ -74,6 +78,7 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   onChange,
   ...rest
 }, ref) => {
+  const isMobile = useIsMobile();
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
 
   /** 可选值集合；当前值不在其中时回退第一个可选值（无可选值则undefined） */
@@ -89,6 +94,7 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   const classes = clsx(
     className,
     getWidgetClassName({ disabled }, 'input', 'dropdownInput'),
+    isMobile && 'oo-ui-isMobile',
   );
 
   const renderOption = (option: SelectableOption) => (
@@ -110,9 +116,10 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
       ref={ref}
     >
       {/* 隐藏select仅承载表单提交（wikimediaui主题下display:none），显示交互由Dropdown承担；
-          oo-ui-indicator-down对齐原版getInputElement（$( '<select>' ).addClass( 'oo-ui-indicator-down' )） */}
+          移动端形态下select转为可见的交互元素。原版0.54的getInputElement为原生`<select>`，
+          下箭头由独立的IndicatorWidget子元素承担（移动端CSS按`> .oo-ui-indicatorWidget`显示） */}
       <select
-        className='oo-ui-inputWidget-input oo-ui-indicator-down'
+        className='oo-ui-inputWidget-input'
         name={name}
         required={required}
         disabled={disabled}
@@ -139,6 +146,8 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
           ) : group.items.map(renderOption)
         ))}
       </select>
+      {/* 对齐原版构造函数append的下箭头指示器；桌面形态由主题CSS隐藏 */}
+      <Indicator indicator='down' />
       <Dropdown
         options={options}
         disabled={disabled}

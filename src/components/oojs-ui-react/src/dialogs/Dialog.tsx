@@ -30,6 +30,11 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
   head?: ReactNode,
   /** 弹窗尾部 */
   foot?: ReactNode,
+  /**
+   * 挂载于content容器内的浮层内容（与head/body/foot同级，配合绝对定位类覆盖整个弹窗），
+   * 对齐原版挂载于$content的元素（如ProcessDialog的错误面板）。普通内容仍走children（body区）
+   */
+  overlay?: ReactNode,
   /** 附加类 */
   contentClassName?: string,
   /** 是否允许按ESC关闭 */
@@ -55,6 +60,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   head,
   children,
   foot,
+  overlay,
   escapable = true,
   onEscape,
   onPrimaryAction,
@@ -322,6 +328,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
             <div className='oo-ui-window-head' ref={headRef}>{head}</div>
             <div className='oo-ui-window-body' ref={bodyRef}>{children}</div>
             <div className='oo-ui-window-foot' ref={footRef}>{foot}</div>
+            {overlay}
           </div>
           <div
             className='oo-ui-window-focusTrap'

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Layout, Menu, Select, Spin } from 'antd';
+import { Layout, Menu, Select, Spin, Switch } from 'antd';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { OOUIProvider, zhHans } from 'oojs-ui-react';
 import {
@@ -55,6 +55,9 @@ function SiderMenu() {
 function App() {
   const [theme, setTheme] = useState<OOUITheme>(DEFAULT_THEME);
   const [locale, setLocale] = useState<PlaygroundLocale>('en');
+  // 移动端形态开关（OOUIProvider.isMobile）：驱动React侧的移动端分支（DropdownInput原生select、
+  // TabSelect居中滚动等）。原版dist的OO.ui.isMobile为恒false的桩，对照页原版侧不受影响
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     applyThemeCss(DEFAULT_THEME);
@@ -76,7 +79,7 @@ function App() {
     <BrowserRouter>
       {/* 文案语言经OOUIProvider下发：切换后声明式组件默认文案响应式更新（无需remount），
           对照原版控件恒为英文（dist仅烘焙en），供对比i18n效果 */}
-      <OOUIProvider messages={locale === 'zh-hans' ? zhHans : undefined}>
+      <OOUIProvider messages={locale === 'zh-hans' ? zhHans : undefined} isMobile={isMobile}>
         <Layout className='playground'>
           <Layout.Header className='playground-header'>
             <div className='playground-title'>oojs-ui-react</div>
@@ -93,6 +96,10 @@ function App() {
                 onChange={switchTheme}
                 style={{ width: 180 }}
               />
+              <span className='playground-header-switch'>
+                <Switch size='small' checked={isMobile} onChange={setIsMobile} />
+                移动端形态
+              </span>
             </div>
           </Layout.Header>
           <Layout>

@@ -9,7 +9,8 @@ import React, {
 import clsx from 'clsx';
 import { TabOption, type TabOptionProps } from '../TabOption';
 import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
+import { useControlledValue, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
+import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';
 
 export type TabSelectOptionProps = TabOptionProps;
@@ -43,8 +44,11 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   tabIndex,
   ...rest
 }, ref) => {
+  const isMobile = useIsMobile();
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, rootRef);
   const [focused, setFocused] = useState(false);
   const optionsRef = useRef(options);
   // document级keydown监听仅在focus时绑定，需经ref读取最新值状态（避免闭包过期）
@@ -77,15 +81,31 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
     getWidgetClassName({ disabled }, 'select', 'tabSelect'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
     framed ? 'oo-ui-tabSelectWidget-framed' : 'oo-ui-tabSelectWidget-frameless',
+    isMobile && 'oo-ui-tabSelectWidget-mobile',
   );
 
   // 选中项变化时滚动到可见区（对齐原版TabOptionWidget.scrollIntoViewOnSelect=true）：
-  // 页签集横向溢出时使新选中项进入视野；itemRefs读取最新元素，无需列入依赖
+  // 页签集横向溢出时使新选中项进入视野；itemRefs读取最新元素，无需列入依赖。
+  // 移动端对齐原版scrollElementIntoView的居中分支：按容器与页签宽度差计算左右padding，
+  // 经scroll-margin实现等效的"带内边距滚动"（nearest对齐+对称边距=居中，滚动到边界时自然钳制）
   useLayoutEffect(() => {
-    if (currentValue !== undefined) {
-      itemRefs.current.get(currentValue)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    if (currentValue === undefined) {
+      return;
     }
-  }, [currentValue]);
+    const option = itemRefs.current.get(currentValue);
+    if (!option) {
+      return;
+    }
+    const group = rootRef.current;
+    if (isMobile && group) {
+      const padding = Math.max((group.clientWidth - option.clientWidth) / 2, 0);
+      option.style.scrollMargin = `0 ${padding}px`;
+      option.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      option.style.scrollMargin = '';
+      return;
+    }
+    option.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [currentValue, isMobile]);
 
   // 对齐原版：聚焦后绑定document级keydown，失焦解绑；←→/↑↓环绕选择，Enter确认
   useEffect(() => {
@@ -162,7 +182,7 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       onMouseDown={handleMouseDown}
       onMouseUp={handleUnpress}
       onMouseLeave={handleUnpress}
-      ref={ref}
+      ref={setRootRef}
     >
       {options.map((option) => (
         <TabOption

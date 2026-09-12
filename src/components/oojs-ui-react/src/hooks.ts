@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -11,7 +12,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react';
-import { clamp } from 'es-toolkit';
+import { clamp, debounce } from 'es-toolkit';
 import { useDir, useViewportSpacing } from './config';
 import { getFirstFocusable, getElementDir, resolveElement } from './utils';
 /**
@@ -397,6 +398,80 @@ export function useOptionDrag<T extends string | number>({
   };
 
   return { pressed, pressedValue, handleMouseDown, handleUnpress };
+}
+
+/**
+ * 输入类组件的软校验反馈（对齐原版TextInputWidget.setValidityFlag的标记输出）：
+ * 值不满足约束时在输入元素输出`aria-invalid`（根元素的invalid标志类由调用方按返回的
+ * `invalid`输出），不改写值。触发时机对齐原版：值变更防抖250ms后校验（原版change事件
+ * 的OO.ui.debounce）、失焦立即校验、聚焦视为有效（原版onFocus的setValidityFlag(true)）；
+ * 初始值不主动校验（原版构造期无change事件，NumberInput的挂载期校验由调用方经revalidate补齐）
+ */
+export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement, V extends string | number>({
+  inputRef,
+  value,
+  validate,
+}: {
+  /** 内部输入元素引用（checkValidity浏览器约束检查的载体） */
+  inputRef: RefObject<T | null>;
+  /** 当前输入值，作为自定义校验函数的入参 */
+  value: V;
+  /** 自定义合法性判定（缺省仅浏览器checkValidity）；返回Promise时按其决议结果标记，拒绝视为非法 */
+  validate?: (value: V) => boolean | Promise<boolean>;
+}): {
+  /** 当前是否标记为非法 */
+  invalid: boolean;
+  /** 输入元素失焦回调：立即重新校验 */
+  handleBlur: () => void;
+  /** 输入元素聚焦回调：清除非法标记 */
+  handleFocus: () => void;
+  /** 立即重新校验（约束配置变化时由调用方触发，对齐原版setRange/setStep的setValidityFlag） */
+  revalidate: () => void;
+} {
+  const [invalid, setInvalid] = useState(false);
+  const validateRef = useRef(validate);
+  validateRef.current = validate;
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  // 首个生效值不校验（对齐原版构造期不触发标记）；发生过变化后即使回到初始值也照常校验
+  // （如表单重置回初始值需清除既有标记），保证状态不滞留
+  const initialValueRef = useRef(value);
+  const interactedRef = useRef(false);
+
+  const check = useCallback(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+    // 先浏览器约束（required/min/max等），通过后再自定义校验，对齐原版getValidity的次序
+    let result: boolean | Promise<boolean> = !input.checkValidity || input.checkValidity();
+    if (result && validateRef.current) {
+      result = validateRef.current(valueRef.current);
+    }
+    Promise.resolve(result).then(
+      (valid) => setInvalid(!valid),
+      () => setInvalid(true),
+    );
+  }, [inputRef]);
+
+  // 防抖句柄跨渲染复用：值快速连续变更时只保留最后一次校验
+  const debouncedCheck = useMemo(() => debounce(check, 250), [check]);
+  useEffect(() => () => debouncedCheck.cancel(), [debouncedCheck]);
+
+  useEffect(() => {
+    if (!interactedRef.current && value === initialValueRef.current) {
+      return;
+    }
+    interactedRef.current = true;
+    debouncedCheck();
+  }, [value, debouncedCheck]);
+
+  return {
+    invalid,
+    handleBlur: check,
+    handleFocus: () => setInvalid(false),
+    revalidate: check,
+  };
 }
 
 /**

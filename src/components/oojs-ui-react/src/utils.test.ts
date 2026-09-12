@@ -6,6 +6,7 @@ import {
   iconElementClasses,
   indicatorElementClasses,
   labelElementClasses,
+  mergeInvalidFlag,
   toFlagArray,
   widgetClasses,
   widgetNameClasses,
@@ -142,5 +143,14 @@ describe('基础工具（贡献器的依赖）', () => {
     expect(toFlagArray('progressive')).toEqual(['progressive']);
     expect(toFlagArray(['progressive', 'destructive'])).toEqual(['progressive', 'destructive']);
     expect(toFlagArray()).toEqual([]);
+  });
+
+  it.each([true, false] as const)('mergeInvalidFlag校验非法时叠加invalid（输入%p）', (invalid) => {
+    expect(mergeInvalidFlag(['progressive'], invalid))
+      .toEqual(invalid ? ['progressive', 'invalid'] : ['progressive']);
+  });
+
+  it('mergeInvalidFlag配置已含invalid时不重复', () => {
+    expect(mergeInvalidFlag(['invalid'], true)).toEqual(['invalid']);
   });
 });
