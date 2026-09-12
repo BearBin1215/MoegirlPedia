@@ -9,7 +9,7 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
-  generateWidgetClassName,
+  getWidgetClassName,
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
@@ -64,7 +64,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({
+    getWidgetClassName({
       disabled,
       icon,
       label,

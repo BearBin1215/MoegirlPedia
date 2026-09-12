@@ -9,7 +9,7 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase, type Indicators } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
-  generateWidgetClassName,
+  getWidgetClassName,
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
@@ -95,7 +95,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon, indicator }, 'input', 'textInput'),
+    getWidgetClassName({ disabled, icon, indicator }, 'input', 'textInput'),
     'oo-ui-textInputWidget-type-text',
     'oo-ui-comboBoxInputWidget',
     options.length === 0 && 'oo-ui-comboBoxInputWidget-empty',

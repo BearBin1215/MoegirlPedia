@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { IconBase } from '../../widgets/Icon/Base';
 import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
 import { LabelBase } from '../../widgets/Label/Base';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
@@ -158,7 +158,7 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled: groupDisabled, icon, indicator: effectiveIndicator, label }),
+    getWidgetClassName({ disabled: groupDisabled, icon, indicator: effectiveIndicator, label }),
     'oo-ui-toolGroup',
     'oo-ui-popupToolGroup',
     open && 'oo-ui-popupToolGroup-active',

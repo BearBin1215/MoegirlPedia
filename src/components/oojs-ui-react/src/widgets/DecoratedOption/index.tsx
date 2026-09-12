@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
@@ -29,7 +29,7 @@ export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({
+    getWidgetClassName({
       disabled,
       label: children,
       icon,

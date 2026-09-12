@@ -13,7 +13,7 @@ import { LabelBase } from '../Label/Base';
 import { IconBase } from '../Icon/Base';
 import { Button } from '../Button';
 import { useDir, useMessage, usePortalContainer, useViewportSpacing } from '../../config';
-import { generateWidgetClassName, getFocusableElements, getElementDir, resolveElement } from '../../utils';
+import { getWidgetClassName, getFocusableElements, getElementDir, resolveElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { LabelElement } from '../Label';
@@ -147,7 +147,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'popup'),
+    getWidgetClassName({ disabled }, 'popup'),
     anchor && layout && `oo-ui-popupWidget-anchored oo-ui-popupWidget-anchored-${layout.anchorEdge}`,
     (!open || outOfView) && 'oo-ui-element-hidden',
   );

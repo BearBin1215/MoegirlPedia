@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef, type ChangeEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxMultioption';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -45,7 +45,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'select', 'checkboxMultiselect'),
+    getWidgetClassName({ disabled }, 'select', 'checkboxMultiselect'),
   );
 
   const handleChange = (optionValue: string | number, checked: boolean, event?: ChangeEvent<HTMLInputElement>) => {

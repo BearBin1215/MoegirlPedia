@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 
 export interface ProgressBarProps extends WidgetProps<HTMLDivElement> {
@@ -29,7 +29,7 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({
     : clamp(progress, 0, 100);
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }),
+    getWidgetClassName({ disabled }),
     'oo-ui-progressBarWidget',
     bounded === false && 'oo-ui-progressBarWidget-indeterminate',
   );

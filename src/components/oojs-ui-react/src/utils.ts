@@ -17,7 +17,8 @@ export interface AccessKeyedElement {
  */
 export type ChangeHandler<T = any, P = HTMLElement> = (value: T, event?: ChangeEvent<P>) => void;
 
-type ComponentProps =
+/** Widget型组件组装基础类的完整入参（Widget基类与三个元素mixin的类型交集） */
+type WidgetClassNameProps =
   WidgetProps &
   LabelElement &
   IconElement &
@@ -82,21 +83,56 @@ export function toFlagArray<T extends string>(flags?: T | T[]): T[] {
   return typeof flags === 'string' ? [flags] : flags ?? [];
 }
 
+/** Widget基类的类贡献：`oo-ui-widget`根类 + disabled/enabled互斥态类 */
+export function widgetClasses({ disabled }: WidgetProps): string {
+  return clsx('oo-ui-widget', disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled');
+}
+
+/** IconElement mixin的类贡献：icon有值时输出`oo-ui-iconElement` */
+export function iconElementClasses({ icon }: IconElement): string {
+  return icon ? 'oo-ui-iconElement' : '';
+}
+
+/** IndicatorElement mixin的类贡献：indicator有值时输出`oo-ui-indicatorElement` */
+export function indicatorElementClasses({ indicator }: IndicatorElement): string {
+  return indicator ? 'oo-ui-indicatorElement' : '';
+}
+
 /**
- * 生成常用类
- * @param props 组件属性
- * @param widgetNames 组件名称，用于生成`oo-ui-{widgetName}Widget`
+ * LabelElement mixin的类贡献：仅"有效可见标签"输出`oo-ui-labelElement`。
+ * 对齐原版setInvisibleLabel的"视同无标签"语义（上游注释：Pretend that there is no
+ * label，大量CSS基于该假设编写），故invisibleLabel时即使有label也不输出
  */
-export function generateWidgetClassName(
-  { disabled, label, icon, indicator }: ComponentProps,
+export function labelElementClasses({ label, invisibleLabel }: LabelElement): string {
+  return !invisibleLabel && hasLabel(label) ? 'oo-ui-labelElement' : '';
+}
+
+/** FlaggedElement mixin的类贡献：每个flag输出`oo-ui-flaggedElement-{flag}` */
+export function flaggedElementClasses(flags?: string | string[]): string {
+  return clsx(toFlagArray(flags).map((flag) => `oo-ui-flaggedElement-${flag}`));
+}
+
+/** Widget型组件的名称类：`oo-ui-{name}Widget`（多个按原版继承链叠加，如input/textInput/numberInput） */
+export function widgetNameClasses(...widgetNames: string[]): string {
+  return clsx(widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`));
+}
+
+/**
+ * 组装Widget型组件的根类。折叠自上方各mixin贡献器（对齐原版Widget+Element mixin的
+ * 类派生规则），供整组类一起输出的常规场景；单独需要某个mixin的类时（如ButtonInput
+ * 自组flag类）直接调用对应贡献器
+ * @param props 组件属性，仅读取基础类相关字段
+ * @param widgetNames 组件名，按原版继承链顺序叠加`oo-ui-{name}Widget`
+ */
+export function getWidgetClassName(
+  { disabled, label, invisibleLabel, icon, indicator }: WidgetClassNameProps,
   ...widgetNames: string[]
 ): string {
   return clsx(
-    'oo-ui-widget',
-    disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-    icon && 'oo-ui-iconElement',
-    indicator && 'oo-ui-indicatorElement',
-    hasLabel(label) && 'oo-ui-labelElement',
-    widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`),
+    widgetClasses({ disabled }),
+    iconElementClasses({ icon }),
+    indicatorElementClasses({ indicator }),
+    labelElementClasses({ label, invisibleLabel }),
+    widgetNameClasses(...widgetNames),
   );
 }

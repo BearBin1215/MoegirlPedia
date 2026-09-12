@@ -2,7 +2,7 @@ import React, { forwardRef, type MouseEventHandler } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
 import { LabelBase } from '../Label/Base';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { OptionProps } from '../Option';
 
 export type TabOptionProps = OptionProps & {
@@ -24,7 +24,7 @@ export const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, label: children }, 'option', 'tabOption'),
+    getWidgetClassName({ disabled, label: children }, 'option', 'tabOption'),
     selected && 'oo-ui-optionWidget-selected',
     pressed && 'oo-ui-optionWidget-pressed',
   );

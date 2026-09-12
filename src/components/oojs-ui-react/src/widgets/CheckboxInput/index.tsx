@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { Icon } from '../Icon';
-import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { getWidgetClassName, type AccessKeyedElement } from '../../utils';
 import { useControlledValue, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -66,7 +66,7 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'input', 'checkboxInput'),
+    getWidgetClassName({ disabled }, 'input', 'checkboxInput'),
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

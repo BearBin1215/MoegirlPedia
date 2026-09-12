@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { TabOption, type TabOptionProps } from '../TabOption';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -74,7 +74,7 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'select', 'tabSelect'),
+    getWidgetClassName({ disabled }, 'select', 'tabSelect'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
     framed ? 'oo-ui-tabSelectWidget-framed' : 'oo-ui-tabSelectWidget-frameless',
   );

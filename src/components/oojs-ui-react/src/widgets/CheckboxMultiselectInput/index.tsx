@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultiselect, type CheckboxMultiselectProps } from '../CheckboxMultiselect';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 
 export interface CheckboxMultiselectInputProps extends Omit<CheckboxMultiselectProps, 'className'> {
 
@@ -27,7 +27,7 @@ export const CheckboxMultiselectInput = forwardRef<HTMLDivElement, CheckboxMulti
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'input', 'checkboxMultiselectInput'),
+    getWidgetClassName({ disabled }, 'input', 'checkboxMultiselectInput'),
   );
 
   // 注入checkbox提交value的选项集：options每渲染新引用时重算，避免每渲染重建数组与对象

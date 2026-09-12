@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { RadioSelect } from '../RadioSelect';
 import { type RadioOptionProps } from '../RadioOption';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useControlledValueFallback } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -51,7 +51,7 @@ export const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'input', 'radioSelectInput'),
+    getWidgetClassName({ disabled }, 'input', 'radioSelectInput'),
   );
 
   return (

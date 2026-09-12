@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { generateWidgetClassName, hasLabel } from '../../utils';
+import { getWidgetClassName, hasLabel } from '../../utils';
 import { useControlledValue, useLabelPadding, useMergedRefs } from '../../hooks';
 import type { TextInputProps } from '../TextInput';
 
@@ -71,7 +71,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
   );

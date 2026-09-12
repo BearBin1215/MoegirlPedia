@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { ElementProps } from '../../Element';
 
 export interface WidgetProps<T = HTMLDivElement> extends Omit<ElementProps<T>, 'onChange'> {
@@ -14,7 +14,7 @@ export const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
   disabled,
   ...rest
 }, ref) => {
-  const classes = clsx(className, generateWidgetClassName({ disabled }));
+  const classes = clsx(className, getWidgetClassName({ disabled }));
 
   return (
     <div

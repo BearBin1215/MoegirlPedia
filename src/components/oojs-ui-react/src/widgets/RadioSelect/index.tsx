@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { RadioOption, type RadioOptionProps } from '../RadioOption';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -50,7 +50,7 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'select', 'radioSelect'),
+    getWidgetClassName({ disabled }, 'select', 'radioSelect'),
     pressed ? 'oo-ui-selectWidget-pressed' : 'oo-ui-selectWidget-unpressed',
   );
 

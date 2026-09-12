@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { generateWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
@@ -117,7 +117,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({
+    getWidgetClassName({
       disabled,
       // useInputTag的<input>不支持图标/指示器展示
       icon: useInputTag ? undefined : icon,
@@ -126,7 +126,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     }, 'input', 'buttonInput'),
     'oo-ui-buttonElement',
     framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    flagList.map((flag) => `oo-ui-flaggedElement-${flag}`),
+    flaggedElementClasses(flags),
     active && 'oo-ui-buttonElement-active',
     pressed && !disabled && 'oo-ui-buttonElement-pressed',
   );

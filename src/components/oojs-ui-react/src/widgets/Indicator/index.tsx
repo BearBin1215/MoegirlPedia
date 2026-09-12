@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import {
   IndicatorBase,
@@ -26,7 +26,7 @@ export const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, indicator }, 'indicator'),
+    getWidgetClassName({ disabled, indicator }, 'indicator'),
     // 单元素组件：根元素即label元素（原版IndicatorWidget混入LabelElement时$label指向根），
     // invisibleLabel的裁剪类按原版落在label（根）上
     'oo-ui-labelElement-invisible',

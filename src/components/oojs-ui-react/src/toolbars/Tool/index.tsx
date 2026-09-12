@@ -8,7 +8,7 @@ import React, {
 import clsx from 'clsx';
 import { Icon } from '../../widgets/Icon';
 import { IconBase } from '../../widgets/Icon/Base';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../../widgets/Widget';
 
 /**
@@ -61,7 +61,7 @@ export interface ToolViewProps {
 export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled }: ToolViewProps) {
   const linkDisabled = !!tool.disabled || !!groupDisabled;
   const classes = clsx(
-    generateWidgetClassName({ disabled: tool.disabled, icon: tool.icon }),
+    getWidgetClassName({ disabled: tool.disabled, icon: tool.icon }),
     'oo-ui-tool',
     getToolNameClassName(tool.name),
     tool.icon && 'oo-ui-tool-with-icon',

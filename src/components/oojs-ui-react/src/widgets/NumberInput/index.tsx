@@ -11,7 +11,7 @@ import { Button } from '../Button';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { generateWidgetClassName, hasLabel, type AccessKeyedElement } from '../../utils';
+import { getWidgetClassName, hasLabel, type AccessKeyedElement } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
@@ -147,7 +147,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
+    getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { LabelBase } from '../Label/Base';
 import { Button } from '../Button';
-import { generateWidgetClassName } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 
@@ -65,11 +65,10 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(({
   const classes = clsx(
     className,
     // invisibleLabel的裁剪类只落在label元素上（下方LabelBase），不得经此挂到根元素（原版LabelElement语义）
-    generateWidgetClassName({ disabled, icon: displayIcon, label: children }),
-    'oo-ui-messageWidget',
+    getWidgetClassName({ disabled, icon: displayIcon, label: children }, 'message'),
     !inline && 'oo-ui-messageWidget-block',
     showCloseButton && 'oo-ui-messageWidget-showClose',
-    `oo-ui-flaggedElement-${messageType}`,
+    flaggedElementClasses(messageType),
   );
 
   return (

@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Dropdown, type DropdownOptionProps } from '../Dropdown';
 import { isSelectableOption, type SelectOptionProps } from '../Select';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useControlledValueFallback } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -88,7 +88,7 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'input', 'dropdownInput'),
+    getWidgetClassName({ disabled }, 'input', 'dropdownInput'),
   );
 
   const renderOption = (option: SelectableOption) => (

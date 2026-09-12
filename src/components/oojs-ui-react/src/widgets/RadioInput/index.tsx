@@ -3,7 +3,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -45,7 +45,7 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled }, 'input', 'radioInput'),
+    getWidgetClassName({ disabled }, 'input', 'radioInput'),
   );
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

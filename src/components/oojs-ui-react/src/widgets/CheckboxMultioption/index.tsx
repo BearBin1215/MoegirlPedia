@@ -2,7 +2,7 @@ import React, { forwardRef, type Ref } from 'react';
 import clsx from 'clsx';
 import { LabelBase } from '../Label/Base';
 import { CheckboxInput, type CheckboxInputProps } from '../CheckboxInput';
-import { generateWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
 export interface CheckboxMultioptionProps extends Omit<OptionProps<HTMLLabelElement>, 'highlighted'> {
@@ -33,7 +33,7 @@ export const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultiopt
 }, ref) => {
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, label: children }, 'option', 'checkboxMultioption'),
+    getWidgetClassName({ disabled, label: children }, 'option', 'checkboxMultioption'),
     selected && 'oo-ui-optionWidget-selected',
   );
 

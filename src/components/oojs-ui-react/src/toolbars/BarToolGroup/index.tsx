@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../utils';
 import {
   ToolView,
   getToolHoverHandlers,
@@ -29,7 +29,7 @@ export const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
   // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled: groupDisabled }),
+    getWidgetClassName({ disabled: groupDisabled }),
     'oo-ui-toolGroup',
     'oo-ui-barToolGroup',
   );

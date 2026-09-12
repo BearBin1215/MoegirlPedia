@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { generateWidgetClassName, toFlagArray } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, toFlagArray } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import { IconBase, type IconElement } from './Base';
 
@@ -31,11 +31,13 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 
   const classes = clsx(
     className,
-    generateWidgetClassName({ disabled, icon }, 'icon'),
+    getWidgetClassName({ disabled, icon }, 'icon'),
     // 单元素组件：根元素即label元素（原版IconWidget混入LabelElement时$label指向根），
     // invisibleLabel的裁剪类按原版落在label（根）上
     'oo-ui-labelElement-invisible',
-    toFlagArray(flags).flatMap((flag) => [`oo-ui-flaggedElement-${flag}`, `oo-ui-image-${flag}`]),
+    flaggedElementClasses(flags),
+    // 主题按image-{flag}给图标着色（FlaggedElement之外Icon的专属类）
+    toFlagArray(flags).map((flag) => `oo-ui-image-${flag}`),
   );
 
   return (
