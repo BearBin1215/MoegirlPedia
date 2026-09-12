@@ -13,6 +13,7 @@ import StackLayout from '../StackLayout';
 import type { PageLayoutProps } from '../PageLayout';
 import { type ChangeHandler } from '../../utils';
 import { useAutoFocusPanel, useLayoutSelection } from '../../hooks';
+import { useMessage } from '../../config';
 
 interface BookletLayoutOptionProps extends PageLayoutProps {
   /** 菜单选项显示内容 */
@@ -118,6 +119,10 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   const movableValues = options.filter((o) => o.movable);
   const selectedIsFirstMovable = movableValues[0]?.value === activeValue;
   const selectedIsLastMovable = movableValues[movableValues.length - 1]?.value === activeValue;
+  // 大纲控制按钮的缺省标题（对齐原版ooui-outline-control-*消息）
+  const moveUpTitle = useMessage('ooui-outline-control-move-up');
+  const moveDownTitle = useMessage('ooui-outline-control-move-down');
+  const removeTitle = useMessage('ooui-outline-control-remove');
 
   const handleSelect = (selectedValue: string | number) => {
     if (selectedValue !== activeValue) {
@@ -163,24 +168,25 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
                 {outlineControlsExtra}
               </div>
               <div className='oo-ui-outlineControlsWidget-movers'>
+                {/* 缺省标题经useMessage读取（对齐原版ooui-outline-control-*消息） */}
                 <Button
                   framed={false}
                   icon='upTriangle'
-                  title='上移'
+                  title={moveUpTitle}
                   disabled={!movableSelected || selectedIsFirstMovable}
                   onClick={() => activeValue !== undefined && onMoveOption?.(activeValue, -1)}
                 />
                 <Button
                   framed={false}
                   icon='downTriangle'
-                  title='下移'
+                  title={moveDownTitle}
                   disabled={!movableSelected || selectedIsLastMovable}
                   onClick={() => activeValue !== undefined && onMoveOption?.(activeValue, 1)}
                 />
                 <Button
                   framed={false}
                   icon='trash'
-                  title='移除'
+                  title={removeTitle}
                   disabled={!removableSelected}
                   onClick={() => activeValue !== undefined && onRemoveOption?.(activeValue)}
                 />

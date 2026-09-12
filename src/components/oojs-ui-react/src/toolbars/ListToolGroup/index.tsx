@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { PopupToolGroupBase, type PopupToolGroupBaseProps } from '../PopupToolGroup';
 import { useControlledValue } from '../../hooks';
+import { useMessage } from '../../config';
 import type { ToolProps } from '../Tool';
 
 export interface ListToolGroupProps extends Omit<PopupToolGroupBaseProps, 'tools' | 'keepOpenToolNames'> {
@@ -58,10 +59,13 @@ const ListToolGroup = forwardRef<HTMLDivElement, ListToolGroupProps>(({
 
   const visibleTools = tools.filter((tool) => !collapsibleNames.includes(tool.name) || expanded);
 
+  // 缺省标题经useMessage读取（对齐原版ooui-toolgroup-expand/collapse消息）
+  const expandLabel = useMessage('ooui-toolgroup-expand');
+  const collapseLabel = useMessage('ooui-toolgroup-collapse');
   const extraTools: ToolProps[] = collapsibleNames.length > 0
     ? [{
       name: EXPAND_COLLAPSE_TOOL_NAME,
-      title: expanded ? 'Fewer' : 'More',
+      title: expanded ? collapseLabel : expandLabel,
       icon: expanded ? 'collapse' : 'expand',
       onSelect: () => commitExpanded((prev) => !prev),
     }]

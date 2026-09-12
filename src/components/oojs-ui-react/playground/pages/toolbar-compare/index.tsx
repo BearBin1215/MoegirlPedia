@@ -53,6 +53,10 @@ function OriginalToolbar() {
       createTool('optionOne', '选项一'),
       createTool('optionTwo', '选项二'),
       createTool('optionThree', '选项三'),
+      // 原版工具按工具栏独占预留（ToolGroup.populate经isToolAvailable/reserveTool），
+      // 同一工具不能同时进两个工具组，右侧组须用独立工具
+      createTool('optionFour', '选项四'),
+      createTool('optionFive', '选项五'),
     ]) {
       toolFactory.register(tool);
     }
@@ -68,7 +72,7 @@ function OriginalToolbar() {
       { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
       // align:'after'：工具组排到工具栏右侧的$after容器（原版insertItemElements）
-      { type: 'menu', include: ['optionOne', 'optionTwo'], icon: 'ellipsis', label: '右侧', align: 'after' },
+      { type: 'menu', include: ['optionFour', 'optionFive'], icon: 'ellipsis', label: '右侧', align: 'after' },
     ]);
     // 原版要求先attach再initialize（narrow阈值依赖布局测量）
     container.appendChild(unwrapJQuery(top.$element));
@@ -112,6 +116,11 @@ const menuTools = (active: Record<string, boolean>, toggle: (name: string) => vo
   { name: 'optionTwo', title: '选项二', active: !!active.optionTwo, onSelect: () => toggle('optionTwo') },
   { name: 'optionThree', title: '选项三', disabled: true, onSelect: () => toggle('optionThree') },
 ];
+// 右侧组用独立工具（原版工具按工具栏独占预留，同一工具不能进两个组）
+const rightMenuTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
+  { name: 'optionFour', title: '选项四', active: !!active.optionFour, onSelect: () => toggle('optionFour') },
+  { name: 'optionFive', title: '选项五', active: !!active.optionFive, onSelect: () => toggle('optionFive') },
+];
 
 /** 每个工具组独立的active状态：toggle切换本组激活项并记录点击的工具标题 */
 function useGroupTools(
@@ -136,8 +145,13 @@ function ReactListGroup({ onLog, label, indicator }: { onLog: (title: string) =>
   return <ListToolGroup label={label} icon='ellipsis' indicator={indicator} tools={tools} />;
 }
 
-function ReactMenuGroup({ onLog, label, align }: { onLog: (title: string) => void; label: string; align?: 'after' }) {
-  const tools = useGroupTools(menuTools, onLog);
+function ReactMenuGroup({ onLog, label, align, defs = menuTools }: {
+  onLog: (title: string) => void;
+  label: string;
+  align?: 'after';
+  defs?: (active: Record<string, boolean>, toggle: (name: string) => void) => ToolProps[];
+}) {
+  const tools = useGroupTools(defs, onLog);
   return <MenuToolGroup label={label} icon='ellipsis' align={align} tools={tools} />;
 }
 
@@ -157,7 +171,7 @@ function ReactToolbar() {
         <ReactListGroup onLog={handleSelect} label='更多' indicator='down' />
         <ReactMenuGroup onLog={handleSelect} label='菜单' />
         {/* align='after'：排到工具栏右侧（对应原版ToolGroup的align配置） */}
-        <ReactMenuGroup onLog={handleSelect} label='右侧' align='after' />
+        <ReactMenuGroup onLog={handleSelect} label='右侧' align='after' defs={rightMenuTools} />
       </Toolbar>
       {/* bottom工具栏：弹出面板向上展开、indicator随position翻转（均对齐原版），此处用组件缺省 */}
       <Toolbar position='bottom'>

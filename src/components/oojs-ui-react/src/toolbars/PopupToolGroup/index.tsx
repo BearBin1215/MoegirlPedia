@@ -14,6 +14,7 @@ import IndicatorBase, { type Indicators } from '../../widgets/Indicator/Base';
 import LabelBase from '../../widgets/Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
+import { usePortalContainer } from '../../config';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
 import {
   ToolView,
@@ -103,7 +104,10 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange, findTool } = useToolGroupPressed(wrappedTools, groupDisabled);
 
   // 定位与钳高（open/tools变化与滚动/缩放时重算）：bottom工具栏的面板向上展开
-  // （对齐原版verticalPosition:'above'），其余向下；面板portal至body，经页面坐标定位
+  // （对齐原版verticalPosition:'above'），其余向下；面板portal至body（或Provider配置的
+  // 容器，锚点为把手），经页面坐标定位
+  const getPortalContainer = usePortalContainer();
+  const portalTarget = getPortalContainer(handleRef.current);
   const layout = useAnchoredPanelLayout({
     open,
     anchor: handleRef,
@@ -242,7 +246,7 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
             ))}
           </div>
         </div>,
-        document.body,
+        portalTarget,
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { useCleanId } from '../hooks';
+import { useMessage } from '../config';
 import { toFlagArray } from '../utils';
 import Button, { type ButtonFlag } from '../widgets/Button';
 import Label from '../widgets/Label';
@@ -75,12 +76,6 @@ export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' |
   onEscape?: () => void;
 }
 
-// 错误面板缺省英文文案
-const ERROR_TITLE = 'Something went wrong';
-const DISMISS_LABEL = 'Dismiss';
-const RETRY_LABEL = 'Try again';
-const CONTINUE_LABEL = 'Continue';
-
 /**
  * 流程弹窗，对齐原版OO.ui.ProcessDialog：头部为safe动作（左）、标题（中）、primary动作（右），
  * 尾部为其他动作；动作执行期间显示pending态，失败时错误面板提供Dismiss/重试。
@@ -118,6 +113,11 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
   const primaryRef = useRef<HTMLDivElement>(null);
   // 标题元素id：使弹窗根（role='dialog'）的aria-labelledby关联标题
   const titleId = useCleanId();
+  // 错误面板缺省文案经useMessage读取（Provider/模块级覆盖>英文默认），对齐原版OO.ui.msg
+  const errorTitle = useMessage('ooui-dialog-process-error');
+  const dismissLabel = useMessage('ooui-dialog-process-dismiss');
+  const retryLabel = useMessage('ooui-dialog-process-retry');
+  const continueLabel = useMessage('ooui-dialog-process-continue');
 
   // 未声明modes的动作在置位mode后同样隐藏
   const visibleActions = mode === undefined
@@ -297,12 +297,12 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     >
       {errors && (
         <div className='oo-ui-processDialog-errors'>
-          <div className='oo-ui-processDialog-errors-title'>{ERROR_TITLE}</div>
+          <div className='oo-ui-processDialog-errors-title'>{errorTitle}</div>
           {errors.map((item) => (
             <Message key={item.id} type='error'>{item.message}</Message>
           ))}
           <div className='oo-ui-processDialog-errors-actions'>
-            <Button onClick={hideErrors}>{DISMISS_LABEL}</Button>
+            <Button onClick={hideErrors}>{dismissLabel}</Button>
             {recoverable && (
               <Button
                 flags={retryAction?.flags}
@@ -313,7 +313,7 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
                   }
                 }}
               >
-                {warning ? CONTINUE_LABEL : RETRY_LABEL}
+                {warning ? continueLabel : retryLabel}
               </Button>
             )}
           </div>

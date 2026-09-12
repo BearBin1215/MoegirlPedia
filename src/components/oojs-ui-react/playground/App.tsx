@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Layout, Menu, Select, Spin } from 'antd';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router';
+import { OOUIProvider, zhHans } from 'oojs-ui-react';
 import {
   applyThemeCss,
   DEFAULT_THEME,
@@ -9,6 +10,13 @@ import {
 } from './components/ooui';
 import { compareRoutes, firstRoutePath, routeGroups } from './routes';
 import './App.css';
+
+type PlaygroundLocale = 'en' | 'zh-hans';
+
+const localeOptions: Array<{ value: PlaygroundLocale; label: string }> = [
+  { value: 'en', label: 'English' },
+  { value: 'zh-hans', label: '简体中文' },
+];
 
 const themeOptions = [
   { value: DEFAULT_THEME, label: 'wikimediaui 主题' },
@@ -46,6 +54,7 @@ function SiderMenu() {
 
 function App() {
   const [theme, setTheme] = useState<OOUITheme>(DEFAULT_THEME);
+  const [locale, setLocale] = useState<PlaygroundLocale>('en');
 
   useEffect(() => {
     applyThemeCss(DEFAULT_THEME);
@@ -65,31 +74,43 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Layout className='playground'>
-        <Layout.Header className='playground-header'>
-          <div className='playground-title'>oojs-ui-react</div>
-          <Select
-            options={themeOptions}
-            value={theme}
-            onChange={switchTheme}
-            style={{ width: 180 }}
-          />
-        </Layout.Header>
-        <Layout>
-          <SiderMenu />
-          {/* key随主题变化：切换主题后整块remount，对照页两侧控件均以新主题重建 */}
-          <Layout.Content key={theme} className='playground-content'>
-            <React.Suspense fallback={<div className='playground-loading'><Spin /></div>}>
-              <Routes>
-                {compareRoutes.map(({ path, Component }) => (
-                  <Route key={path} path={path} element={<Component />} />
-                ))}
-                <Route path='*' element={<Navigate to={firstRoutePath} replace />} />
-              </Routes>
-            </React.Suspense>
-          </Layout.Content>
+      {/* 文案语言经OOUIProvider下发：切换后声明式组件默认文案响应式更新（无需remount），
+          对照原版控件恒为英文（dist仅烘焙en），供对比i18n效果 */}
+      <OOUIProvider messages={locale === 'zh-hans' ? zhHans : undefined}>
+        <Layout className='playground'>
+          <Layout.Header className='playground-header'>
+            <div className='playground-title'>oojs-ui-react</div>
+            <div className='playground-header-switches'>
+              <Select
+                options={localeOptions}
+                value={locale}
+                onChange={setLocale}
+                style={{ width: 130 }}
+              />
+              <Select
+                options={themeOptions}
+                value={theme}
+                onChange={switchTheme}
+                style={{ width: 180 }}
+              />
+            </div>
+          </Layout.Header>
+          <Layout>
+            <SiderMenu />
+            {/* key随主题变化：切换主题后整块remount，对照页两侧控件均以新主题重建 */}
+            <Layout.Content key={theme} className='playground-content'>
+              <React.Suspense fallback={<div className='playground-loading'><Spin /></div>}>
+                <Routes>
+                  {compareRoutes.map(({ path, Component }) => (
+                    <Route key={path} path={path} element={<Component />} />
+                  ))}
+                  <Route path='*' element={<Navigate to={firstRoutePath} replace />} />
+                </Routes>
+              </React.Suspense>
+            </Layout.Content>
+          </Layout>
         </Layout>
-      </Layout>
+      </OOUIProvider>
     </BrowserRouter>
   );
 }

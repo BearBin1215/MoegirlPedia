@@ -14,6 +14,7 @@ import {
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useMenuPopup } from '../../hooks';
+import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
 import { isSelectableOption } from '../Select';
@@ -89,6 +90,8 @@ const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
 
   const controlsDisabled = disabled || readOnly;
   const selectableValues = getSelectableValues(options);
+  // 下拉按钮的无障碍标签（对齐原版ooui-combobox-button-label消息）
+  const toggleOptionsLabel = useMessage('ooui-combobox-button-label');
 
   const classes = clsx(
     className,
@@ -263,7 +266,7 @@ const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
             aria-controls={menuId}
             onClick={handleDropdownButtonClick}
           >
-            <LabelBase className='oo-ui-labelElement-invisible'>Toggle options</LabelBase>
+            <LabelBase className='oo-ui-labelElement-invisible'>{toggleOptionsLabel}</LabelBase>
             <IndicatorBase indicator='down' />
           </span>
         </span>

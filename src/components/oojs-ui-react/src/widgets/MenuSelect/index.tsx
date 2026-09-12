@@ -6,13 +6,15 @@ import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import Select, { type SelectProps } from '../Select';
 import { useAnchoredPanelLayout, useCleanId, useMergedRefs } from '../../hooks';
+import { usePortalContainer } from '../../config';
+import { resolveElement } from '../../utils';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;
 
   /**
-   * 浮动定位的锚定容器。菜单portal在body上、
-   * 无法回退到DOM父节点，故定位依赖此参数（Dropdown等调用方须显式传入）
+   * 浮动定位的锚定容器。菜单经portal渲染在body（或OOUIProvider.getPortalContainer
+   * 指定的容器）上、无法回退到DOM父节点，故定位依赖此参数（Dropdown等调用方须显式传入）
    */
   container?: React.RefObject<HTMLElement | null> | HTMLElement | null;
 }
@@ -45,6 +47,9 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
     matchAnchorWidth: true,
     hideWhenOutOfView: true,
   });
+  // 菜单portal容器：配置的getPortalContainer以锚点元素调用，缺省document.body
+  const getPortalContainer = usePortalContainer();
+  const portalTarget = getPortalContainer(resolveElement(container));
 
   const classes = clsx(
     className,
@@ -71,7 +76,7 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
         overflowY: layout?.maxHeight !== undefined ? 'auto' : undefined,
       }}
     />,
-    document.body,
+    portalTarget,
   );
 });
 

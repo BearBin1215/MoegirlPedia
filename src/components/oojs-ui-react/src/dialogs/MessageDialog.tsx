@@ -9,6 +9,7 @@ import Label from '../widgets/Label';
 import Button from '../widgets/Button';
 import PanelLayout from '../layouts/PanelLayout';
 import { useCleanId } from '../hooks';
+import { useMessage } from '../config';
 import Dialog, { type DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
@@ -31,8 +32,8 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   className,
   title,
   size = 'small',
-  okLabel = 'OK',
-  cancelLabel = 'Cancel',
+  okLabel,
+  cancelLabel,
   foot,
   onOk,
   onCancel,
@@ -40,6 +41,12 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
+  // 缺省按钮文案经useMessage读取（Provider/模块级覆盖>英文默认），对齐原版OO.ui.msg。
+  // cancelLabel传null表示隐藏取消按钮（??会把null当缺省，须显式判null）
+  const defaultOkLabel = useMessage('ooui-dialog-message-accept');
+  const defaultCancelLabel = useMessage('ooui-dialog-message-reject');
+  const resolvedOkLabel = okLabel ?? defaultOkLabel;
+  const resolvedCancelLabel = cancelLabel === null ? null : cancelLabel ?? defaultCancelLabel;
   const classes = clsx(className, 'oo-ui-messageDialog');
   // 标题元素id：使弹窗根（role='dialog'）的aria-labelledby关联标题
   const titleId = useCleanId();
@@ -72,8 +79,8 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
         <div className='oo-ui-messageDialog-actions oo-ui-messageDialog-actions-horizontal'>
           {foot ?? (
             <>
-              {cancelLabel !== null && <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{cancelLabel}</Button>}
-              <Button anchorRef={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{okLabel}</Button>
+              {resolvedCancelLabel !== null && <Button className='oo-ui-actionWidget' framed={false} flags='safe' onClick={() => onCancel?.()}>{resolvedCancelLabel}</Button>}
+              <Button anchorRef={okButtonRef} className='oo-ui-actionWidget' framed={false} flags='primary' onClick={() => onOk?.()}>{resolvedOkLabel}</Button>
             </>
           )}
         </div>

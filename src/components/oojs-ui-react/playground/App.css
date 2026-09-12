@@ -34,6 +34,12 @@ body {
     Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* 头部右侧开关组（文案语言/原版主题） */
+.playground-header-switches {
+  display: flex;
+  gap: 8px;
+}
+
 .playground-sider {
   /* 视口较矮时侧栏菜单自身滚动，不撑破骨架 */
   overflow-y: auto;

@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import LabelBase from '../Label/Base';
 import IconBase from '../Icon/Base';
 import Button from '../Button';
+import { useMessage, usePortalContainer } from '../../config';
 import { generateWidgetClassName, getFocusableElements, resolveElement, VIEWPORT_SPACING } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
@@ -133,6 +134,11 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
   const [layout, setLayout] = useState<PopupLayout | null>(null);
   // 锚定容器滚出可视区时的表现层隐藏（不改变open）
   const [outOfView, setOutOfView] = useState(false);
+  // 关闭按钮的无障碍标签（对齐原版ooui-popup-widget-close-button-aria-label消息）
+  const closeAriaLabel = useMessage('ooui-popup-widget-close-button-aria-label');
+  // 浮层portal容器：配置的getPortalContainer以锚点元素调用，缺省document.body
+  const getPortalContainer = usePortalContainer();
+  const portalTarget = getPortalContainer(resolveElement(container));
 
   const classes = clsx(
     className,
@@ -496,7 +502,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
                 framed={false}
                 icon='close'
                 className='oo-ui-popupWidget-closeButton'
-                aria-label='关闭'
+                aria-label={closeAriaLabel}
                 onClick={() => onClose?.()}
               />
             )}
@@ -509,7 +515,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       </div>
       {anchor && <div className='oo-ui-popupWidget-anchor' style={layout ? (layout.anchorEdge === 'top' || layout.anchorEdge === 'bottom' ? { left: layout.anchorOffset } : { top: layout.anchorOffset }) : undefined} />}
     </div>,
-    document.body,
+    portalTarget,
   );
 });
 

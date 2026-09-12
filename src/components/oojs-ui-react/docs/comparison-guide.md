@@ -82,6 +82,7 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 
 - **`MessageDialog` 的 `size` 只在 `open()` 的 data 里生效**：`MessageDialog.getSetupProcess` 每次打开都会执行 `this.size = data.size ?? this.constructor.static.size`（static 为 'small'），构造时传的 `{ size }` 配置会被覆盖。原版侧对照页要展示多尺寸弹窗时，尺寸必须经 `dialog.open({ size })` 传入（playground的dialog-compare页即因此踩坑）。
 - **同一 `WindowManager` 的窗口按 `constructor.static.name` 注册**：`addWindows` 以类静态 name 为 key，同类多实例互相覆盖，只有最后一个真正挂载。同类多窗口需各自配一个 manager（playground的dialog-compare页五尺寸即五个manager）。
+- **工具在工具栏内按组独占**：`ToolGroup.populate` 经 `toolbar.isToolAvailable(name)`/`reserveTool` 预留工具，同一工具在一条工具栏内只能进一个工具组；被别的组预留后本组 `populate` 拿不到工具，组被标记 `oo-ui-toolGroup-empty`（`display:none`）静默隐藏。对照页安排多组工具时各组必须用不同的工具名（playground的toolbar-compare页即因此踩坑）。
 - **`OO.ui.isMobile()` 在本版本（0.49.2）dist 中是恒返回 `false` 的桩函数**。原版所有依赖它的移动端分支（TabOption 选中后居中滚动、`DropdownInputWidget` 切原生 select、`IndexLayout.autoFocus` 抑制等）在这版 OOUI 里都不会进入。遇到这类「原版有、React 版没有」的差异时，先确认原版该分支是否真的可达，再决定是否补实现或按对齐处理。
 - 原版 `FloatableElement` 的 `hideWhenOutOfView` 只给浮层加 `oo-ui-element-hidden` 类，并**不**改写 `aria-expanded`。React 版的 `outOfView` 收敛在组件内部、由调用方维持 `aria-expanded`，两者行为一致，不是差异。
 

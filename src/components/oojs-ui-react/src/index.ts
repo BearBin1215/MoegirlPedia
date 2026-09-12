@@ -88,5 +88,13 @@ export type {
 export { confirm, alert, prompt } from './dialogs/statics';
 export type { ConfirmAlertOptions, AlertOptions, PromptOptions } from './dialogs/statics';
 
+// 全局配置与消息（i18n）。OOUIProvider为声明式组件提供消息覆盖与浮层portal容器；
+// msg/registerMessages供命令式API（confirm/alert/prompt）与非React场景使用
+export { OOUIProvider, useOOUIConfig, useMessage } from './config';
+export type { OOUIConfig } from './config';
+export { msg, registerMessages } from './i18n';
+export type { MessageKey, MessageValue } from './i18n';
+export { zhHans } from './locales/zh-hans';
+
 // 类型
 export type { AccessKeyedElement, ChangeHandler } from './utils';

@@ -8,6 +8,7 @@ import PopupButton from '../../widgets/PopupButton';
 import type { WidgetProps } from '../../widgets/Widget';
 import type { IconElement } from '../../widgets/Icon';
 import type { LabelElement } from '../../widgets/Label';
+import { useMessage } from '../../config';
 
 export interface FieldsetLayoutProps extends
   WidgetProps<HTMLFieldSetElement>,
@@ -34,6 +35,8 @@ const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
   helpInline = false,
   ...rest
 }, ref) => {
+  // 帮助按钮的无障碍标签（对齐原版ooui-field-help消息）
+  const helpAriaLabel = useMessage('ooui-field-help');
   const classes = clsx(
     className,
     hasLabel(label) && 'oo-ui-labelElement',
@@ -56,7 +59,7 @@ const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
             className='oo-ui-fieldsetLayout-help'
             framed={false}
             icon='info'
-            aria-label='帮助'
+            aria-label={helpAriaLabel}
             padded
             popupContent={help}
           />
