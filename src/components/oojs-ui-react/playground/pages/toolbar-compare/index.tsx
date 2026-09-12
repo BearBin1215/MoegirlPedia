@@ -43,7 +43,7 @@ function OriginalToolbar() {
 
     const toolFactory = new ui.ToolFactory();
     for (const tool of [
-      // 图标名须为0.49.2主题CSS实际存在的图标（user/comment在该版本不存在，渲染为空白）
+      // 图标名须为当前版本主题CSS实际存在的图标（user/comment在该版本不存在，渲染为空白）
       createTool('person', '个人', 'userAvatar'),
       createTool('help', '帮助', 'help'),
       createTool('comment', '评论', 'speechBubbles'),

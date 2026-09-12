@@ -113,9 +113,10 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
   const primaryRef = useRef<HTMLDivElement>(null);
   // 标题元素id：使弹窗根（role='dialog'）的aria-labelledby关联标题
   const titleId = useCleanId();
-  // 错误面板缺省文案经useMessage读取（Provider/模块级覆盖>英文默认），对齐原版OO.ui.msg
+  // 错误面板缺省文案经useMessage读取（Provider/模块级覆盖>英文默认），对齐原版OO.ui.msg。
+  // 0.54起错误面板的退出按钮为Back（原Dismiss键仅保留在消息表中）
   const errorTitle = useMessage('ooui-dialog-process-error');
-  const dismissLabel = useMessage('ooui-dialog-process-dismiss');
+  const backLabel = useMessage('ooui-dialog-process-back');
   const retryLabel = useMessage('ooui-dialog-process-retry');
   const continueLabel = useMessage('ooui-dialog-process-continue');
 
@@ -299,10 +300,11 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
         <div className='oo-ui-processDialog-errors'>
           <div className='oo-ui-processDialog-errors-title'>{errorTitle}</div>
           {errors.map((item) => (
-            <Message key={item.id} type='error'>{item.message}</Message>
+            // 对齐原版showErrors：警告错误以warning形态渲染
+            <Message key={item.id} type={item.warning ? 'warning' : 'error'}>{item.message}</Message>
           ))}
           <div className='oo-ui-processDialog-errors-actions'>
-            <Button onClick={hideErrors}>{dismissLabel}</Button>
+            <Button onClick={hideErrors}>{backLabel}</Button>
             {recoverable && (
               <Button
                 flags={retryAction?.flags}

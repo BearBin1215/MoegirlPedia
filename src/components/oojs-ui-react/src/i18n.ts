@@ -7,6 +7,7 @@ export type MessageKey =
   | 'ooui-dialog-message-accept'
   | 'ooui-dialog-message-reject'
   | 'ooui-dialog-process-error'
+  | 'ooui-dialog-process-back'
   | 'ooui-dialog-process-dismiss'
   | 'ooui-dialog-process-retry'
   | 'ooui-dialog-process-continue'
@@ -22,11 +23,12 @@ export type MessageKey =
 /** 消息值：字符串或延迟解析函数（如站点侧 () => mw.msg(key) 接入MediaWiki语言体系，对齐原版deferMsg语义） */
 export type MessageValue = string | (() => string);
 
-/** 英文默认表，键值对齐原版OOUI dist烘焙的en消息 */
+/** 英文默认表，键值对齐原版OOUI dist内联的en消息（0.54.1） */
 const en: Record<MessageKey, string> = {
   'ooui-dialog-message-accept': 'OK',
   'ooui-dialog-message-reject': 'Cancel',
   'ooui-dialog-process-error': 'Something went wrong',
+  'ooui-dialog-process-back': 'Back',
   'ooui-dialog-process-dismiss': 'Dismiss',
   'ooui-dialog-process-retry': 'Try again',
   'ooui-dialog-process-continue': 'Continue',

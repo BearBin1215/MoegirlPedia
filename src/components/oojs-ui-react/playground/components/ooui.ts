@@ -7,6 +7,8 @@ import oouiApexThemeUrl from 'oojs-ui/dist/oojs-ui-apex.js?url';
 // 主题CSS以?inline文本导出：走Vite CSS管线，图标相对url已被重写为构建资源URL
 import oouiWikimediaCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.css?inline';
 import oouiApexCssText from 'oojs-ui/dist/oojs-ui-apex.css?inline';
+// 0.54起主题CSS引用Codex设计令牌（var(--*)，约450处）但自身不定义，令牌表须一并注入
+import codexTokensCssText from '@wikimedia/codex-design-tokens/dist/theme-wikimedia-ui.css?inline';
 
 type OOUIWindow = {
   // size仅在open的data中生效（MessageDialog.getSetupProcess每次open覆盖构造配置）
@@ -152,7 +154,7 @@ type OOUIDestroyable = { destroy?: () => void };
 
 /**
  * 对照页原版控件登记器：effect内new出的原版控件逐个add登记，cleanup时统一destroyAll。
- * 原版0.49.2仅Toolbar/ToolGroup/Tool/WindowManager有destroy（会解除window级监听并移除DOM，
+ * 原版0.54.1仅Toolbar/ToolGroup/Tool/WindowManager有destroy（会解除window级监听并移除DOM，
  * 如Toolbar的window resize监听仅destroy才解除）；普通widget无destroy，其监听均绑定在自身
  * 子树内，随React卸载移除宿主容器即一并清理
  */
@@ -198,11 +200,14 @@ const THEME_CSS_TEXT: Record<OOUITheme, string> = {
 
 const themeCssUrls = new Map<OOUITheme, string>();
 
-/** 主题CSS文本（图标url已被构建期重写为资源URL）包成Blob URL（结果缓存） */
+/** 主题CSS文本（图标url已被构建期重写为资源URL）+前置Codex令牌表，包成Blob URL（结果缓存） */
 function getThemeCssUrl(theme: OOUITheme): string {
   let url = themeCssUrls.get(theme);
   if (!url) {
-    url = URL.createObjectURL(new Blob([THEME_CSS_TEXT[theme]], { type: 'text/css' }));
+    url = URL.createObjectURL(new Blob(
+      [codexTokensCssText, THEME_CSS_TEXT[theme]],
+      { type: 'text/css' },
+    ));
     themeCssUrls.set(theme, url);
   }
   return url;

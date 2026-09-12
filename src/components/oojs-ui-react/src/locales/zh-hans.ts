@@ -5,6 +5,7 @@ export const zhHans: Partial<Record<MessageKey, MessageValue>> = {
   'ooui-dialog-message-accept': '确定',
   'ooui-dialog-message-reject': '取消',
   'ooui-dialog-process-error': '出现错误',
+  'ooui-dialog-process-back': '返回',
   'ooui-dialog-process-dismiss': '解除',
   'ooui-dialog-process-retry': '重试',
   'ooui-dialog-process-continue': '继续',
