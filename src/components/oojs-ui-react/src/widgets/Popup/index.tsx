@@ -147,7 +147,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled }, 'popup'),
+    getWidgetClassName({ disabled, label, invisibleLabel }, 'popup'),
     anchor && layout && `oo-ui-popupWidget-anchored oo-ui-popupWidget-anchored-${layout.anchorEdge}`,
     (!open || outOfView) && 'oo-ui-element-hidden',
   );

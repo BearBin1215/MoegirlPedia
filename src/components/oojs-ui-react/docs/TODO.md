@@ -1,7 +1,7 @@
 ## 底层
 
 - [x] 将Icon、Indicator等常见复用元素封装
-- [x] 复用组件类生成逻辑（比如根据disabled生成`oo-ui-widget-disabled`或`oo-ui-widget-enabled`类
+- [x] 复用组件类生成逻辑（mixin贡献器 + `getWidgetClassName` 折叠层，如根据disabled生成`oo-ui-widget-disabled`或`oo-ui-widget-enabled`类）
 - [ ] 错误处理逻辑
 
 ## 优先实现
@@ -75,13 +75,13 @@
   - `$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
 - **ComboBoxInput 的菜单浮层定位同上**（MenuSelect 简化版）。菜单展开时机是等效实现：原版 `onEdit` 监听多种事件后再 toggle。
 - **工具栏的以下能力未实现**：
-  - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定左对齐；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体，定位与钳高和 MenuSelect 共用同一实现。
+  - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定起始边对齐（LTR左/RTL右，经 `useAnchoredPanelLayout` 与 MenuSelect 共用实现）；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
   - `PopupTool` 与 `ToolGroupTool`：工具内嵌工具组的场景。
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的焦点陷阱大部分已对齐，剩下 `toggleIsolation` 未实现**：
   - 已对齐：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
-  - 未实现：原版 `toggleIsolation` 会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程的 Popup、MenuSelect 等浮层 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互），需等浮层 portal 容器支持豁免标记后再做。
+  - 未实现：原版 `toggleIsolation` 会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。
   - 另外，裸 `Dialog` 没有内置标题，调用方需自行用 `aria-labelledby` 关联。
 - **FieldLayout 未复刻原版 `align='inline'` 在字段非内联时降级为 `'top'` 的校验**。原因与 `ActionFieldLayout` 的 `fieldInline` 同源：React 无法探测子组件的元素类型。
