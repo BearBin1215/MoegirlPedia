@@ -63,7 +63,7 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。
 - `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。
 - `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。
-- `useAnchoredPanelLayout` + `VIEWPORT_SPACING`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup）。
+- `useAnchoredPanelLayout`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup），留白与方向经全局配置解析。
 - `useAutoFocusPanel`：切换激活面板后聚焦其内首个可聚焦元素（IndexLayout/BookletLayout）。
 - `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略。
 - `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。
@@ -83,8 +83,23 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - **`MessageDialog` 的 `size` 只在 `open()` 的 data 里生效**：`MessageDialog.getSetupProcess` 每次打开都会执行 `this.size = data.size ?? this.constructor.static.size`（static 为 'small'），构造时传的 `{ size }` 配置会被覆盖。原版侧对照页要展示多尺寸弹窗时，尺寸必须经 `dialog.open({ size })` 传入（playground的dialog-compare页即因此踩坑）。
 - **同一 `WindowManager` 的窗口按 `constructor.static.name` 注册**：`addWindows` 以类静态 name 为 key，同类多实例互相覆盖，只有最后一个真正挂载。同类多窗口需各自配一个 manager（playground的dialog-compare页五尺寸即五个manager）。
 - **工具在工具栏内按组独占**：`ToolGroup.populate` 经 `toolbar.isToolAvailable(name)`/`reserveTool` 预留工具，同一工具在一条工具栏内只能进一个工具组；被别的组预留后本组 `populate` 拿不到工具，组被标记 `oo-ui-toolGroup-empty`（`display:none`）静默隐藏。对照页安排多组工具时各组必须用不同的工具名（playground的toolbar-compare页即因此踩坑）。
-- **`OO.ui.isMobile()` 在当前版本（0.54.1）dist 中仍是恒返回 `false` 的桩函数**。原版所有依赖它的移动端分支（TabOption 选中后居中滚动、`DropdownInputWidget` 切原生 select、`IndexLayout.autoFocus` 抑制等）在这版 OOUI 里都不会进入。遇到这类「原版有、React 版没有」的差异时，先确认原版该分支是否真的可达，再决定是否补实现或按对齐处理。
+- **`OO.ui.isMobile()` 在当前版本（0.54.1）dist 中仍是恒返回 `false` 的桩函数**。原版所有依赖它的移动端分支（TabOption 选中后居中滚动、`DropdownInputWidget` 切原生 select、`IndexLayout.autoFocus` 抑制等）在这版 OOUI 里都不会进入。遇到这类「原版有、React 版没有」的差异时，先确认原版该分支是否真的可达，再决定是否补实现或按对齐处理。本工程已将 `isMobile` 映射为 `OOUIProvider` 配置（见下节），配置后这些分支即变为可达，补齐对应行为前先记入 TODO.md。
 - 原版 `FloatableElement` 的 `hideWhenOutOfView` 只给浮层加 `oo-ui-element-hidden` 类，并**不**改写 `aria-expanded`。React 版的 `outOfView` 收敛在组件内部、由调用方维持 `aria-expanded`，两者行为一致，不是差异。
+
+## 全局能力映射（OOUIProvider ↔ OO.ui 全局命名空间）
+
+原版 OOUI 的可覆写模块级全局（`OO.ui.msg`、`OO.ui.isMobile`、`OO.ui.getViewportSpacing`、`OO.ui.getTeleportTarget` 等）在 React 语境下统一收敛到 `src/config.tsx` 的 `OOUIProvider`（context）。新增全局能力时**扩展 `OOUIConfig` 并配套 use hook**，不要再造模块级可变全局：
+
+| 原版全局 | 本工程对应 | 说明 |
+| --- | --- | --- |
+| `OO.ui.msg.messages` / `OO.ui.msg` | `messages` 配置 + `useMessage`；`msg`/`registerMessages` 供命令式 API | 命令式 API 在 React 树外渲染拿不到 context，走模块级覆盖表 |
+| `OO.ui.getTeleportTarget` / `$overlay` | `getPortalContainer` | 浮层 portal 容器 |
+| `OO.ui.isMobile()`（恒 false 的桩） | `isMobile` 配置 + `useIsMobile()` | 消费点：Index/BookletLayout 的 autoFocus 抑制、ProcessDialog 的 `oo-ui-isMobile` 类 |
+| `OO.ui.getViewportSpacing()`（缺省 0） | `viewportSpacing` 配置 + `useViewportSpacing()` | 本工程缺省各边 5px（`VIEWPORT_SPACING`），较原版默认收紧防贴边 |
+| `Element` 的 `dir` 配置 | `dir` 配置 + `useDir()` | 浮层 portal 至 body 后不继承内容区方向，按锚点元素 computed direction 解析（对齐 `Element.static.getDir`），可被 `dir` 配置覆盖；Popup 的 before/after 与 align 为逻辑方位，RTL 下物理侧翻转（对齐原版 FloatableElement 按 direction 取 start/end） |
+| `OO.ui.deferMsg` / `OO.ui.resolveMsg` | `deferMsg` / `resolveMsg`（i18n.ts） | 值为函数的消息在调用时才取值 |
+
+不映射的宿主环境全局（`bind`/`infuse`/`warnDeprecation`/`getUserLanguages`/`isSafeUrl`/`EventSequencer` 等）见 TODO.md 舍弃节；`debounce`/`throttle` 不进导出面，内部直接用 es-toolkit。
 
 ## 浏览器自动化验证注意（trae 浏览器桥限制）
 

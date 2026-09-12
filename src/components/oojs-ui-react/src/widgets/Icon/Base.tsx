@@ -15,7 +15,7 @@ export type IconBaseProps =
   IconElement;
 
 /** 图标基础元素（无Widget包装），输出图标类与noIcon占位类，供各组件内嵌复用 */
-const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
+export const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
   className,
   icon,
   ...rest
@@ -33,4 +33,3 @@ const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
 
 IconBase.displayName = 'IconBase';
 
-export default IconBase;

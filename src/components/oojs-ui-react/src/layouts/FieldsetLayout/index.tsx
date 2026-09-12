@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { hasLabel } from '../../utils';
-import LabelBase from '../../widgets/Label/Base';
-import IconBase from '../../widgets/Icon/Base';
-import Label from '../../widgets/Label';
-import PopupButton from '../../widgets/PopupButton';
+import { LabelBase } from '../../widgets/Label/Base';
+import { IconBase } from '../../widgets/Icon/Base';
+import { Label } from '../../widgets/Label';
+import { PopupButton } from '../../widgets/PopupButton';
 import type { WidgetProps } from '../../widgets/Widget';
 import type { IconElement } from '../../widgets/Icon';
 import type { LabelElement } from '../../widgets/Label';
@@ -26,7 +26,7 @@ export interface FieldsetLayoutProps extends
 }
 
 /** 字段集布局，对齐原版OO.ui.FieldsetLayout（fieldset元素 + legend头部 + group分组） */
-const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
+export const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
   children,
   className,
   label,
@@ -75,4 +75,3 @@ const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProps>(({
 
 FieldsetLayout.displayName = 'FieldsetLayout';
 
-export default FieldsetLayout;

@@ -5,15 +5,15 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
-import PanelLayout from '../PanelLayout';
-import OutlineSelect from '../../widgets/OutlineSelect';
-import Button from '../../widgets/Button';
-import StackLayout from '../StackLayout';
+import { MenuLayout, type MenuLayoutProps } from '../MenuLayout';
+import { PanelLayout } from '../PanelLayout';
+import { OutlineSelect } from '../../widgets/OutlineSelect';
+import { Button } from '../../widgets/Button';
+import { StackLayout } from '../StackLayout';
 import type { PageLayoutProps } from '../PageLayout';
 import { type ChangeHandler } from '../../utils';
 import { useAutoFocusPanel, useLayoutSelection } from '../../hooks';
-import { useMessage } from '../../config';
+import { useIsMobile, useMessage } from '../../config';
 
 interface BookletLayoutOptionProps extends PageLayoutProps {
   /** 菜单选项显示内容 */
@@ -73,7 +73,7 @@ export interface BookletLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'chil
   outlineControlsExtra?: ReactNode;
 }
 
-const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
+export const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   className,
   options,
   value,
@@ -123,6 +123,8 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   const moveUpTitle = useMessage('ooui-outline-control-move-up');
   const moveDownTitle = useMessage('ooui-outline-control-move-down');
   const removeTitle = useMessage('ooui-outline-control-remove');
+  // 移动端形态开关（全局配置）：autoFocus的抑制条件
+  const isMobile = useIsMobile();
 
   const handleSelect = (selectedValue: string | number) => {
     if (selectedValue !== activeValue) {
@@ -131,10 +133,11 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   };
 
   // 对齐原版onStackLayoutSet：continuous时滚动至激活页（首次不滚动）；autoFocus时
-  // 聚焦页内第一个可聚焦元素（焦点已在该页内时useAutoFocusPanel自动跳过）
+  // 聚焦页内第一个可聚焦元素（焦点已在该页内时useAutoFocusPanel自动跳过；
+  // 移动端形态抑制聚焦，对齐原版的!isMobile条件）
   useAutoFocusPanel({
     activeValue,
-    enabled: autoFocus,
+    enabled: autoFocus && !isMobile,
     rootRef: stackRef,
     activeSelector: '.oo-ui-pageLayout-active',
     recomputeKey: continuous,
@@ -210,4 +213,3 @@ const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
 
 BookletLayout.displayName = 'BookletLayout';
 
-export default BookletLayout;

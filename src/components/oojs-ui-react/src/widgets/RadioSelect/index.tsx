@@ -7,7 +7,7 @@ import React, {
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
-import RadioOption, { type RadioOptionProps } from '../RadioOption';
+import { RadioOption, type RadioOptionProps } from '../RadioOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
@@ -30,7 +30,7 @@ export interface RadioSelectProps extends WidgetProps {
  * 单选组，对齐原版OO.ui.RadioSelectWidget：整组以radiogroup聚焦，↑↓←→在非禁用项间
  * 环绕移动并直接改选、Enter重申当前项，聚焦且无选中项时自动选中首个非禁用项（细节见各处理器）
  */
-const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
+export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   options,
   className,
   disabled,
@@ -165,4 +165,3 @@ const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
 
 RadioSelect.displayName = 'RadioSelect';
 
-export default RadioSelect;

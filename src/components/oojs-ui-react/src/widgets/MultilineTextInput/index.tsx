@@ -5,9 +5,9 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName, hasLabel } from '../../utils';
 import { useControlledValue, useLabelPadding, useMergedRefs } from '../../hooks';
 import type { TextInputProps } from '../TextInput';
@@ -31,7 +31,7 @@ const getDefaultMaxRows = (rows?: number) => Math.max(2 * (rows || 0), 10);
  * 实测内容与maxRows高度并回写真实input高度（测量流程见useEffect内注释），
  * 受控/非受控语义与其余输入类组件一致
  */
-const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
+export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
   name,
   className,
@@ -203,4 +203,3 @@ const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>((
 
 MultilineTextInput.displayName = 'MultilineTextInput';
 
-export default MultilineTextInput;

@@ -5,9 +5,9 @@ import React, {
   type Ref,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName, hasLabel } from '../../utils';
 import { useControlledValue, useLabelPadding } from '../../hooks';
 import type { InputProps } from '../Input';
@@ -40,7 +40,7 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
 /**
  * 文本输入框
  */
-const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
+export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   accessKey,
   name,
   className,
@@ -117,4 +117,3 @@ const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
 
 TextInput.displayName = 'TextInput';
 
-export default TextInput;

@@ -18,7 +18,7 @@ export interface WindowManagerProps extends ElementProps<HTMLDivElement> {
  * 弹窗管理器容器，对齐原版OO.ui.WindowManager：以portal（默认document.body）承载children，
  * 输出管理器尺寸/满屏类供主题CSS定位弹窗；本工程仅承担容器职责，不含原版的开窗队列管理
  */
-const WindowManager = forwardRef<HTMLDivElement, WindowManagerProps>(({
+export const WindowManager = forwardRef<HTMLDivElement, WindowManagerProps>(({
   className,
   children,
   modal = true,
@@ -53,4 +53,3 @@ const WindowManager = forwardRef<HTMLDivElement, WindowManagerProps>(({
 
 WindowManager.displayName = 'WindowManager';
 
-export default WindowManager;

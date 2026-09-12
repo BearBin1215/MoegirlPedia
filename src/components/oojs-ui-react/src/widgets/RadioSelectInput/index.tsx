@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import RadioSelect from '../RadioSelect';
+import { RadioSelect } from '../RadioSelect';
 import { type RadioOptionProps } from '../RadioOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useControlledValueFallback } from '../../hooks';
@@ -29,7 +29,7 @@ export interface RadioSelectInputProps extends Omit<WidgetProps<HTMLDivElement>,
  * 表单提交。value只能是可选项之一，否则回退为第一个可选值（对齐原版setValue的选项校验），
  * 故与RadioSelect不同，组件始终存在选中项（与HTML radio表单语义一致）
  */
-const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps>(({
+export const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps>(({
   options,
   className,
   disabled,
@@ -87,4 +87,3 @@ const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps>(({
 
 RadioSelectInput.displayName = 'RadioSelectInput';
 
-export default RadioSelectInput;

@@ -1,11 +1,11 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import Select, { type SelectProps } from '../Select';
+import { Select, type SelectProps } from '../Select';
 
 export type OutlineSelectProps = Omit<SelectProps, 'outline'>;
 
 /** 大纲样式选择组件，对齐原版OO.ui.OutlineSelectWidget：委托Select输出outline类，经其渲染OutlineOption */
-const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
+export const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
   className,
   ...rest
 }, ref) => {
@@ -27,4 +27,3 @@ const OutlineSelect = forwardRef<HTMLDivElement, OutlineSelectProps>(({
 
 OutlineSelect.displayName = 'OutlineSelect';
 
-export default OutlineSelect;

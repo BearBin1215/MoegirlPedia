@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { debounce } from 'es-toolkit';
 import type { ElementProps } from '../Element';
 import { getFocusableElements } from '../utils';
-import WindowManager from './WindowManager';
+import { WindowManager } from './WindowManager';
 
 /**
  * 弹窗开关动画时序（ms），对齐主题CSS的window动画：active为打开即展开，setupDelay/readyDelay
@@ -47,7 +47,7 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
  * active→setup→ready动画态（时序见DIALOG_ANIMATION），关闭播缩小淡出；非full尺寸下
  * 由head/body/foot实测内容高度撑起frame，带焦点陷阱与ESC/Ctrl+Enter快捷键
  */
-const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
+export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   className,
   contentClassName,
   size = 'medium',
@@ -337,4 +337,3 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
 
 Dialog.displayName = 'Dialog';
 
-export default Dialog;

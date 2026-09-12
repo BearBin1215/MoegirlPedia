@@ -1,7 +1,7 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
+import { PanelLayout, type PanelLayoutProps } from '../PanelLayout';
 
 export type PageLayoutProps = PanelLayoutProps & {
   /**
@@ -16,7 +16,7 @@ export type PageLayoutProps = PanelLayoutProps & {
 };
 
 /** 页组件，由`StackLayout`按`options`生成分页，`value`兼作激活匹配与列表key */
-const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
+export const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
   className,
   children,
   hidden,
@@ -48,4 +48,3 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(({
 
 PageLayout.displayName = 'PageLayout';
 
-export default PageLayout;

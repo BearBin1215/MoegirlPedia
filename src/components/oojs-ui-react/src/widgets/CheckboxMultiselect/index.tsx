@@ -1,6 +1,6 @@
 import React, { useRef, forwardRef, type ChangeEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
-import CheckboxMultioption, { type CheckboxMultioptionProps } from '../CheckboxMultioption';
+import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxMultioption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { WidgetProps } from '../Widget';
@@ -24,7 +24,7 @@ export interface CheckboxMultiselectProps extends WidgetProps {
 }
 
 /** 多选框组，对齐原版OO.ui.CheckboxMultiselectWidget：支持Shift+点击范围选择与方向键焦点导航 */
-const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>(({
+export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>(({
   options,
   className,
   disabled,
@@ -140,4 +140,3 @@ const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselectProps>
 
 CheckboxMultiselect.displayName = 'CheckboxMultiselect';
 
-export default CheckboxMultiselect;

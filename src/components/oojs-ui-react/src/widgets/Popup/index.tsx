@@ -9,11 +9,11 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import LabelBase from '../Label/Base';
-import IconBase from '../Icon/Base';
-import Button from '../Button';
-import { useMessage, usePortalContainer } from '../../config';
-import { generateWidgetClassName, getFocusableElements, resolveElement, VIEWPORT_SPACING } from '../../utils';
+import { LabelBase } from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { Button } from '../Button';
+import { useDir, useMessage, usePortalContainer, useViewportSpacing } from '../../config';
+import { generateWidgetClassName, getFocusableElements, getElementDir, resolveElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { LabelElement } from '../Label';
@@ -97,6 +97,8 @@ interface PopupLayout {
   anchorOffset: number;
   /** 裁剪轴上的自然尺寸（above/below为高度，before/after为宽度） */
   unclippedSize: number;
+  /** 弹层有效文本方向（写入浮层根dir属性；锚点继承方向，可被Provider.dir覆盖） */
+  dir: 'ltr' | 'rtl';
 }
 
 const OPPOSITE: Record<PopupPosition, PopupPosition> = {
@@ -104,7 +106,7 @@ const OPPOSITE: Record<PopupPosition, PopupPosition> = {
 };
 
 /** 弹出层，对齐原版OO.ui.PopupWidget（浮动定位+锚点箭头+自动翻转+自动关闭+ClippableElement裁剪+Tab边界关闭）。容器探测与翻转空间比较为简化实现，见docs/TODO.md */
-const Popup = forwardRef<HTMLDivElement, PopupProps>(({
+export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
   open,
   container,
   position: positionProp = 'below',
@@ -136,6 +138,9 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
   const [outOfView, setOutOfView] = useState(false);
   // 关闭按钮的无障碍标签（对齐原版ooui-popup-widget-close-button-aria-label消息）
   const closeAriaLabel = useMessage('ooui-popup-widget-close-button-aria-label');
+  // 浮层文本方向覆盖与视口留白（全局配置）
+  const configDir = useDir();
+  const spacing = useViewportSpacing();
   // 浮层portal容器：配置的getPortalContainer以锚点元素调用，缺省document.body
   const getPortalContainer = usePortalContainer();
   const portalTarget = getPortalContainer(resolveElement(container));
@@ -159,6 +164,8 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       return;
     }
     const containerEl = resolveElement(container);
+    // 弹层方向：Provider.dir覆盖锚点继承方向（对齐原版Element config.dir优先）
+    const dir = configDir ?? getElementDir(containerEl);
     const compute = (): PopupLayout | null => {
       if (!popupRef.current) {
         return null;
@@ -179,13 +186,15 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       const vh = window.innerHeight;
 
       let position = positionProp;
+      // 方位与对齐为逻辑值，物理侧按方向解析（对齐原版FloatableElement按direction取start/end）
+      const rtl = dir === 'rtl';
       if (autoFlip) {
         // 对齐原版toggle中的翻转判定：常态方向放不下时翻转；对侧也放不下时保留空间更大的一侧
         const spaces: Record<PopupPosition, number> = {
           below: vh - base.bottom,
           above: base.top,
-          after: vw - base.right,
-          before: base.left,
+          before: rtl ? vw - base.right : base.left,
+          after: rtl ? base.left : vw - base.right,
         };
         const fits = (pos: PopupPosition) => spaces[pos] >= (pos === 'above' || pos === 'below' ? ph : pw);
         if (!fits(position)) {
@@ -208,19 +217,23 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       } else if (position === 'above') {
         top = base.top + scrollY - ph - anchorShift;
       } else if (position === 'before') {
-        left = base.left + scrollX - pw - anchorShift;
+        // before为容器起始侧（LTR左/RTL右）
+        left = rtl ? base.right + scrollX : base.left + scrollX - pw - anchorShift;
       } else {
-        left = base.right + scrollX;
+        // after为容器结束侧（LTR右/RTL左）
+        left = rtl ? base.left + scrollX - pw - anchorShift : base.right + scrollX;
       }
       if (vertical) {
         if (alignProp === 'center') {
           left = base.left + scrollX + (base.width - pw) / 2;
-        } else if (alignProp === 'forwards') {
+        } else if (rtl ? alignProp === 'backwards' : alignProp === 'forwards') {
+          // forwards对齐起始边（LTR左缘/RTL右缘）
           left = base.left + scrollX;
         } else {
           left = base.right + scrollX - pw;
         }
       } else {
+        // 纵向对齐沿物理轴，不随RTL翻转
         if (alignProp === 'center') {
           top = base.top + scrollY + (base.height - ph) / 2;
         } else if (alignProp === 'forwards') {
@@ -282,6 +295,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
         anchorOffset: rawAnchorOffset - adjust,
         // 裁剪轴上的自然尺寸，供裁剪计算使用（裁剪会改变实际rect，不能以实际rect为基准）
         unclippedSize: anchorAxisX ? ph : pw,
+        dir,
       };
     };
 
@@ -301,7 +315,7 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-  }, [open, positionProp, alignProp, autoFlip, width, height, containerPadding, container, anchor]);
+  }, [open, positionProp, alignProp, autoFlip, width, height, containerPadding, container, anchor, configDir]);
 
   // 对齐原版onDocumentMouseDown：点击popup与忽略元素之外时请求关闭
   useEffect(() => {
@@ -384,7 +398,6 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     const body = root.querySelector<HTMLElement>('.oo-ui-popupWidget-body');
     const containerEl = resolveElement(container);
     const scroller = findScrollableContainer(containerEl);
-    const spacing = VIEWPORT_SPACING;
     const buffer = 7;
     const applyVisualBounds = () => {
       // 滚出隐藏：锚定容器与可视区（就近滚动容器，缺省视口）无交集时隐藏
@@ -408,10 +421,10 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       // itemRect以未裁剪自然尺寸为基准（实际rect会随裁剪收缩，直接使用会逐轮振荡）
       const vp = scroller === document.documentElement
         ? {
-          top: spacing,
-          left: spacing,
-          right: window.innerWidth - spacing,
-          bottom: window.innerHeight - spacing,
+          top: spacing.top,
+          left: spacing.left,
+          right: window.innerWidth - spacing.right,
+          bottom: window.innerHeight - spacing.bottom,
         }
         : (() => {
           const r = scroller.getBoundingClientRect();
@@ -473,12 +486,14 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
       }
     };
     // layout为state（滚动时更新），作为依赖触发本effect重算
-  }, [open, hideWhenOutOfView, layout, container]);
+  }, [open, hideWhenOutOfView, layout, container, spacing]);
 
   return createPortal(
     <div
       {...rest}
       className={classes}
+      // dir取弹层有效方向（RTL站点/Provider.dir配置下浮层文本方向正确）
+      dir={layout?.dir}
       style={{
         position: 'absolute',
         top: layout?.top ?? -9999,
@@ -521,4 +536,3 @@ const Popup = forwardRef<HTMLDivElement, PopupProps>(({
 
 Popup.displayName = 'Popup';
 
-export default Popup;

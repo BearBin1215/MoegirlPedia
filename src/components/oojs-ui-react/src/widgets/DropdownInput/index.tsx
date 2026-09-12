@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import Dropdown, { type DropdownOptionProps } from '../Dropdown';
+import { Dropdown, type DropdownOptionProps } from '../Dropdown';
 import { isSelectableOption, type SelectOptionProps } from '../Select';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useControlledValueFallback } from '../../hooks';
@@ -63,7 +63,7 @@ const groupOptions = (options: DropdownInputOption[]): OptionGroup[] => {
  * 表单下拉选择，对齐原版OO.ui.DropdownInputWidget：DropdownWidget展示 + 隐藏`<select>`承载
  * 表单提交。value只能是可选项之一，否则回退为第一个可选值（对齐原版setValue的选项校验）
  */
-const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
+export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   options,
   className,
   disabled,
@@ -151,4 +151,3 @@ const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
 
 DropdownInput.displayName = 'DropdownInput';
 
-export default DropdownInput;

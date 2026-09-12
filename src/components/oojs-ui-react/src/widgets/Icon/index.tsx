@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { generateWidgetClassName, toFlagArray } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import IconBase, { type IconElement } from './Base';
+import { IconBase, type IconElement } from './Base';
 
 /** 主题支持的图标变体（对齐wikimediaui主题variants） */
 export type IconFlag = 'progressive' | 'destructive' | 'invert' | 'error' | 'warning' | 'success';
@@ -19,7 +19,7 @@ export interface IconProps extends
 }
 
 /** 独立图标组件，对齐原版OO.ui.IconWidget：基于IconBase附加Widget类名与flag变体 */
-const Icon = forwardRef<HTMLSpanElement, IconProps>(({
+export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
   icon,
   className,
   disabled,
@@ -52,5 +52,4 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 
 Icon.displayName = 'Icon';
 
-export default Icon;
 export { IconElement };

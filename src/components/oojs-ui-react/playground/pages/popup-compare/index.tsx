@@ -271,7 +271,7 @@ function ReactAutoFlip() {
           open={open}
           onClick={() => setOpen((v) => !v)}
           onClose={() => setOpen(false)}
-          popupContent='我应该向上翻转显示。'
+          popupContent={<p>我应该向上翻转显示。</p>}
         >
           接近底部
         </PopupButton>

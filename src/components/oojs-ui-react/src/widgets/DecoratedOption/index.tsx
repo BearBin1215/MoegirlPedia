@@ -1,8 +1,8 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
@@ -17,7 +17,7 @@ export type DecoratedOptionProps =
     value?: string | number;
   };
 
-const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
+export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
   children,
   className,
   disabled,
@@ -55,4 +55,3 @@ const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
 
 DecoratedOption.displayName = 'DecoratedOption';
 
-export default DecoratedOption;

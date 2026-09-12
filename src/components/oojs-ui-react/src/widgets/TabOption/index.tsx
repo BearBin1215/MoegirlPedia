@@ -1,7 +1,7 @@
 import React, { forwardRef, type MouseEventHandler } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import LabelBase from '../Label/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import type { OptionProps } from '../Option';
 
@@ -14,7 +14,7 @@ export type TabOptionProps = OptionProps & {
 };
 
 /** 选项组件，用于作为`TabSelect`子组件，对齐原版`TabOptionWidget`（不可高亮） */
-const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
+export const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
   children,
   className,
   disabled,
@@ -52,4 +52,3 @@ const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
 
 TabOption.displayName = 'TabOption';
 
-export default TabOption;

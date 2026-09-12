@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import LabelBase, { type LabelElement } from './Base';
+import { LabelBase, type LabelElement } from './Base';
 
 /** 标签相对控件的位置（输入类组件经labelPosition使用） */
 export type LabelPosition = 'before' | 'after';
@@ -10,7 +10,7 @@ export type LabelPosition = 'before' | 'after';
 export type LabelProps = WidgetProps<HTMLSpanElement>;
 
 /** 独立标签组件，对齐原版OO.ui.LabelWidget：基于LabelBase附加Widget类名 */
-const Label = forwardRef<HTMLSpanElement, LabelProps>(({
+export const Label = forwardRef<HTMLSpanElement, LabelProps>(({
   className,
   children,
   disabled,
@@ -36,5 +36,4 @@ const Label = forwardRef<HTMLSpanElement, LabelProps>(({
 
 Label.displayName = 'Label';
 
-export default Label;
 export { LabelElement };

@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
-import PageLayout, { type PageLayoutProps } from '../PageLayout';
+import { PanelLayout, type PanelLayoutProps } from '../PanelLayout';
+import { PageLayout, type PageLayoutProps } from '../PageLayout';
 import { type ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 
@@ -38,7 +38,7 @@ export interface StackLayoutProps extends Omit<PanelLayoutProps, 'onChange'> {
  * 堆叠布局，对齐原版OO.ui.StackLayout：按options渲染分页，value指定激活页，
  * 受控/非受控语义与IndexLayout/BookletLayout一致
  */
-const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
+export const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
   value,
   defaultValue,
   onChange,
@@ -82,4 +82,3 @@ const StackLayout = forwardRef<HTMLDivElement, StackLayoutProps>(({
 
 StackLayout.displayName = 'StackLayout';
 
-export default StackLayout;

@@ -9,9 +9,9 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
@@ -67,7 +67,7 @@ export interface ButtonInputProps extends
  * 表单按钮，对齐原版OO.ui.ButtonInputWidget：真实`<button>`/`<input>`元素，用于FormLayout提交，
  * 无表单提交需求时请使用Button
  */
-const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
+export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
   active,
   accessKey,
   children,
@@ -232,4 +232,3 @@ const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
 
 ButtonInput.displayName = 'ButtonInput';
 
-export default ButtonInput;

@@ -8,7 +8,7 @@ export type MenuToolGroupProps = PopupToolGroupBaseProps;
  * 菜单工具组，对齐原版OO.ui.MenuToolGroup：工具以标签横向排布收进下拉面板，
  * 组把手标签按激活工具的标题合成（无激活工具时为空白占位，对齐原版onUpdateState）
  */
-const MenuToolGroup = forwardRef<HTMLDivElement, MenuToolGroupProps>(({
+export const MenuToolGroup = forwardRef<HTMLDivElement, MenuToolGroupProps>(({
   tools,
   label,
   toolsClassName,
@@ -33,4 +33,3 @@ const MenuToolGroup = forwardRef<HTMLDivElement, MenuToolGroupProps>(({
 
 MenuToolGroup.displayName = 'MenuToolGroup';
 
-export default MenuToolGroup;

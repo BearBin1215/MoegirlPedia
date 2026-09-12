@@ -1,98 +1,117 @@
 // 公共导出面：仅含消费者直接使用的组件与类型。
+// 每个消费者可见组件配套导出其Props类型（包装组件转发、声明式props数组的类型标注所需），
+// 与组件合并为一条导出语句（类型经内联type标记，兼容isolatedModules）；
+// 数组项等紧邻类型（如各Select系的OptionProps、PopupPosition、Indicators）一并导出。
 // 对齐原版类层级的中间件（Widget、Option/MenuOption/DecoratedOption/OutlineOption/
 // MenuSectionOption/TabOption/RadioOption、MenuSelect等）不从此处导出，仅供组件内部
 // 经相对路径引用；目录结构仍按原版类层级组织，以便对照开发（见AGENTS.md）。
 
 // 基础
-export { default as Label } from './widgets/Label';
+export { Label, type LabelProps } from './widgets/Label';
 
 // 图标
-export { default as Icon } from './widgets/Icon';
-export { default as Indicator } from './widgets/Indicator';
+export { Icon, type IconProps } from './widgets/Icon';
+export { Indicator, type IndicatorProps, type Indicators } from './widgets/Indicator';
 
 // 按钮
-export { default as Button } from './widgets/Button';
-export type { ButtonProps } from './widgets/Button';
-export { default as ButtonGroup } from './widgets/ButtonGroup';
-export { default as PopupButton } from './widgets/PopupButton';
+export { Button, type ButtonProps } from './widgets/Button';
+export { ButtonGroup, type ButtonGroupProps } from './widgets/ButtonGroup';
+export { PopupButton, type PopupButtonProps } from './widgets/PopupButton';
 
 // 弹出层
-export { default as Popup } from './widgets/Popup';
+export { Popup, type PopupProps, type PopupPosition } from './widgets/Popup';
 
 // 输入框
-export { default as TextInput } from './widgets/TextInput';
-export { default as NumberInput } from './widgets/NumberInput';
-export { default as MultilineTextInput } from './widgets/MultilineTextInput';
-// PromptOptions.textInput按名引用该类型，需随导出面提供
-export type { TextInputProps } from './widgets/TextInput';
+// PromptOptions.textInput按名引用TextInputProps，需随导出面提供
+export { TextInput, type TextInputProps } from './widgets/TextInput';
+export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
+export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 
 // 消息提示
-export { default as Message } from './widgets/Message';
-export type { MessageType } from './widgets/Message';
+export { Message, type MessageProps, type MessageType } from './widgets/Message';
 
 // 进度条
-export { default as ProgressBar } from './widgets/ProgressBar';
+export { ProgressBar, type ProgressBarProps } from './widgets/ProgressBar';
 
 // 备选项输入框
-export { default as ComboBoxInput } from './widgets/ComboBoxInput';
+export { ComboBoxInput, type ComboBoxInputProps } from './widgets/ComboBoxInput';
 
 // 单选框/复选框
-export { default as RadioInput } from './widgets/RadioInput';
-export { default as RadioSelect } from './widgets/RadioSelect';
-export { default as CheckboxInput } from './widgets/CheckboxInput';
-export { default as CheckboxMultiselect } from './widgets/CheckboxMultiselect';
+export { RadioInput, type RadioInputProps } from './widgets/RadioInput';
+export { RadioSelect, type RadioSelectProps } from './widgets/RadioSelect';
+export { CheckboxInput, type CheckboxInputProps } from './widgets/CheckboxInput';
+export { CheckboxMultiselect, type CheckboxMultiselectProps } from './widgets/CheckboxMultiselect';
 
 // 表单输入控件（配合FormLayout做浏览器原生提交）
-export { default as ButtonInput } from './widgets/ButtonInput';
-export { default as DropdownInput } from './widgets/DropdownInput';
-export { default as RadioSelectInput } from './widgets/RadioSelectInput';
-export { default as CheckboxMultiselectInput } from './widgets/CheckboxMultiselectInput';
+export { ButtonInput, type ButtonInputProps } from './widgets/ButtonInput';
+export {
+  DropdownInput,
+  type DropdownInputProps,
+  type DropdownInputOption,
+} from './widgets/DropdownInput';
+export { RadioSelectInput, type RadioSelectInputProps } from './widgets/RadioSelectInput';
+export { CheckboxMultiselectInput, type CheckboxMultiselectInputProps } from './widgets/CheckboxMultiselectInput';
 
-// 选择框。Select系可独立使用（也作为Dropdown/BookletLayout/IndexLayout的内部构建件）
-export { default as Dropdown } from './widgets/Dropdown';
-export { default as Select } from './widgets/Select';
-export { default as TabSelect } from './widgets/TabSelect';
-export { default as OutlineSelect } from './widgets/OutlineSelect';
+// 选择框。Select系可独立使用（也作为Dropdown/BookletLayout/IndexLayout的内部构建件），
+// options数组项类型随组件导出（声明式props数组的标注所需）
+export { Dropdown, type DropdownProps, type DropdownOptionProps } from './widgets/Dropdown';
+export { Select, type SelectProps, type SelectOptionProps } from './widgets/Select';
+export { TabSelect, type TabSelectProps, type TabSelectOptionProps } from './widgets/TabSelect';
+export { OutlineSelect, type OutlineSelectProps } from './widgets/OutlineSelect';
 
 // 布局
-export { default as Layout } from './layouts/Layout';
-export { default as PanelLayout } from './layouts/PanelLayout';
-export { default as PageLayout } from './layouts/PageLayout';
-export { default as TabPanelLayout } from './layouts/TabPanelLayout';
-export { default as StackLayout } from './layouts/StackLayout';
-export { default as BookletLayout } from './layouts/BookletLayout';
-export { default as FieldLayout } from './layouts/FieldLayout';
-export { default as FieldsetLayout } from './layouts/FieldsetLayout';
-export { default as ActionFieldLayout } from './layouts/ActionFieldLayout';
-export { default as FormLayout } from './layouts/FormLayout';
-export { default as HorizontalLayout } from './layouts/HorizontalLayout';
-export { default as IndexLayout } from './layouts/IndexLayout';
+export { Layout, type LayoutProps } from './layouts/Layout';
+export { PanelLayout, type PanelLayoutProps } from './layouts/PanelLayout';
+export { PageLayout, type PageLayoutProps } from './layouts/PageLayout';
+export { TabPanelLayout, type TabPanelLayoutProps } from './layouts/TabPanelLayout';
+export { StackLayout, type StackLayoutProps } from './layouts/StackLayout';
+export { BookletLayout, type BookletLayoutProps } from './layouts/BookletLayout';
+export { FieldLayout, type FieldLayoutProps } from './layouts/FieldLayout';
+export { FieldsetLayout, type FieldsetLayoutProps } from './layouts/FieldsetLayout';
+export { ActionFieldLayout, type ActionFieldLayoutProps } from './layouts/ActionFieldLayout';
+export { FormLayout, type FormLayoutProps } from './layouts/FormLayout';
+export { HorizontalLayout, type HorizontalLayoutProps } from './layouts/HorizontalLayout';
+export {
+  IndexLayout,
+  type IndexLayoutProps,
+  type IndexLayoutTabProps,
+} from './layouts/IndexLayout';
 
 // 工具栏
-export { default as Toolbar } from './toolbars/Toolbar';
-export { default as BarToolGroup } from './toolbars/BarToolGroup';
-export { default as ListToolGroup } from './toolbars/ListToolGroup';
-export { default as MenuToolGroup } from './toolbars/MenuToolGroup';
+export { Toolbar, type ToolbarProps } from './toolbars/Toolbar';
+export { BarToolGroup, type BarToolGroupProps } from './toolbars/BarToolGroup';
+export { ListToolGroup, type ListToolGroupProps } from './toolbars/ListToolGroup';
+export { MenuToolGroup, type MenuToolGroupProps } from './toolbars/MenuToolGroup';
+// tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置
 export type { ToolProps } from './toolbars/Tool';
 
 // 弹窗
-export { default as Dialog } from './dialogs/Dialog';
-export { default as MessageDialog } from './dialogs/MessageDialog';
-export { default as ProcessDialog } from './dialogs/ProcessDialog';
-export type {
-  ProcessDialogActionProps,
-  ProcessDialogErrorProps,
+export { Dialog, type DialogProps } from './dialogs/Dialog';
+export { MessageDialog, type MessageDialogProps } from './dialogs/MessageDialog';
+export {
+  ProcessDialog,
+  type ProcessDialogProps,
+  type ProcessDialogActionProps,
+  type ProcessDialogErrorProps,
 } from './dialogs/ProcessDialog';
 // confirm/alert/prompt对齐原版OO.ui.confirm/OO.ui.alert/OO.ui.prompt：独立命令式API，
 // 非MessageDialog静态方法
 export { confirm, alert, prompt } from './dialogs/statics';
 export type { ConfirmAlertOptions, AlertOptions, PromptOptions } from './dialogs/statics';
 
-// 全局配置与消息（i18n）。OOUIProvider为声明式组件提供消息覆盖与浮层portal容器；
-// msg/registerMessages供命令式API（confirm/alert/prompt）与非React场景使用
-export { OOUIProvider, useOOUIConfig, useMessage } from './config';
-export type { OOUIConfig } from './config';
-export { msg, registerMessages } from './i18n';
+// 全局配置与消息（i18n）。OOUIProvider映射原版OO.ui命名空间的可覆写全局（消息表、
+// 浮层portal容器、isMobile、dir、viewportSpacing），为声明式组件提供React语境的全局配置；
+// msg/deferMsg/resolveMsg/registerMessages供命令式API（confirm/alert/prompt）与非React场景使用
+export {
+  OOUIProvider,
+  useOOUIConfig,
+  useMessage,
+  useIsMobile,
+  useDir,
+  useViewportSpacing,
+} from './config';
+export type { OOUIConfig, ViewportSpacing, ViewportSpacingInput, Direction } from './config';
+export { msg, deferMsg, resolveMsg, registerMessages } from './i18n';
 export type { MessageKey, MessageValue } from './i18n';
 export { zhHans } from './locales/zh-hans';
 

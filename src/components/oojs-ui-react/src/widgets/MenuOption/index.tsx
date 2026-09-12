@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
+import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
 
 export type MenuOptionProps =
@@ -11,7 +11,7 @@ export type MenuOptionProps =
   };
 
 /** 选项组件，用于作为`Dropdown`子组件 */
-const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
+export const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   className,
   disabled,
   selected,
@@ -40,4 +40,3 @@ const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
 
 MenuOption.displayName = 'MenuOption';
 
-export default MenuOption;

@@ -8,7 +8,7 @@ export interface WidgetProps<T = HTMLDivElement> extends Omit<ElementProps<T>, '
   disabled?: boolean;
 }
 
-const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
+export const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
   children,
   className,
   disabled,
@@ -30,4 +30,3 @@ const Widget = forwardRef<HTMLDivElement, WidgetProps<HTMLDivElement>>(({
 
 Widget.displayName = 'Widget';
 
-export default Widget;

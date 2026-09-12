@@ -1,8 +1,8 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import LabelBase from '../Label/Base';
-import Button from '../Button';
+import { IconBase } from '../Icon/Base';
+import { LabelBase } from '../Label/Base';
+import { Button } from '../Button';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
@@ -44,7 +44,7 @@ export interface MessageProps extends
 /**
  * 消息提示，对齐原版OO.ui.MessageWidget：error类型使用role=alert，其余类型aria-live=polite
  */
-const Message = forwardRef<HTMLDivElement, MessageProps>(({
+export const Message = forwardRef<HTMLDivElement, MessageProps>(({
   children,
   className,
   disabled,
@@ -102,4 +102,3 @@ const Message = forwardRef<HTMLDivElement, MessageProps>(({
 
 Message.displayName = 'Message';
 
-export default Message;

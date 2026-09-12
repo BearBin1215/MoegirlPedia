@@ -1,7 +1,7 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import PanelLayout, { type PanelLayoutProps } from '../PanelLayout';
+import { PanelLayout, type PanelLayoutProps } from '../PanelLayout';
 
 export interface TabPanelLayoutProps extends PanelLayoutProps {
   /** 是否为当前激活面板 */
@@ -14,7 +14,7 @@ export interface TabPanelLayoutProps extends PanelLayoutProps {
 }
 
 /** 页签面板组件，用于`IndexLayout`组件的分页 */
-const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
+export const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
   className,
   children,
   active,
@@ -44,4 +44,3 @@ const TabPanelLayout = forwardRef<HTMLDivElement, TabPanelLayoutProps>(({
 
 TabPanelLayout.displayName = 'TabPanelLayout';
 
-export default TabPanelLayout;

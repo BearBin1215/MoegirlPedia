@@ -7,9 +7,9 @@ import React, {
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
-import MenuOption, { type MenuOptionProps } from '../MenuOption';
-import MenuSectionOption, { type MenuSectionOptionProps } from '../MenuSectionOption';
-import OutlineOption from '../OutlineOption';
+import { MenuOption, type MenuOptionProps } from '../MenuOption';
+import { MenuSectionOption, type MenuSectionOptionProps } from '../MenuSectionOption';
+import { OutlineOption } from '../OutlineOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useCleanId, useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
@@ -62,7 +62,7 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
  * 键盘行为对齐原版SelectWidget：聚焦后↑↓←→环绕移动高亮（无高亮时回退选中项）、
  * Enter选中、Home/End/PageUp/PageDown可选、字符前缀跳转（1500ms缓冲）、Escape/Tab清除高亮
  */
-const Select = forwardRef<HTMLDivElement, SelectProps>(({
+export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   className,
   disabled,
   onChange,
@@ -364,4 +364,3 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
 
 Select.displayName = 'Select';
 
-export default Select;

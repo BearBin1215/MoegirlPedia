@@ -5,12 +5,12 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import Label from '../widgets/Label';
-import Button from '../widgets/Button';
-import PanelLayout from '../layouts/PanelLayout';
+import { Label } from '../widgets/Label';
+import { Button } from '../widgets/Button';
+import { PanelLayout } from '../layouts/PanelLayout';
 import { useCleanId } from '../hooks';
 import { useMessage } from '../config';
-import Dialog, { type DialogProps } from './Dialog';
+import { Dialog, type DialogProps } from './Dialog';
 
 export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   title?: ReactNode;
@@ -27,7 +27,7 @@ export interface MessageDialogProps extends Omit<DialogProps, 'title'> {
   onCancel?: () => void;
 }
 
-const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
+export const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
   children,
   className,
   title,
@@ -101,4 +101,3 @@ const MessageDialog = forwardRef<HTMLDivElement, MessageDialogProps>(({
 
 MessageDialog.displayName = 'MessageDialog';
 
-export default MessageDialog;

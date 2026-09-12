@@ -48,7 +48,7 @@ export const ToolbarNarrowContext = createContext(false);
  * 工具组组件（工具为纯数据props）。窄栏模式的oo-ui-toolbar-narrow类对齐原版，
  * 窄栏下切换把手标签/图标（narrowConfig）未实现，见docs/TODO.md
  */
-const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
+export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
   children,
   position = 'top',
   actions,
@@ -178,4 +178,3 @@ const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
 
 Toolbar.displayName = 'Toolbar';
 
-export default Toolbar;

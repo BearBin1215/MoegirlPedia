@@ -22,7 +22,7 @@ export interface RadioInputProps extends Omit<InputProps<
   inputId?: string;
 }
 
-const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
+export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   name,
   inputId,
   accessKey,
@@ -82,4 +82,3 @@ const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
 
 RadioInput.displayName = 'RadioInput';
 
-export default RadioInput;

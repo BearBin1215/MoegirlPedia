@@ -7,7 +7,7 @@ import React, {
   type FocusEvent,
 } from 'react';
 import clsx from 'clsx';
-import TabOption, { type TabOptionProps } from '../TabOption';
+import { TabOption, type TabOptionProps } from '../TabOption';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import { useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
@@ -32,7 +32,7 @@ export interface TabSelectProps extends Omit<WidgetProps<HTMLDivElement>, 'onSel
 }
 
 /** 选项卡选择组件，对齐原版`TabSelectWidget`（role=tablist，聚焦后←→环绕选择） */
-const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
+export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   className,
   framed = true,
   value,
@@ -181,4 +181,3 @@ const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
 
 TabSelect.displayName = 'TabSelect';
 
-export default TabSelect;

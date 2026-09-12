@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import Layout, { type LayoutProps } from '../Layout';
+import { Layout, type LayoutProps } from '../Layout';
 
 export type HorizontalLayoutProps = LayoutProps;
 
-const HorizontalLayout = forwardRef<HTMLDivElement, HorizontalLayoutProps>(({
+export const HorizontalLayout = forwardRef<HTMLDivElement, HorizontalLayoutProps>(({
   className,
   children,
   ...rest
@@ -27,4 +27,3 @@ const HorizontalLayout = forwardRef<HTMLDivElement, HorizontalLayoutProps>(({
 
 HorizontalLayout.displayName = 'HorizontalLayout';
 
-export default HorizontalLayout;

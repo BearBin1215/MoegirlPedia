@@ -20,7 +20,7 @@ export interface FormLayoutProps extends ElementProps<HTMLFormElement> {
  * 表单布局，对齐原版OO.ui.FormLayout：`<form>`元素包裹字段集，配合InputWidget家族
  * （TextInput/ButtonInput/DropdownInput等）实现浏览器原生表单提交。
  */
-const FormLayout = forwardRef<HTMLFormElement, FormLayoutProps>(({
+export const FormLayout = forwardRef<HTMLFormElement, FormLayoutProps>(({
   className,
   children,
   method,
@@ -42,4 +42,3 @@ const FormLayout = forwardRef<HTMLFormElement, FormLayoutProps>(({
 
 FormLayout.displayName = 'FormLayout';
 
-export default FormLayout;

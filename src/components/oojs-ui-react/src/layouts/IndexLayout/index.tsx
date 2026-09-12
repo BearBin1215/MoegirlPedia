@@ -6,11 +6,12 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import MenuLayout, { type MenuLayoutProps } from '../MenuLayout';
-import PanelLayout from '../PanelLayout';
-import TabPanelLayout, { type TabPanelLayoutProps } from '../TabPanelLayout';
-import TabSelect from '../../widgets/TabSelect';
+import { MenuLayout, type MenuLayoutProps } from '../MenuLayout';
+import { PanelLayout } from '../PanelLayout';
+import { TabPanelLayout, type TabPanelLayoutProps } from '../TabPanelLayout';
+import { TabSelect } from '../../widgets/TabSelect';
 import { type ChangeHandler } from '../../utils';
+import { useIsMobile } from '../../config';
 import { useAutoFocusPanel, useCleanId, useLayoutSelection } from '../../hooks';
 
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
@@ -51,7 +52,7 @@ export interface IndexLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'menuPo
 }
 
 /** 页签布局组件，对齐原版`IndexLayout`，菜单固定在顶部 */
-const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
+export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   className,
   options,
   framed = true,
@@ -69,6 +70,8 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   // id片段经useCleanId剥离`:`，可安全用于CSS选择器与aria关联
   const idBase = useCleanId();
   const stackRef = useRef<HTMLDivElement>(null);
+  // 移动端形态开关（全局配置）：autoFocus的抑制条件
+  const isMobile = useIsMobile();
 
   const classes = clsx(
     className,
@@ -81,10 +84,11 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     }
   };
 
-  // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦）
+  // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦；
+  // 移动端形态抑制聚焦，对齐原版onStackLayoutSet的!isMobile条件）
   useAutoFocusPanel({
     activeValue: effectiveValue,
-    enabled: autoFocus,
+    enabled: autoFocus && !isMobile,
     rootRef: stackRef,
     activeSelector: '.oo-ui-tabPanelLayout-active',
     skipInitialFocus: true,
@@ -173,4 +177,3 @@ const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
 
 IndexLayout.displayName = 'IndexLayout';
 
-export default IndexLayout;

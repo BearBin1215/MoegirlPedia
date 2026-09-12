@@ -65,6 +65,12 @@ body {
   padding: 4em 0;
 }
 
+/* p为全局元素默认（模拟皮肤全文档生效的原版环境）：portal至body的浮层与内容区的
+   p需同边距，两侧弹层的内容度量才可比（同字体为何挂在body的注释） */
+p {
+  margin: 0.8em 0;
+}
+
 /* #region 对照页排版（限定内容区，避免影响壳层） */
 .playground-content {
   h1:first-child {
@@ -83,10 +89,6 @@ body {
   h5,
   h6 {
     margin: 1em 0 0.4em;
-  }
-
-  p {
-    margin: 0.8em 0;
   }
 
   /* 链接默认无下划线，悬浮时显示 */

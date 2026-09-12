@@ -1,11 +1,11 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
+import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
 
 export type MenuSectionOptionProps = DecoratedOptionProps;
 
 /** 选项组组件，不可选，用于作为`Dropdown`子组件 */
-const MenuSectionOption = forwardRef<HTMLDivElement, MenuSectionOptionProps>(({
+export const MenuSectionOption = forwardRef<HTMLDivElement, MenuSectionOptionProps>(({
   className,
   ...rest
 }, ref) => {
@@ -26,4 +26,3 @@ const MenuSectionOption = forwardRef<HTMLDivElement, MenuSectionOptionProps>(({
 
 MenuSectionOption.displayName = 'MenuSectionOption';
 
-export default MenuSectionOption;

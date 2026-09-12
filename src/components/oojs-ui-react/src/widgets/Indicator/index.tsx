@@ -2,7 +2,8 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import IndicatorBase, {
+import {
+  IndicatorBase,
   type IndicatorElement,
   type Indicators,
 } from './Base';
@@ -15,7 +16,7 @@ export type IndicatorProps =
   };
 
 /** 独立指示器组件，对齐原版OO.ui.IndicatorWidget：基于IndicatorBase附加Widget类名 */
-const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
+export const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
   indicator,
   className,
   disabled,
@@ -45,5 +46,4 @@ const Indicator = forwardRef<HTMLSpanElement, IndicatorProps>(({
 
 Indicator.displayName = 'Indicator';
 
-export default Indicator;
 export { IndicatorElement, Indicators };

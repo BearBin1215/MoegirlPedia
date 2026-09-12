@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from 'react';
 import clsx from 'clsx';
-import CheckboxMultiselect, { type CheckboxMultiselectProps } from '../CheckboxMultiselect';
+import { CheckboxMultiselect, type CheckboxMultiselectProps } from '../CheckboxMultiselect';
 import { generateWidgetClassName } from '../../utils';
 
 export interface CheckboxMultiselectInputProps extends Omit<CheckboxMultiselectProps, 'className'> {
@@ -15,7 +15,7 @@ export interface CheckboxMultiselectInputProps extends Omit<CheckboxMultiselectP
  * 注意：选项checkbox的`value`由本组件接管（写入选项自身value供表单提交），
  * 调用方传入的`checkboxProps.value`会被覆盖
  */
-const CheckboxMultiselectInput = forwardRef<HTMLDivElement, CheckboxMultiselectInputProps>(({
+export const CheckboxMultiselectInput = forwardRef<HTMLDivElement, CheckboxMultiselectInputProps>(({
   options,
   className,
   disabled,
@@ -61,4 +61,3 @@ const CheckboxMultiselectInput = forwardRef<HTMLDivElement, CheckboxMultiselectI
 
 CheckboxMultiselectInput.displayName = 'CheckboxMultiselectInput';
 
-export default CheckboxMultiselectInput;

@@ -36,8 +36,17 @@ export function hasLabel(label: unknown): boolean {
   return label !== null && label !== undefined && label !== false && label !== '';
 }
 
-/** 浮动定位/钳高类组件的视口四周留白（px），MenuSelect/Popup/PopupToolGroup共用 */
+/** 浮动定位/钳高类组件的视口四周留白缺省值（px），可经OOUIProvider.viewportSpacing覆盖；MenuSelect/Popup/PopupToolGroup共用 */
 export const VIEWPORT_SPACING = 5;
+
+/**
+ * 取元素的有效文本方向（'ltr'|'rtl'）。读取computed direction（继承dir属性与CSS），
+ * 对齐原版`OO.ui.Element.static.getDir`的语义。portal至body的浮层无法继承内容区方向，
+ * 以锚点元素的有效方向为准
+ */
+export function getElementDir(el: HTMLElement | null | undefined): 'ltr' | 'rtl' {
+  return getComputedStyle(el ?? document.documentElement).direction === 'rtl' ? 'rtl' : 'ltr';
+}
 
 /**
  * 根节点内可聚焦元素选择器。对齐原版`OO.ui.findFocusable`的判定范围：

@@ -15,7 +15,7 @@ export type IndicatorBaseProps =
   IndicatorElement;
 
 /** 指示器基础元素（无Widget包装），输出指示器类与noIndicator占位类，供各组件内嵌复用 */
-const IndicatorBase = forwardRef<HTMLSpanElement, IndicatorBaseProps>(({
+export const IndicatorBase = forwardRef<HTMLSpanElement, IndicatorBaseProps>(({
   className,
   indicator,
   ...rest
@@ -33,4 +33,3 @@ const IndicatorBase = forwardRef<HTMLSpanElement, IndicatorBaseProps>(({
 
 IndicatorBase.displayName = 'IndicatorBase';
 
-export default IndicatorBase;

@@ -9,9 +9,9 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import IconBase from '../../widgets/Icon/Base';
-import IndicatorBase, { type Indicators } from '../../widgets/Indicator/Base';
-import LabelBase from '../../widgets/Label/Base';
+import { IconBase } from '../../widgets/Icon/Base';
+import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
+import { LabelBase } from '../../widgets/Label/Base';
 import { generateWidgetClassName } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
@@ -197,6 +197,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
         <div className={clsx(narrow && 'oo-ui-toolbar-narrow')}>
           <div
             ref={toolsRef}
+            // dir取把手有效方向（RTL站点/Provider.dir配置下面板文本方向正确）
+            dir={layout?.dir}
             className={clsx(
               'oo-ui-toolGroup-tools',
               'oo-ui-popupToolGroup-tools',

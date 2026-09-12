@@ -5,9 +5,9 @@ import React, {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase, { type Indicators } from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase, type Indicators } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import {
   generateWidgetClassName,
   type AccessKeyedElement,
@@ -18,7 +18,7 @@ import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
 import { isSelectableOption } from '../Select';
-import MenuSelect from '../MenuSelect';
+import { MenuSelect } from '../MenuSelect';
 
 export interface ComboBoxInputProps extends
   Omit<WidgetProps<HTMLDivElement>, 'children' | 'id'>,
@@ -63,7 +63,7 @@ const getSelectableValues = (options: DropdownOptionProps[]): Array<string | num
  * 输入即展开菜单并按值精确匹配选中项，↑↓移动高亮、Enter选定高亮项并收起菜单、
  * 下拉按钮切换菜单。不像原生combobox那样强制输入内容必须是选项之一
  */
-const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
+export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   options,
   className,
   disabled,
@@ -288,4 +288,3 @@ const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
 
 ComboBoxInput.displayName = 'ComboBoxInput';
 
-export default ComboBoxInput;

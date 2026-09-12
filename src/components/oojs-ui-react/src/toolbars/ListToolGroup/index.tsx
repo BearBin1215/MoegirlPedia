@@ -31,7 +31,7 @@ const EXPAND_COLLAPSE_TOOL_NAME = 'more-fewer';
  * 列表工具组，对齐原版OO.ui.ListToolGroup：工具以标签文本纵向列表收进下拉面板，
  * 尾部可出现More/Fewer切换项控制可折叠工具的显隐（选中该项不收起面板）
  */
-const ListToolGroup = forwardRef<HTMLDivElement, ListToolGroupProps>(({
+export const ListToolGroup = forwardRef<HTMLDivElement, ListToolGroupProps>(({
   tools,
   allowCollapse,
   forceExpand,
@@ -85,4 +85,3 @@ const ListToolGroup = forwardRef<HTMLDivElement, ListToolGroupProps>(({
 
 ListToolGroup.displayName = 'ListToolGroup';
 
-export default ListToolGroup;

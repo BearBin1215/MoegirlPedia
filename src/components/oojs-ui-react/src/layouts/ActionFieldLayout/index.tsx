@@ -1,6 +1,6 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import FieldLayout from '../FieldLayout';
+import { FieldLayout } from '../FieldLayout';
 import type { FieldLayoutProps } from '../FieldLayout';
 
 export interface ActionFieldLayoutProps extends FieldLayoutProps {
@@ -17,7 +17,7 @@ export interface ActionFieldLayoutProps extends FieldLayoutProps {
 
 /** 带操作按钮的字段布局，对齐原版OO.ui.ActionFieldLayout（FieldLayout + 输入区旁附加按钮）。
  * 原版为FieldLayout的子类，此处同样以组合方式复用FieldLayout的排布逻辑 */
-const ActionFieldLayout = forwardRef<HTMLDivElement, ActionFieldLayoutProps>(({
+export const ActionFieldLayout = forwardRef<HTMLDivElement, ActionFieldLayoutProps>(({
   align = 'left',
   button,
   children,
@@ -42,4 +42,3 @@ const ActionFieldLayout = forwardRef<HTMLDivElement, ActionFieldLayoutProps>(({
 
 ActionFieldLayout.displayName = 'ActionFieldLayout';
 
-export default ActionFieldLayout;

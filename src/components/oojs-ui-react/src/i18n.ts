@@ -55,13 +55,13 @@ function substitute(message: string, params: unknown[]): string {
 }
 
 /** 解析单条消息值：函数求值、字符串直出，对齐原版OO.ui.resolveMsg */
-export function resolveMessage(value: MessageValue): string {
+export function resolveMsg(value: MessageValue): string {
   return typeof value === 'function' ? value() : value;
 }
 
 /** 格式化一条消息值并做参数替换，供msg与Provider侧useMessage共用 */
 export function formatMessage(value: MessageValue, params: unknown[]): string {
-  return substitute(resolveMessage(value), params);
+  return substitute(resolveMsg(value), params);
 }
 
 /**
@@ -71,6 +71,14 @@ export function formatMessage(value: MessageValue, params: unknown[]): string {
 export function msg(key: MessageKey, ...params: unknown[]): string {
   const override = overrides[key];
   return formatMessage(override ?? en[key], params);
+}
+
+/**
+ * 延迟解析消息：返回调用时才取值的函数，对齐原版OO.ui.deferMsg。
+ * 用于消息表晚于模块初始化就绪的接入场景（如站点侧 () => mw.msg(key)）
+ */
+export function deferMsg(key: MessageKey, ...params: unknown[]): () => string {
+  return () => msg(key, ...params);
 }
 
 /** 模块级注册消息覆盖（并入现有覆盖表，后注册的同键覆盖先注册的） */

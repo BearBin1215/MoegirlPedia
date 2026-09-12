@@ -6,8 +6,8 @@ import React, {
   type MouseEvent as ReactMouseEvent,
 } from 'react';
 import clsx from 'clsx';
-import Icon from '../../widgets/Icon';
-import IconBase from '../../widgets/Icon/Base';
+import { Icon } from '../../widgets/Icon';
+import { IconBase } from '../../widgets/Icon/Base';
 import { generateWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../../widgets/Widget';
 

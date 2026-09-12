@@ -6,13 +6,13 @@ import React, {
   type ReactElement,
 } from 'react';
 import clsx from 'clsx';
-import Widget, { type WidgetProps } from '../Widget';
-import Button, { type ButtonProps } from '../Button';
+import { Widget, type WidgetProps } from '../Widget';
+import { Button, type ButtonProps } from '../Button';
 
 /** 按钮组（children为Button元素；组级disabled传播到各Button，为React便捷行为，原版无此JS传播） */
 export type ButtonGroupProps = WidgetProps;
 
-const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
+export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
   className,
   disabled,
   children,
@@ -44,4 +44,3 @@ const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
 
 ButtonGroup.displayName = 'ButtonGroup';
 
-export default ButtonGroup;

@@ -10,9 +10,9 @@ import React, {
   type Ref,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IconFlag } from '../Icon';
@@ -94,7 +94,7 @@ export interface ButtonProps extends
  * 按钮组件，对齐原版OO.ui.ButtonWidget/ButtonElement：span内嵌a[role=button]结构，
  * 支持图标/标签/指示器、flags变体与链接；按压态含键盘Enter/空格（CSS无法覆盖，见事件处理）
  */
-const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
+export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   active,
   accessKey,
   children,
@@ -283,4 +283,3 @@ const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
 
 Button.displayName = 'Button';
 
-export default Button;

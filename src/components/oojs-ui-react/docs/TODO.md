@@ -51,6 +51,7 @@
 - **工具栏不再经 `ToolFactory` 注册工具**，改为 ToolGroup 的声明式 `tools` props，工具激活态由调用方受控。对应原版的 `tool.setActive` + toolbar `updateState` 事件。
 - **未实现工具级快捷键提示**。原版 OOUI 本身也没有快捷键系统，`getToolAccelerator` 只是留给宿主覆写的钩子。
 - **ProcessDialog 用 `onAction` 异步回调编排动作**，替代原版 `getActionProcess` 的 `OO.ui.Process` 多步 `.next()` 链。多步流程在同一异步函数内串联，因此不可中断（原版可 abort）。
+- **原版 OO.ui 命名空间中宿主环境性质的全局工具不映射**：`bind`（jQuery proxy）、`infuse`（PHP 服务端渲染水合）、`warnDeprecation`、`getUserLanguages`/`getLocalValue`（MediaWiki 多语言回退）、`isSafeUrl`（仅 TabOption href 使用，本工程已舍弃该能力）、`EventSequencer`（底层事件时序，React 事件系统无使用场景）、`generateElementId`（React `useId` 已覆盖）。`debounce`/`throttle` 亦不进导出面，组件内部直接使用 es-toolkit。
 - **Popup 在滚动引起裁剪变化时仍会重新判定翻转方向**。原版 `FloatableElement` 的注释明确「滚动时不再翻转」，React 版有意保留重判定。
 - **CheckboxMultioption 的根元素用 `role='checkbox'` + `aria-checked`**，内层是原生 checkbox。原版 `OptionWidget` 根为 `role='option'`（由 `SelectWidget` 的 `listbox` 承载）；React 版若改成 `option` 会与内层原生控件语义重复，故保留 checkbox 语义。
 - **Select 系选项的选中态统一用基类 `OptionProps.selected`**，Radio/Checkbox 型选项在内层原生控件上再映射为 `checked`。原版各 OptionWidget 分别用 `setSelected`/`setChecked` 等维护；React 版认为选中语义相同，不对外暴露多种命名。
@@ -65,7 +66,7 @@
 
 ### 暂不实现
 
-- **TabOption 未实现移动端选中后的水平居中滚动**。`scrollIntoViewOnSelect` 的滚动进视野行为已对齐（选中项变化时 `scrollIntoView({ block: 'nearest', inline: 'nearest' })`），但原版在移动端还会按容器宽度加左右 padding 把页签居中，这部分未实现。注：本版本 OOUI 的 `OO.ui.isMobile()` 恒返回 `false`，移动端分支实际未启用。
+- **TabOption 未实现移动端选中后的水平居中滚动**。`scrollIntoViewOnSelect` 的滚动进视野行为已对齐（选中项变化时 `scrollIntoView({ block: 'nearest', inline: 'nearest' })`），但原版在移动端还会按容器宽度加左右 padding 把页签居中，这部分未实现。注：移动端形态经 `OOUIProvider.isMobile` 配置后分支可达，行为仍待补齐。
 - **Popup 的容器探测与翻转判定是简化版**：
   - 容器钳制：原版会按 `$container`（默认就近滚动容器）和 `containerPadding` 把弹层钳制在容器内；React 版只向上找第一个 `overflow: auto/scroll` 祖先，未完整复刻 `getClosestScrollableElementContainer`。
   - 自动翻转：React 版按预计算的两侧空间比较，原版是先定位再测量。
@@ -74,12 +75,13 @@
   - 裁剪锚点：原版 `ClippableElement` 锚定就近滚动容器；React 版锚定视口，`hideWhenOutOfView` 也简化成视口判定，未复刻基于 `$floatableClosestScrollable` 的精确判定。
   - 不支持原版 `DropdownWidget` 的 `$overlay` 配置。
 - **ComboBoxInput 的菜单浮层定位同上**（MenuSelect 简化版）。菜单展开时机是等效实现：原版 `onEdit` 监听多种事件后再 toggle。
-- **DropdownInput 未实现原版的移动端形态**：`oo-ui-isMobile` 时应隐藏 DropdownWidget、直接显示原生 `<select>`。注：本版本 OOUI 的 `OO.ui.isMobile()` 恒返回 `false`，原版这个分支同样不会进入。
+- **DropdownInput 未实现原版的移动端形态**：`oo-ui-isMobile` 时应隐藏 DropdownWidget、直接显示原生 `<select>`。注：移动端形态经 `OOUIProvider.isMobile` 配置后分支可达，行为仍待补齐。
 - **工具栏的以下能力未实现**：
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定左对齐；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体，定位与钳高和 MenuSelect 共用同一实现。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
   - `PopupTool` 与 `ToolGroupTool`：工具内嵌工具组的场景。
-- **`confirm`/`alert`/`prompt` 是简化实现**：原版经 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版没有多窗口堆栈管理。
+- **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
+- **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的焦点陷阱大部分已对齐，剩下 `toggleIsolation` 未实现**：
   - 已对齐：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
   - 未实现：原版 `toggleIsolation` 会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程的 Popup、MenuSelect 等浮层 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互），需等浮层 portal 容器支持豁免标记后再做。
@@ -88,6 +90,4 @@
 - **ProcessDialog 的错误面板渲染在 body 内**，原版挂在 `$content` 上、绝对定位覆盖整个对话框。
 - **ProcessDialog 的 ESC 由 `onEscape` 回调承担**，对齐原版「ESC 执行空动作流程」的关闭语义；但遇到不可恢复错误时不恢复动作能力，原版 `setAbilities` 的禁用会持续到关闭。
 - **TextInput/NumberInput 未实现 `setValidation`/`validateNumber` 的合法性标记**。原版在 allowInteger/step/min/max/required 等约束不满足时会给出软校验反馈（输出 `aria-invalid` 与 `flaggedElement-invalid` 类，不改写值），React 版暂无这个反馈途径。
-- **文案目前硬编码，待 i18n 方案**。涉及：Message 的 Close、ComboBoxInput 的 Toggle options、FieldsetLayout 与 Popup 的帮助/关闭、ListToolGroup 的 More/Fewer、Dialog 静态方法的 OK/Cancel、ProcessDialog 错误面板的缺省英文。
 - **FieldLayout 未复刻原版 `align='inline'` 在字段非内联时降级为 `'top'` 的校验**。原因与 `ActionFieldLayout` 的 `fieldInline` 同源：React 无法探测子组件的元素类型。
-- **IndexLayout 的 `autoFocus` 未实现原版的移动端抑制**（原版条件含 `!OO.ui.isMobile()`）。continuous 场景已对齐原版。

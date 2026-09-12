@@ -15,7 +15,7 @@ export type BarToolGroupProps = ToolGroupBaseProps;
  * 平铺工具组，对齐原版OO.ui.BarToolGroup：工具以图标按钮横向平铺，
  * 标题以tooltip展示（titleTooltips/accelTooltips为true）
  */
-const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
+export const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
   tools,
   className,
   disabled,
@@ -66,4 +66,3 @@ const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
 
 BarToolGroup.displayName = 'BarToolGroup';
 
-export default BarToolGroup;

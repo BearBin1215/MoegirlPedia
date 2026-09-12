@@ -6,7 +6,7 @@ import React, {
   type Ref,
 } from 'react';
 import clsx from 'clsx';
-import Icon from '../Icon';
+import { Icon } from '../Icon';
 import { generateWidgetClassName, type AccessKeyedElement } from '../../utils';
 import { useControlledValue, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
@@ -33,7 +33,7 @@ export type CheckboxInputProps =
     inputRef?: Ref<HTMLInputElement>;
   };
 
-const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
+export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   name,
   inputId,
   accessKey,
@@ -111,4 +111,3 @@ const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
 
 CheckboxInput.displayName = 'CheckboxInput';
 
-export default CheckboxInput;

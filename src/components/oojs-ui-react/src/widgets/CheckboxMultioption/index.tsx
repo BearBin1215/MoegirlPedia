@@ -1,7 +1,7 @@
 import React, { forwardRef, type Ref } from 'react';
 import clsx from 'clsx';
-import LabelBase from '../Label/Base';
-import CheckboxInput, { type CheckboxInputProps } from '../CheckboxInput';
+import { LabelBase } from '../Label/Base';
+import { CheckboxInput, type CheckboxInputProps } from '../CheckboxInput';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
@@ -18,7 +18,7 @@ export interface CheckboxMultioptionProps extends Omit<OptionProps<HTMLLabelElem
   checkboxProps?: Omit<CheckboxInputProps, 'checked' | 'onChange' | 'disabled'>;
 }
 
-const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProps>(({
+export const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProps>(({
   accessKey,
   className,
   disabled,
@@ -63,4 +63,3 @@ const CheckboxMultioption = forwardRef<HTMLLabelElement, CheckboxMultioptionProp
 
 CheckboxMultioption.displayName = 'CheckboxMultioption';
 
-export default CheckboxMultioption;

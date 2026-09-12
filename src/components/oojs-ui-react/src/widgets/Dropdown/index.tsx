@@ -5,9 +5,9 @@ import React, {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
 import clsx from 'clsx';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import {
   generateWidgetClassName,
   type AccessKeyedElement,
@@ -19,7 +19,7 @@ import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
 import type { SelectOptionProps } from '../Select';
 import { isSelectableOption } from '../Select';
-import MenuSelect from '../MenuSelect';
+import { MenuSelect } from '../MenuSelect';
 
 export type DropdownOptionProps = SelectOptionProps;
 
@@ -44,7 +44,7 @@ export interface DropdownProps extends
 /**
  * 下拉选择框组件
  */
-const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
+export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   className,
   disabled,
   icon,
@@ -204,4 +204,3 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 
 Dropdown.displayName = 'Dropdown';
 
-export default Dropdown;

@@ -12,8 +12,8 @@ import {
   type RefObject,
 } from 'react';
 import { clamp } from 'es-toolkit';
-import { VIEWPORT_SPACING, getFirstFocusable, resolveElement } from './utils';
-
+import { useDir, useViewportSpacing } from './config';
+import { getFirstFocusable, getElementDir, resolveElement } from './utils';
 /**
  * 受控/非受控通用值状态（对齐React受控组件惯例，原版通过setters维护无对应物）：
  * 传入`value`即受控模式（内部state不生效）；否则维护内部state并以`defaultValue`初始化。
@@ -438,6 +438,7 @@ export function useMenuPopup<T extends string | number>({
 export interface AnchoredPanelLayout {
   /** 面板左上角页面坐标 */
   top: number;
+  /** 面板左上角页面坐标 */
   left: number;
   /** 需要写入的宽度；仅matchAnchorWidth时给出 */
   width?: number;
@@ -445,12 +446,15 @@ export interface AnchoredPanelLayout {
   maxHeight?: number;
   /** 锚点滚出视口（仅hideWhenOutOfView时判定） */
   outOfView: boolean;
+  /** 面板有效文本方向（Provider.dir覆盖锚点继承方向），供浮层根设置dir属性 */
+  dir: 'ltr' | 'rtl';
 }
 
 /**
  * 锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup共用）：
- * 面板按页面坐标定位于锚点正下/正上方（页面坐标随滚动自然跟随），
- * 空间不足时将内容钳至可用高度并改为内部滚动；开启/滚动/缩放及recomputeKey变化时重算。
+ * 面板按页面坐标定位于锚点正下/正上方（页面坐标随滚动自然跟随），水平对齐锚点起始边
+ * （RTL下为右缘，对齐原版horizontalPosition:'start'的语义），空间不足时将内容钳至可用
+ * 高度并改为内部滚动；开启/滚动/缩放及recomputeKey变化时重算。
  * 返回布局供调用方写入style（React受控渲染或命令式均可）
  */
 export function useAnchoredPanelLayout({
@@ -479,6 +483,8 @@ export function useAnchoredPanelLayout({
   recomputeKey?: unknown;
 }): AnchoredPanelLayout | null {
   const [layout, setLayout] = useState<AnchoredPanelLayout | null>(null);
+  const configDir = useDir();
+  const spacing = useViewportSpacing();
 
   useLayoutEffect(() => {
     const panel = panelRef.current;
@@ -497,6 +503,8 @@ export function useAnchoredPanelLayout({
       if (!el || !anchorEl) {
         return null;
       }
+      // 面板方向：Provider.dir覆盖锚点元素的继承方向（对齐原版Element config.dir优先）
+      const dir = configDir ?? getElementDir(anchorEl);
       // 清除上一轮钳高，测量自然尺寸（避免以钳后高度为基准逐轮收缩）
       el.style.maxHeight = '';
       el.style.overflowY = '';
@@ -513,7 +521,7 @@ export function useAnchoredPanelLayout({
       let top: number;
       let maxHeight: number | undefined;
       if (position === 'above') {
-        const available = Math.max(0, rect.top - VIEWPORT_SPACING);
+        const available = Math.max(0, rect.top - spacing.top);
         // 钳高后底缘仍贴锚点顶缘，向上收缩
         const clampedHeight = Math.min(naturalHeight, available);
         top = rect.top + scrollY - clampedHeight;
@@ -523,18 +531,23 @@ export function useAnchoredPanelLayout({
       } else {
         top = rect.bottom + scrollY;
         if (!outOfView && clip) {
-          const available = vh - rect.bottom - VIEWPORT_SPACING;
+          const available = vh - rect.bottom - spacing.bottom;
           if (naturalHeight > available) {
             maxHeight = Math.max(0, available - borderHeight);
           }
         }
       }
+      // 水平对齐锚点起始边；RTL下起始边为右缘（matchAnchorWidth时面板宽度等于锚点，坐标一致）
+      const left = dir === 'rtl' && !matchAnchorWidth
+        ? rect.left + rect.width - el.offsetWidth + scrollX
+        : rect.left + scrollX;
       return {
         top,
-        left: rect.left + scrollX,
+        left,
         width: matchAnchorWidth ? rect.width : undefined,
         maxHeight,
         outOfView,
+        dir,
       };
     };
 
@@ -546,7 +559,7 @@ export function useAnchoredPanelLayout({
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, recomputeKey]);
+  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, recomputeKey, configDir, spacing]);
 
   return layout;
 }

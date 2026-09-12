@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import LabelBase from '../Label/Base';
-import RadioInput from '../RadioInput';
+import { LabelBase } from '../Label/Base';
+import { RadioInput } from '../RadioInput';
 import { generateWidgetClassName, type ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
@@ -13,7 +13,7 @@ export interface RadioOptionProps extends Omit<OptionProps<HTMLLabelElement>, 'h
   selected?: boolean;
 }
 
-const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
+export const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
   accessKey,
   className,
   disabled,
@@ -59,4 +59,3 @@ const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
 
 RadioOption.displayName = 'RadioOption';
 
-export default RadioOption;

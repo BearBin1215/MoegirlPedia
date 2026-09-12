@@ -3,7 +3,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import Layout, { type LayoutProps } from '../Layout';
+import { Layout, type LayoutProps } from '../Layout';
 
 export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   /** 是否铺满父元素 */
@@ -16,7 +16,7 @@ export interface MenuLayoutProps extends Omit<LayoutProps, 'onSelect'> {
   menu: ReactNode;
 }
 
-const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
+export const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
   className,
   children,
   expanded = true,
@@ -64,4 +64,3 @@ const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
 
 MenuLayout.displayName = 'MenuLayout';
 
-export default MenuLayout;

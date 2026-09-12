@@ -16,7 +16,7 @@ export interface ProgressBarProps extends WidgetProps<HTMLDivElement> {
 /**
  * 进度条，对齐原版OO.ui.ProgressBarWidget
  */
-const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({
+export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({
   className,
   disabled,
   progress = false,
@@ -55,4 +55,3 @@ const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(({
 
 ProgressBar.displayName = 'ProgressBar';
 
-export default ProgressBar;

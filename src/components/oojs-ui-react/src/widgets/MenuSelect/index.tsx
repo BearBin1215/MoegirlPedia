@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import Select, { type SelectProps } from '../Select';
+import { Select, type SelectProps } from '../Select';
 import { useAnchoredPanelLayout, useCleanId, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
 import { resolveElement } from '../../utils';
@@ -25,7 +25,7 @@ export interface MenuSelectProps extends SelectProps {
  * 浮动行为对齐原版FloatableElement/ClippableElement：portal至body后定位在锚定容器正下方、
  * 宽度取容器宽度，视口下方空间不足时钳制高度改为内部滚动（下拉菜单不翻转），容器滚出视口时隐藏
  */
-const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
+export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,
   open = false,
   container,
@@ -67,6 +67,8 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
       handleNavigationKeys={handleNavigationKeys}
       listWrapsAround={listWrapsAround}
       className={clsx(classes, layout?.outOfView && 'oo-ui-element-hidden')}
+      // dir取锚点有效方向（RTL站点/Provider.dir配置下菜单文本方向正确）
+      dir={layout?.dir}
       style={{
         position: 'absolute',
         top: layout?.top ?? -9999,
@@ -82,4 +84,3 @@ const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
 
 MenuSelect.displayName = 'MenuSelect';
 
-export default MenuSelect;

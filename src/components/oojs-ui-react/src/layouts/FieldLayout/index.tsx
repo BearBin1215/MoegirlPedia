@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import LabelBase from '../../widgets/Label/Base';
+import { LabelBase } from '../../widgets/Label/Base';
 import { hasLabel } from '../../utils';
-import Layout from '../Layout';
+import { Layout } from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
 import type { LabelElement } from '../../widgets/Label';
 
@@ -14,7 +14,7 @@ export interface FieldLayoutProps extends
   align?: 'left' | 'right' | 'top' | 'inline';
 }
 
-const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
+export const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
   align = 'left',
   children,
   className,
@@ -57,4 +57,3 @@ const FieldLayout = forwardRef<HTMLDivElement, FieldLayoutProps>(({
 
 FieldLayout.displayName = 'FieldLayout';
 
-export default FieldLayout;

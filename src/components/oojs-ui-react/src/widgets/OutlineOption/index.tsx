@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
-import DecoratedOption, { type DecoratedOptionProps } from '../DecoratedOption';
+import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
 import type { OptionProps } from '../Option';
 
 export interface OutlineOptionProps extends Omit<DecoratedOptionProps, 'value'>, OptionProps {
@@ -13,7 +13,7 @@ export interface OutlineOptionProps extends Omit<DecoratedOptionProps, 'value'>,
 }
 
 /** 大纲选项，对齐原版OO.ui.OutlineOptionWidget：按level输出缩进层级类，供OutlineSelect渲染 */
-const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
+export const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   className,
   level = 0,
   selected,
@@ -44,4 +44,3 @@ const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
 
 OutlineOption.displayName = 'OutlineOption';
 
-export default OutlineOption;

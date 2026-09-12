@@ -4,9 +4,9 @@ import React, {
   type ReactNode,
 } from 'react';
 import { createRoot } from 'react-dom/client';
-import FieldLayout from '../layouts/FieldLayout';
-import TextInput, { type TextInputProps } from '../widgets/TextInput';
-import MessageDialog from './MessageDialog';
+import { FieldLayout } from '../layouts/FieldLayout';
+import { TextInput, type TextInputProps } from '../widgets/TextInput';
+import { MessageDialog } from './MessageDialog';
 import { DIALOG_ANIMATION, type DialogProps } from './Dialog';
 
 export interface ConfirmAlertOptions {

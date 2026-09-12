@@ -8,12 +8,12 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { useCleanId } from '../hooks';
-import { useMessage } from '../config';
+import { useIsMobile, useMessage } from '../config';
 import { toFlagArray } from '../utils';
-import Button, { type ButtonFlag } from '../widgets/Button';
-import Label from '../widgets/Label';
-import Message from '../widgets/Message';
-import Dialog, { type DialogProps } from './Dialog';
+import { Button, type ButtonFlag } from '../widgets/Button';
+import { Label } from '../widgets/Label';
+import { Message } from '../widgets/Message';
+import { Dialog, type DialogProps } from './Dialog';
 
 export interface ProcessDialogActionProps {
 
@@ -81,7 +81,7 @@ export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' |
  * 尾部为其他动作；动作执行期间显示pending态，失败时错误面板提供Dismiss/重试。
  * 原版通过子类覆写getActionProcess编排流程，本工程改为onAction异步回调声明式编排
  */
-const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
+export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
   title,
   actions = [],
   mode,
@@ -119,6 +119,8 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
   const backLabel = useMessage('ooui-dialog-process-back');
   const retryLabel = useMessage('ooui-dialog-process-retry');
   const continueLabel = useMessage('ooui-dialog-process-continue');
+  // 移动端形态开关（全局配置）：对齐原版构造函数的oo-ui-isMobile类
+  const isMobile = useIsMobile();
 
   // 未声明modes的动作在置位mode后同样隐藏
   const visibleActions = mode === undefined
@@ -268,7 +270,7 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
       aria-labelledby={ariaLabelledBy ?? titleId}
       onEscape={handleEscape}
       onPrimaryAction={handlePrimaryShortcut}
-      className={clsx(className, 'oo-ui-processDialog')}
+      className={clsx(className, 'oo-ui-processDialog', isMobile && 'oo-ui-isMobile')}
       contentClassName='oo-ui-processDialog-content'
       head={
         <div ref={navigationRef} className='oo-ui-processDialog-navigation'>
@@ -328,4 +330,3 @@ const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
 
 ProcessDialog.displayName = 'ProcessDialog';
 
-export default ProcessDialog;

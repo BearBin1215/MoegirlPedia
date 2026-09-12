@@ -12,7 +12,7 @@ export interface LayoutProps extends Omit<ElementProps, 'hidden'> {
 }
 
 /** 布局组件基础 */
-const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
+export const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
   className,
   children,
   hidden,
@@ -51,4 +51,3 @@ const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
 
 Layout.displayName = 'Layout';
 
-export default Layout;

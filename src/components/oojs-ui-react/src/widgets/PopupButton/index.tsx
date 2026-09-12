@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import Button, { type ButtonProps } from '../Button';
-import Popup, { type PopupProps } from '../Popup';
+import { Button, type ButtonProps } from '../Button';
+import { Popup, type PopupProps } from '../Popup';
 import { useControlledValue, useMergedRefs } from '../../hooks';
 
 export type PopupButtonProps = Omit<ButtonProps, 'onClick' | 'active'> &
@@ -23,7 +23,7 @@ export type PopupButtonProps = Omit<ButtonProps, 'onClick' | 'active'> &
   };
 
 /** 弹出按钮，对齐原版OO.ui.PopupButtonWidget：点击按钮切换popup，popup默认autoClose并忽略按钮自身 */
-const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
+export const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
   children,
   popupContent,
   open: openProp,
@@ -110,4 +110,3 @@ const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
 
 PopupButton.displayName = 'PopupButton';
 
-export default PopupButton;

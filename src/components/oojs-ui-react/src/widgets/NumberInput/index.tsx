@@ -7,10 +7,10 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
-import Button from '../Button';
-import IconBase from '../Icon/Base';
-import IndicatorBase from '../Indicator/Base';
-import LabelBase from '../Label/Base';
+import { Button } from '../Button';
+import { IconBase } from '../Icon/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { generateWidgetClassName, hasLabel, type AccessKeyedElement } from '../../utils';
 import { useControlledValue } from '../../hooks';
 import type { InputProps } from '../Input';
@@ -58,7 +58,7 @@ export interface NumberInputProps extends
 }
 
 /** 数字输入框 */
-const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
+export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   name,
   accessKey,
   className,
@@ -244,4 +244,3 @@ const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 
 NumberInput.displayName = 'NumberInput';
 
-export default NumberInput;
