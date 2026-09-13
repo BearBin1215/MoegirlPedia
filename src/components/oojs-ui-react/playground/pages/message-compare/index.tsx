@@ -60,7 +60,7 @@ function ReactMessages() {
 function MessageComparePage() {
   return (
     <CompareLayout
-      title='Message 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Message 对照'
       description={(
         <>
           对照点：四种type的图标与配色（notice/error/warning/success）、block与inline两种形态、

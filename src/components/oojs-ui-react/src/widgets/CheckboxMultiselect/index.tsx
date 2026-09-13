@@ -1,8 +1,13 @@
 import React, { useRef, forwardRef, type ChangeEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxMultioption';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  FieldLabelLinkProvider,
+  useControlledValue,
+  useFieldGroupLabelLink,
+  useFieldLabelActivate,
+} from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 type MultiselectValue = Array<string | number>;
@@ -32,6 +37,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
   value,
   defaultValue,
   onChange,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
   const { value: currentValue, commit: commitValue } = useControlledValue<MultiselectValue, ChangeEvent<HTMLInputElement>>(
@@ -42,6 +48,20 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
   const inputRefs = useRef(new Map<string | number, HTMLInputElement>());
   // 上一次点击的选项value，供Shift+点击范围选择的起点定位
   const lastClickedRef = useRef<string | number | null>(null);
+  // FieldLayout标签联动（通道B）：点击标签聚焦首个非禁用选项的checkbox（对齐原版
+  // CheckboxMultiselectWidget覆写的simulateLabelClick→focus()→getRelativeFocusableItem(null, 1)；
+  // 该组件不是TabIndexedElement，原版focus()在禁用时也不聚焦）
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (disabled) {
+      return;
+    }
+    const firstEnabled = options.find((option) => !(option.disabled === void 0 ? disabled : option.disabled));
+    if (firstEnabled) {
+      inputRefs.current.get(firstEnabled.value)?.focus();
+    }
+  });
+  // 通道A屏蔽：组内每个checkbox都会认领同一字段id（重复id且label误切首个选项），禁用之
+  const groupLink = useFieldGroupLabelLink();
 
   const classes = clsx(
     className,
@@ -108,32 +128,35 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
       {...rest}
       className={classes}
       aria-disabled={disabled || undefined}
+      aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       ref={ref}
     >
-      {options.map((option) => {
-        const isSelected = currentValue.includes(option.value);
-        return (
-          <CheckboxMultioption
-            {...option}
-            disabled={option.disabled === void 0 ? disabled : option.disabled}
-            selected={isSelected}
-            key={option.value}
-            name={name}
-            inputRef={(node) => {
-              if (node) {
-                inputRefs.current.set(option.value, node);
-              } else {
-                inputRefs.current.delete(option.value);
-              }
-            }}
-            onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
-            onChange={(checkedState, event) => {
-              option.onChange?.(checkedState, event);
-              handleChange(option.value, checkedState, event);
-            }}
-          />
-        );
-      })}
+      <FieldLabelLinkProvider value={groupLink}>
+        {options.map((option) => {
+          const isSelected = currentValue.includes(option.value);
+          return (
+            <CheckboxMultioption
+              {...option}
+              disabled={option.disabled === void 0 ? disabled : option.disabled}
+              selected={isSelected}
+              key={option.value}
+              name={name}
+              inputRef={(node) => {
+                if (node) {
+                  inputRefs.current.set(option.value, node);
+                } else {
+                  inputRefs.current.delete(option.value);
+                }
+              }}
+              onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
+              onChange={(checkedState, event) => {
+                option.onChange?.(checkedState, event);
+                handleChange(option.value, checkedState, event);
+              }}
+            />
+          );
+        })}
+      </FieldLabelLinkProvider>
     </div>
   );
 });

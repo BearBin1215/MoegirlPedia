@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
   ActionFieldLayout,
+  Button,
   ButtonInput,
   CheckboxMultiselectInput,
+  Dropdown,
   DropdownInput,
   FieldLayout,
   FieldsetLayout,
@@ -50,6 +52,9 @@ function OriginalForm() {
       RadioSelectInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       CheckboxMultiselectInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       ButtonInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
+      ButtonWidget: new (config?: Record<string, unknown>) => { $element: unknown };
+      DropdownWidget: new (config?: Record<string, unknown>) => { $element: unknown };
+      MenuOptionWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       FieldLayout: new (field: unknown, config?: Record<string, unknown>) => { $element: unknown };
       FieldsetLayout: new (config?: Record<string, unknown>) => { $element: unknown; addItems: (items: unknown[]) => void };
       ActionFieldLayout: new (field: unknown, button: unknown, config?: Record<string, unknown>) => { $element: unknown };
@@ -75,6 +80,16 @@ function OriginalForm() {
       name: 'checks',
       options: checkboxOptions,
       value: ['c1'],
+    });
+    const button = new ui.ButtonWidget({ label: '按钮' });
+    const dropdownWidget = new ui.DropdownWidget({
+      label: '选择',
+      menu: {
+        items: [
+          new ui.MenuOptionWidget({ data: 'a', label: 'Option A' }),
+          new ui.MenuOptionWidget({ data: 'b', label: 'Option B', disabled: true }),
+        ],
+      },
     });
 
     const searchInput = new ui.TextInputWidget({ placeholder: '搜索', name: 'search' });
@@ -106,9 +121,11 @@ function OriginalForm() {
       new ui.FieldLayout(dropdown, { label: '下拉（含分组与禁用项）', align: 'top' }),
       new ui.FieldLayout(radio, { label: '单选组', align: 'top' }),
       new ui.FieldLayout(checks, { label: '多选组', align: 'top' }),
+      new ui.FieldLayout(button, { label: '按钮（标签点击聚焦）', align: 'top' }),
+      new ui.FieldLayout(dropdownWidget, { label: '下拉（标签点击聚焦）', align: 'top' }),
     ];
     register(
-      username, dropdown, radio, checks,
+      username, dropdown, radio, checks, button, dropdownWidget,
       searchInput, searchButton, searchField,
       searchInput2, searchButton2, searchField2,
       fieldset, ...fieldLayouts,
@@ -186,6 +203,18 @@ function ReactForm() {
               defaultValue={['c1']}
             />
           </FieldLayout>
+          <FieldLayout label='按钮（标签点击聚焦）' align='top'>
+            <Button>按钮</Button>
+          </FieldLayout>
+          <FieldLayout label='下拉（标签点击聚焦）' align='top'>
+            <Dropdown
+              label='选择'
+              options={[
+                { value: 'a', children: 'Option A' },
+                { value: 'b', children: 'Option B', disabled: true },
+              ]}
+            />
+          </FieldLayout>
           <ActionFieldLayout label='ActionField（input标签按钮）' align='top' button={<ButtonInput type='submit' flags='primary' useInputTag>搜索</ButtonInput>}>
             <TextInput placeholder='搜索' name='search' />
           </ActionFieldLayout>
@@ -241,12 +270,13 @@ function ReactTextInputVariants() {
 function FormComparePage() {
   return (
     <CompareLayout
-      title='Form / Inputs 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Form / Inputs 对照'
       description={(
         <>
           对照点：FormLayout包裹表单、DropdownInput（隐藏select+分组optgroup+禁用项）、
           RadioSelectInput（默认选中首项语义）、CheckboxMultiselectInput（checkbox的name/value表单提交）、
           ButtonInput（submit按钮触发原生提交，两种标签形态）、ActionFieldLayout（输入框+按钮组合）、
+          FieldLayout标签联动（点击标签聚焦输入框/勾选首个非禁用项/按钮/下拉把手）、
           点击两侧提交按钮后FormData序列化结果应一致。
         </>
       )}

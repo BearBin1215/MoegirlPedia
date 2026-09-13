@@ -189,7 +189,7 @@ function ReactToolbar() {
 function ToolbarComparePage() {
   return (
     <CompareLayout
-      title='Toolbar 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Toolbar 对照'
       description={(
         <>
           对照点：Bar组平铺按钮（标题tooltip、按压态）、List组下拉面板（选中收起、标题为标签文本）、

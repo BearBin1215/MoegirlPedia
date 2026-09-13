@@ -3,19 +3,24 @@ import React, {
   useMemo,
   forwardRef,
   type ChangeEvent,
+  type MouseEventHandler,
   type Ref,
 } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
-import { IndicatorBase } from '../Indicator/Base';
+import { IndicatorBase, type IndicatorBaseProps, type Indicators } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray } from '../../utils';
-import { useControlledValue, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
+import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
 import type { FlaggedElement } from '../../utils';
+
+/** type prop的合法值：原版getValidType白名单并入'search'——原版该类型经SearchInputWidget子类
+ * 覆写getValidType绕过白名单实现，React版为免组合层另开口子而统一放行 */
+const VALID_INPUT_TYPES = ['text', 'password', 'email', 'url', 'number', 'search'];
 
 /**
  * 合法性校验入参，对齐原版setValidation的三种形态：
@@ -36,6 +41,27 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
 
   /** 最大长度 */
   maxLength?: number;
+
+  /**
+   * 输入元素type（对齐原版config.type）：input的type属性与根元素`oo-ui-textInputWidget-type-{type}`
+   * 类共用；白名单为原版getValidType并入'search'，非法值回退'text'
+   * @default 'text'
+   */
+  type?: string;
+
+  /**
+   * 指示器元素附加属性（透传至指示器span），对应原版$indicator上的事件绑定能力；
+   * SearchInput经此挂清除交互。注意指示器的mousedown聚焦为内置行为，此处的onMouseDown
+   * 会在其之后补充调用
+   */
+  indicatorProps?: Omit<IndicatorBaseProps, 'indicator'>;
+
+  /**
+   * 指示器槽位覆写（SearchInput内部通道，勿在组件外使用）：非undefined时完全接管指示器
+   * 槽位，null=明确无（抑制required缺省回退）——对齐原版SearchInputWidget构造后经
+   * updateSearchIndicator调setIndicator(null)盖掉RequiredElement缺省的覆写能力
+   */
+  indicatorOverride?: Indicators | null;
 
   /**
    * 标签位置
@@ -84,6 +110,9 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   onChange,
   placeholder,
   maxLength,
+  type = 'text',
+  indicatorProps,
+  indicatorOverride,
   icon,
   indicator,
   label,
@@ -109,6 +138,8 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   );
   const internalInputRef = useRef<HTMLInputElement>(null);
   const setInputRef = useMergedRefs(inputRef, internalInputRef);
+  // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
+  const fieldInputId = useFieldInputId();
   // 软校验反馈（对齐原版setValidityFlag）：非法时输入元素aria-invalid + 根元素invalid标志类
   const validateFn = useMemo(() => resolveValidate(validate), [validate]);
   const { invalid, handleBlur, handleFocus } = useValidityFlag({
@@ -116,11 +147,28 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
     value: currentValue,
     validate: validateFn,
   });
+  // type白名单校验（对齐原版getValidType）
+  const validType = VALID_INPUT_TYPES.includes(type) ? type : 'text';
+  // 指示器解析（对齐原版构造期语义）：indicatorOverride非undefined时完全接管
+  // （SearchInput内部通道）；否则indicator falsy（未指定）时回退required缺省——
+  // 原版config无法表达"显式无"，falsy指示器+required同样显示required指示器
+  const resolvedIndicator = indicatorOverride !== undefined
+    ? indicatorOverride
+    : indicator || (required ? 'required' : undefined);
+
+  /** 对齐原版onIconMouseDown/onIndicatorMouseDown：左键点击图标/指示器聚焦输入框（preventDefault阻止焦点转移后显式聚焦） */
+  const handleDecorationMouseDown: MouseEventHandler = (e) => {
+    if (e.button === 0) {
+      e.preventDefault();
+      internalInputRef.current?.focus();
+    }
+  };
+
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
-    'oo-ui-textInputWidget-type-text',
+    `oo-ui-textInputWidget-type-${validType}`,
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
 
@@ -137,8 +185,9 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
     >
       <input
         ref={setInputRef}
+        id={fieldInputId}
         accessKey={accessKey}
-        type='text'
+        type={validType}
         name={name}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -158,8 +207,15 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         dir={dir}
         style={inputStyle}
       />
-      <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
+      <IconBase icon={icon} onMouseDown={handleDecorationMouseDown} />
+      <IndicatorBase
+        indicator={resolvedIndicator ?? undefined}
+        {...indicatorProps}
+        onMouseDown={(event) => {
+          handleDecorationMouseDown(event);
+          indicatorProps?.onMouseDown?.(event);
+        }}
+      />
       {hasLabel(label) && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );

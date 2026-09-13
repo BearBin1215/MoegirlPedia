@@ -56,6 +56,15 @@ export function hasLabel(label: unknown): boolean {
   return label !== null && label !== undefined && label !== false && label !== '';
 }
 
+/**
+ * 合并aria-labelledby取值（FieldLayout联动下发的labelId与调用方透传值并列，均有时以空格
+ * 分隔），全部为空时返回undefined
+ */
+export function mergeAriaLabelledBy(...values: (string | undefined)[]): string | undefined {
+  const merged = values.filter(Boolean).join(' ');
+  return merged || undefined;
+}
+
 /** 浮动定位/钳高类组件的视口四周留白缺省值（px），可经OOUIProvider.viewportSpacing覆盖；MenuSelect/Popup/PopupToolGroup共用 */
 export const VIEWPORT_SPACING = 5;
 

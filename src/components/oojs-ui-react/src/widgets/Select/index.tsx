@@ -10,8 +10,8 @@ import clsx from 'clsx';
 import { MenuOption, type MenuOptionProps } from '../MenuOption';
 import { MenuSectionOption, type MenuSectionOptionProps } from '../MenuSectionOption';
 import { OutlineOption } from '../OutlineOption';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useCleanId, useControlledValue, useOptionDrag, useOptionRegistry } from '../../hooks';
+import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import { useCleanId, useControlledValue, useFieldLabelActivate, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 /**
@@ -77,6 +77,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   tabIndex,
   onKeyDown,
   onMouseLeave,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
@@ -89,6 +90,15 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   // 选项DOM双向索引（值→元素供前缀匹配/滚动，元素→值供拖拽定位），供拖拽与滚动共用
   const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>();
   const keyPressBufferRef = useRef<{ buffer: string; timer: number }>({ buffer: '', timer: 0 });
+  const rootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, rootRef);
+  // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
+  // 基线focus()，禁用时不聚焦）
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (!disabled) {
+      rootRef.current?.focus();
+    }
+  });
 
   /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
   const isValueSelectable = (optionValue: string | number) =>
@@ -312,13 +322,14 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       // 高亮项关联：对齐原版SelectWidget.highlightItem将高亮项id写入$focusOwner（本工程为listbox根）
       // 的aria-activedescendant；无高亮时不输出
       aria-activedescendant={highlightedIndex >= 0 ? optionElementId(highlightedIndex) : undefined}
+      aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       tabIndex={tabIndex ?? (disabled ? -1 : 0)}
       onKeyDown={handleKeyDown}
       onMouseUp={handleUnpress}
       onMouseDown={handleMouseDown}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
-      ref={ref}
+      ref={setRootRef}
     >
       {options.map((option, i) => {
         if (!('value' in option) || option.value === undefined) {

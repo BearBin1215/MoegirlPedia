@@ -59,7 +59,7 @@ function IndexComparePage() {
 
   return (
     <CompareLayout
-      title='IndexLayout 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='IndexLayout 对照'
       description={(
         <>
           对照点：顶部页签样式与选中态、点击切换、聚焦页签栏后←→/↑↓环绕切换、

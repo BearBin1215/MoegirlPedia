@@ -42,7 +42,7 @@ function NumberComparePage() {
 
   return (
     <CompareLayout
-      title='NumberInput 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='NumberInput 对照'
       description={(
         <>
           对照点：键入越界值保留、清空为空、空值时+/-从0起步、

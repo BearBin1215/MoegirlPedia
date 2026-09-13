@@ -10,10 +10,11 @@ import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
   getWidgetClassName,
+  mergeAriaLabelledBy,
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
-import { useControlledValue, useMenuPopup, useMergedRefs } from '../../hooks';
+import { useCleanId, useControlledValue, useFieldLabelActivate, useMenuPopup, useMergedRefs } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
@@ -53,6 +54,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   options,
   value,
   defaultValue,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
@@ -61,6 +63,16 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
   const mergedRef = useMergedRefs(elementRef, ref);
+  // FieldLayout标签联动（通道B）：点击标签聚焦handle（对齐原版TabIndexedElement.simulateLabelClick
+  // 基线focus()，禁用时不聚焦）
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (!disabled) {
+      elementRef.current?.querySelector<HTMLElement>('.oo-ui-dropdownWidget-handle')?.focus();
+    }
+  });
+  // handle内label元素id：原版DropdownWidget构造期setLabelId并把它并入handle的
+  // aria-labelledby，使combobox的可访问名称为字段label+当前显示文本
+  const ownLabelId = useCleanId();
 
   const classes = clsx(
     className,
@@ -181,11 +193,14 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         role='combobox'
         aria-autocomplete='list'
         aria-expanded={open}
+        // aria-labelledby落在handle：原版$tabIndexed=$handle且setLabelledBy覆写写$handle，
+        // 并入handle内label元素id（构造期setLabelId分配）使名称含当前显示文本
+        aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ownLabelId, ariaLabelledBy)}
         onClick={handleClickLabel}
         onKeyDown={handleKeyDown}
       >
         <IconBase icon={icon} />
-        <LabelBase role='textbox' aria-readonly>{displayLabel}</LabelBase>
+        <LabelBase id={ownLabelId} role='textbox' aria-readonly>{displayLabel}</LabelBase>
         <IndicatorBase indicator='down' />
       </span>
       <MenuSelect

@@ -16,5 +16,6 @@ export const zhHans: Partial<Record<MessageKey, MessageValue>> = {
   'ooui-toolgroup-collapse': '收起',
   'ooui-combobox-button-label': '切换选项',
   'ooui-popup-widget-close-button-aria-label': '关闭',
+  'ooui-item-remove': '移除',
   'ooui-field-help': '帮助',
 };

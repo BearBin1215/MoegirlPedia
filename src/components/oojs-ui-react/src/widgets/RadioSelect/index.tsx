@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useRef,
   forwardRef,
   type ChangeEvent,
   type FocusEvent,
@@ -8,8 +9,14 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { RadioOption, type RadioOptionProps } from '../RadioOption';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  FieldLabelLinkProvider,
+  useControlledValue,
+  useFieldGroupLabelLink,
+  useFieldLabelActivate,
+  useMergedRefs,
+} from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 export interface RadioSelectProps extends WidgetProps {
@@ -40,6 +47,7 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   onChange,
   onKeyDown,
   onFocus,
+  'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
   const { value: currentValue, commit } = useControlledValue<string | number, ChangeEvent<HTMLInputElement>>(
@@ -47,6 +55,17 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     onChange,
   );
   const [pressed, setPressed] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, rootRef);
+  // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
+  // 基线focus()，禁用时不聚焦）
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (!disabled) {
+      rootRef.current?.focus();
+    }
+  });
+  // 通道A屏蔽：组内每个radio都会认领同一字段id（重复id且label误切首个选项），禁用之
+  const groupLink = useFieldGroupLabelLink();
 
   const classes = clsx(
     className,
@@ -135,30 +154,33 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
       className={classes}
       aria-disabled={disabled || undefined}
       role='radiogroup'
+      aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       tabIndex={disabled ? -1 : 0}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
       onMouseUp={handleUnpress}
       onMouseDown={handlePress}
       onMouseLeave={handleUnpress}
-      ref={ref}
+      ref={setRootRef}
     >
-      {options.map((option) => {
-        const handleChange: ChangeHandler<boolean, HTMLInputElement> = (checked, event) => {
-          option.onChange?.(checked, event);
-          commit(option.value, event);
-        };
-        return (
-          <RadioOption
-            {...option}
-            disabled={option.disabled === void 0 ? disabled : option.disabled}
-            selected={currentValue === option.value}
-            key={option.value}
-            name={name}
-            onChange={handleChange}
-          />
-        );
-      })}
+      <FieldLabelLinkProvider value={groupLink}>
+        {options.map((option) => {
+          const handleChange: ChangeHandler<boolean, HTMLInputElement> = (checked, event) => {
+            option.onChange?.(checked, event);
+            commit(option.value, event);
+          };
+          return (
+            <RadioOption
+              {...option}
+              disabled={option.disabled === void 0 ? disabled : option.disabled}
+              selected={currentValue === option.value}
+              key={option.value}
+              name={name}
+              onChange={handleChange}
+            />
+          );
+        })}
+      </FieldLabelLinkProvider>
     </div>
   );
 });

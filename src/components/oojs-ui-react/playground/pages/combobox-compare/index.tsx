@@ -61,7 +61,7 @@ function ReactComboBox() {
 function ComboBoxComparePage() {
   return (
     <CompareLayout
-      title='ComboBoxInput 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='ComboBoxInput 对照'
       description={(
         <>
           对照点：输入即展开菜单、按值精确匹配选中项、↑↓键盘高亮（环绕）、Enter选定高亮项并收起、

@@ -18,6 +18,7 @@ export type MessageKey =
   | 'ooui-toolgroup-collapse'
   | 'ooui-combobox-button-label'
   | 'ooui-popup-widget-close-button-aria-label'
+  | 'ooui-item-remove'
   | 'ooui-field-help';
 
 /** 消息值：字符串或延迟解析函数（如站点侧 () => mw.msg(key) 接入MediaWiki语言体系，对齐原版deferMsg语义） */
@@ -39,6 +40,7 @@ const en: Record<MessageKey, string> = {
   'ooui-toolgroup-collapse': 'Fewer',
   'ooui-combobox-button-label': 'Toggle options',
   'ooui-popup-widget-close-button-aria-label': 'Close',
+  'ooui-item-remove': 'Remove',
   'ooui-field-help': 'Help',
 };
 

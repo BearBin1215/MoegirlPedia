@@ -81,7 +81,7 @@ function ReactPrompt() {
 function PromptComparePage() {
   return (
     <CompareLayout
-      title='Prompt 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Prompt 对照'
       description={(
         <>
           对照点：打开后自动聚焦文本输入框、输入框内按Enter等同点击确定、确定兑现输入值、

@@ -12,7 +12,7 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray, type AccessKeyedElement, type FlaggedElement } from '../../utils';
-import { useControlledValue, useValidityFlag } from '../../hooks';
+import { useControlledValue, useFieldInputId, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
@@ -124,6 +124,8 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     value: currentValue,
     validate: validateNumber,
   });
+  // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
+  const fieldInputId = useFieldInputId();
   // 约束配置变化立即重校验（对齐原版setRange/setStep的setValidityFlag；挂载期同样校验一次，
   // 复现原版构造期行为：空值+required在加载时即输出非法标记）
   useEffect(() => {
@@ -241,6 +243,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
         )}
         <input
           accessKey={accessKey}
+          id={fieldInputId}
           type='number'
           name={name}
           tabIndex={disabled ? -1 : 0}

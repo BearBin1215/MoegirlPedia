@@ -161,7 +161,7 @@ function ReactImperative() {
 function DialogComparePage() {
   return (
     <CompareLayout
-      title='Dialog 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Dialog 对照'
       description={(
         <>
           左侧为本地安装的原版oojs-ui，右侧为本组件库实现。

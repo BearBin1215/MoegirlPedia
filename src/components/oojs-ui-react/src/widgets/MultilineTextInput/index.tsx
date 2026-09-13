@@ -10,7 +10,7 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, toFlagArray } from '../../utils';
-import { useControlledValue, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
+import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import { resolveValidate, type TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
@@ -78,6 +78,8 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     value: currentValue,
     validate: validateFn,
   });
+  // FieldLayout标签联动（通道A）：textarea认领字段id与label的htmlFor原生关联
+  const fieldInputId = useFieldInputId();
 
   const classes = clsx(
     className,
@@ -177,6 +179,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     >
       <textarea
         accessKey={accessKey}
+        id={fieldInputId}
         name={name}
         onChange={handleChange}
         onBlur={handleBlur}

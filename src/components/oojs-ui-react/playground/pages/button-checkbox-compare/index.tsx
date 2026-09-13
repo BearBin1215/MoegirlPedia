@@ -282,7 +282,7 @@ function ButtonCheckboxComparePage() {
 
   return (
     <CompareLayout
-      title='Button / CheckboxInput 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Button / CheckboxInput 对照'
       description={(
         <>
           对照点：图标/指示器变体类（primary/progressive/destructive/error/invert、激活、禁用）、

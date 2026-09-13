@@ -4,7 +4,7 @@ import { Dropdown, type DropdownOptionProps } from '../Dropdown';
 import { Indicator } from '../Indicator';
 import { isSelectableOption, type SelectOptionProps } from '../Select';
 import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue, useControlledValueFallback } from '../../hooks';
+import { useControlledValue, useControlledValueFallback, useFieldInputId } from '../../hooks';
 import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';
 
@@ -80,6 +80,9 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
 }, ref) => {
   const isMobile = useIsMobile();
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
+  // FieldLayout标签联动（通道A）：select认领字段id；桌面形态select隐藏（点击标签无可见效果），
+  // 移动端形态下原生select可见，点击标签即聚焦
+  const fieldInputId = useFieldInputId();
 
   /** 可选值集合；当前值不在其中时回退第一个可选值（无可选值则undefined） */
   const selectableValues = options
@@ -119,6 +122,7 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
           移动端形态下select转为可见的交互元素。原版0.54的getInputElement为原生`<select>`，
           下箭头由独立的IndicatorWidget子元素承担（移动端CSS按`> .oo-ui-indicatorWidget`显示） */}
       <select
+        id={fieldInputId}
         className='oo-ui-inputWidget-input'
         name={name}
         required={required}

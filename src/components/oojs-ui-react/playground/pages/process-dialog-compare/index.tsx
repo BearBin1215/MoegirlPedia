@@ -221,7 +221,7 @@ function ReactProcessDialog() {
 function ProcessDialogComparePage() {
   return (
     <CompareLayout
-      title='ProcessDialog/ProgressBar 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='ProcessDialog/ProgressBar 对照'
       description={(
         <>
           对照点：头部safe（左）/标题（中）/primary（右）布局、ESC触发safe动作、Ctrl/Cmd+Enter触发primary、

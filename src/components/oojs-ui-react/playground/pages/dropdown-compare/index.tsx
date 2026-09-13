@@ -115,7 +115,7 @@ function ReactGroupedDropdown() {
 function DropdownComparePage() {
   return (
     <CompareLayout
-      title='Dropdown 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='Dropdown 对照'
       description={(
         <>
           对照点：点击/Enter/Space开合菜单、↑↓键盘高亮移动、Enter选中高亮项、

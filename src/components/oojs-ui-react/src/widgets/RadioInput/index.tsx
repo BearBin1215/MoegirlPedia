@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { getWidgetClassName } from '../../utils';
-import { useControlledValue } from '../../hooks';
+import { useControlledValue, useFieldInputId } from '../../hooks';
 import type { InputProps } from '../Input';
 
 export interface RadioInputProps extends Omit<InputProps<
@@ -42,6 +42,8 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
     { value: checked, defaultValue: defaultChecked ?? false },
     onChange,
   );
+  // FieldLayout标签联动（通道A）：显式inputId优先，否则认领字段id与label的htmlFor关联
+  const fieldInputId = useFieldInputId(inputId);
 
   const classes = clsx(
     className,
@@ -67,7 +69,7 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         disabled={disabled}
         checked={isChecked}
         name={name}
-        id={inputId}
+        id={fieldInputId}
         title={title}
         dir={dir}
         role={role}

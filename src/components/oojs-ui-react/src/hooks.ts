@@ -1,5 +1,7 @@
 import {
+  createContext,
   useCallback,
+  useContext,
   useEffect,
   useId,
   useLayoutEffect,
@@ -15,6 +17,64 @@ import {
 import { clamp, debounce } from 'es-toolkit';
 import { useDir, useViewportSpacing } from './config';
 import { getFirstFocusable, getElementDir, resolveElement } from './utils';
+
+/**
+ * FieldLayout与字段组件的标签联动通道（对齐原版FieldLayout按getInputId()分流的双路径）：
+ * 含原生input的字段经`inputId`与label的htmlFor原生关联（原版path 1， getInputId为
+ * 可标记元素自动生成id）；无原生input的组件注册标签点击激活回调（对齐原版
+ * simulateLabelClick）并经`labelId`挂aria-labelledby（对齐原版setLabelledBy，原版path 2）。
+ * 通道按组件形态认领：输入类组件只走通道A；组容器（RadioSelect/CheckboxMultiselect）经
+ * useFieldGroupLabelLink屏蔽通道A后只走通道B，保证不双触发
+ */
+export interface FieldLabelLink {
+  /** 原生input应使用的id（label的htmlFor指向它）；选项组容器经useFieldGroupLabelLink屏蔽后为undefined */
+  inputId?: string;
+  /** 标签元素id，供无原生input的组件经aria-labelledby引用 */
+  labelId: string;
+  /** 注册标签点击的激活回调，返回注销函数 */
+  registerLabelActivate: (activate: () => void) => () => void;
+}
+
+const FieldLabelLinkContext = createContext<FieldLabelLink | null>(null);
+
+/** FieldLayout向字段子树下发联动通道（仅供FieldLayout使用） */
+export const FieldLabelLinkProvider = FieldLabelLinkContext.Provider;
+
+/**
+ * 输入类组件（通道A）：取原生input/select应挂的id，显式`inputId`优先，不在FieldLayout内时
+ * 返回undefined。id与label的htmlFor配合后，点击标签的聚焦/切换由浏览器原生处理
+ */
+export function useFieldInputId(explicitId?: string): string | undefined {
+  const link = useContext(FieldLabelLinkContext);
+  return explicitId ?? link?.inputId;
+}
+
+/**
+ * 选项组容器（RadioSelect/CheckboxMultiselect等）的通道A屏蔽：组内每个选项input都会认领
+ * 同一个字段id——产生重复id，且label原生激活首个选项（原版组容器getInputId()为null，
+ * 标签点击走simulateLabelClick聚焦而非切换）。经此改写下发值：仅屏蔽inputId，labelId与
+ * 激活回调注册照常下发；不在FieldLayout内时返回null（无需再下发）
+ */
+export function useFieldGroupLabelLink(): FieldLabelLink | null {
+  const link = useContext(FieldLabelLinkContext);
+  return useMemo(() => (link ? { ...link, inputId: undefined } : null), [link]);
+}
+
+/**
+ * 非input类组件（通道B）：注册标签点击的激活回调（激活逻辑随渲染更新经ref读取），
+ * 返回标签元素id供组件根挂aria-labelledby；不在FieldLayout内时返回undefined且不注册
+ */
+export function useFieldLabelActivate(activate: () => void): string | undefined {
+  const link = useContext(FieldLabelLinkContext);
+  const activateRef = useRef(activate);
+  activateRef.current = activate;
+  const register = link?.registerLabelActivate;
+  useEffect(
+    () => (register ? register(() => activateRef.current()) : undefined),
+    [register],
+  );
+  return link?.labelId;
+}
 /**
  * 受控/非受控通用值状态（对齐React受控组件惯例，原版通过setters维护无对应物）：
  * 传入`value`即受控模式（内部state不生效）；否则维护内部state并以`defaultValue`初始化。

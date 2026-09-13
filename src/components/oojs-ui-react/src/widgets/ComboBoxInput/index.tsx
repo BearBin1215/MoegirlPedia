@@ -13,7 +13,7 @@ import {
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
-import { useCleanId, useControlledValue, useMenuPopup } from '../../hooks';
+import { useCleanId, useControlledValue, useFieldInputId, useMenuPopup } from '../../hooks';
 import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
@@ -87,6 +87,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   const menuRef = useRef<HTMLDivElement>(null);
   // 菜单id：aria-owns/aria-controls关联portal化的菜单面板
   const menuId = useCleanId();
+  // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
+  const fieldInputId = useFieldInputId();
 
   const controlsDisabled = disabled || readOnly;
   const selectableValues = getSelectableValues(options);
@@ -221,6 +223,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
       <div ref={elementRef} className='oo-ui-comboBoxInputWidget-field'>
         <input
           ref={inputRef}
+          id={fieldInputId}
           type='text'
           name={name}
           accessKey={accessKey}

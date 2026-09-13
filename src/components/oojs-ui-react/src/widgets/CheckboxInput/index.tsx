@@ -8,7 +8,7 @@ import React, {
 import clsx from 'clsx';
 import { Icon } from '../Icon';
 import { getWidgetClassName, type AccessKeyedElement } from '../../utils';
-import { useControlledValue, useMergedRefs } from '../../hooks';
+import { useControlledValue, useFieldInputId, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
 
 export type CheckboxInputProps =
@@ -56,6 +56,8 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
     { value: checked, defaultValue: defaultChecked ?? false },
     onChange,
   );
+  // FieldLayout标签联动（通道A）：显式inputId优先，否则认领字段id与label的htmlFor关联
+  const fieldInputId = useFieldInputId(inputId);
 
   // indeterminate不是React受控属性，需手动同步到DOM
   useEffect(() => {
@@ -87,7 +89,7 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
       <input
         ref={setInputRef}
         name={name}
-        id={inputId}
+        id={fieldInputId}
         type='checkbox'
         value={value === undefined ? undefined : String(value)}
         required={required}

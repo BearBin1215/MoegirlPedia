@@ -25,13 +25,14 @@
 - [x] 工具栏（Toolbar/Bar/List/MenuToolGroup）
 - [x] 备选项输入框（ComboBox）
 - [x] 流程弹窗（ProcessDialog）与进度条（ProgressBar）
+- [x] 切换按钮（ToggleButton）
 
 ## 低优先度实现
 
-- [ ] 滑动（ToggleSwitch）
+- [x] 滑动（ToggleSwitch）
 - [x] Tab（IndexLayout/TabSelect/TabOption/TabPanelLayout）
 - [x] Menu
-- [ ] 搜索输入框
+- [x] 搜索输入框（SearchInput）
 - [ ] 其他布局类组件
 
 ## 未对齐行为记录
@@ -63,6 +64,7 @@
 - **工具栏面板支持按 Escape 收起**。原版只能靠鼠标或键盘在面板外松开时收起，没有 Escape 键。
 - **BookletLayout 在激活页签被移除时自动补选相邻页签**，非受控直接生效，受控则由父组件决定是否采纳。原版不补选，其 `removePages` 注释明确表示「选哪页属业务逻辑」。
 - **ProgressBar 把 `progress` 钳制在 0–100**，非有限值（NaN 等）按不定进度处理。原版 `setProgress` 不钳制，NaN 会直接输出 `width: NaN%` 和 `aria-valuenow="NaN"`。
+- **Select 根元素可聚焦，FieldLayout 标签点击会聚焦根**。原版 `SelectWidget` 无 `TabIndexedElement`（根不可聚焦），`simulateLabelClick` 继承基类的空操作，标签点击无任何效果；React 版为 listbox 键盘可达性给根加了 `tabIndex`，标签点击随之聚焦根（与 RadioSelect 行为一致）。
 
 ### 暂不实现
 

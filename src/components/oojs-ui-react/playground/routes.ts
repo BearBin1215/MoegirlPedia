@@ -62,6 +62,18 @@ export const compareRoutes: CompareRoute[] = [
     group: 'Widgets',
     Component: lazy(() => import('./pages/popup-compare')),
   },
+  {
+    path: 'search-compare',
+    title: 'SearchInput',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/search-compare')),
+  },
+  {
+    path: 'toggle-compare',
+    title: 'ToggleSwitch / ToggleButton',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/toggle-compare')),
+  },
   // #endregion
 
   // #region Layouts

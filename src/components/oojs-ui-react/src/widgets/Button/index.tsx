@@ -13,7 +13,8 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, mergeAriaLabelledBy, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { useFieldLabelActivate, useMergedRefs } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IconFlag } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
@@ -68,6 +69,14 @@ export interface ButtonProps extends
   /** 按钮跳转链接。原版会执行isSafeUrl净化，本工程省略 */
   href?: string;
 
+  /**
+   * 根元素widget名类链（原版继承链顺序，输出`oo-ui-{name}Widget`），默认['button']。
+   * ToggleButton等Button组合形态经此对齐原版继承链——原版ToggleButtonWidget继承
+   * ToggleWidget而非ButtonWidget，根不应有oo-ui-buttonWidget（主题的按钮行距规则
+   * 不应命中）。组件内部组合通道，勿在常规使用中改动
+   */
+  widgetNames?: string[];
+
   /** 链接打开位置（<a>的target） */
   target?: string;
 
@@ -112,7 +121,10 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   rel = ['nofollow'],
   title,
   tabIndex,
+  widgetNames = ['button'],
   'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
+  'aria-labelledby': ariaLabelledBy,
   anchorRef,
   onClick,
   onMouseDown,
@@ -128,6 +140,14 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
    * mouseup可能发生在按钮外，通过document级capture监听复位（原版onDocumentMouseUp同款）
    */
   const [pressed, setPressed] = useState(false);
+  // FieldLayout标签联动（通道B）：点击标签聚焦按钮元素（对齐原版TabIndexedElement.simulateLabelClick
+  // 基线focus()，禁用时不聚焦）
+  const internalAnchorRef = useRef<HTMLAnchorElement>(null);
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (!disabled) {
+      internalAnchorRef.current?.focus();
+    }
+  });
   // 未复位的document级mouseup监听（按压后组件卸载的边界场景），卸载时兜底移除
   // （对齐Tool.tsx/Select.tsx的监听清理范式）；ref惰性初始化，避免每渲染新建Set即丢
   const documentMouseUpHandlersRef = useRef<Set<() => void> | null>(null);
@@ -146,6 +166,7 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   const flagList = toFlagArray(flags);
   const relList = typeof rel === 'string' ? [rel] : rel;
   const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
+  const setAnchorRef = useMergedRefs(anchorRef, internalAnchorRef);
 
   const classes = clsx(
     className,
@@ -155,7 +176,7 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       label: children,
       invisibleLabel,
       indicator,
-    }, 'button'),
+    }, ...widgetNames),
     'oo-ui-buttonElement',
     framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
     flaggedElementClasses(flags),
@@ -254,15 +275,19 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       <a
         className='oo-ui-buttonElement-button'
         role='button'
-        ref={anchorRef}
+        ref={setAnchorRef}
         tabIndex={disabled ? -1 : (tabIndex ?? 0)}
         href={disabled ? undefined : href}
         target={target}
         rel={relList.join(' ') || undefined}
         title={title}
         accessKey={accessKey}
-        // aria-label须落在可聚焦的<a>上（外层span为generic元素不可命名，且不会向子元素传播）
+        // aria-label/aria-pressed/aria-labelledby须落在可聚焦的<a>上（外层span为generic
+        // 元素不可命名）：aria-label供显式命名，aria-pressed供ToggleButton等开关形态，
+        // aria-labelledby供FieldLayout标签联动与调用方命名（原版$tabIndexed=$button）
         aria-label={ariaLabel}
+        aria-pressed={ariaPressed}
+        aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       >
         <IconBase
           icon={icon}

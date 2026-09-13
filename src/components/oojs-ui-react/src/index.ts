@@ -15,6 +15,8 @@ export { Indicator, type IndicatorProps, type Indicators } from './widgets/Indic
 
 // 按钮
 export { Button, type ButtonProps } from './widgets/Button';
+export { ToggleButton, type ToggleButtonProps } from './widgets/ToggleButton';
+export { ToggleSwitch, type ToggleSwitchProps } from './widgets/ToggleSwitch';
 export { ButtonGroup, type ButtonGroupProps } from './widgets/ButtonGroup';
 export { PopupButton, type PopupButtonProps } from './widgets/PopupButton';
 
@@ -28,6 +30,7 @@ export {
   type TextInputProps,
   type TextInputValidate,
 } from './widgets/TextInput';
+export { SearchInput, type SearchInputProps } from './widgets/SearchInput';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 

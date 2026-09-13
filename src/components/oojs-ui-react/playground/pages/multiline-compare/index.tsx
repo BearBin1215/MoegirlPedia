@@ -106,7 +106,7 @@ function ReactVariants() {
 function MultilineComparePage() {
   return (
     <CompareLayout
-      title='MultilineTextInput 对照 - 原版oojs-ui vs oojs-ui-react'
+      title='MultilineTextInput 对照'
       description={(
         <>
           对照点：autosize高度自适应、maxRows上限（rows=3时原版默认maxRows=10）、
