@@ -1,7 +1,4 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
   forwardRef,
   type MouseEvent,
   type MouseEventHandler,
@@ -12,7 +9,8 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, resolveTabIndex, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { usePressedState } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
@@ -96,22 +94,13 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
    * 键盘为Enter/空格按下与抬起；鼠标为左键按下加类，mouseup可能发生在按钮外，
    * 通过document级capture监听复位（原版onDocumentMouseUp同款）
    */
-  const [pressed, setPressed] = useState(false);
-  // 未复位的document级mouseup监听（按压后组件卸载的边界场景），卸载时兜底移除
-  // （对齐Tool.tsx/Select.tsx的监听清理范式）；ref惰性初始化，避免每渲染新建Set即丢
-  const documentMouseUpHandlersRef = useRef<Set<() => void> | null>(null);
-  // 未复位的document级keyup监听（按住Enter/空格期间焦点移出后原位keyup不再触发），按住期间仅挂载一次
-  const documentKeyUpHandlerRef = useRef<(() => void) | null>(null);
-  useEffect(() => () => {
-    for (const handler of documentMouseUpHandlersRef.current ?? []) {
-      document.removeEventListener('mouseup', handler, true);
-    }
-    documentMouseUpHandlersRef.current?.clear();
-    if (documentKeyUpHandlerRef.current) {
-      document.removeEventListener('keyup', documentKeyUpHandlerRef.current, true);
-      documentKeyUpHandlerRef.current = null;
-    }
-  }, []);
+  const {
+    pressed,
+    onMouseDown: pressMouseDown,
+    onMouseUp: pressMouseUp,
+    onKeyDown: pressKeyDown,
+    onKeyUp: pressKeyUp,
+  } = usePressedState({ disabled });
   const flagList = toFlagArray(flags);
   const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
 
@@ -137,50 +126,24 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     }
   };
 
-  const handleMouseUp: MouseEventHandler<HTMLElement> = (ev) => {
-    if (!disabled) {
-      setPressed(false);
-    }
-    onMouseUp?.(ev);
-  };
-
-  /** 对齐原版onMouseDown/onDocumentMouseUp：左键按下进入按压态；mouseup可能发生在按钮外，用document级capture监听确保复位 */
+  // 按压态的进入/复位由usePressedState的处理器承担，这里仅串联调用方透传的事件回调
   const handleMouseDown: MouseEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && ev.button === 0) {
-      setPressed(true);
-      const onDocumentMouseUp = () => {
-        setPressed(false);
-        document.removeEventListener('mouseup', onDocumentMouseUp, true);
-        documentMouseUpHandlersRef.current?.delete(onDocumentMouseUp);
-      };
-      (documentMouseUpHandlersRef.current ??= new Set()).add(onDocumentMouseUp);
-      document.addEventListener('mouseup', onDocumentMouseUp, true);
-    }
+    pressMouseDown(ev);
     onMouseDown?.(ev);
   };
 
-  /** 按下Enter或空格键等同按下鼠标（原生button的click由浏览器触发，无需手动派发）。
-   * 对齐原版onKeyDown：无论按住期间焦点是否移出，keyup均经document级capture监听复位按压态 */
+  const handleMouseUp: MouseEventHandler<HTMLElement> = (ev) => {
+    pressMouseUp(ev);
+    onMouseUp?.(ev);
+  };
+
   const handleKeyDown: KeyboardEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(true);
-      if (!documentKeyUpHandlerRef.current) {
-        const onDocumentKeyUp = () => {
-          setPressed(false);
-          document.removeEventListener('keyup', onDocumentKeyUp, true);
-          documentKeyUpHandlerRef.current = null;
-        };
-        documentKeyUpHandlerRef.current = onDocumentKeyUp;
-        document.addEventListener('keyup', onDocumentKeyUp, true);
-      }
-    }
+    pressKeyDown(ev);
     onKeyDown?.(ev);
   };
 
   const handleKeyUp: KeyboardEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(false);
-    }
+    pressKeyUp(ev);
     onKeyUp?.(ev);
   };
 
@@ -189,7 +152,8 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     name,
     className: 'oo-ui-inputWidget-input oo-ui-buttonElement-button',
     disabled,
-    tabIndex: disabled ? -1 : (tabIndex ?? 0),
+    tabIndex: resolveTabIndex(tabIndex, disabled),
+    'aria-disabled': disabled || undefined,
     title,
     accessKey,
     formNoValidate: formNoValidate || undefined,

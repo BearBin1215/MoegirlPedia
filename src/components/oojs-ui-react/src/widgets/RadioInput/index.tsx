@@ -3,7 +3,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName, resolveTabIndex } from '../../utils';
 import { useControlledValue, useFieldInputId } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -75,8 +75,10 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         role={role}
         onChange={handleChange}
         required={required}
-        tabIndex={tabIndex ?? (disabled ? -1 : 0)}
+        aria-disabled={disabled || undefined}
+        tabIndex={resolveTabIndex(tabIndex, disabled)}
       />
+      {/* 主题以::before/::after在input与span上绘制未选/选中圆点（对齐原版RadioInputWidget的append('<span>')） */}
       <span />
     </span>
   );

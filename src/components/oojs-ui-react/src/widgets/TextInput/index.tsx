@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase, type IndicatorBaseProps, type Indicators } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray } from '../../utils';
 import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
@@ -122,7 +122,9 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   flags,
   inputRef,
   required,
-  // title/dir对齐原版InputWidget的落点（TitledElement的$titled与setDir均为$input），不放外层div
+  // tabIndex落在input上（组件根为不可聚焦的div）；title/dir对齐原版InputWidget的落点
+  // （TitledElement的$titled与setDir均为$input），同样不放外层div
+  tabIndex,
   title,
   dir,
   value,
@@ -192,7 +194,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={resolveTabIndex(tabIndex, disabled)}
         aria-disabled={disabled || undefined}
         aria-invalid={invalid || undefined}
         className='oo-ui-inputWidget-input'

@@ -1,7 +1,5 @@
 import React, {
-  useState,
   useRef,
-  useEffect,
   forwardRef,
   type MouseEventHandler,
   type KeyboardEventHandler,
@@ -13,8 +11,9 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, mergeAriaLabelledBy, toFlagArray, type AccessKeyedElement } from '../../utils';
-import { useFieldLabelActivate, useMergedRefs } from '../../hooks';
+import { flaggedElementClasses, getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { useFieldLabelActivate, useMergedRefs, usePressedState } from '../../hooks';
+import { useButtonGroupDisabled } from '../ButtonGroup/context';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IconFlag } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
@@ -134,44 +133,38 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   onKeyUp,
   ...rest
 }, ref) => {
+  // 组级禁用（ButtonGroup经Context下发）与自身禁用取或
+  const groupDisabled = useButtonGroupDisabled();
+  const isDisabled = disabled || groupDisabled;
   /**
    * 按压态，由JS维护并输出`oo-ui-buttonElement-pressed`类，对齐原版ButtonElement：
    * 键盘为Enter/空格按下与抬起（CSS无法实现键盘按压）；鼠标为左键按下加类，
    * mouseup可能发生在按钮外，通过document级capture监听复位（原版onDocumentMouseUp同款）
    */
-  const [pressed, setPressed] = useState(false);
+  const {
+    pressed,
+    onMouseDown: pressMouseDown,
+    onMouseUp: pressMouseUp,
+    onKeyDown: pressKeyDown,
+    onKeyUp: pressKeyUp,
+  } = usePressedState({ disabled: isDisabled });
   // FieldLayout标签联动（通道B）：点击标签聚焦按钮元素（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
   const internalAnchorRef = useRef<HTMLAnchorElement>(null);
   const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
+    if (!isDisabled) {
       internalAnchorRef.current?.focus();
     }
   });
-  // 未复位的document级mouseup监听（按压后组件卸载的边界场景），卸载时兜底移除
-  // （对齐Tool.tsx/Select.tsx的监听清理范式）；ref惰性初始化，避免每渲染新建Set即丢
-  const documentMouseUpHandlersRef = useRef<Set<() => void> | null>(null);
-  // 未复位的document级keyup监听（按住Enter/空格期间焦点移出后原位keyup不再触发），按住期间仅挂载一次
-  const documentKeyUpHandlerRef = useRef<(() => void) | null>(null);
-  useEffect(() => () => {
-    for (const handler of documentMouseUpHandlersRef.current ?? []) {
-      document.removeEventListener('mouseup', handler, true);
-    }
-    documentMouseUpHandlersRef.current?.clear();
-    if (documentKeyUpHandlerRef.current) {
-      document.removeEventListener('keyup', documentKeyUpHandlerRef.current, true);
-      documentKeyUpHandlerRef.current = null;
-    }
-  }, []);
   const flagList = toFlagArray(flags);
   const relList = typeof rel === 'string' ? [rel] : rel;
-  const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
+  const iconClasses = getButtonIconClasses(framed, active, isDisabled, flagList);
   const setAnchorRef = useMergedRefs(anchorRef, internalAnchorRef);
 
   const classes = clsx(
     className,
     getWidgetClassName({
-      disabled,
+      disabled: isDisabled,
       icon,
       label: children,
       invisibleLabel,
@@ -181,74 +174,39 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
     flaggedElementClasses(flags),
     active && 'oo-ui-buttonElement-active',
-    pressed && !disabled && 'oo-ui-buttonElement-pressed',
+    pressed && !isDisabled && 'oo-ui-buttonElement-pressed',
   );
 
   const handleClick: ButtonProps['onClick'] = (ev) => {
-    if (!disabled && onClick) {
+    if (!isDisabled && onClick) {
       onClick(ev);
     }
   };
 
-  const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled) {
-      setPressed(false);
-    }
-    if (onMouseUp) {
-      onMouseUp(ev);
-    }
-  };
-
-  /** 对齐原版onMouseDown/onDocumentMouseUp：左键按下进入按压态；mouseup可能发生在按钮外，用document级capture监听确保复位 */
+  // 按压态的进入/复位由usePressedState的处理器承担，这里仅串联调用方透传的事件回调
   const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && ev.button === 0) {
-      setPressed(true);
-      const onDocumentMouseUp = () => {
-        setPressed(false);
-        document.removeEventListener('mouseup', onDocumentMouseUp, true);
-        documentMouseUpHandlersRef.current?.delete(onDocumentMouseUp);
-      };
-      (documentMouseUpHandlersRef.current ??= new Set()).add(onDocumentMouseUp);
-      document.addEventListener('mouseup', onDocumentMouseUp, true);
-    }
-    if (onMouseDown) {
-      onMouseDown(ev);
-    }
+    pressMouseDown(ev);
+    onMouseDown?.(ev);
   };
 
-  /** 按下Enter或空格键等同按下鼠标（键盘按压态无法用CSS实现，需JS维护）。
-   * 对齐原版onKeyDown：无论按住期间焦点是否移出，keyup均经document级capture监听复位按压态 */
+  const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
+    pressMouseUp(ev);
+    onMouseUp?.(ev);
+  };
+
   const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(true);
-      if (!documentKeyUpHandlerRef.current) {
-        const onDocumentKeyUp = () => {
-          setPressed(false);
-          document.removeEventListener('keyup', onDocumentKeyUp, true);
-          documentKeyUpHandlerRef.current = null;
-        };
-        documentKeyUpHandlerRef.current = onDocumentKeyUp;
-        document.addEventListener('keyup', onDocumentKeyUp, true);
-      }
-    }
-    if (onKeyDown) {
-      onKeyDown(ev);
-    }
+    pressKeyDown(ev);
+    onKeyDown?.(ev);
   };
 
-  /** 松开Enter或空格键，复位键盘按压态 */
   const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(false);
-    }
-    if (onKeyUp) {
-      onKeyUp(ev);
-    }
+    pressKeyUp(ev);
+    onKeyUp?.(ev);
   };
 
   /** 对齐原版onKeyPress：Enter/空格触发click，存在click监听时阻止默认行为（空格滚动页面） */
   const handleKeyPress: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
+    if (!isDisabled && (ev.key === 'Enter' || ev.key === ' ')) {
       if (onClick) {
         ev.preventDefault();
       }
@@ -270,14 +228,17 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       onKeyDown={handleKeyDown}
       onKeyPress={handleKeyPress}
       onKeyUp={handleKeyUp}
-      aria-disabled={disabled || undefined}
+      aria-disabled={isDisabled || undefined}
     >
       <a
         className='oo-ui-buttonElement-button'
         role='button'
         ref={setAnchorRef}
-        tabIndex={disabled ? -1 : (tabIndex ?? 0)}
-        href={disabled ? undefined : href}
+        tabIndex={resolveTabIndex(tabIndex, isDisabled)}
+        // aria-disabled落在锚点上：原版TabIndexedElement.updateTabIndex写在$tabIndexed
+        // （ChromeVox/NVDA不继承父元素的aria-disabled，放外层span会读不到）
+        aria-disabled={isDisabled || undefined}
+        href={isDisabled ? undefined : href}
         target={target}
         rel={relList.join(' ') || undefined}
         title={title}

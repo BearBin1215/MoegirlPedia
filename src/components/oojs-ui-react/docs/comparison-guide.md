@@ -52,24 +52,42 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `import { type KeyboardEvent } from 'react'` 会遮蔽 DOM 的 `KeyboardEvent`，导致 `document.addEventListener('keydown', ...)` 类型报错。规避：`import { type KeyboardEvent as ReactKeyboardEvent }`，或以 `globalThis.KeyboardEvent` 引用 DOM 类型。
 - **非受控用法兼容**：类输入组件不能只依赖 `value` prop 变化触发副作用（非受控时 value 恒 undefined，effect 只跑一次）。用 `input` 事件监听（键入即时）+ `value` 依赖（程序化赋值/受控回流）双通道。
 - **浮层的 Escape 统一在捕获阶段处理并 `stopPropagation`**（`hooks.ts` 的 `useDismissablePopover`）：Popup/MenuSelect/PopupToolGroup 都经它关闭。Dialog 的 ESC 是 React `onKeyDown`（冒泡阶段、绑在弹窗根），故弹窗内嵌套浮层的 ESC 只会关最内层浮层。新增浮层时必须复用该 hook，不要各自写 document 监听——否则 ESC 会同时关掉浮层与弹窗。
+- **同类交互必须收敛到同一个 hook，不得按组件手抄**：按键前缀跳转、相对导航、按压态、浮层关闭、选项过滤等交互在原版里各组件共享基类方法，React 版应对应共享 hook/纯函数（索引见「共享抽象」）。若发现同一交互已有多份手写实现，优先抽取收敛而不是在新组件里再抄一份。`usePressedState`、`useMenuPopup.handleNavigationKey`、`useGroupKeyboardSelection`、`findRelativeSelectableItem`、`useDismissablePopover` 即为此类收敛产物。
+- **回调用 ref 承载、而非进依赖数组**：最新值/回调统一经 `useLatestRef` 读取，使 effect 与 document 监听只随真正需要的开关挂卸，避免内联箭头函数每渲染重挂监听。已有正例：`useControlledValue.commit`（useCallback 稳定）、`useDismissablePopover`、`useAutoFocusPanel`、`usePressedState`。
+- **Hook 不可置于短路/条件表达式中**：如 `idProp ?? \`...${useCleanId()}\`` 会在 idProp 有值时跳过 Hook 调用，同一实例切换时 React 抛 "Rendered fewer hooks than expected" 并卸载整树。先生成再合并。
+- **`hidden="until-found"` 不要同时标记 `aria-hidden`**：`until-found` 的语义是"对浏览器查找可见、对用户暂时不可见"，持续向辅助技术声明不可见会与查找命中激活面板的意图冲突。`Layout` 仅在 `hidden === true` 时输出 `aria-hidden`。
 - a11y 布尔属性（`aria-selected`/`aria-checked` 等）写实际布尔值，不要写死 `false`。
+- **`tabIndex` 统一走 `resolveTabIndex(tabIndex, disabled)`**（utils.ts）：原版 `TabIndexedElement.updateTabIndex` 是 **disabled 覆盖显式值**（`isDisabled() ? -1 : tabIndex`，注释 "Do not index over disabled elements"），启用时缺省 0。两个落点规则同样来自原版：① tabIndex 必须落在与 `$tabIndexed` 相同的元素上（Button/ToggleButton→锚点 `a`、InputWidget 全族含 Checkbox/Radio/ComboBox→`input`、ButtonInput→真实 button/input、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根元素；DropdownInput/RadioSelectInput 转发给内部控件），**不要落在不可聚焦的外层容器上**；② `aria-disabled` 也写在该元素上——ChromeVox/NVDA 不继承父元素的 `aria-disabled`，只标根会读不到。新增"可聚焦元素与根不同"的组件时按此两条接入。
+- **"隐藏"的类未必是 `display:none`**：主题对隐藏菜单用 `width/height:0 + overflow:hidden`（`oo-ui-menuLayout-hideMenu`），其中可聚焦元素仍在 tab 序，构成隐形焦点陷阱。此类隐藏必须卸载子树或设 `inert`，只加 `aria-hidden` 不够。判断前先查主题 CSS 的实际属性。
+- **组级禁用经 Context 下发，不用 `cloneElement`**：`ButtonGroup` 经 `ButtonGroupDisabledProvider`/`useButtonGroupDisabled` 下发组禁用态，组内按钮自行与 `disabled` 取或。`cloneElement` + `child.type === Button` 会静默漏掉 ToggleButton 等组合形态、包一层的 Button 与 memo 后的 Button（原实现即存在此漏失）。
 
 ### 共享抽象（改动前先查是否已有对应 hook）
 
 `src/hooks.ts` 与 `src/utils.ts` 收敛了跨组件重复逻辑，新增/修改组件应优先复用而非再写一份：
 
-- `useControlledValue` / `useControlledValueFallback`：受控/非受控值状态。
+- `useControlledValue` / `useControlledValueNotify`：受控/非受控值状态；后者在受控值非法（不在可用值集合内）时把生效值回写父级，同一非法值仅回写一次（父级未采纳时不反复触发），`useLayoutSelection` 的受控回写共用同一守卫。
 - `useMergedRefs`：同时持有元素引用并向外转发 ref（替代 `useImperativeHandle` 手工桥接）。
 - `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。
-- `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。
-- `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。
-- `useAnchoredPanelLayout`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup），留白与方向经全局配置解析。
+- `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。`ignore` 为忽略目标白名单（ref 或真实元素数组），浮层自身根节点须列入（Popup 传入 portal 根 `rootRef` 与 `autoCloseIgnore`）。
+- `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。导航键（↑↓/Home/End/PageUp/PageDown）经返回的 `handleNavigationKey` 统一处理（翻页 ±10 与原版一致），组件内不要再手写按键分支。
+- `usePressedState`：鼠标/键盘按压态的进入与复位（document 级 capture `mouseup`/`keyup` 兜底），Button/ButtonInput/Tool 组共用。组内委托场景经 `resolveTarget` 从事件 target 解析目标、`canPress` 过滤、`onTrigger` 在释放落在发起目标上时回调（Tool 组的 `onSelect` 位）。
+- `useGroupKeyboardSelection`：直选型选项组（TabSelect/RadioSelect）的键盘改选，`selectableValues` 由调用方按展示顺序给出。与 `useMenuPopup` 同样的"同类交互收敛到同一 hook"约束。
+- `findRelativeSelectableItem`（utils.ts）：相对定位可选值的纯函数，Select/TabSelect/RadioSelect 与菜单导航共用；`offset` 为相对步数（±1 步进、±10 翻页），`filter` 供前缀跳转。改端点/环绕/无选中起步等边界规则只改这一处。
+- `useLatestRef`：渲染期同步最新值的 ref，供事件监听/定时器读取最新 props 而不重挂监听；`useControlledValue.commit`、`useControlledValueNotify`、`useDismissablePopover`、`useValidityFlag`、`useAutoFocusPanel`、`usePressedState` 等内部回调均经它稳定化。
+- **选项集工具**（`utils.ts`）：`isSelectableOption`（带 value 且未禁用）、`getSelectableValues`（可选值序列）、`resolveSelectableValue`（非法受控值回退首个可选值）、`resolveOptionDisabled`（选项未声明 disabled 时继承组级 disabled）。Select/Dropdown/DropdownInput/ComboBoxInput/RadioSelect/RadioSelectInput/TabSelect/CheckboxMultiselect 一律经此，不要再写一遍 `filter(…).map(…)` 或 `=== void 0 ?` 继承表达式；判定高频调用处（拖拽 `mousemove`、悬停）另建 `Set` 做 O(1) 命中。
+- `resolveLayoutSelection`（`hooks.ts` 导出的纯函数）：布局激活值的"有效值原样、缺失/失效按邻近回退（原位置→前一项→首项）"派生；`prevOptions` 须传上一轮 options。
+- `useAnchoredPanelLayout`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup），留白与方向经全局配置解析；方向按锚点元素缓存，避免滚动重算触发样式重算。
 - `useAutoFocusPanel`：切换激活面板后聚焦其内首个可聚焦元素（IndexLayout/BookletLayout）。
-- `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略。
-- `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。
+- `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略（派生走 `resolveLayoutSelection`）。
+- `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。`useOptionRegistry` 须传入当前渲染的选项值列表——值移除时其 ref 回调缓存随之淘汰，避免长期运行下缓存累积。
+- `widgets/Popup/popupLayout.ts`：Popup 定位的纯函数模块（翻转判定 / 方位与对齐→页面坐标 / 箭头腾挪 / 容器边界钳制 / 就近滚动容器探测），可独立单测；浮层定位逻辑的改动优先改这里，不要在组件内联计算。
 - `useValidityFlag`：输入类组件的软校验反馈（输入元素 `aria-invalid` + 根元素 invalid 标志类，不改写值）。触发时机对齐原版 `setValidityFlag`：值变更防抖 250ms、失焦立即校验、聚焦清除；初始值不主动校验（NumberInput 的挂载期校验由组件经 `revalidate` 补齐，对齐原版 setRange/setStep 的构造期校验）。
 - `FieldLabelLink`（Context）+ `useFieldInputId` / `useFieldLabelActivate` / `useFieldGroupLabelLink`：FieldLayout 的标签联动双通道，对齐原版按 `getInputId()` 分流的两条路径——输入类组件（通道A）认领字段 id 与 label 的 `htmlFor` 原生关联；无原生 input 的组件（通道B）注册标签点击激活回调（原版 simulateLabelClick）并经 labelId 挂 `aria-labelledby`（原版 setLabelledBy），aria 落点须与原版 `$tabIndexed` 同元素（如 Button 的 anchor、Dropdown 的 handle）。选项组容器（RadioSelect/CheckboxMultiselect）经 `useFieldGroupLabelLink` 屏蔽通道A后再向选项下发——组内多个 input 认领同一字段id会产生重复id且label误切首个选项，原版组容器 `getInputId()` 为 null 只走通道B。通道B激活回调含禁用态 guard（原版 focus() 内含 isDisabled 判断，禁用不聚焦）。新增字段组件按形态二选一接入，勿在 FieldLayout 里反射子组件。
 - `FOCUSABLE_SELECTOR` / `getFocusableElements` / `getFirstFocusable`：可聚焦元素判定，全库统一口径。
+- `resolveTabIndex`（utils.ts）：可聚焦元素的 tabIndex 取值（disabled 优先，缺省 0），见上文 a11y 条目。
+- `ElementOrRef` / `resolveElement`（utils.ts）：浮层锚点与"忽略目标"的入参形态（ref 或真实元素）及统一解析，浮层定位与关闭类逻辑共用。
+- `OFFSCREEN_POSITION` / `VIEWPORT_SPACING`（utils.ts）：浮层未定位时的哨兵坐标与视口留白缺省值，MenuSelect/Popup/PopupToolGroup 共用，勿再写 `-9999`/`5` 字面量。
+- `ButtonGroupDisabledProvider` / `useButtonGroupDisabled`（widgets/ButtonGroup/context.ts）：组级禁用下发通道，替代对 children 的 cloneElement 注入。
 - `toFlagArray`：标志参数归一化为数组。
 - **类生成模块（mixin贡献器）**：`getWidgetClassName` 折叠自 `widgetClasses`/`iconElementClasses`/`indicatorElementClasses`/`labelElementClasses`/`flaggedElementClasses`/`widgetNameClasses`，每个贡献器对齐原版一个 Element mixin（如 `labelElementClasses` 含原版 setInvisibleLabel 的"视同无标签"规则）。需要单个 mixin 的类时直接调贡献器，整组输出用折叠层；契约由 `src/utils.test.ts` 锁定，改期望值前先核对原版对应 mixin。TextInput 系组件的 `flags` prop（`FlaggedElement` 类型，utils.ts）经 `flaggedElementClasses` 输出，软校验的 invalid 标志经 `mergeInvalidFlag` 叠加其上（配置 flags 为声明式基线，不随校验通过移除——原版 config.flags 与 setFlags 共享存储的移除语义不适用于声明式 props）。
 - **TextInput 系指示器解析**：`indicator` falsy（未指定）时回退 required 缺省指示器——对齐原版 `RequiredElement.setRequired` 的构造期条件改写（config 层面不存在"显式无"，falsy 指示器 + required 同样显示 required）。SearchInput 经内部通道 `indicatorOverride` 完全接管指示器槽位（`null`=明确无，抑制 required 回退），对齐原版 `SearchInputWidget.updateSearchIndicator` 构造后 `setIndicator(null)` 的覆写；`indicatorOverride` 是组件内部通道，勿在 SearchInput 之外使用。

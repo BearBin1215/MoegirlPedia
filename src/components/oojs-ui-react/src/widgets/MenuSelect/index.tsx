@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { Select, type SelectProps } from '../Select';
 import { useAnchoredPanelLayout, useCleanId, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
-import { resolveElement } from '../../utils';
+import { OFFSCREEN_POSITION, resolveElement } from '../../utils';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;
@@ -38,7 +38,9 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   const menuRef = useRef<HTMLDivElement | null>(null);
   const mergedRef = useMergedRefs(menuRef, ref);
   // 面板id供调用方建立aria-owns/aria-controls关联
-  const menuId = idProp ?? `oo-ui-menuSelectWidget-${useCleanId()}`;
+  // useCleanId须无条件调用：Hook不可置于`??`短路右侧，否则idProp有无切换时Hook数量变化触发卸载
+  const generatedId = useCleanId();
+  const menuId = idProp ?? `oo-ui-menuSelectWidget-${generatedId}`;
 
   const layout = useAnchoredPanelLayout({
     open,
@@ -71,8 +73,8 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
       dir={layout?.dir}
       style={{
         position: 'absolute',
-        top: layout?.top ?? -9999,
-        left: layout?.left ?? -9999,
+        top: layout?.top ?? OFFSCREEN_POSITION,
+        left: layout?.left ?? OFFSCREEN_POSITION,
         width: layout?.width,
         maxHeight: layout?.maxHeight,
         overflowY: layout?.maxHeight !== undefined ? 'auto' : undefined,

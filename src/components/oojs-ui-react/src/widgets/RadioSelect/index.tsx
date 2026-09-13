@@ -1,20 +1,29 @@
 import React, {
+  useMemo,
   useState,
   useRef,
   forwardRef,
   type ChangeEvent,
   type FocusEvent,
-  type KeyboardEvent as ReactKeyboardEvent,
+  type KeyboardEventHandler,
   type MouseEventHandler,
 } from 'react';
 import clsx from 'clsx';
 import { RadioOption, type RadioOptionProps } from '../RadioOption';
-import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  getSelectableValues,
+  getWidgetClassName,
+  mergeAriaLabelledBy,
+  resolveOptionDisabled,
+  resolveTabIndex,
+  type ChangeHandler,
+} from '../../utils';
 import {
   FieldLabelLinkProvider,
   useControlledValue,
   useFieldGroupLabelLink,
   useFieldLabelActivate,
+  useGroupKeyboardSelection,
   useMergedRefs,
 } from '../../hooks';
 import type { WidgetProps } from '../Widget';
@@ -47,6 +56,7 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
   onChange,
   onKeyDown,
   onFocus,
+  tabIndex,
   'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
@@ -80,57 +90,31 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     }
   };
 
+  /** 鼠标抬起/移出时退出按压态（对齐原版onDocumentMouseUp/onMouseLeave的复位） */
   const handleUnpress: MouseEventHandler<HTMLDivElement> = () => {
     setPressed(false);
   };
 
   /**
-   * 键盘改选。不转发option.onChange：那是原生input change事件的透传通道，
-   * 键盘改选对应原版chooseItem→setSelected（静默更新input勾选态、不发change），
-   * 仅提交组级onChange并同步非受控内部值
+   * 键盘改选（与TabSelect共用useGroupKeyboardSelection，对齐原版RadioSelectWidget经
+   * SelectWidget.onDocumentKeyDown绑定于focus/blur的形态）：↑↓←→在非禁用项间环绕移动并
+   * 直接改选（radio选项无高亮态，等效chooseItem）、Enter重申当前项。
+   * 不转发option.onChange：那是原生input change事件的透传通道，键盘改选对应原版
+   * chooseItem→setSelected（静默更新input勾选态、不发change），仅提交组级onChange并
+   * 同步非受控内部值
    */
-  const commitSelection = (optionValue: string | number) => {
-    commit(optionValue);
-  };
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const handleGroupKeyDown = useGroupKeyboardSelection<string | number>({
+    disabled,
+    selectableValues,
+    value: currentValue,
+    onCommit: commit,
+  });
 
-  /**
-   * 键盘导航，对齐原版RadioSelectWidget（经SelectWidget.onDocumentKeyDown绑定于focus/blur）：
-   * ↑↓←→在非禁用项间移动并直接改选（radio选项无高亮态，等效chooseItem），端点环绕
-   * （static.listWrapsAround=true）；Enter重申当前选中项；Home/End/PageUp/PageDown不处理
-   * （static.handleNavigationKeys=false）。无选中项时↓从首项、↑从末项起步
-   */
-  const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+  /** 键盘导航入口：先透传调用方onKeyDown，再处理导航键 */
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
     onKeyDown?.(e);
-    if (disabled) {
-      return;
-    }
-    const selectable = options.filter((option) => !option.disabled);
-    if (!selectable.length) {
-      return;
-    }
-    const currentIndex = selectable.findIndex((option) => option.value === currentValue);
-    switch (e.key) {
-      case 'Enter':
-        if (currentIndex !== -1) {
-          commitSelection(selectable[currentIndex].value);
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-      case 'ArrowDown':
-      case 'ArrowRight': {
-        const delta = e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 1;
-        const next = currentIndex === -1
-          ? selectable[delta === 1 ? 0 : selectable.length - 1]
-          : selectable[(currentIndex + delta + selectable.length) % selectable.length];
-        commitSelection(next.value);
-        e.preventDefault();
-        e.stopPropagation();
-        break;
-      }
-    }
+    handleGroupKeyDown(e);
   };
 
   /** 对齐原版SelectWidget.onFocus：Tab聚焦组根本身（内层radio/label均tabIndex=-1）且无选中项时，自动选中首个非禁用项 */
@@ -142,9 +126,8 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     if (options.some((option) => option.value === currentValue)) {
       return;
     }
-    const first = options.find((option) => !option.disabled);
-    if (first) {
-      commitSelection(first.value);
+    if (selectableValues.length) {
+      commit(selectableValues[0]);
     }
   };
 
@@ -155,7 +138,7 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
       aria-disabled={disabled || undefined}
       role='radiogroup'
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={resolveTabIndex(tabIndex, disabled)}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
       onMouseUp={handleUnpress}
@@ -172,7 +155,7 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
           return (
             <RadioOption
               {...option}
-              disabled={option.disabled === void 0 ? disabled : option.disabled}
+              disabled={resolveOptionDisabled(option, disabled)}
               selected={currentValue === option.value}
               key={option.value}
               name={name}

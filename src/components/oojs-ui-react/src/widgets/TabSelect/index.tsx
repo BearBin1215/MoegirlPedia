@@ -1,15 +1,14 @@
 import React, {
   forwardRef,
-  useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
-  useState,
-  type FocusEvent,
+  type KeyboardEventHandler,
 } from 'react';
 import clsx from 'clsx';
 import { TabOption, type TabOptionProps } from '../TabOption';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
+import { getSelectableValues, getWidgetClassName, resolveTabIndex, type ChangeHandler } from '../../utils';
+import { useControlledValue, useGroupKeyboardSelection, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
 import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';
 
@@ -42,28 +41,21 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   onChange,
   disabled,
   tabIndex,
+  onKeyDown,
   ...rest
 }, ref) => {
   const isMobile = useIsMobile();
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
-  const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>();
+  // 索引注册值：全部选项值（与下方registerItem的调用集合同源，供淘汰已移除选项）
+  const optionValues = useMemo(() => options.map((option) => option.value), [options]);
+  const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>(optionValues);
   const rootRef = useRef<HTMLDivElement>(null);
   const setRootRef = useMergedRefs(ref, rootRef);
-  const [focused, setFocused] = useState(false);
-  const optionsRef = useRef(options);
-  // document级keydown监听仅在focus时绑定，需经ref读取最新值状态（避免闭包过期）
-  const valueRef = useRef(currentValue);
-  const disabledRef = useRef(disabled);
-  const commitRef = useRef(commit);
-  optionsRef.current = options;
-  valueRef.current = currentValue;
-  disabledRef.current = disabled;
-  commitRef.current = commit;
+  // 可选值序列（非禁用项，按展示顺序），键盘导航与拖拽的共用目标集合；Set供O(1)命中
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const selectableValueSet = useMemo(() => new Set(selectableValues), [selectableValues]);
 
-  const isValueSelectable = (optionValue: string | number) => {
-    const option = optionsRef.current.find((o) => o.value === optionValue);
-    return !!option && !option.disabled;
-  };
+  const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);
 
   const { pressed, pressedValue, handleMouseDown, handleUnpress } = useOptionDrag<string | number>({
     disabled,
@@ -105,64 +97,23 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       return;
     }
     option.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  }, [currentValue, isMobile]);
+  }, [currentValue, isMobile, itemRefs]);
 
-  // 对齐原版：聚焦后绑定document级keydown，失焦解绑；←→/↑↓环绕选择，Enter确认
-  useEffect(() => {
-    if (!focused) {
-      return undefined;
-    }
-    const handleDocumentKeyDown = (e: KeyboardEvent) => {
-      if (disabledRef.current) {
-        return;
-      }
-      const selectable = optionsRef.current.filter((option) => !option.disabled);
-      if (!selectable.length) {
-        return;
-      }
-      const currentIndex = selectable.findIndex((option) => option.value === valueRef.current);
-      let next: TabSelectOptionProps | undefined;
-      let handled = false;
-      switch (e.key) {
-        case 'Enter':
-          // Enter重申当前选中项（无选中项不响应）
-          if (currentIndex !== -1) {
-            next = selectable[currentIndex];
-            handled = true;
-          }
-          break;
-        case 'ArrowUp':
-        case 'ArrowLeft':
-          // 无选中项时自末项起步，否则环绕前移
-          next = currentIndex === -1
-            ? selectable[selectable.length - 1]
-            : selectable[(currentIndex - 1 + selectable.length) % selectable.length];
-          handled = true;
-          break;
-        case 'ArrowDown':
-        case 'ArrowRight':
-          // 无选中项时自首项起步，否则环绕后移
-          next = currentIndex === -1
-            ? selectable[0]
-            : selectable[(currentIndex + 1) % selectable.length];
-          handled = true;
-          break;
-        default:
-          break;
-      }
-      if (next) {
-        commitRef.current(next.value);
-      }
-      if (handled) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-    document.addEventListener('keydown', handleDocumentKeyDown, true);
-    return () => {
-      document.removeEventListener('keydown', handleDocumentKeyDown, true);
-    };
-  }, [focused]);
+  // 键盘改选（与RadioSelect共用useGroupKeyboardSelection，对齐原版经SelectWidget.
+  // onDocumentKeyDown的绑定形态）：tablist聚焦后←→/↑↓环绕选择、Enter确认。选项元素
+  // 均tabIndex=-1，焦点始终落在组根，React事件即覆盖全部按键目标
+  const handleGroupKeyDown = useGroupKeyboardSelection<string | number>({
+    disabled,
+    selectableValues,
+    value: currentValue,
+    onCommit: commit,
+  });
+
+  /** 键盘导航入口：先透传调用方onKeyDown，再处理导航键 */
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
+    onKeyDown?.(e);
+    handleGroupKeyDown(e);
+  };
 
   return (
     <div
@@ -170,15 +121,8 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
       className={classes}
       aria-disabled={disabled || undefined}
       role='tablist'
-      tabIndex={tabIndex ?? (disabled ? -1 : 0)}
-      onFocus={(e: FocusEvent<HTMLDivElement>) => {
-        setFocused(true);
-        rest.onFocus?.(e);
-      }}
-      onBlur={(e: FocusEvent<HTMLDivElement>) => {
-        setFocused(false);
-        rest.onBlur?.(e);
-      }}
+      tabIndex={resolveTabIndex(tabIndex, disabled)}
+      onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}
       onMouseUp={handleUnpress}
       onMouseLeave={handleUnpress}

@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { IconBase } from '../../widgets/Icon/Base';
 import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
 import { LabelBase } from '../../widgets/Label/Base';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName, OFFSCREEN_POSITION } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
@@ -101,7 +101,7 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
       }
     },
   })), [tools, onToolSelect, keepOpenToolNames]);
-  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange, findTool } = useToolGroupPressed(wrappedTools, groupDisabled);
+  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange } = useToolGroupPressed(wrappedTools, groupDisabled);
 
   // 定位与钳高（open/tools变化与滚动/缩放时重算）：bottom工具栏的面板向上展开
   // （对齐原版verticalPosition:'above'），其余向下；面板portal至body（或Provider配置的
@@ -212,8 +212,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
             // 引发布局回流导致锚点位移，使定位读到过期坐标而左右错位
             style={{
               position: 'absolute',
-              top: layout?.top ?? -9999,
-              left: layout?.left ?? -9999,
+              top: layout?.top ?? OFFSCREEN_POSITION,
+              left: layout?.left ?? OFFSCREEN_POSITION,
               maxHeight: layout?.maxHeight,
               overflowY: layout?.maxHeight !== undefined ? 'auto' : undefined,
             }}
@@ -235,10 +235,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
                   }
                 }
               }
-              const tool = findTool(e.target);
-              if (tool) {
-                onToolKeyDown(e, tool);
-              }
+              // 工具链接的Enter/空格按压流（useToolGroupPressed内部解析目标，非工具位置无副作用）
+              onToolKeyDown(e);
             }}
             {...getToolHoverHandlers(onToolHoverChange)}
           >

@@ -1,4 +1,5 @@
 import React, {
+  useMemo,
   useRef,
   useState,
   forwardRef,
@@ -9,7 +10,9 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase, type Indicators } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
+  getSelectableValues,
   getWidgetClassName,
+  resolveTabIndex,
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
@@ -17,7 +20,6 @@ import { useCleanId, useControlledValue, useFieldInputId, useMenuPopup } from '.
 import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
-import { isSelectableOption } from '../Select';
 import { MenuSelect } from '../MenuSelect';
 
 export interface ComboBoxInputProps extends
@@ -54,10 +56,6 @@ export interface ComboBoxInputProps extends
   indicator?: Indicators;
 }
 
-/** 可选项（有value且未禁用），键盘导航的目标集合 */
-const getSelectableValues = (options: DropdownOptionProps[]): Array<string | number> =>
-  options.filter(isSelectableOption).map((option) => option.value);
-
 /**
  * 备选项输入框，对齐原版OO.ui.ComboBoxInputWidget：可自由输入的文本框 + 下拉选项菜单，
  * 输入即展开菜单并按值精确匹配选中项，↑↓移动高亮、Enter选定高亮项并收起菜单、
@@ -77,6 +75,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   value,
   defaultValue,
   onChange,
+  // tabIndex落在input上（对齐原版ComboBoxInputWidget继承InputWidget的$tabIndexed=$input）
+  tabIndex,
   ...rest
 }, ref) => {
   const { value: currentValue, commit } = useControlledValue<string>({ value, defaultValue }, onChange);
@@ -91,7 +91,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   const fieldInputId = useFieldInputId();
 
   const controlsDisabled = disabled || readOnly;
-  const selectableValues = getSelectableValues(options);
+  // 可选项（有value且未禁用），键盘导航的目标集合
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
   // 下拉按钮的无障碍标签（对齐原版ooui-combobox-button-label消息）
   const toggleOptionsLabel = useMessage('ooui-combobox-button-label');
 
@@ -106,11 +107,12 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
 
   // 菜单开合与键盘高亮（端点钳制不环绕、无高亮时↓从首项/↑从末项起步）；
   // 开启时点击外部/Escape关闭（Escape捕获阶段，嵌套于Dialog时不误关弹窗）。
-  // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写
+  // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写；
+  // 导航键（↑↓/Home/End/PageUp/PageDown）统一走handleNavigationKey
   const {
     highlightedValue,
     setHighlightedValue,
-    moveHighlight,
+    handleNavigationKey,
   } = useMenuPopup<string | number>({
     open,
     onClose: () => setOpen(false),
@@ -128,40 +130,23 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     }
     switch (event.key) {
       case 'ArrowDown':
-        // 方向键唤起菜单并移动高亮（未展开时moveHighlight自首/末项起步）
+        // 方向键唤起菜单并移动高亮（未展开时自首/末项起步）
         event.preventDefault();
         setOpen(true);
-        moveHighlight(1);
+        handleNavigationKey('ArrowDown');
         break;
       case 'ArrowUp':
         event.preventDefault();
         setOpen(true);
-        moveHighlight(-1);
+        handleNavigationKey('ArrowUp');
         break;
       case 'Home':
-        // 仅菜单展开时占用，收起时保留输入框原生光标跳转
-        if (open && selectableValues.length) {
-          event.preventDefault();
-          setHighlightedValue(selectableValues[0]);
-        }
-        break;
       case 'End':
-        if (open && selectableValues.length) {
-          event.preventDefault();
-          setHighlightedValue(selectableValues[selectableValues.length - 1]);
-        }
-        break;
       case 'PageUp':
-        // 仅菜单展开时占用，收起时保留原生滚动；±10对齐原版翻页步长
-        if (open && selectableValues.length) {
-          event.preventDefault();
-          moveHighlight(-10);
-        }
-        break;
       case 'PageDown':
-        if (open && selectableValues.length) {
+        // 仅菜单展开时占用，收起时保留输入框原生光标跳转/原生滚动；翻页步长与首末跳转由handleNavigationKey统一
+        if (open && handleNavigationKey(event.key)) {
           event.preventDefault();
-          moveHighlight(10);
         }
         break;
       case 'Enter':
@@ -195,6 +180,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     ));
   };
 
+  /** 下拉按钮开合菜单并把焦点交还输入框（对齐原版onDropdownButtonClick） */
   const handleDropdownButtonClick = () => {
     if (controlsDisabled) {
       return;
@@ -232,7 +218,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
           aria-required={required}
           disabled={disabled}
           readOnly={readOnly}
-          tabIndex={disabled ? -1 : 0}
+          tabIndex={resolveTabIndex(tabIndex, disabled)}
           aria-disabled={disabled || undefined}
           role='combobox'
           aria-autocomplete='list'

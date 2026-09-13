@@ -57,6 +57,7 @@
 - **CheckboxMultioption 的根元素用 `role='checkbox'` + `aria-checked`**，内层是原生 checkbox。原版 `OptionWidget` 根为 `role='option'`（由 `SelectWidget` 的 `listbox` 承载）；React 版若改成 `option` 会与内层原生控件语义重复，故保留 checkbox 语义。
 - **Select 系选项的选中态统一用基类 `OptionProps.selected`**，Radio/Checkbox 型选项在内层原生控件上再映射为 `checked`。原版各 OptionWidget 分别用 `setSelected`/`setChecked` 等维护；React 版认为选中语义相同，不对外暴露多种命名。
 - **布局组件的受控 API 统一为 `value`/`defaultValue`/`onChange`**（`StackLayout`、`IndexLayout`、`BookletLayout`）。原版经 `setItem`/`setPage`/`setTabPanel` 等 setter 命令式切换；`StackLayout` 原先公开的 `activeValue` 已并入 `value`。
+- **`TabIndexedElement` 的 `setTabIndex(null)` 语义未实现**。原版传 `null` 时移除该元素的 `tabindex` 与 `aria-disabled`；React 的 `tabIndex` 类型不接受 `null`，经 `...rest` 透传到 DOM 会破坏属性类型，故统一收为 `number`——需要"不参与Tab序"时用 `-1`（焦点可达性等价）。其余 tabIndex 行为已对齐：`disabled` 覆盖显式值、落点与原版 `$tabIndexed` 一致（Button→锚点、输入类→`input`、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根）、`aria-disabled` 写在该元素上。
 
 ### 增强
 

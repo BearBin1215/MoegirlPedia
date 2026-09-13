@@ -63,6 +63,7 @@
     "eslint": "^9.39.5",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-vue": "^10.10.0",
     "espree": "^10.4.0",
     "glob": "13.0.6",

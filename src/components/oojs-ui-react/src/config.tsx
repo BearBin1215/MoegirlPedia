@@ -42,7 +42,11 @@ export function normalizeViewportSpacing(input: ViewportSpacingInput | undefined
 /** 全局配置。对齐原版OOUI的模块级全局（OO.ui.msg.messages消息表、isMobile/getViewportSpacing/
  * getTeleportTarget等可覆写全局函数、Element的dir配置）在React语境下的对应物 */
 export interface OOUIConfig {
-  /** 消息覆盖表，覆盖英文默认（见src/i18n.ts）。声明式组件渲染时读取，切换即响应式更新 */
+  /**
+   * 消息覆盖表，覆盖英文默认（见src/i18n.ts）。声明式组件渲染时读取，切换即响应式更新。
+   * 传入内联对象字面量会使Provider value每渲染变化并导致整棵子树重渲染，
+   * 故应传入稳定引用（模块级常量，如`locales/zh-hans.ts`导出的`zhHans`）
+   */
   messages?: Partial<Record<MessageKey, MessageValue>>;
 
   /**

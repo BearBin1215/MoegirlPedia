@@ -4,6 +4,7 @@ import { IconBase } from '../Icon/Base';
 import { LabelBase } from '../Label/Base';
 import { Button } from '../Button';
 import { flaggedElementClasses, getWidgetClassName } from '../../utils';
+import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../Icon';
 
@@ -61,6 +62,8 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(({
   // 显式传入icon时覆盖类型默认图标
   const displayIcon = icon ?? TYPE_ICONS[messageType];
   const showCloseButton = showClose && !inline;
+  // 关闭按钮的无障碍标签（对齐原版MessageWidget构造期读取的ooui-popup-widget-close-button-aria-label）
+  const closeAriaLabel = useMessage('ooui-popup-widget-close-button-aria-label');
 
   const classes = clsx(
     className,
@@ -93,7 +96,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(({
           invisibleLabel
           onClick={onClose}
         >
-          Close
+          {closeAriaLabel}
         </Button>
       )}
     </div>

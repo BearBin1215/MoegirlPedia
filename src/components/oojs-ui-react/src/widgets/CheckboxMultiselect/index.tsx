@@ -1,7 +1,12 @@
 import React, { useRef, forwardRef, type ChangeEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxMultioption';
-import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  getWidgetClassName,
+  mergeAriaLabelledBy,
+  resolveOptionDisabled,
+  type ChangeHandler,
+} from '../../utils';
 import {
   FieldLabelLinkProvider,
   useControlledValue,
@@ -55,7 +60,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
     if (disabled) {
       return;
     }
-    const firstEnabled = options.find((option) => !(option.disabled === void 0 ? disabled : option.disabled));
+    const firstEnabled = options.find((option) => !resolveOptionDisabled(option, disabled));
     if (firstEnabled) {
       inputRefs.current.get(firstEnabled.value)?.focus();
     }
@@ -79,8 +84,8 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
         const nextValue = [...currentValue];
         for (let i = start; i <= end; i++) {
           const option = options[i];
-          // 区间内禁用项保持原状
-          if (option.disabled) {
+          // 区间内禁用项保持原状（经resolveOptionDisabled使未声明disabled的项随组禁用）
+          if (resolveOptionDisabled(option, disabled)) {
             continue;
           }
           const has = nextValue.includes(option.value);
@@ -102,8 +107,13 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
     commitValue(nextValue, event);
   };
 
-  // 对齐原版CheckboxMultioptionWidget.onKeyDown：↑/←上一个、↓/→下一个非禁用项（循环）
+  // 对齐原版CheckboxMultioptionWidget.onKeyDown：↑/←上一个、↓/→下一个非禁用项（循环）。
+  // 组禁用时不响应（与RadioSelect/TabSelect的useGroupKeyboardSelection一致）；
+  // 禁用判定经resolveOptionDisabled，使未声明disabled的选项随组禁用
   const handleOptionKeyDown = (event: KeyboardEvent<HTMLLabelElement>, optionValue: string | number) => {
+    if (disabled) {
+      return;
+    }
     const key = event.key;
     if (key !== 'ArrowUp' && key !== 'ArrowLeft' && key !== 'ArrowDown' && key !== 'ArrowRight') {
       return;
@@ -114,7 +124,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
     let nextIndex = (currentIndex + direction + len) % len;
     for (let i = 0; i < len; i++) {
       const next = options[nextIndex];
-      if (next && !next.disabled) {
+      if (next && !resolveOptionDisabled(next, disabled)) {
         inputRefs.current.get(next.value)?.focus();
         break;
       }
@@ -137,7 +147,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
           return (
             <CheckboxMultioption
               {...option}
-              disabled={option.disabled === void 0 ? disabled : option.disabled}
+              disabled={resolveOptionDisabled(option, disabled)}
               selected={isSelected}
               key={option.value}
               name={name}

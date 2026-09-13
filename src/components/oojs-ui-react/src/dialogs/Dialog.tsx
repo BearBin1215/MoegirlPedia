@@ -2,6 +2,7 @@ import React, {
   useState,
   useEffect,
   useLayoutEffect,
+  useCallback,
   forwardRef,
   useRef,
   type ReactNode,
@@ -10,6 +11,7 @@ import clsx from 'clsx';
 import { debounce } from 'es-toolkit';
 import type { ElementProps } from '../Element';
 import { getFocusableElements } from '../utils';
+import { useLatestRef } from '../hooks';
 import { WindowManager } from './WindowManager';
 
 /**
@@ -20,6 +22,29 @@ export const DIALOG_ANIMATION = { setupDelay: 60, readyDelay: 120, closeDuration
 
 /** frame过渡时长（与closeDuration同源，单位为s） */
 const DIALOG_TRANSITION = `${DIALOG_ANIMATION.closeDuration / 1000}s`;
+
+/** frame宽度档位（px），'full'不入表（宽度交由CSS满屏） */
+const DIALOG_FRAME_WIDTHS = { small: 300, medium: 500, large: 700, larger: 900 } as const;
+
+/**
+ * 以head/body/foot实测内容高度撑起frame：先把frame钳到0再测量——三者绝对定位，
+ * 其scrollHeight即可反映内容溢出的真实高度（%高度链虽塌陷，溢出内容始终计入）。
+ * height不在transition范围内，钳0立即生效，测完设置最终高度即paint前就位
+ */
+function measureContentHeight(
+  frame: HTMLDivElement,
+  head: HTMLDivElement,
+  body: HTMLDivElement,
+  foot: HTMLDivElement,
+): void {
+  frame.style.height = '0px';
+  const totalHeight =
+    head.scrollHeight +
+    body.scrollHeight +
+    foot.scrollHeight +
+    frame.offsetHeight - frame.clientHeight;
+  frame.style.height = `${totalHeight}px`;
+}
 
 export interface DialogProps extends ElementProps<HTMLDivElement> {
   /** 弹窗大小（缺省medium） */
@@ -98,95 +123,81 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     setup && 'oo-ui-window-content-setup',
   );
 
-  const frameWidth = (() => {
-    switch (size) {
-      case 'full':
-        return false;
-      case 'large':
-        return 700;
-      case 'larger':
-        return 900;
-      case 'small':
-        return 300;
-      case 'medium':
-      default:
-        return 500;
-    }
-  })();
+  // 显式标注为number | false：'full'为false（宽度交由CSS满屏），其余取档位表
+  const frameWidth: number | false = size === 'full' ? false : DIALOG_FRAME_WIDTHS[size];
+
+  // 测量读取的渲染期状态（active/setup/size/frameWidth）：经ref读取，使测量函数与监听
+  // 恒为最新闭包（不必用依赖数组驱动重挂）
+  const frameStateRef = useLatestRef({ active, setup, size, frameWidth });
 
   /**
-   * 重算frame高度：非满屏且视窗容得下时，以head/body/foot实测scrollHeight之和撑起frame，
-   * 否则满屏；测量仅限setup稳定期以避开动画过渡态（细节见函数内注释）
+   * 重算frame高度：非满屏且视窗容得下时，以head/body/foot实测内容高度撑起frame，
+   * 否则满屏；测量仅限setup稳定期以避开动画过渡态
    */
-  const updateSize = () => {
+  const measureFrame = useCallback(() => {
+    const {
+      active: activeNow,
+      setup: setupNow,
+      size: sizeNow,
+      frameWidth: frameWidthNow,
+    } = frameStateRef.current;
     const frame = frameRef.current;
     if (!frame) {
       return;
     }
-    if (size === 'full') {
+    if (sizeNow === 'full') {
       // 满屏尺寸：宽高交由CSS（oo-ui-windowManager-size-full），清空内联高度避免覆盖
       setFull(true);
       frame.style.height = '';
       return;
     }
-    if (frameWidth && frameWidth > window.innerWidth) {
+    if (frameWidthNow && frameWidthNow > window.innerWidth) {
       setFull(true);
       // 窄屏下将高度、宽度设为100%
       frame.style.height = '100%';
       return;
     }
     setFull(false);
-    if (!active || !setup || !headRef.current || !bodyRef.current || !footRef.current) {
+    const headEl = headRef.current;
+    const bodyEl = bodyRef.current;
+    const footEl = footRef.current;
+    if (!activeNow || !setupNow || !headEl || !bodyEl || !footEl) {
       // 仅在setup（布局稳定期）测量；其他阶段测量会被动画过渡态污染
       return;
     }
-    // 先将frame钳制到0再测量：head/body/foot（绝对定位）的scrollHeight即可反映
-    // 内容溢出的真实高度；%高度链虽塌陷，但溢出内容始终计入scrollHeight。
-    // height不在transition范围内，钳0立即生效，测完设置最终高度即paint前就位。
-    frame.style.height = '0px';
-    const totalHeight =
-      headRef.current.scrollHeight +
-      bodyRef.current.scrollHeight +
-      footRef.current.scrollHeight +
-      frame.offsetHeight - frame.clientHeight;
-    frame.style.height = `${totalHeight}px`;
-  };
+    measureContentHeight(frame, headEl, bodyEl, footEl);
+  }, [frameStateRef]);
 
-  // 监听视窗宽度变化（setup需入依赖：updateSize闭包读取setup，漏掉时监听持有旧闭包而早退，打开后resize不再重算高度）
+  // 高度重算的订阅源合一：head/foot内容变化（RO，即时）与视窗尺寸变化（resize，防抖200ms）。
+  // 经ref读取最新状态，故监听只在挂载时建立一次，不随active/setup变化重挂。
+  // 不观察body——原版同样不因body内容变化重算，溢出由body内部滚动承接；
+  // head/foot为绝对定位，measureFrame对frame钳0不会反向改变其尺寸，无RO循环
   useEffect(() => {
-    const onResize = debounce(updateSize, 200);
-    window.addEventListener('resize', onResize);
-
-    return () => {
-      // 卸载后取消trailing调用，避免操作已卸载组件的ref
-      onResize.cancel();
-      window.removeEventListener('resize', onResize);
-    };
-  }, [active, setup, frameWidth]);
-
-  // head/foot内容变化（动作集增减等）时重算高度，对齐原版Dialog.onActionsChange触发updateSize；
-  // 不观察body——原版同样不因body内容变化重算，溢出由body内部滚动承接。
-  // head/foot为绝对定位，updateSize对frame钳0测量不会反向改变其尺寸，无RO循环
-  useEffect(() => {
-    const observer = new ResizeObserver(updateSize);
+    const observer = new ResizeObserver(() => measureFrame());
     if (headRef.current) {
       observer.observe(headRef.current);
     }
     if (footRef.current) {
       observer.observe(footRef.current);
     }
+    const onResize = debounce(() => measureFrame(), 200);
+    window.addEventListener('resize', onResize);
     return () => {
+      // 卸载后取消trailing调用，避免操作已卸载组件的ref
+      onResize.cancel();
+      window.removeEventListener('resize', onResize);
       observer.disconnect();
     };
-  }, [active, setup, frameWidth]);
+  }, [measureFrame]);
 
   // setup拍在paint前设置最终高度（对齐原版setup()中updateSize先于addClass的时序）：
-  // 动画期间布局即为最终布局，scale缩放纯靠transform，不产生滚动条，复现原版"从中间由小变大"
+  // 动画期间布局即为最终布局，scale缩放纯靠transform，不产生滚动条，复现原版"从中间由小变大"。
+  // frameWidth入依赖：size变化时宽度与测量基准同时变化，须在同一帧重算高度
   useLayoutEffect(() => {
     if (active && setup) {
-      updateSize();
+      measureFrame();
     }
-  }, [active, setup, frameWidth]);
+  }, [active, setup, frameWidth, measureFrame]);
 
   // 键盘行为，对齐原版Dialog.prototype.onDialogKeyDown：原版将keydown绑定在弹窗自身
   // $element上（焦点须在弹窗内才生效），故此处用React的onKeyDown而非document级监听，
@@ -270,30 +281,23 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     }
   }, [open, active]);
 
-  // 开关动画控制，对齐原版生命周期：
-  // 打开：active（dialog展开，frame以scale(0.5)+透明可见）→ setup（scale→1+淡入）→ ready
-  // 关闭：hold（立即移除setup，播放250ms缩小淡出）→ teardown（移除active隐藏）
+  // 开关动画控制，对齐原版生命周期（计时器统一入数组，随open翻转整体清理）
   useEffect(() => {
-    let t1: ReturnType<typeof setTimeout>;
-    let t2: ReturnType<typeof setTimeout>;
-    let t3: ReturnType<typeof setTimeout>;
+    const timers: ReturnType<typeof setTimeout>[] = [];
     if (open) {
-      t1 = setTimeout(() => setActive(true));
-      t2 = setTimeout(() => setSetup(true), DIALOG_ANIMATION.setupDelay);
-      t3 = setTimeout(() => setReady(true), DIALOG_ANIMATION.readyDelay);
+      // 打开：active（dialog展开，frame以scale(0.5)+透明可见）→ setup（scale→1+淡入）→ ready
+      timers.push(setTimeout(() => setActive(true)));
+      timers.push(setTimeout(() => setSetup(true), DIALOG_ANIMATION.setupDelay));
+      timers.push(setTimeout(() => setReady(true), DIALOG_ANIMATION.readyDelay));
     } else {
-      t1 = setTimeout(() => {
+      // 关闭：hold（立即移除setup，播放closeDuration缩小淡出）→ teardown（移除active隐藏）
+      timers.push(setTimeout(() => {
         setReady(false);
         setSetup(false);
-      });
-      t3 = setTimeout(() => setActive(false), DIALOG_ANIMATION.closeDuration);
+      }));
+      timers.push(setTimeout(() => setActive(false), DIALOG_ANIMATION.closeDuration));
     }
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
+    return () => timers.forEach(clearTimeout);
   }, [open]);
 
   return (

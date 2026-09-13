@@ -2,6 +2,8 @@ import React, {
   useRef,
   useEffect,
   useLayoutEffect,
+  useCallback,
+  useMemo,
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEventHandler,
@@ -10,7 +12,14 @@ import clsx from 'clsx';
 import { MenuOption, type MenuOptionProps } from '../MenuOption';
 import { MenuSectionOption, type MenuSectionOptionProps } from '../MenuSectionOption';
 import { OutlineOption } from '../OutlineOption';
-import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  findRelativeSelectableItem,
+  getSelectableValues,
+  getWidgetClassName,
+  mergeAriaLabelledBy,
+  resolveTabIndex,
+  type ChangeHandler,
+} from '../../utils';
 import { useCleanId, useControlledValue, useFieldLabelActivate, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -22,11 +31,11 @@ export type SelectOptionProps =
   | MenuOptionProps
   | (MenuSectionOptionProps & { value?: undefined });
 
-type SelectableOption = MenuOptionProps & { value: string | number };
+/** 字符前缀跳转的缓冲时长（ms），对齐原版SelectWidget.onDocumentKeyPress的1500 */
+const KEY_PRESS_BUFFER_MS = 1500;
 
-/** 可选项判定（带value且未禁用）；键盘导航与选中目标集合共用（Select/Dropdown/ComboBoxInput一致） */
-export const isSelectableOption = (option: SelectOptionProps): option is SelectableOption =>
-  'value' in option && option.value !== undefined && !option.disabled;
+/** Home/End/PageUp/PageDown的按键量（页步长），对齐原版findRelativeSelectableItem的±1与±10 */
+const NAVIGATION_STEPS = { home: 1, end: -1, pageUp: -10, pageDown: 10 } as const;
 
 export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
   /** 选中选项回调函数（值优先） */
@@ -87,11 +96,26 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     { value: highlightedValue },
     onHighlightedChange,
   );
+  // 选项DOM索引的注册值：全部带value的选项（禁用项也注册——命中后由可选性过滤），
+  // 与下方registerItem的调用集合同源，供索引淘汰已移除选项
+  const optionValues = useMemo(() => {
+    const values: (string | number)[] = [];
+    for (const option of options) {
+      if (option.value !== undefined) {
+        values.push(option.value);
+      }
+    }
+    return values;
+  }, [options]);
   // 选项DOM双向索引（值→元素供前缀匹配/滚动，元素→值供拖拽定位），供拖拽与滚动共用
-  const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>();
+  const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>(optionValues);
   const keyPressBufferRef = useRef<{ buffer: string; timer: number }>({ buffer: '', timer: 0 });
   const rootRef = useRef<HTMLDivElement>(null);
   const setRootRef = useMergedRefs(ref, rootRef);
+  // 可选值序列（有value且未禁用）：键盘导航、悬停高亮与拖拽的共用目标集合。
+  // 另建Set供O(1)命中——拖拽mousemove逐帧调用isValueSelectable
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const selectableValueSet = useMemo(() => new Set(selectableValues), [selectableValues]);
   // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
   const fieldLabelId = useFieldLabelActivate(() => {
@@ -100,9 +124,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     }
   });
 
-  /** 从事件target沿祖先链定位选项值（对齐原版findTargetItem的closest('.oo-ui-optionWidget')） */
-  const isValueSelectable = (optionValue: string | number) =>
-    options.some((option) => option.value === optionValue && isSelectableOption(option));
+  /** 值是否可选（在可选值集合内） */
+  const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);
 
   const { pressed, pressedValue, handleMouseDown, handleUnpress } = useOptionDrag<string | number>({
     disabled,
@@ -152,19 +175,19 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       .toLowerCase()
       .startsWith(buffer.trim().toLowerCase());
 
-  const scrollItemIntoView = (optionValue: string | number) => {
+  // 经useCallback稳定（内部读ref）：供高亮滚动的layout effect以稳定依赖引用
+  const scrollItemIntoView = useCallback((optionValue: string | number) => {
     itemRefs.current.get(optionValue)?.scrollIntoView({ block: 'nearest' });
-  };
+  }, [itemRefs]);
 
   // 高亮项变化时滚动到可见区（对齐原版键盘导航的滚动行为）。统一在此处理而非仅在
   // handleKeyDown里调用：受控高亮（上层如ComboBoxInput经MenuSelect传入，键盘事件
-  // 不冒泡经过本组件）时仅靠handleKeyDown会漏掉滚动。
-  // scrollItemIntoView经itemRefs读取最新元素，无过期闭包，无需列入依赖
+  // 不冒泡经过本组件）时仅靠handleKeyDown会漏掉滚动
   useLayoutEffect(() => {
     if (currentHighlighted !== undefined) {
       scrollItemIntoView(currentHighlighted);
     }
-  }, [currentHighlighted]);
+  }, [currentHighlighted, scrollItemIntoView]);
 
   /** 对齐原版findRelativeSelectableItem：从start（不含）按offset取可选值，支持环绕与过滤 */
   const findRelative = (
@@ -172,43 +195,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     offset: number,
     filter?: (optionValue: string | number) => boolean,
     wrap = listWrapsAround,
-  ): string | number | undefined => {
-    const selectable = options.filter(isSelectableOption);
-    if (!selectable.length) {
-      return undefined;
-    }
-    const step = offset > 0 ? 1 : -1;
-    const startIndex = start === undefined
-      ? -1
-      : selectable.findIndex((o) => o.value === start);
-    if (startIndex === -1) {
-      // start不在可选集内：正向自首项、反向自末项起步，不满足filter则视为无目标
-      const candidate = offset > 0 ? selectable[0] : selectable[selectable.length - 1];
-      return candidate && (!filter || filter(candidate.value)) ? candidate.value : undefined;
-    }
-    let index = startIndex;
-    // 环绕时上限一整圈保证可终止，否则最多走|offset|步
-    const maxSteps = wrap ? selectable.length : Math.abs(offset);
-    for (let i = 0; i < maxSteps; i++) {
-      let nextIndex = index + step;
-      if (nextIndex < 0 || nextIndex >= selectable.length) {
-        if (!wrap) {
-          return undefined;
-        }
-        nextIndex = (nextIndex + selectable.length) % selectable.length;
-      }
-      index = nextIndex;
-      const candidate = selectable[index];
-      if (!filter || filter(candidate.value)) {
-        return candidate.value;
-      }
-      if (wrap && index === startIndex) {
-        // 绕回起点仍未命中filter：可选集内无满足条件的项
-        return undefined;
-      }
-    }
-    return undefined;
-  };
+  ): string | number | undefined =>
+    findRelativeSelectableItem(selectableValues, start, offset, filter, wrap);
 
   /** 键盘导航，对齐原版SelectWidget.onDocumentKeyDown与onDocumentKeyPress */
   const handleKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -216,14 +204,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     if (disabled) {
       return;
     }
-    const selectable = options.filter(isSelectableOption);
-    if (!selectable.length) {
+    if (!selectableValues.length) {
       return;
     }
-    // 对齐原版：导航目标为高亮项，无高亮时回退选中项
-    const current = currentHighlighted !== undefined && selectable.some((o) => o.value === currentHighlighted)
+    // 对齐原版：导航目标为高亮项，无高亮（或高亮项已不在可选集）时回退选中项
+    const current = currentHighlighted !== undefined && selectableValueSet.has(currentHighlighted)
       ? currentHighlighted
-      : selectable.find((o) => o.value === currentValue)?.value;
+      : selectableValueSet.has(currentValue) ? currentValue : undefined;
     let next: string | number | undefined;
     let handled = false;
 
@@ -251,7 +238,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
           // Home/PageUp从头或向前，End/PageDown从尾或向后（对齐原版findRelativeSelectableItem(null,±1)与±10）
           next = findRelative(
             e.key === 'PageUp' || e.key === 'PageDown' ? current : undefined,
-            e.key === 'Home' ? 1 : e.key === 'End' ? -1 : e.key === 'PageUp' ? -10 : 10,
+            NAVIGATION_STEPS[
+              e.key === 'Home' ? 'home' : e.key === 'End' ? 'end' : e.key === 'PageUp' ? 'pageUp' : 'pageDown'
+            ],
           );
           handled = true;
         }
@@ -274,7 +263,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
         if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           const b = keyPressBufferRef.current;
           clearTimeout(b.timer);
-          b.timer = window.setTimeout(clearKeyPressBuffer, 1500);
+          b.timer = window.setTimeout(clearKeyPressBuffer, KEY_PRESS_BUFFER_MS);
           // 对齐原版onDocumentKeyPress：连打同字符在同名前缀项间循环，否则累计缓冲
           let item = current;
           if (b.buffer === e.key && item !== undefined) {
@@ -304,9 +293,11 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     }
   };
 
-  // 选项元素id（对齐原版OptionWidget.getElementId）：调用方未显式给id时按数组下标生成
-  // （useCleanId去`:`），供aria-activedescendant指向高亮项；下标口径与highlightedIndex一致
   const optionIdBase = useCleanId();
+  /**
+   * 选项元素id（对齐原版OptionWidget.getElementId）：调用方未显式给id时按数组下标生成
+   * （useCleanId已去除`:`），供aria-activedescendant指向高亮项；下标口径与highlightedIndex一致
+   */
   const optionElementId = (index: number) => options[index]?.id ?? `${optionIdBase}-${index}`;
   const highlightedIndex = currentHighlighted === undefined
     ? -1
@@ -323,7 +314,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       // 的aria-activedescendant；无高亮时不输出
       aria-activedescendant={highlightedIndex >= 0 ? optionElementId(highlightedIndex) : undefined}
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
-      tabIndex={tabIndex ?? (disabled ? -1 : 0)}
+      tabIndex={resolveTabIndex(tabIndex, disabled)}
       onKeyDown={handleKeyDown}
       onMouseUp={handleUnpress}
       onMouseDown={handleMouseDown}

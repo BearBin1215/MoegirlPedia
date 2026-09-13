@@ -60,6 +60,9 @@ interface ProcessDialogErrorItem extends ProcessDialogErrorProps {
   id: number;
 }
 
+/** 标题避让判定的宽度余量（px）：原版fitLabel在相对尺寸下取`$head.width() - 20`，此处以同一余量近似 */
+const LABEL_FIT_GAP = 20;
+
 export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' | 'foot'> {
 
   /** 弹窗标题 */
@@ -223,7 +226,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
       const labelWidth = titleRef.current?.offsetWidth ?? 0;
       let leftWidth: number;
       let rightWidth: number;
-      if (2 * biggerWidth + labelWidth < navigationWidth - 20) {
+      if (2 * biggerWidth + labelWidth < navigationWidth - LABEL_FIT_GAP) {
         leftWidth = rightWidth = biggerWidth;
       } else {
         leftWidth = safeWidth;

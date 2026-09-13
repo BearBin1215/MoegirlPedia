@@ -5,7 +5,7 @@ import React, {
   type MouseEvent,
 } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName, mergeAriaLabelledBy } from '../../utils';
+import { getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex } from '../../utils';
 import { useControlledValue, useFieldLabelActivate, useMergedRefs } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -82,7 +82,7 @@ export const ToggleSwitch = forwardRef<HTMLSpanElement, ToggleSwitchProps>(({
       aria-checked={isChecked}
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       aria-disabled={disabled || undefined}
-      tabIndex={tabIndex ?? (disabled ? -1 : 0)}
+      tabIndex={resolveTabIndex(tabIndex, disabled)}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       ref={setRootRef}

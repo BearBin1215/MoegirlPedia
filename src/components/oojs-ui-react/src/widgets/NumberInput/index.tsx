@@ -11,12 +11,18 @@ import { Button } from '../Button';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray, type AccessKeyedElement, type FlaggedElement } from '../../utils';
-import { useControlledValue, useFieldInputId, useValidityFlag } from '../../hooks';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray, type AccessKeyedElement, type FlaggedElement } from '../../utils';
+import { useControlledValue, useFieldInputId, useLatestRef, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelElement, LabelPosition } from '../Label';
 import type { IconElement } from '../Icon';
 import type { IndicatorElement } from '../Indicator';
+
+/** allowInteger的强制步长与buttonStep的缺省步长（对齐原版setStep的`step || 1`） */
+const DEFAULT_STEP = 1;
+
+/** PageUp/PageDown步长相对buttonStep的倍数（对齐原版`pageStep = 10 * buttonStep`） */
+const PAGE_STEP_MULTIPLIER = 10;
 
 /** 数字输入框属性。值为`number`，空值（清空或键入非数字）为`''` */
 export interface NumberInputProps extends
@@ -74,6 +80,8 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   placeholder,
   readOnly,
   required,
+  // tabIndex落在input上（组件根为不可聚焦的div）
+  tabIndex,
   showButtons = true,
   step: stepProp,
   allowInteger,
@@ -87,9 +95,9 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 }, ref) => {
   // 对齐原版构造逻辑：allowInteger/isInteger为废弃兼容配置，置位时强制step=1（覆盖显式传入值）；
   // buttonStep缺省取step（无step时1）、pageStep缺省取buttonStep×10（原版setStep：buttonStep=step||1，pageStep=10*buttonStep）
-  const step = allowInteger || isInteger ? 1 : stepProp;
-  const buttonStep = buttonStepProp ?? (step ?? 1);
-  const pageStep = pageStepProp ?? buttonStep * 10;
+  const step = allowInteger || isInteger ? DEFAULT_STEP : stepProp;
+  const buttonStep = buttonStepProp ?? (step ?? DEFAULT_STEP);
+  const pageStep = pageStepProp ?? buttonStep * PAGE_STEP_MULTIPLIER;
   const { value: currentValue, commit } = useControlledValue<number | '', ChangeEvent<HTMLInputElement>>(
     { value: controlledValue, defaultValue: defaultValue ?? '' },
     onChange,
@@ -148,15 +156,18 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   };
 
   // 滚轮步进，对齐原版onWheel：聚焦时按buttonStep调整并阻止页面滚动。
-  // React合成wheel事件是passive的无法preventDefault，需挂原生监听；
-  // 不设依赖数组，保证每轮渲染闭包为最新（随currentValue/buttonStep更新）。
+  // React合成wheel事件是passive的无法preventDefault，需挂原生监听；disabled/readOnly/
+  // 步进与调整逻辑经ref读取最新闭包，监听只随挂载挂卸一次（不设依赖的每渲染重挂会使
+  // 每次键入都remove/addEventListener，对齐MultilineTextInput的adjustSizeRef范式）
+  const wheelStateRef = useLatestRef({ disabled, readOnly, buttonStep, adjustValue });
   useEffect(() => {
     const input = inputRef.current;
     if (!input) {
       return;
     }
     const handleWheel = (ev: WheelEvent) => {
-      if (disabled || readOnly) {
+      const { disabled: disabledNow, readOnly: readOnlyNow, buttonStep: buttonStepNow, adjustValue: adjustNow } = wheelStateRef.current;
+      if (disabledNow || readOnlyNow) {
         return;
       }
       // 对齐原版onWheel：deltaY为0时回退取deltaX（横向滚轮/触摸板横滑）
@@ -170,13 +181,13 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
         return;
       }
       ev.preventDefault();
-      adjustValue(delta < 0 ? -buttonStep : buttonStep);
+      adjustNow(delta < 0 ? -buttonStepNow : buttonStepNow);
     };
     input.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
       input.removeEventListener('wheel', handleWheel);
     };
-  });
+  }, [wheelStateRef]);
 
   const classes = clsx(
     className,
@@ -246,7 +257,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           id={fieldInputId}
           type='number'
           name={name}
-          tabIndex={disabled ? -1 : 0}
+          tabIndex={resolveTabIndex(tabIndex, disabled)}
           aria-disabled={disabled || undefined}
           aria-invalid={invalid || undefined}
           className='oo-ui-inputWidget-input'

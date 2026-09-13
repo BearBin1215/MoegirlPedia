@@ -24,7 +24,7 @@ export const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
   ...rest
 }, ref) => {
   const groupDisabled = isGroupAutoDisabled(tools, disabled);
-  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange, findTool } = useToolGroupPressed(tools, groupDisabled);
+  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange } = useToolGroupPressed(tools, groupDisabled);
 
   // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
   const classes = clsx(
@@ -48,12 +48,7 @@ export const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
           groupDisabled ? 'oo-ui-toolGroup-disabled-tools' : 'oo-ui-toolGroup-enabled-tools',
         )}
         onMouseDown={onMouseKeyDown}
-        onKeyDown={(e) => {
-          const tool = findTool(e.target);
-          if (tool) {
-            onToolKeyDown(e, tool);
-          }
-        }}
+        onKeyDown={onToolKeyDown}
         {...getToolHoverHandlers(onToolHoverChange)}
       >
         {tools.map((tool) => (

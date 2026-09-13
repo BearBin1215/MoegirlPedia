@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useMemo,
   useRef,
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -9,8 +10,10 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
+  getSelectableValues,
   getWidgetClassName,
   mergeAriaLabelledBy,
+  resolveTabIndex,
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
@@ -19,9 +22,7 @@ import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
 import type { SelectOptionProps } from '../Select';
-import { isSelectableOption } from '../Select';
 import { MenuSelect } from '../MenuSelect';
-
 export type DropdownOptionProps = SelectOptionProps;
 
 export interface DropdownProps extends
@@ -54,6 +55,8 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   options,
   value,
   defaultValue,
+  // tabIndex落在handle上（对齐原版DropdownWidget的$tabIndexed=$handle，根元素不可聚焦）
+  tabIndex,
   'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
@@ -85,17 +88,18 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     open && 'oo-ui-dropdownWidget-open',
   );
 
-  /** 可选项（有value且未禁用），键盘导航的目标集合 */
-  const selectableOptions = options.filter(isSelectableOption);
-  const selectableValues = selectableOptions.map((o) => o.value);
+  /** 可选项（有value且未禁用），键盘导航的目标集合；Set供Enter分支O(1)校验高亮值 */
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const selectableValueSet = useMemo(() => new Set(selectableValues), [selectableValues]);
 
   // 菜单开合与键盘高亮：端点钳制不环绕（原版MenuSelectWidget static.listWrapsAround=false），
   // 开启时点击外部/Escape关闭（Escape捕获阶段，嵌套于Dialog时不误关弹窗）。
-  // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写
+  // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写；
+  // 导航键（↑↓/Home/End/PageUp/PageDown）统一走handleNavigationKey
   const {
     highlightedValue,
     setHighlightedValue,
-    moveHighlight,
+    handleNavigationKey,
   } = useMenuPopup<string | number>({
     open,
     onClose: () => setOpen(false),
@@ -120,56 +124,33 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         ev.preventDefault();
         if (!open) {
           setOpen(true);
-        } else {
-          const highlighted = selectableOptions.find((o) => o.value === highlightedValue);
-          if (highlighted) {
-            selectOption(highlighted.value);
-          }
+        } else if (highlightedValue !== undefined && selectableValueSet.has(highlightedValue)) {
+          selectOption(highlightedValue);
         }
         break;
       case 'ArrowDown':
-        ev.preventDefault();
-        if (!open) {
-          setOpen(true);
-        } else {
-          moveHighlight(1);
-        }
-        break;
       case 'ArrowUp':
+        // 收起时方向键仅展开（对齐原版onKeyDown），展开后才移动高亮
         ev.preventDefault();
         if (!open) {
           setOpen(true);
         } else {
-          moveHighlight(-1);
+          handleNavigationKey(ev.key);
         }
         break;
       case 'Home':
-        if (open && selectableOptions.length) {
-          ev.preventDefault();
-          setHighlightedValue(selectableOptions[0].value);
-        }
-        break;
       case 'End':
-        if (open && selectableOptions.length) {
-          ev.preventDefault();
-          setHighlightedValue(selectableOptions[selectableOptions.length - 1].value);
-        }
-        break;
       case 'PageUp':
-        if (open && selectableOptions.length) {
-          ev.preventDefault();
-          moveHighlight(-10);
-        }
-        break;
       case 'PageDown':
-        if (open && selectableOptions.length) {
+        // 仅菜单展开时占用按键；±10翻页步长与首末跳转由handleNavigationKey统一
+        if (open && handleNavigationKey(ev.key)) {
           ev.preventDefault();
-          moveHighlight(10);
         }
         break;
     }
   };
 
+  /** 点击handle开合菜单（对齐原版DropdownWidget.onClick的toggle语义，禁用时不响应） */
   const handleClickLabel = () => {
     if (!disabled) {
       setOpen((prev) => !prev);
@@ -186,7 +167,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       ref={mergedRef}
     >
       <span
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={resolveTabIndex(tabIndex, disabled)}
         aria-disabled={disabled || undefined}
         aria-haspopup='listbox'
         className='oo-ui-dropdownWidget-handle'

@@ -59,6 +59,8 @@ export const ToggleButton = forwardRef<HTMLSpanElement, ToggleButtonProps>(({
   return (
     <Button
       {...rest}
+      // disabled须显式下传（解构后不在rest中）；Button内部再与ButtonGroup下发的组禁用取或
+      disabled={disabled}
       className={clsx(
         className,
         isChecked ? 'oo-ui-toggleWidget-on' : 'oo-ui-toggleWidget-off',

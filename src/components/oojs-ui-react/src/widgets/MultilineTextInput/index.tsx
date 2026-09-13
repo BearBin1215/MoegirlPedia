@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, toFlagArray } from '../../utils';
+import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, resolveTabIndex, toFlagArray } from '../../utils';
 import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import { resolveValidate, type TextInputProps } from '../TextInput';
 
@@ -26,6 +26,9 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
 
 /** 缺省maxRows：2×rows与10取大（对齐原版autosize缺省规则） */
 const getDefaultMaxRows = (rows?: number) => Math.max(2 * (rows || 0), 10);
+
+/** 指示器的右侧微调（px）：与TextInput系指示器的默认落点对齐，多行框需显式补回 */
+const INDICATOR_RIGHT_OFFSET = '2px';
 
 /**
  * 多行文本输入框，对齐原版OO.ui.MultilineTextInputWidget：autosize时经隐藏测量textarea
@@ -46,6 +49,8 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   labelPosition = 'after',
   readOnly,
   required,
+  // tabIndex落在textarea上（组件根为不可聚焦的div）
+  tabIndex,
   validate,
   flags,
   autosize,
@@ -184,7 +189,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={resolveTabIndex(tabIndex, disabled)}
         aria-disabled={disabled || undefined}
         aria-invalid={invalid || undefined}
         className={inputClasses}
@@ -212,7 +217,10 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
         />
       )}
       <IconBase icon={icon} />
-      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} style={{ right: '2px' }} />
+      <IndicatorBase
+        indicator={indicator || (required ? 'required' : undefined)}
+        style={{ right: INDICATOR_RIGHT_OFFSET }}
+      />
       {hasLabel(label) && <LabelBase ref={labelRef}>{label}</LabelBase>}
     </div>
   );

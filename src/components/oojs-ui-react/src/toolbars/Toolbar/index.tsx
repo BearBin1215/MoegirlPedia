@@ -10,8 +10,12 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { useMergedRefs } from '../../hooks';
+import { withTemporaryClass } from '../../utils';
 import type { ElementProps } from '../../Element';
 import type { ToolGroupBaseProps } from '../Tool';
+
+/** 窄栏类名：state派生与测量期临时增删共用同一常量，避免字面量分叉 */
+const NARROW_CLASS = 'oo-ui-toolbar-narrow';
 
 export interface ToolbarProps extends ElementProps<HTMLDivElement> {
 
@@ -93,17 +97,19 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
       }
       // narrow类会压缩工具组宽度（主题CSS有多处.narrow规则），以压缩后宽度为基准会
       // 误判（判定撤销→内容恢复自然宽度溢出→bar宽度未变、RO不回调→状态长期错误）。
-      // 测量前临时移除该类取自然宽度，判定后按结果恢复——对齐原版getNarrowThreshold
-      // 惰性缓存「未压缩内容宽度」的基准语义，且能感知工具组增减（移除/恢复在同一
-      // 同步块内，paint不发生于中间，无闪烁）
-      root.classList.remove('oo-ui-toolbar-narrow');
-      const contentWidth = (toolsRef.current?.offsetWidth ?? 0) +
-        (afterRef.current?.offsetWidth ?? 0) +
-        (actionsRef.current?.offsetWidth ?? 0);
+      // 测量期临时移除该类取自然宽度（withTemporaryClass保证恢复），判定后按结果同步
+      // 写回——对齐原版getNarrowThreshold惰性缓存「未压缩内容宽度」的基准语义，且能
+      // 感知工具组增减（同步块内完成，paint不发生于中间，无闪烁）
+      let contentWidth = 0;
+      withTemporaryClass(root, NARROW_CLASS, () => {
+        contentWidth = (toolsRef.current?.offsetWidth ?? 0) +
+          (afterRef.current?.offsetWidth ?? 0) +
+          (actionsRef.current?.offsetWidth ?? 0);
+      });
       const next = bar.clientWidth <= contentWidth;
-      if (next) {
-        root.classList.add('oo-ui-toolbar-narrow');
-      }
+      // classList同步写回：与下方由state派生的className同值，仅为免去等React提交的闪烁，
+      // 不构成第二个真相来源（state始终是权威值）
+      root.classList.toggle(NARROW_CLASS, next);
       setNarrow(next);
     };
     measure();
@@ -153,7 +159,7 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
   return (
     <div
       {...rest}
-      className={clsx(className, 'oo-ui-toolbar', `oo-ui-toolbar-position-${position}`, narrow && 'oo-ui-toolbar-narrow')}
+      className={clsx(className, 'oo-ui-toolbar', `oo-ui-toolbar-position-${position}`, narrow && NARROW_CLASS)}
       onMouseDown={handlePointerDown}
       onKeyDown={handlePointerDown}
       ref={mergedRef}

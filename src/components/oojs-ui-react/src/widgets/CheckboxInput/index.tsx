@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { Icon } from '../Icon';
-import { getWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { getWidgetClassName, resolveTabIndex, type AccessKeyedElement } from '../../utils';
 import { useControlledValue, useFieldInputId, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -96,7 +96,7 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         title={title}
         dir={dir}
         accessKey={accessKey}
-        tabIndex={tabIndex ?? (disabled ? -1 : 0)}
+        tabIndex={resolveTabIndex(tabIndex, disabled)}
         aria-disabled={disabled || undefined}
         className='oo-ui-inputWidget-input'
         checked={isChecked}

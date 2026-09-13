@@ -1,9 +1,14 @@
-import React, { forwardRef } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import clsx from 'clsx';
 import { RadioSelect } from '../RadioSelect';
 import { type RadioOptionProps } from '../RadioOption';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue, useControlledValueFallback } from '../../hooks';
+import {
+  getSelectableValues,
+  getWidgetClassName,
+  resolveSelectableValue,
+  type ChangeHandler,
+} from '../../utils';
+import { useControlledValue, useControlledValueNotify } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 export interface RadioSelectInputProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
@@ -37,17 +42,17 @@ export const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps
   value,
   defaultValue,
   onChange,
+  // 转发给内部RadioSelect的根（对齐原版RadioSelectInputWidget把$tabIndexed重定向到内部组的）
+  tabIndex,
   ...rest
 }, ref) => {
   const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
 
-  /** 可选值集合；当前值不在其中时回退第一个可选值（无可选值则undefined） */
-  const selectableValues = options
-    .filter((option) => !option.disabled)
-    .map((option) => option.value);
-  const effectiveValue = selectableValues.includes(currentValue) ? currentValue : selectableValues[0];
-  // 受控值为非法值时回写回退值，避免父级state与显示值漂移（对齐原版setValue的回退写入）
-  useControlledValueFallback(value, effectiveValue, onChange);
+  // 可选值集合；当前值不在其中时回退首个可选值（无可选值则undefined）
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const effectiveValue = resolveSelectableValue(currentValue, selectableValues);
+  // 受控值为非法值时回写生效值，避免父级state与显示值漂移（对齐原版setValue的回退写入）
+  useControlledValueNotify(value, effectiveValue, onChange);
 
   const classes = clsx(
     className,
@@ -75,6 +80,7 @@ export const RadioSelectInput = forwardRef<HTMLDivElement, RadioSelectInputProps
         options={options}
         disabled={disabled}
         value={effectiveValue}
+        tabIndex={tabIndex}
         onChange={(next) => {
           if (next !== undefined) {
             commit(next);

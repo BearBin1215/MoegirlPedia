@@ -12,7 +12,7 @@ import { TabPanelLayout, type TabPanelLayoutProps } from '../TabPanelLayout';
 import { TabSelect } from '../../widgets/TabSelect';
 import { type ChangeHandler } from '../../utils';
 import { useIsMobile } from '../../config';
-import { useAutoFocusPanel, useCleanId, useLayoutSelection } from '../../hooks';
+import { useAutoFocusPanel, useCleanId, useLatestRef, useLayoutSelection } from '../../hooks';
 
 export interface IndexLayoutTabProps extends TabPanelLayoutProps {
   /** 页签显示内容 */
@@ -24,6 +24,21 @@ export interface IndexLayoutTabProps extends TabPanelLayoutProps {
   /** 页签是否禁用，禁用页签对应的面板将以hidden完全隐藏 */
   disabled?: boolean;
 }
+
+/**
+ * 面板专属props（LayoutProps.hidden + PanelLayoutProps的布局字段 + 页签复用字段）：
+ * 页签不透传这些字段，否则经TabOption的...rest落成div未知属性并触发React开发期告警。
+ * 新增面板级prop时须同步此名单
+ */
+const PANEL_ONLY_PROPS = [
+  'active',
+  'hidden',
+  'scrollable',
+  'padded',
+  'framed',
+  'expanded',
+  'label',
+] as const;
 
 export interface IndexLayoutProps extends Omit<MenuLayoutProps, 'menu' | 'menuPosition' | 'children' | 'onChange'> {
   /** 页签集 */
@@ -94,7 +109,12 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     skipInitialFocus: true,
   });
 
-  // 对齐原版openMatchedPanels：浏览器查找命中隐藏面板时自动切换到对应页签
+  // 对齐原版openMatchedPanels：浏览器查找命中隐藏面板时自动切换到对应页签。
+  // 处理器经ref读取最新options/生效值/选择回调，监听仅随开关与idBase挂卸
+  // （依赖effectiveValue等每渲染变化的值会使监听反复移除再添加）
+  const optionsRef = useLatestRef(options);
+  const effectiveValueRef = useLatestRef(effectiveValue);
+  const selectRef = useLatestRef(select);
   useEffect(() => {
     if (!openMatchedPanels || continuous) {
       return undefined;
@@ -106,13 +126,14 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     // beforematch在浏览器页内查找（Ctrl+F）命中hidden="until-found"元素时派发：
     // 按命中面板id反查页签并激活，使查找结果所在面板可见
     const handleBeforeMatch = (e: Event) => {
-      const index = options.findIndex(
+      const currentOptions = optionsRef.current;
+      const index = currentOptions.findIndex(
         (_, i) => `${idBase}-panel-${i}` === (e.target as HTMLElement).id,
       );
       if (index !== -1) {
-        const matched = options[index].value;
-        if (matched !== effectiveValue) {
-          select(matched);
+        const matched = currentOptions[index].value;
+        if (matched !== effectiveValueRef.current) {
+          selectRef.current(matched);
         }
       }
     };
@@ -120,7 +141,7 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     return () => {
       stack.removeEventListener('beforematch', handleBeforeMatch);
     };
-  }, [openMatchedPanels, continuous, options, idBase, effectiveValue, select]);
+  }, [openMatchedPanels, continuous, idBase, optionsRef, effectiveValueRef, selectRef]);
 
   return (
     <MenuLayout
@@ -136,9 +157,8 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
             onChange={activate}
             options={options.map((option, i) => ({
               // 对齐原版：页签仅承接label/disabled与元素级属性（原版经tabItemConfig），
-              // 面板属性（active/scrollable/padded/framed/expanded等）不透入页签，
-              // 否则经TabOption的...rest落成div未知属性触发React开发期告警
-              ...omit(option, ['active', 'hidden', 'scrollable', 'padded', 'framed', 'expanded', 'label']),
+              // 面板属性经PANEL_ONLY_PROPS统一剥离
+              ...omit(option, [...PANEL_ONLY_PROPS]),
               value: option.value,
               disabled: option.disabled,
               children: option.label,

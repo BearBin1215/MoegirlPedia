@@ -1,10 +1,15 @@
-import React, { forwardRef } from 'react';
+import React, { useMemo, forwardRef } from 'react';
 import clsx from 'clsx';
 import { Dropdown, type DropdownOptionProps } from '../Dropdown';
 import { Indicator } from '../Indicator';
-import { isSelectableOption, type SelectOptionProps } from '../Select';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
-import { useControlledValue, useControlledValueFallback, useFieldInputId } from '../../hooks';
+import { type SelectOptionProps } from '../Select';
+import {
+  getSelectableValues,
+  getWidgetClassName,
+  resolveSelectableValue,
+  type ChangeHandler,
+} from '../../utils';
+import { useControlledValue, useControlledValueNotify, useFieldInputId } from '../../hooks';
 import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';
 
@@ -12,8 +17,8 @@ export type DropdownInputOption = DropdownOptionProps;
 
 type SelectableOption = SelectOptionProps & { value: string | number };
 
-/** 带value的选项（分组判定用；禁用项仍是可选项，只是不可选，故不含disabled判定） */
-const hasOptionValue = (option: DropdownInputOption): option is SelectableOption =>
+/** 是否“选项”而非分组标题（分组判定用；禁用项仍是选项，只是不可选，故不含disabled判定） */
+const isValueOption = (option: DropdownInputOption): option is SelectableOption =>
   'value' in option && option.value !== undefined;
 
 export interface DropdownInputProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
@@ -47,7 +52,7 @@ interface OptionGroup {
 const groupOptions = (options: DropdownInputOption[]): OptionGroup[] => {
   const groups: OptionGroup[] = [];
   for (const option of options) {
-    if (!hasOptionValue(option)) {
+    if (!isValueOption(option)) {
       groups.push({ section: option, items: [] });
     } else {
       const last = groups[groups.length - 1];
@@ -76,6 +81,8 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   value,
   defaultValue,
   onChange,
+  // 转发给内部Dropdown的handle（对齐原版DropdownInputWidget把$tabIndexed重定向到内部Dropdown的）
+  tabIndex,
   ...rest
 }, ref) => {
   const isMobile = useIsMobile();
@@ -84,13 +91,11 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
   // 移动端形态下原生select可见，点击标签即聚焦
   const fieldInputId = useFieldInputId();
 
-  /** 可选值集合；当前值不在其中时回退第一个可选值（无可选值则undefined） */
-  const selectableValues = options
-    .filter(isSelectableOption)
-    .map((option) => option.value);
-  const effectiveValue = selectableValues.includes(currentValue) ? currentValue : selectableValues[0];
-  // 受控值为非法值时回写回退值，避免父级state与显示值漂移
-  useControlledValueFallback(value, effectiveValue, onChange);
+  // 可选值集合；当前值不在其中时回退首个可选值（无可选值则undefined）
+  const selectableValues = useMemo(() => getSelectableValues(options), [options]);
+  const effectiveValue = resolveSelectableValue(currentValue, selectableValues);
+  // 受控值为非法值时回写生效值，避免父级state与显示值漂移
+  useControlledValueNotify(value, effectiveValue, onChange);
 
   const groups = groupOptions(options);
 
@@ -157,6 +162,7 @@ export const DropdownInput = forwardRef<HTMLDivElement, DropdownInputProps>(({
         disabled={disabled}
         value={effectiveValue}
         onChange={(next) => commit(next)}
+        tabIndex={tabIndex}
       />
     </div>
   );

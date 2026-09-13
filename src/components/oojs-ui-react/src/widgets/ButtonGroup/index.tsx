@@ -1,15 +1,9 @@
-import React, {
-  forwardRef,
-  Children,
-  cloneElement,
-  isValidElement,
-  type ReactElement,
-} from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Widget, type WidgetProps } from '../Widget';
-import { Button, type ButtonProps } from '../Button';
+import { ButtonGroupDisabledProvider } from './context';
 
-/** 按钮组（children为Button元素；组级disabled传播到各Button，为React便捷行为，原版无此JS传播） */
+/** 按钮组（children为Button元素；组级disabled经Context下发到组内按钮，为React便捷行为，原版无此JS传播） */
 export type ButtonGroupProps = WidgetProps;
 
 export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
@@ -30,17 +24,11 @@ export const ButtonGroup = forwardRef<HTMLDivElement, ButtonGroupProps>(({
       disabled={disabled}
       ref={ref}
     >
-      {Children.map(children, (child) => {
-        if (isValidElement(child) && child.type === Button) {
-          return cloneElement(child as ReactElement<ButtonProps>, {
-            disabled: disabled || (child.props as ButtonProps).disabled,
-          });
-        }
-        return child;
-      })}
+      <ButtonGroupDisabledProvider value={disabled}>
+        {children}
+      </ButtonGroupDisabledProvider>
     </Widget>
   );
 });
 
 ButtonGroup.displayName = 'ButtonGroup';
-

@@ -5,6 +5,7 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import vuePlugin from 'eslint-plugin-vue';
 import * as espree from 'espree';
 
@@ -37,6 +38,7 @@ export default tseslint.config(
     plugins: {
       '@stylistic': stylistic,
       'react': reactPlugin,
+      'react-hooks': reactHooksPlugin,
     },
     settings: {
       react: {
@@ -126,6 +128,8 @@ export default tseslint.config(
       'react/no-unused-state': 2,
       'react/no-arrow-function-lifecycle': 2,
       'react/prop-types': 0,
+      'react-hooks/rules-of-hooks': 2, // Hook调用规则（条件/循环内调用Hook等，React运行时错误的高发源）
+      'react-hooks/exhaustive-deps': 1, // effect依赖完整性（告警级：依赖经ref承载等合理豁免场景较多）
       '@stylistic/arrow-parens': 1,
       '@stylistic/arrow-spacing': [1, {
         before: true,

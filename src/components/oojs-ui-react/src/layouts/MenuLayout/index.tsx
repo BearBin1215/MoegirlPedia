@@ -36,12 +36,14 @@ export const MenuLayout = forwardRef<HTMLDivElement, MenuLayoutProps>(({
   );
 
   const elements = [
+    // 隐藏菜单时不下挂子树：主题CSS以width/height:0 + overflow:hidden收起菜单（并非display:none），
+    // 保留子树会让其中可聚焦元素仍留在tab序（隐形焦点陷阱）
     <div
       key='menu'
       className='oo-ui-menuLayout-menu'
       aria-hidden={!showMenu}
     >
-      {menu}
+      {showMenu ? menu : null}
     </div>,
     <div
       key='content'
