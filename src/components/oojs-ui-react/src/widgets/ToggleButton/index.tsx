@@ -1,7 +1,7 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Button, type ButtonProps } from '../Button';
-import { useControlledValue, useFieldLabelActivate, useMergedRefs } from '../../hooks';
+import { useControlledValue, useFieldLabelFocus } from '../../hooks';
 import { mergeAriaLabelledBy } from '../../utils';
 
 /**
@@ -48,12 +48,10 @@ export const ToggleButton = forwardRef<HTMLSpanElement, ToggleButtonProps>(({
   );
   // FieldLayout标签联动（通道B）：点击标签聚焦按钮元素（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
-  const rootRef = useRef<HTMLSpanElement>(null);
-  const setRootRef = useMergedRefs(ref, rootRef);
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
-      rootRef.current?.querySelector<HTMLElement>('a[role=button]')?.focus();
-    }
+  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLSpanElement>({
+    ref,
+    disabled,
+    activate: (el) => el?.querySelector<HTMLElement>('a[role=button]')?.focus(),
   });
 
   return (

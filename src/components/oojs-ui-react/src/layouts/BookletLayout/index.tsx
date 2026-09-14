@@ -91,7 +91,7 @@ export const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
 }, ref) => {
   // 激活页选择：失效（被移除）时按邻近回退，受控回写/非受控提交（见useLayoutSelection）。
   // 原版不补选（其removePages注释明确「选哪页属业务逻辑」），此为增强行为，见docs/TODO.md
-  const { effectiveValue: activeValue, select } = useLayoutSelection<string | number>({
+  const { effectiveValue: activeValue, selectIfChanged } = useLayoutSelection<string | number>({
     value,
     defaultValue,
     onChange,
@@ -126,12 +126,6 @@ export const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
   // 移动端形态开关（全局配置）：autoFocus的抑制条件
   const isMobile = useIsMobile();
 
-  const handleSelect = (selectedValue: string | number) => {
-    if (selectedValue !== activeValue) {
-      select(selectedValue);
-    }
-  };
-
   // 对齐原版onStackLayoutSet：continuous时滚动至激活页（首次不滚动）；autoFocus时
   // 聚焦页内第一个可聚焦元素（焦点已在该页内时useAutoFocusPanel自动跳过；
   // 移动端形态抑制聚焦，对齐原版的!isMobile条件）
@@ -162,7 +156,7 @@ export const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
         >
           <OutlineSelect
             value={activeValue}
-            onChange={handleSelect}
+            onChange={selectIfChanged}
             options={menuOptions}
           />
           {editable && (
@@ -204,7 +198,7 @@ export const BookletLayout = forwardRef<HTMLDivElement, BookletLayoutProps>(({
         value={activeValue}
         options={pageOptions}
         continuous={continuous}
-        onPageFocus={continuous ? (focusedValue) => handleSelect(focusedValue) : undefined}
+        onPageFocus={continuous ? selectIfChanged : undefined}
         ref={stackRef}
       />
     </MenuLayout>

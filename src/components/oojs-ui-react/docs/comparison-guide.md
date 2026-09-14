@@ -52,7 +52,7 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `import { type KeyboardEvent } from 'react'` 会遮蔽 DOM 的 `KeyboardEvent`，导致 `document.addEventListener('keydown', ...)` 类型报错。规避：`import { type KeyboardEvent as ReactKeyboardEvent }`，或以 `globalThis.KeyboardEvent` 引用 DOM 类型。
 - **非受控用法兼容**：类输入组件不能只依赖 `value` prop 变化触发副作用（非受控时 value 恒 undefined，effect 只跑一次）。用 `input` 事件监听（键入即时）+ `value` 依赖（程序化赋值/受控回流）双通道。
 - **浮层的 Escape 统一在捕获阶段处理并 `stopPropagation`**（`hooks.ts` 的 `useDismissablePopover`）：Popup/MenuSelect/PopupToolGroup 都经它关闭。Dialog 的 ESC 是 React `onKeyDown`（冒泡阶段、绑在弹窗根），故弹窗内嵌套浮层的 ESC 只会关最内层浮层。新增浮层时必须复用该 hook，不要各自写 document 监听——否则 ESC 会同时关掉浮层与弹窗。
-- **同类交互必须收敛到同一个 hook，不得按组件手抄**：按键前缀跳转、相对导航、按压态、浮层关闭、选项过滤等交互在原版里各组件共享基类方法，React 版应对应共享 hook/纯函数（索引见「共享抽象」）。若发现同一交互已有多份手写实现，优先抽取收敛而不是在新组件里再抄一份。`usePressedState`、`useMenuPopup.handleNavigationKey`、`useGroupKeyboardSelection`、`findRelativeSelectableItem`、`useDismissablePopover` 即为此类收敛产物。
+- **同类交互必须收敛到同一个 hook，不得按组件手抄**：按键前缀跳转、相对导航、按压态、浮层关闭、选项过滤等交互在原版里各组件共享基类方法，React 版应对应共享 hook/纯函数（索引见「共享抽象」）。若发现同一交互已有多份手写实现，优先抽取收敛而不是在新组件里再抄一份。`usePressedState`、`useMenuPopup.handleNavigationKey`/`consumeNavigationKey`、`useGroupKeyboardSelection`、`findRelativeSelectableItem`、`useDismissablePopover` 即为此类收敛产物。
 - **回调用 ref 承载、而非进依赖数组**：最新值/回调统一经 `useLatestRef` 读取，使 effect 与 document 监听只随真正需要的开关挂卸，避免内联箭头函数每渲染重挂监听。已有正例：`useControlledValue.commit`（useCallback 稳定）、`useDismissablePopover`、`useAutoFocusPanel`、`usePressedState`。
 - **Hook 不可置于短路/条件表达式中**：如 `idProp ?? \`...${useCleanId()}\`` 会在 idProp 有值时跳过 Hook 调用，同一实例切换时 React 抛 "Rendered fewer hooks than expected" 并卸载整树。先生成再合并。
 - **`hidden="until-found"` 不要同时标记 `aria-hidden`**：`until-found` 的语义是"对浏览器查找可见、对用户暂时不可见"，持续向辅助技术声明不可见会与查找命中激活面板的意图冲突。`Layout` 仅在 `hidden === true` 时输出 `aria-hidden`。
@@ -72,8 +72,9 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `useMergedRefs`：同时持有元素引用并向外转发 ref（替代 `useImperativeHandle` 手工桥接）。
 - `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。
 - `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。`ignore` 为忽略目标白名单（ref 或真实元素数组），浮层自身根节点须列入（Popup 传入 portal 根 `rootRef` 与 `autoCloseIgnore`）。
-- `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。导航键（↑↓/Home/End/PageUp/PageDown）经返回的 `handleNavigationKey` 统一处理（翻页 ±10 与原版一致），组件内不要再手写按键分支。
+- `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。导航键（↑↓/Home/End/PageUp/PageDown）经返回的 `handleNavigationKey` 统一处理（翻页 ±10 与原版一致），组件内不要再手写按键分支；Home/End/PageUp/PageDown 的"仅展开时生效 + preventDefault"走 `consumeNavigationKey`（与 `handleNavigationKey` 的区别是它额外包含这两件事，供 `onKeyDown` 直接转调）。
 - `usePressedState`：鼠标/键盘按压态的进入与复位（document 级 capture `mouseup`/`keyup` 兜底），Button/ButtonInput/Tool 组共用。组内委托场景经 `resolveTarget` 从事件 target 解析目标、`canPress` 过滤、`onTrigger` 在释放落在发起目标上时回调（Tool 组的 `onSelect` 位）。
+  `onMouseDown`/`onMouseUp`/`onKeyDown`/`onKeyUp` 四个参数承接调用方透传的回调，**先于**按压逻辑无条件转发——按压逻辑含 disabled/非左键的提前返回，置于其后会导致这些分支下调用方收不到事件。Button/ButtonInput 经此串联用户回调，不再各自写包装函数。
 - `useGroupKeyboardSelection`：直选型选项组（TabSelect/RadioSelect/ButtonSelect）的键盘改选，`selectableValues` 由调用方按展示顺序给出。选中提交带"值未变化不提交"守卫（对齐原版 `selectItem` 对已选中项的提前返回，`Select` 的 Enter 与拖拽提交同理）。与 `useMenuPopup` 同样的"同类交互收敛到同一 hook"约束。
 - `findRelativeSelectableItem`（utils.ts）：相对定位可选值的纯函数，Select/TabSelect/RadioSelect 与菜单导航共用；`offset` 为相对步数（±1 步进、±10 翻页），`filter` 供前缀跳转。改端点/环绕/无选中起步等边界规则只改这一处。
 - `useLatestRef`：渲染期同步最新值的 ref，供事件监听/定时器读取最新 props 而不重挂监听；`useControlledValue.commit`、`useControlledValueNotify`、`useDismissablePopover`、`useValidityFlag`、`useAutoFocusPanel`、`usePressedState` 等内部回调均经它稳定化。
@@ -81,11 +82,12 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - `resolveLayoutSelection`（`hooks.ts` 导出的纯函数）：布局激活值的"有效值原样、缺失/失效按邻近回退（原位置→前一项→首项）"派生；`prevOptions` 须传上一轮 options。
 - `useAnchoredPanelLayout`：锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup），留白与方向经全局配置解析；方向按锚点元素缓存，避免滚动重算触发样式重算。
 - `useAutoFocusPanel`：切换激活面板后聚焦其内首个可聚焦元素（IndexLayout/BookletLayout）。
-- `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略（派生走 `resolveLayoutSelection`）。
+- `useLayoutSelection`：布局激活项的统一"派生 + 失效补选"策略（派生走 `resolveLayoutSelection`）。返回的 `select`/`selectIfChanged` 把 IndexLayout/BookletLayout 各自手写的"同值不提交"守卫收敛到一处：`selectIfChanged` 与**生效值**比较（对齐原版 `BookletLayout.setPage` 与当前页比较的提前返回），受控值非法时点击回退项不重复派发。两者保持**一元签名**（不转发事件）——`ChangeHandler` 约定第二参数为 change 事件，而 `StackLayout.onPageFocus` 传来的是 FocusEvent，不进参数是从源头规避串味。
 - `useOptionRegistry` / `useOptionDrag`：Select 系的选项 DOM 双向索引与拖拽选择。`useOptionRegistry` 须传入当前渲染的选项值列表——值移除时其 ref 回调缓存随之淘汰，避免长期运行下缓存累积。
 - `widgets/Popup/popupLayout.ts`：Popup 定位的纯函数模块（翻转判定 / 方位与对齐→页面坐标 / 箭头腾挪 / 容器边界钳制 / 就近滚动容器探测），可独立单测；浮层定位逻辑的改动优先改这里，不要在组件内联计算。
 - `useValidityFlag`：输入类组件的软校验反馈（输入元素 `aria-invalid` + 根元素 invalid 标志类，不改写值）。触发时机对齐原版 `setValidityFlag`：值变更防抖 250ms、失焦立即校验、聚焦清除；初始值不主动校验（NumberInput 的挂载期校验由组件经 `revalidate` 补齐，对齐原版 setRange/setStep 的构造期校验）。
-- `FieldLabelLink`（Context）+ `useFieldInputId` / `useFieldLabelActivate` / `useFieldGroupLabelLink`：FieldLayout 的标签联动双通道，对齐原版按 `getInputId()` 分流的两条路径——输入类组件（通道A）认领字段 id 与 label 的 `htmlFor` 原生关联；无原生 input 的组件（通道B）注册标签点击激活回调（原版 simulateLabelClick）并经 labelId 挂 `aria-labelledby`（原版 setLabelledBy），aria 落点须与原版 `$tabIndexed` 同元素（如 Button 的 anchor、Dropdown 的 handle）。选项组容器（RadioSelect/CheckboxMultiselect）经 `useFieldGroupLabelLink` 屏蔽通道A后再向选项下发——组内多个 input 认领同一字段id会产生重复id且label误切首个选项，原版组容器 `getInputId()` 为 null 只走通道B。通道B激活回调含禁用态 guard（原版 focus() 内含 isDisabled 判断，禁用不聚焦）。新增字段组件按形态二选一接入，勿在 FieldLayout 里反射子组件。
+- `FieldLabelLink`（Context）+ `useFieldInputId` / `useFieldLabelFocus` / `useFieldGroupLabelLink`：FieldLayout 的标签联动双通道，对齐原版按 `getInputId()` 分流的两条路径——输入类组件（通道A）认领字段 id 与 label 的 `htmlFor` 原生关联；无原生 input 的组件（通道B）注册标签点击激活回调（原版 simulateLabelClick）并经 labelId 挂 `aria-labelledby`（原版 setLabelledBy），aria 落点须与原版 `$tabIndexed` 同元素（如 Button 的 anchor、Dropdown 的 handle）。选项组容器（RadioSelect/CheckboxMultiselect）经 `useFieldGroupLabelLink` 屏蔽通道A后再向选项下发——组内多个 input 认领同一字段id会产生重复id且label误切首个选项，原版组容器 `getInputId()` 为 null 只走通道B。通道B激活回调含禁用态 guard（原版 focus() 内含 isDisabled 判断，禁用不聚焦）。新增字段组件按形态二选一接入，勿在 FieldLayout 里反射子组件。
+- `useFieldLabelFocus`（通道B的推荐入口，内部经 `useFieldLabelActivate` 注册）：对齐原版 `TabIndexedElement.simulateLabelClick` 的默认实现——内部持有根元素 ref 并与外部转发的 ref 合并，点击标签时聚焦根元素，禁用时不聚焦。落点不是根元素或需附带副作用的组件传 `activate` 覆盖：Dropdown 聚焦 handle、ToggleButton 经内部锚点聚焦、ToggleSwitch 额外翻转值、CheckboxMultiselect 聚焦首个可用选项。返回值另含内部 `rootRef`，供组件自身读取（如 Dropdown 把它作为浮层忽略目标）。仅在不经过根元素的场景才直接使用 `useFieldLabelActivate`。
 - `FOCUSABLE_SELECTOR` / `getFocusableElements` / `getFirstFocusable`：可聚焦元素判定，全库统一口径。
 - `resolveTabIndex`（utils.ts）：可聚焦元素的 tabIndex 取值（disabled 优先，缺省 0），见上文 a11y 条目。
 - `ElementOrRef` / `resolveElement`（utils.ts）：浮层锚点与"忽略目标"的入参形态（ref 或真实元素）及统一解析，浮层定位与关闭类逻辑共用。

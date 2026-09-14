@@ -1,7 +1,6 @@
 import React, {
   forwardRef,
   useMemo,
-  useRef,
   type KeyboardEventHandler,
 } from 'react';
 import clsx from 'clsx';
@@ -17,9 +16,8 @@ import {
 import {
   useCleanId,
   useControlledValue,
-  useFieldLabelActivate,
+  useFieldLabelFocus,
   useGroupKeyboardSelection,
-  useMergedRefs,
   useOptionDrag,
   useOptionRegistry,
 } from '../../hooks';
@@ -69,18 +67,12 @@ export const ButtonSelect = forwardRef<HTMLDivElement, ButtonSelectProps>(({
   // 索引注册值：全部选项值（与下方registerItem的调用集合同源，供淘汰已移除选项）
   const optionValues = useMemo(() => options.map((option) => option.value), [options]);
   const { registerItem, findItemFromNode } = useOptionRegistry<string | number>(optionValues);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const setRootRef = useMergedRefs(ref, rootRef);
   // 可选值序列（非禁用项，按展示顺序），键盘导航与拖拽的共用目标集合；Set供O(1)命中
   const selectableValues = useMemo(() => getSelectableValues(options), [options]);
   const selectableValueSet = useMemo(() => new Set(selectableValues), [selectableValues]);
   // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
-      rootRef.current?.focus();
-    }
-  });
+  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLDivElement>({ ref, disabled });
 
   /** 值是否可选（在可选值集合内，供拖拽判定） */
   const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);

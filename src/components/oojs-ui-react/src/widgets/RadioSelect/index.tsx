@@ -1,7 +1,6 @@
 import React, {
   useMemo,
   useState,
-  useRef,
   forwardRef,
   type ChangeEvent,
   type FocusEvent,
@@ -22,9 +21,8 @@ import {
   FieldLabelLinkProvider,
   useControlledValue,
   useFieldGroupLabelLink,
-  useFieldLabelActivate,
+  useFieldLabelFocus,
   useGroupKeyboardSelection,
-  useMergedRefs,
 } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -65,15 +63,9 @@ export const RadioSelect = forwardRef<HTMLDivElement, RadioSelectProps>(({
     onChange,
   );
   const [pressed, setPressed] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const setRootRef = useMergedRefs(ref, rootRef);
   // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
-      rootRef.current?.focus();
-    }
-  });
+  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLDivElement>({ ref, disabled });
   // 通道A屏蔽：组内每个radio都会认领同一字段id（重复id且label误切首个选项），禁用之
   const groupLink = useFieldGroupLabelLink();
 

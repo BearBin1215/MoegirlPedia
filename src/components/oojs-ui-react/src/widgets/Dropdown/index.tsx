@@ -17,7 +17,7 @@ import {
   type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
-import { useCleanId, useControlledValue, useFieldLabelActivate, useMenuPopup, useMergedRefs } from '../../hooks';
+import { useCleanId, useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { LabelElement } from '../Label';
 import type { IconElement } from '../Icon';
@@ -62,16 +62,18 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
 }, ref) => {
   const [open, setOpen] = useState(false);
   const { value: currentValue, commitIfChanged } = useControlledValue<string | number>({ value, defaultValue }, onChange);
-  const elementRef = useRef<HTMLDivElement>(null);
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
-  const mergedRef = useMergedRefs(elementRef, ref);
   // FieldLayout标签联动（通道B）：点击标签聚焦handle（对齐原版TabIndexedElement.simulateLabelClick
-  // 基线focus()，禁用时不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
-      elementRef.current?.querySelector<HTMLElement>('.oo-ui-dropdownWidget-handle')?.focus();
-    }
+  // 基线focus()，禁用时不聚焦）。返回的rootRef兼作浮层的忽略目标
+  const {
+    setRef: mergedRef,
+    rootRef: elementRef,
+    fieldLabelId,
+  } = useFieldLabelFocus<HTMLDivElement>({
+    ref,
+    disabled,
+    activate: (el) => el?.querySelector<HTMLElement>('.oo-ui-dropdownWidget-handle')?.focus(),
   });
   // handle内label元素id：原版DropdownWidget构造期setLabelId并把它并入handle的
   // aria-labelledby，使combobox的可访问名称为字段label+当前显示文本
@@ -95,11 +97,13 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   // 菜单开合与键盘高亮：端点钳制不环绕（原版MenuSelectWidget static.listWrapsAround=false），
   // 开启时点击外部/Escape关闭（Escape捕获阶段，嵌套于Dialog时不误关弹窗）。
   // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写；
-  // 导航键（↑↓/Home/End/PageUp/PageDown）统一走handleNavigationKey
+  // 导航键（↑↓/Home/End/PageUp/PageDown）移动高亮走handleNavigationKey，
+  // 菜单展开时占用按键（preventDefault）走consumeNavigationKey
   const {
     highlightedValue,
     setHighlightedValue,
     handleNavigationKey,
+    consumeNavigationKey,
   } = useMenuPopup<string | number>({
     open,
     onClose: () => setOpen(false),
@@ -145,10 +149,8 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       case 'End':
       case 'PageUp':
       case 'PageDown':
-        // 仅菜单展开时占用按键；±10翻页步长与首末跳转由handleNavigationKey统一
-        if (open && handleNavigationKey(ev.key)) {
-          ev.preventDefault();
-        }
+        // 仅菜单展开时占用按键；±10翻页步长与首末跳转由consumeNavigationKey统一
+        consumeNavigationKey(ev);
         break;
     }
   };

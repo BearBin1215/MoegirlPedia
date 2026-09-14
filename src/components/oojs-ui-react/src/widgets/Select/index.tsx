@@ -20,7 +20,7 @@ import {
   resolveTabIndex,
   type ChangeHandler,
 } from '../../utils';
-import { useCleanId, useControlledValue, useFieldLabelActivate, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
+import { useCleanId, useControlledValue, useFieldLabelFocus, useOptionDrag, useOptionRegistry } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 /**
@@ -118,19 +118,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   // 选项DOM双向索引（值→元素供前缀匹配/滚动，元素→值供拖拽定位），供拖拽与滚动共用
   const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>(optionValues);
   const keyPressBufferRef = useRef<{ buffer: string; timer: number }>({ buffer: '', timer: 0 });
-  const rootRef = useRef<HTMLDivElement>(null);
-  const setRootRef = useMergedRefs(ref, rootRef);
   // 可选值序列（有value且未禁用）：键盘导航、悬停高亮与拖拽的共用目标集合。
   // 另建Set供O(1)命中——拖拽mousemove逐帧调用isValueSelectable
   const selectableValues = useMemo(() => getSelectableValues(options), [options]);
   const selectableValueSet = useMemo(() => new Set(selectableValues), [selectableValues]);
   // FieldLayout标签联动（通道B）：点击标签聚焦容器（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
-      rootRef.current?.focus();
-    }
-  });
+  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLDivElement>({ ref, disabled });
 
   /** 值是否可选（在可选值集合内） */
   const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);
@@ -341,7 +335,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       ref={setRootRef}
     >
       {options.map((option, i) => {
-        if (!('value' in option) || option.value === undefined) {
+        if (option.value === undefined) {
           return (
             <MenuSectionOption
               {...option}

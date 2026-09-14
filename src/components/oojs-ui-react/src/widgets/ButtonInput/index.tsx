@@ -96,11 +96,17 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
    */
   const {
     pressed,
-    onMouseDown: pressMouseDown,
-    onMouseUp: pressMouseUp,
-    onKeyDown: pressKeyDown,
-    onKeyUp: pressKeyUp,
-  } = usePressedState({ disabled });
+    onMouseDown: pressedMouseDown,
+    onMouseUp: pressedMouseUp,
+    onKeyDown: pressedKeyDown,
+    onKeyUp: pressedKeyUp,
+  } = usePressedState({
+    disabled,
+    onMouseDown,
+    onMouseUp,
+    onKeyDown,
+    onKeyUp,
+  });
   const flagList = toFlagArray(flags);
   const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
 
@@ -126,27 +132,6 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     }
   };
 
-  // 按压态的进入/复位由usePressedState的处理器承担，这里仅串联调用方透传的事件回调
-  const handleMouseDown: MouseEventHandler<HTMLElement> = (ev) => {
-    pressMouseDown(ev);
-    onMouseDown?.(ev);
-  };
-
-  const handleMouseUp: MouseEventHandler<HTMLElement> = (ev) => {
-    pressMouseUp(ev);
-    onMouseUp?.(ev);
-  };
-
-  const handleKeyDown: KeyboardEventHandler<HTMLElement> = (ev) => {
-    pressKeyDown(ev);
-    onKeyDown?.(ev);
-  };
-
-  const handleKeyUp: KeyboardEventHandler<HTMLElement> = (ev) => {
-    pressKeyUp(ev);
-    onKeyUp?.(ev);
-  };
-
   const inputProps = {
     type,
     name,
@@ -158,10 +143,10 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     accessKey,
     formNoValidate: formNoValidate || undefined,
     onClick: handleClick,
-    onMouseDown: handleMouseDown,
-    onMouseUp: handleMouseUp,
-    onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
+    onMouseDown: pressedMouseDown,
+    onMouseUp: pressedMouseUp,
+    onKeyDown: pressedKeyDown,
+    onKeyUp: pressedKeyUp,
   } as const;
 
   return (

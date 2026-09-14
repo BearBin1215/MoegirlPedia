@@ -9,6 +9,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  // 以别名导入：DOM的KeyboardEvent在下文经globalThis引用，避免被React的类型遮蔽
+  type KeyboardEvent as ReactKeyboardEvent,
   type KeyboardEventHandler,
   type MouseEventHandler,
   type MutableRefObject,
@@ -82,6 +84,73 @@ export function useFieldLabelActivate(activate: () => void): string | undefined 
   );
   return link?.labelId;
 }
+
+/**
+ * 稳定的多ref合并回调（回调引用跨渲染稳定）：
+ * 组件内需同时持有元素引用并向外转发ref时使用。经ref读取最新refs数组，
+ * 回调仅创建一次，避免每渲染新函数导致的detach/attach
+ */
+export function useMergedRefs<T>(...refs: (Ref<T> | undefined)[]): (node: T | null) => void {
+  const refsRef = useRef(refs);
+  refsRef.current = refs;
+  return useMemo(() => (node: T | null) => {
+    for (const ref of refsRef.current) {
+      if (!ref) {
+        continue;
+      }
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        // React 18的RefObject.current为readonly，需断言
+        (ref as MutableRefObject<T | null>).current = node;
+      }
+    }
+  }, []);
+}
+
+/**
+ * 通道B的标签点击激活（对齐原版`TabIndexedElement.simulateLabelClick`的默认实现）：
+ * 点击FieldLayout标签时聚焦组件根元素，禁用时不聚焦（原版`focus()`内含isDisabled判断）。
+ * 内部持有根元素ref并与外部转发的ref合并，返回合并后的ref回调、内部ref与标签元素id。
+ * 落点不是根元素或需附带副作用的组件传`activate`覆盖默认的聚焦：
+ * Dropdown聚焦handle、ToggleButton经内部锚点聚焦、ToggleSwitch额外翻转值、
+ * CheckboxMultiselect聚焦首个可用选项（不经根元素）
+ */
+export function useFieldLabelFocus<T extends HTMLElement>({
+  ref,
+  disabled,
+  activate,
+}: {
+  /** 外部转发的根元素ref */
+  ref?: Ref<T>;
+  /** 禁用时不激活 */
+  disabled?: boolean;
+  /** 自定义激活动作，入参为根元素；缺省聚焦根元素 */
+  activate?: (el: T | null) => void;
+}): {
+  /** 合并内部ref与外部ref后的根元素ref回调 */
+  setRef: (node: T | null) => void;
+  /** 内部持有的根元素ref，供组件自身读取（如Dropdown的浮层忽略目标） */
+  rootRef: RefObject<T | null>;
+  /** 标签元素id，供根元素挂aria-labelledby */
+  fieldLabelId: string | undefined;
+} {
+  const rootRef = useRef<T>(null);
+  const setRef = useMergedRefs(ref, rootRef);
+  // 激活回调经useFieldLabelActivate的ref读取，闭包里的disabled/activate恒为最新值
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (disabled) {
+      return;
+    }
+    if (activate) {
+      activate(rootRef.current);
+    } else {
+      rootRef.current?.focus();
+    }
+  });
+  return { setRef, rootRef, fieldLabelId };
+}
+
 /**
  * 跟踪最新值的ref（渲染期同步），供事件监听/定时器等场景经ref读取最新props：
  * 既避免闭包过期，又使监听等只需挂载一次的资源不必随回调身份变化反复重挂
@@ -208,6 +277,11 @@ export function useLayoutSelection<T extends string | number>({
   effectiveValue: T | undefined;
   /** 选择激活项：非受控同步内部state，并始终转发onChange */
   select: (value: T) => void;
+  /**
+   * 仅值变化时选择激活项（对齐原版`StackLayout.setItem`/`BookletLayout.setPage`
+   * 对同值的提前返回），供用户主动切换页签的场景使用
+   */
+  selectIfChanged: (value: T) => void;
 } {
   const { value: innerValue, isControlled, commit } = useControlledValue<T>({ value, defaultValue }, onChange);
   // 上一轮options：失效值需据其在旧列表中的位置定位相邻项。显式依赖options，
@@ -228,30 +302,20 @@ export function useLayoutSelection<T extends string | number>({
     }
   }, [isControlled, effectiveValue, innerValue, commit]);
 
-  return { effectiveValue, select: commit };
-}
-
-/**
- * 稳定的多ref合并回调（等价原utils.mergeRefs，但回调引用跨渲染稳定）：
- * 组件内需同时持有元素引用并向外转发ref时使用。经ref读取最新refs数组，
- * 回调仅创建一次，避免每渲染新函数导致的detach/attach
- */
-export function useMergedRefs<T>(...refs: (Ref<T> | undefined)[]): (node: T | null) => void {
-  const refsRef = useRef(refs);
-  refsRef.current = refs;
-  return useMemo(() => (node: T | null) => {
-    for (const ref of refsRef.current) {
-      if (!ref) {
-        continue;
-      }
-      if (typeof ref === 'function') {
-        ref(node);
-      } else {
-        // React 18的RefObject.current为readonly，需断言
-        (ref as MutableRefObject<T | null>).current = node;
-      }
+  // 布局侧的选择入口统一为一元签名：调用方可能附带事件（如StackLayout的onPageFocus携带
+  // FocusEvent），而ChangeHandler约定第二参数为change事件，故在此从运行时剥掉多余入参
+  const select = useCallback((next: T) => commit(next), [commit]);
+  /**
+   * 仅在与生效值不同时选择（对齐原版`BookletLayout.setPage`与当前页比较的提前返回）：
+   * 受控值非法时生效值已是回退值，点击该回退项不再重复派发
+   */
+  const selectIfChanged = useCallback((next: T) => {
+    if (next !== effectiveValue) {
+      commit(next);
     }
-  }, []);
+  }, [effectiveValue, commit]);
+
+  return { effectiveValue, select, selectIfChanged };
 }
 
 /**
@@ -362,12 +426,16 @@ export function useDismissablePopover({
  * 缺省为单元素按压；释放落在发起目标上时经`onTrigger`触发（Tool组的onSelect位，Button系
  * 依赖原生click触发无需传）
  */
-export function usePressedState<T = boolean>({
+export function usePressedState<T = boolean, E extends HTMLElement = HTMLElement>({
   disabled,
   resolveTarget,
   canPress,
   onTrigger,
   preventDefaultOnPress = false,
+  onMouseDown: passMouseDown,
+  onMouseUp: passMouseUp,
+  onKeyDown: passKeyDown,
+  onKeyUp: passKeyUp,
 }: {
   /** 禁用时按下不进入按压态 */
   disabled?: boolean;
@@ -379,15 +447,26 @@ export function usePressedState<T = boolean>({
   onTrigger?: (target: T) => void;
   /** 按下被接受时阻止默认行为（Tool组防拖动选中文本/焦点转移；Button不阻止以保留点击聚焦） */
   preventDefaultOnPress?: boolean;
+  /**
+   * 调用方透传的mousedown回调，**先于**按压逻辑无条件转发：按压逻辑含disabled/非左键
+   * 的提前返回，置于其后会导致这些分支下调用方收不到事件
+   */
+  onMouseDown?: MouseEventHandler<E>;
+  /** 调用方透传的mouseup回调，同为先于按压复位无条件转发 */
+  onMouseUp?: MouseEventHandler<E>;
+  /** 调用方透传的keydown回调，同为先于按压逻辑无条件转发 */
+  onKeyDown?: KeyboardEventHandler<E>;
+  /** 调用方透传的keyup回调，同为先于按压复位无条件转发 */
+  onKeyUp?: KeyboardEventHandler<E>;
 }): {
   /** 是否处于按压中 */
   pressed: boolean;
   /** 按压中的目标；null为无按压（单元素按压时恒为真值） */
   pressedTarget: T | null;
-  onMouseDown: MouseEventHandler<HTMLElement>;
-  onMouseUp: MouseEventHandler<HTMLElement>;
-  onKeyDown: KeyboardEventHandler<HTMLElement>;
-  onKeyUp: KeyboardEventHandler<HTMLElement>;
+  onMouseDown: MouseEventHandler<E>;
+  onMouseUp: MouseEventHandler<E>;
+  onKeyDown: KeyboardEventHandler<E>;
+  onKeyUp: KeyboardEventHandler<E>;
 } {
   const [pressedTarget, setPressedTarget] = useState<T | null>(null);
   // 活跃document监听的处理器集合（按压后组件卸载的边界场景），卸载时兜底移除；
@@ -396,6 +475,14 @@ export function usePressedState<T = boolean>({
   const keyUpHandlersRef = useRef<Set<(ev: globalThis.KeyboardEvent) => void> | null>(null);
   // 处理器闭包经ref读取最新配置：监听挂载期间props更新（disabled/onTrigger等）后仍取新值
   const configRef = useLatestRef({ disabled, resolveTarget, canPress, onTrigger });
+  // 调用方透传的事件回调：与configRef同理经ref读取，在按压处理之后转发。
+  // 对齐原版ButtonElement mixin在同一处处理按压与用户回调，React的单handler模型需手工串联
+  const passThroughRef = useLatestRef({
+    onMouseDown: passMouseDown,
+    onMouseUp: passMouseUp,
+    onKeyDown: passKeyDown,
+    onKeyUp: passKeyUp,
+  });
   useEffect(() => () => {
     for (const handler of mouseUpHandlersRef.current ?? []) {
       document.removeEventListener('mouseup', handler, true);
@@ -440,7 +527,8 @@ export function usePressedState<T = boolean>({
     return target;
   };
 
-  const onMouseDown: MouseEventHandler<HTMLElement> = (e) => {
+  const onMouseDown: MouseEventHandler<E> = (e) => {
+    passThroughRef.current.onMouseDown?.(e);
     if (configRef.current.disabled || e.button !== 0) {
       return;
     }
@@ -463,13 +551,15 @@ export function usePressedState<T = boolean>({
   };
 
   /** 鼠标在元素上释放时复位按压态（document监听兜底目标外释放） */
-  const onMouseUp: MouseEventHandler<HTMLElement> = () => {
+  const onMouseUp: MouseEventHandler<E> = (e) => {
+    passThroughRef.current.onMouseUp?.(e);
     if (!configRef.current.disabled) {
       setPressedTarget(null);
     }
   };
 
-  const onKeyDown: KeyboardEventHandler<HTMLElement> = (e) => {
+  const onKeyDown: KeyboardEventHandler<E> = (e) => {
+    passThroughRef.current.onKeyDown?.(e);
     // 长按自动重复的keydown不重复进入按压流，避免keyup时N个监听齐触发onTrigger
     if (e.repeat || configRef.current.disabled || (e.key !== 'Enter' && e.key !== ' ')) {
       return;
@@ -495,7 +585,8 @@ export function usePressedState<T = boolean>({
   };
 
   /** 元素上松开Enter/空格时复位键盘按压态 */
-  const onKeyUp: KeyboardEventHandler<HTMLElement> = (e) => {
+  const onKeyUp: KeyboardEventHandler<E> = (e) => {
+    passThroughRef.current.onKeyUp?.(e);
     if (!configRef.current.disabled && (e.key === 'Enter' || e.key === ' ')) {
       setPressedTarget(null);
     }
@@ -800,7 +891,28 @@ export function useMenuPopup<T extends string | number>({
 
   useDismissablePopover({ enabled: open, onClose, ignore });
 
-  return { highlightedValue, setHighlightedValue, handleNavigationKey };
+  /**
+   * 菜单展开时消费导航键（对齐原版`SelectWidget.onDocumentKeyDown`由基类统一处理，
+   * `MenuSelectWidget`继承后Dropdown与ComboBoxInput均经其菜单响应）：命中导航键时
+   * 阻止默认行为，返回是否消费。与`handleNavigationKey`的区别是本函数额外包含
+   * “仅展开时生效”与preventDefault，供组件的onKeyDown直接转调
+   */
+  const consumeNavigationKey = (
+    event: Pick<ReactKeyboardEvent, 'key' | 'preventDefault'>,
+  ): boolean => {
+    if (!open || !handleNavigationKey(event.key)) {
+      return false;
+    }
+    event.preventDefault();
+    return true;
+  };
+
+  return {
+    highlightedValue,
+    setHighlightedValue,
+    handleNavigationKey,
+    consumeNavigationKey,
+  };
 }
 
 /**

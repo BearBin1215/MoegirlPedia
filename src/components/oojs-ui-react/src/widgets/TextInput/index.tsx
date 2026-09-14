@@ -1,6 +1,5 @@
 import React, {
   useRef,
-  useMemo,
   forwardRef,
   type ChangeEvent,
   type MouseEventHandler,
@@ -143,11 +142,10 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
   const fieldInputId = useFieldInputId();
   // 软校验反馈（对齐原版setValidityFlag）：非法时输入元素aria-invalid + 根元素invalid标志类
-  const validateFn = useMemo(() => resolveValidate(validate), [validate]);
   const { invalid, handleBlur, handleFocus } = useValidityFlag({
     inputRef: internalInputRef,
     value: currentValue,
-    validate: validateFn,
+    validate: resolveValidate(validate),
   });
   // type白名单校验（对齐原版getValidType）
   const validType = VALID_INPUT_TYPES.includes(type) ? type : 'text';

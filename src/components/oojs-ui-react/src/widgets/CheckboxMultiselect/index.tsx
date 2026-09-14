@@ -11,7 +11,7 @@ import {
   FieldLabelLinkProvider,
   useControlledValue,
   useFieldGroupLabelLink,
-  useFieldLabelActivate,
+  useFieldLabelFocus,
 } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -55,15 +55,17 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
   const lastClickedRef = useRef<string | number | null>(null);
   // FieldLayout标签联动（通道B）：点击标签聚焦首个非禁用选项的checkbox（对齐原版
   // CheckboxMultiselectWidget覆写的simulateLabelClick→focus()→getRelativeFocusableItem(null, 1)；
-  // 该组件不是TabIndexedElement，原版focus()在禁用时也不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (disabled) {
-      return;
-    }
-    const firstEnabled = options.find((option) => !resolveOptionDisabled(option, disabled));
-    if (firstEnabled) {
-      inputRefs.current.get(firstEnabled.value)?.focus();
-    }
+  // 该组件不是TabIndexedElement，原版focus()在禁用时也不聚焦）。
+  // 落点是选项input而非根元素，故经activate覆盖默认的根元素聚焦
+  const { setRef, fieldLabelId } = useFieldLabelFocus<HTMLDivElement>({
+    ref,
+    disabled,
+    activate: () => {
+      const firstEnabled = options.find((option) => !resolveOptionDisabled(option, disabled));
+      if (firstEnabled) {
+        inputRefs.current.get(firstEnabled.value)?.focus();
+      }
+    },
   });
   // 通道A屏蔽：组内每个checkbox都会认领同一字段id（重复id且label误切首个选项），禁用之
   const groupLink = useFieldGroupLabelLink();
@@ -139,7 +141,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
       className={classes}
       aria-disabled={disabled || undefined}
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
-      ref={ref}
+      ref={setRef}
     >
       <FieldLabelLinkProvider value={groupLink}>
         {options.map((option) => {

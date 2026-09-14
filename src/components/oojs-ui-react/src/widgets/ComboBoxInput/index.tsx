@@ -32,7 +32,7 @@ export interface ComboBoxInputProps extends
   /** 输入框值（受控，传入即受控模式） */
   value?: string;
 
-  /** 非受控初始值 */
+  /** 非受控初始值，缺省`''` */
   defaultValue?: string;
 
   onChange?: ChangeHandler<string>;
@@ -79,7 +79,11 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   tabIndex,
   ...rest
 }, ref) => {
-  const { value: currentValue, commit, commitIfChanged } = useControlledValue<string>({ value, defaultValue }, onChange);
+  // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
+  const { value: currentValue, commit, commitIfChanged } = useControlledValue<string>(
+    { value, defaultValue: defaultValue ?? '' },
+    onChange,
+  );
   const [open, setOpen] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -108,11 +112,13 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   // 菜单开合与键盘高亮（端点钳制不环绕、无高亮时↓从首项/↑从末项起步）；
   // 开启时点击外部/Escape关闭（Escape捕获阶段，嵌套于Dialog时不误关弹窗）。
   // 高亮与Select共用（含鼠标悬停），经onHighlightedChange回写；
-  // 导航键（↑↓/Home/End/PageUp/PageDown）统一走handleNavigationKey
+  // 导航键（↑↓/Home/End/PageUp/PageDown）移动高亮走handleNavigationKey，
+  // 菜单展开时占用按键（preventDefault）走consumeNavigationKey
   const {
     highlightedValue,
     setHighlightedValue,
     handleNavigationKey,
+    consumeNavigationKey,
   } = useMenuPopup<string | number>({
     open,
     onClose: () => setOpen(false),
@@ -144,10 +150,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
       case 'End':
       case 'PageUp':
       case 'PageDown':
-        // 仅菜单展开时占用，收起时保留输入框原生光标跳转/原生滚动；翻页步长与首末跳转由handleNavigationKey统一
-        if (open && handleNavigationKey(event.key)) {
-          event.preventDefault();
-        }
+        // 仅菜单展开时占用，收起时保留输入框原生光标跳转/原生滚动；翻页步长与首末跳转由consumeNavigationKey统一
+        consumeNavigationKey(event);
         break;
       case 'Enter':
         // 选定高亮项后收起菜单；
@@ -227,7 +231,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
           // 对齐原版autocomplete:false默认（自定义建议菜单与浏览器原生补全不可叠加）
           autoComplete='off'
           className='oo-ui-inputWidget-input'
-          value={currentValue ?? ''}
+          // 归一化后恒为string（非受控缺省''），无需再兜底空串
+          value={currentValue}
           onChange={(event) => handleInputChange(event.target.value)}
           onKeyDown={handleInputKeyDown}
         />

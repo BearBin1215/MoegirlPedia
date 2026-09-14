@@ -429,7 +429,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
             <IconBase icon={icon} />
             {/* invisibleLabel的裁剪类落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
             <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
-            {head && !hideCloseButton && (
+            {!hideCloseButton && (
               <Button
                 framed={false}
                 icon='close'

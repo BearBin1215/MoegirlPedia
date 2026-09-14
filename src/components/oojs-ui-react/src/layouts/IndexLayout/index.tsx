@@ -81,7 +81,7 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
   ...rest
 }, ref) => {
   // 未指定时自动选中第一个可选页签（受控回写/非受控提交，见useLayoutSelection）
-  const { effectiveValue, select } = useLayoutSelection<string | number>({ value, defaultValue, onChange, options });
+  const { effectiveValue, select, selectIfChanged } = useLayoutSelection<string | number>({ value, defaultValue, onChange, options });
   // id片段经useCleanId剥离`:`，可安全用于CSS选择器与aria关联
   const idBase = useCleanId();
   const stackRef = useRef<HTMLDivElement>(null);
@@ -92,12 +92,6 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
     className,
     'oo-ui-indexLayout',
   );
-
-  const activate = (key: string | number) => {
-    if (key !== effectiveValue) {
-      select(key);
-    }
-  };
 
   // 对齐原版autoFocus：切换面板后聚焦新面板内第一个可聚焦元素（初始渲染不聚焦；
   // 移动端形态抑制聚焦，对齐原版onStackLayoutSet的!isMobile条件）
@@ -154,7 +148,7 @@ export const IndexLayout = forwardRef<HTMLDivElement, IndexLayoutProps>(({
           <TabSelect
             framed={framed}
             value={effectiveValue}
-            onChange={activate}
+            onChange={selectIfChanged}
             options={options.map((option, i) => ({
               // 对齐原版：页签仅承接label/disabled与元素级属性（原版经tabItemConfig），
               // 面板属性经PANEL_ONLY_PROPS统一剥离

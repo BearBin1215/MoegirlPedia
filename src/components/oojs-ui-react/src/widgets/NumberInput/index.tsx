@@ -117,7 +117,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     if (value === '') {
       return !required;
     }
-    if (Number.isNaN(value) || !Number.isFinite(value)) {
+    if (!Number.isFinite(value)) {
       return false;
     }
     if (step !== undefined && Math.floor(value / step) !== value / step) {

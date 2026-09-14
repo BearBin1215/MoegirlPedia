@@ -1,12 +1,11 @@
 import React, {
   forwardRef,
-  useRef,
   type KeyboardEvent,
   type MouseEvent,
 } from 'react';
 import clsx from 'clsx';
 import { getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex } from '../../utils';
-import { useControlledValue, useFieldLabelActivate, useMergedRefs } from '../../hooks';
+import { useControlledValue, useFieldLabelFocus } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
 export interface ToggleSwitchProps extends Omit<WidgetProps<HTMLSpanElement>, 'children' | 'onChange'> {
@@ -42,15 +41,15 @@ export const ToggleSwitch = forwardRef<HTMLSpanElement, ToggleSwitchProps>(({
     { value: checked, defaultValue: defaultChecked ?? false },
     onChange,
   );
-  const rootRef = useRef<HTMLSpanElement>(null);
-  const setRootRef = useMergedRefs(ref, rootRef);
   // FieldLayout标签联动（通道B）：点击标签翻转+聚焦（对齐原版覆写的simulateLabelClick，
   // 禁用时既不翻转也不聚焦——原版focus()内含isDisabled判断）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!disabled) {
+  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLSpanElement>({
+    ref,
+    disabled,
+    activate: (el) => {
       commit(!isChecked);
-      rootRef.current?.focus();
-    }
+      el?.focus();
+    },
   });
 
   const classes = clsx(

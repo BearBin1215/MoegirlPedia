@@ -1,7 +1,6 @@
 import React, {
   useEffect,
   useRef,
-  useMemo,
   forwardRef,
   type ChangeEvent,
 } from 'react';
@@ -77,11 +76,10 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     onChange,
   );
   // 软校验反馈与TextInput一致（原版MultilineTextInputWidget继承TextInputWidget的校验能力）
-  const validateFn = useMemo(() => resolveValidate(validate), [validate]);
   const { invalid, handleBlur, handleFocus } = useValidityFlag({
     inputRef: textareaRef,
     value: currentValue,
-    validate: validateFn,
+    validate: resolveValidate(validate),
   });
   // FieldLayout标签联动（通道A）：textarea认领字段id与label的htmlFor原生关联
   const fieldInputId = useFieldInputId();

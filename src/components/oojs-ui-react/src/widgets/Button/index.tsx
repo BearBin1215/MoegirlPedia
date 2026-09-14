@@ -1,7 +1,5 @@
 import React, {
-  useRef,
   forwardRef,
-  type MouseEventHandler,
   type KeyboardEventHandler,
   type MouseEvent,
   type KeyboardEvent,
@@ -12,7 +10,7 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import { flaggedElementClasses, getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex, toFlagArray, type AccessKeyedElement } from '../../utils';
-import { useFieldLabelActivate, useMergedRefs, usePressedState } from '../../hooks';
+import { useFieldLabelFocus, usePressedState } from '../../hooks';
 import { useButtonGroupDisabled } from '../ButtonGroup/context';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IconFlag } from '../Icon';
@@ -143,23 +141,26 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
    */
   const {
     pressed,
-    onMouseDown: pressMouseDown,
-    onMouseUp: pressMouseUp,
-    onKeyDown: pressKeyDown,
-    onKeyUp: pressKeyUp,
-  } = usePressedState({ disabled: isDisabled });
+    onMouseDown: pressedMouseDown,
+    onMouseUp: pressedMouseUp,
+    onKeyDown: pressedKeyDown,
+    onKeyUp: pressedKeyUp,
+  } = usePressedState<boolean, HTMLSpanElement>({
+    disabled: isDisabled,
+    onMouseDown,
+    onMouseUp,
+    onKeyDown,
+    onKeyUp,
+  });
   // FieldLayout标签联动（通道B）：点击标签聚焦按钮元素（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）
-  const internalAnchorRef = useRef<HTMLAnchorElement>(null);
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (!isDisabled) {
-      internalAnchorRef.current?.focus();
-    }
-  });
+  const {
+    setRef: setAnchorRef,
+    fieldLabelId,
+  } = useFieldLabelFocus<HTMLAnchorElement>({ ref: anchorRef, disabled: isDisabled });
   const flagList = toFlagArray(flags);
   const relList = typeof rel === 'string' ? [rel] : rel;
   const iconClasses = getButtonIconClasses(framed, active, isDisabled, flagList);
-  const setAnchorRef = useMergedRefs(anchorRef, internalAnchorRef);
 
   const classes = clsx(
     className,
@@ -183,27 +184,6 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
     }
   };
 
-  // 按压态的进入/复位由usePressedState的处理器承担，这里仅串联调用方透传的事件回调
-  const handleMouseDown: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    pressMouseDown(ev);
-    onMouseDown?.(ev);
-  };
-
-  const handleMouseUp: MouseEventHandler<HTMLSpanElement> = (ev) => {
-    pressMouseUp(ev);
-    onMouseUp?.(ev);
-  };
-
-  const handleKeyDown: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    pressKeyDown(ev);
-    onKeyDown?.(ev);
-  };
-
-  const handleKeyUp: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
-    pressKeyUp(ev);
-    onKeyUp?.(ev);
-  };
-
   /** 对齐原版onKeyPress：Enter/空格触发click，存在click监听时阻止默认行为（空格滚动页面） */
   const handleKeyPress: KeyboardEventHandler<HTMLSpanElement> = (ev) => {
     if (!isDisabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -223,11 +203,11 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       ref={ref}
       className={classes}
       onClick={handleClick}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onKeyDown={handleKeyDown}
+      onMouseDown={pressedMouseDown}
+      onMouseUp={pressedMouseUp}
+      onKeyDown={pressedKeyDown}
       onKeyPress={handleKeyPress}
-      onKeyUp={handleKeyUp}
+      onKeyUp={pressedKeyUp}
       aria-disabled={isDisabled || undefined}
     >
       <a
