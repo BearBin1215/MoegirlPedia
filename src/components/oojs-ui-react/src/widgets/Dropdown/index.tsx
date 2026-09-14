@@ -61,7 +61,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   ...rest
 }, ref) => {
   const [open, setOpen] = useState(false);
-  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
+  const { value: currentValue, commitIfChanged } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   const elementRef = useRef<HTMLDivElement>(null);
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
@@ -107,9 +107,12 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
     ignore: [elementRef, menuRef],
   });
 
-  /** 选中指定选项并关闭菜单（非受控时同步内部state） */
+  /**
+   * 选定选项并收起菜单：值变化时才提交（对齐原版onMenuSelect的select事件），
+   * 但任何一次选定都收起（对齐原版MenuSelectWidget.hideOnChoose——重复选定当前项同样收起）
+   */
   const selectOption = (optionValue: string | number) => {
-    commit(optionValue);
+    commitIfChanged(optionValue);
     setOpen(false);
   };
 
@@ -187,7 +190,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       <MenuSelect
         ref={menuRef}
         container={elementRef}
-        onChange={selectOption}
+        onChoose={selectOption}
         value={currentValue}
         open={open}
         options={options}

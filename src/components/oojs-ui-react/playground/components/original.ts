@@ -12,21 +12,22 @@ export type OriginalBuilder = (
 ) => void;
 
 /**
- * 生成“名称+控件”行输出器：在容器内输出一行原版控件，
- * 与React侧的p行结构一致，保证两侧逐行对照。
+ * 生成“名称+控件”行输出器：在容器内输出一行原版控件（与React侧的p行结构一致，
+ * 保证两侧逐行对照），并返回创建出的控件实例供页面绑事件。
  */
 export function createRowAppender(container: HTMLElement, register: RegisterWidget) {
-  return (
-    Widget: new (config?: Record<string, unknown>) => { $element: unknown },
+  return <T extends { $element: unknown }>(
+    Widget: new (config?: Record<string, unknown>) => T,
     name: string,
     config: Record<string, unknown>,
-  ) => {
+  ): T => {
     const widget = new Widget(config);
     register(widget);
     const p = document.createElement('p');
     p.textContent = name;
     p.appendChild(unwrapJQuery(widget.$element));
     container.appendChild(p);
+    return widget;
   };
 }
 

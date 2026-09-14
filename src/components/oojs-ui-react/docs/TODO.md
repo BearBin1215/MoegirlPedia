@@ -26,6 +26,8 @@
 - [x] 备选项输入框（ComboBox）
 - [x] 流程弹窗（ProcessDialog）与进度条（ProgressBar）
 - [x] 切换按钮（ToggleButton）
+- [x] 按钮式选择（ButtonSelect/ButtonOption，含拖拽选择）
+- [x] 隐藏输入（HiddenInputWidget）
 
 ## 低优先度实现
 
@@ -33,6 +35,10 @@
 - [x] Tab（IndexLayout/TabSelect/TabOption/TabPanelLayout）
 - [x] Menu
 - [x] 搜索输入框（SearchInput）
+- [x] 复制文本布局（CopyTextLayout）
+- [ ] 标签多选族（MultiselectWidget/TagMultiselectWidget/MenuTagMultiselectWidget/TagItemWidget）
+- [ ] 文件选择输入框（SelectFileInputWidget）
+- [ ] 工具栏剩余（PopupTool/ToolGroupTool/LabelToolGroup）
 - [ ] 其他布局类组件
 
 ## 未对齐行为记录
@@ -57,6 +63,7 @@
 - **CheckboxMultioption 的根元素用 `role='checkbox'` + `aria-checked`**，内层是原生 checkbox。原版 `OptionWidget` 根为 `role='option'`（由 `SelectWidget` 的 `listbox` 承载）；React 版若改成 `option` 会与内层原生控件语义重复，故保留 checkbox 语义。
 - **Select 系选项的选中态统一用基类 `OptionProps.selected`**，Radio/Checkbox 型选项在内层原生控件上再映射为 `checked`。原版各 OptionWidget 分别用 `setSelected`/`setChecked` 等维护；React 版认为选中语义相同，不对外暴露多种命名。
 - **布局组件的受控 API 统一为 `value`/`defaultValue`/`onChange`**（`StackLayout`、`IndexLayout`、`BookletLayout`）。原版经 `setItem`/`setPage`/`setTabPanel` 等 setter 命令式切换；`StackLayout` 原先公开的 `activeValue` 已并入 `value`。
+- **选项族不支持 `flags`**。原版 `OptionWidget` 混入 `FlaggedElement`，选项可经 `flags` 输出 `oo-ui-flaggedElement-*` 并影响图标变体（progressive/destructive/error/warning/success）；本工程选项族（MenuOption/OutlineOption/TabOption/ButtonOption 等）未开放该配置，`ButtonOption` 的图标/指示器变体只按"带边框且激活或禁用则反色"输出。
 - **`TabIndexedElement` 的 `setTabIndex(null)` 语义未实现**。原版传 `null` 时移除该元素的 `tabindex` 与 `aria-disabled`；React 的 `tabIndex` 类型不接受 `null`，经 `...rest` 透传到 DOM 会破坏属性类型，故统一收为 `number`——需要"不参与Tab序"时用 `-1`（焦点可达性等价）。其余 tabIndex 行为已对齐：`disabled` 覆盖显式值、落点与原版 `$tabIndexed` 一致（Button→锚点、输入类→`input`、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根）、`aria-disabled` 写在该元素上。
 
 ### 增强
@@ -66,6 +73,11 @@
 - **BookletLayout 在激活页签被移除时自动补选相邻页签**，非受控直接生效，受控则由父组件决定是否采纳。原版不补选，其 `removePages` 注释明确表示「选哪页属业务逻辑」。
 - **ProgressBar 把 `progress` 钳制在 0–100**，非有限值（NaN 等）按不定进度处理。原版 `setProgress` 不钳制，NaN 会直接输出 `width: NaN%` 和 `aria-valuenow="NaN"`。
 - **Select 根元素可聚焦，FieldLayout 标签点击会聚焦根**。原版 `SelectWidget` 无 `TabIndexedElement`（根不可聚焦），`simulateLabelClick` 继承基类的空操作，标签点击无任何效果；React 版为 listbox 键盘可达性给根加了 `tabIndex`，标签点击随之聚焦根（与 RadioSelect 行为一致）。
+- **ButtonSelect 的 `aria-activedescendant` 在初始选中时即输出**。原版 `SelectWidget.selectItem` 只在选中项变化时写入该属性，带初始选中值的控件首帧没有该属性；React 版按声明式状态始终输出选中项 id。
+- **CopyTextLayout 的复制优先走 `navigator.clipboard`**，不可用或被权限拒绝时回落到原版的 `document.execCommand('copy')`。原版仅用后者，该 API 已废弃，在非安全上下文或部分浏览器中静默失败且无从感知。
+- **HiddenInputWidget 的 `disabled` 落到原生属性上**。原版经 `Widget.setDisabled` 只切换 `oo-ui-widget-*` 类并移除 `aria-disabled`，被"禁用"的隐藏输入仍会随表单提交；React 版按标准 `disabled` 语义让它退出提交。
+- **ButtonOption 的选中态图标/指示器一律反色**。原版 `ButtonOptionWidget` 构造期 `setSelected` 会 `setActive(true)`，但随后 `ButtonElement` 构造函数把 `this.active` 复位为 `false`，导致"初始选中"的按钮不反色、"用户点选后"的按钮才反色（同一状态两种表现，实测确认）；React 版按主题规则（带边框按钮在激活或禁用时反色）统一输出。
+- **Button 系列不输出 `oo-ui-buttonElement-size-medium`**。原版 `ButtonElement.setSize` 缺省写入尺寸类（`medium`），该类在 wikimediaui/apex 主题 CSS 中均无定义、不产生样式；React 版 Button/ButtonInput/ButtonOption 一律不输出。
 
 ### 暂不实现
 

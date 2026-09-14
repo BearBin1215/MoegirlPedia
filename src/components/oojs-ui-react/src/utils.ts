@@ -146,12 +146,16 @@ export function resolveSelectableValue<T extends string | number>(
   return value !== undefined && selectableValues.includes(value) ? value : selectableValues[0];
 }
 
-/** 选项禁用态：选项未显式声明disabled时继承组级disabled（对齐原版OptionWidget.isDisabled） */
+/**
+ * 选项禁用态：组禁用时选项一律禁用，否则取选项自身的disabled
+ * （对齐原版ItemWidget.isDisabled的`this.disabled || group.isDisabled()`——组禁用优先，
+ * 选项无法在禁用组内单独启用）
+ */
 export function resolveOptionDisabled(
   option: { disabled?: boolean },
   groupDisabled?: boolean,
 ): boolean | undefined {
-  return option.disabled ?? groupDisabled;
+  return option.disabled || groupDisabled;
 }
 
 /**

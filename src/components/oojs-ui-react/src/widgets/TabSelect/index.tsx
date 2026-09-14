@@ -45,7 +45,7 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
   ...rest
 }, ref) => {
   const isMobile = useIsMobile();
-  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
+  const { value: currentValue, commitIfChanged } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   // 索引注册值：全部选项值（与下方registerItem的调用集合同源，供淘汰已移除选项）
   const optionValues = useMemo(() => options.map((option) => option.value), [options]);
   const { itemRefs, registerItem, findItemFromNode } = useOptionRegistry<string | number>(optionValues);
@@ -57,15 +57,13 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
 
   const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);
 
+  // 拖拽选择：提交走commitIfChanged（点击已选中页签不重复派发onChange，对齐原版selectItem
+  // 对已选中项的提前返回）；禁用态由useOptionDrag自身拦截
   const { pressed, pressedValue, handleMouseDown, handleUnpress } = useOptionDrag<string | number>({
     disabled,
     isValueSelectable,
     findItemFromNode,
-    onCommit: (optionValue) => {
-      if (!disabled) {
-        commit(optionValue);
-      }
-    },
+    onCommit: commitIfChanged,
   });
 
   const classes = clsx(
@@ -99,14 +97,14 @@ export const TabSelect = forwardRef<HTMLDivElement, TabSelectProps>(({
     option.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [currentValue, isMobile, itemRefs]);
 
-  // 键盘改选（与RadioSelect共用useGroupKeyboardSelection，对齐原版经SelectWidget.
-  // onDocumentKeyDown的绑定形态）：tablist聚焦后←→/↑↓环绕选择、Enter确认。选项元素
-  // 均tabIndex=-1，焦点始终落在组根，React事件即覆盖全部按键目标
+  // 键盘改选（与RadioSelect共用useGroupKeyboardSelection，对齐原版经
+  // SelectWidget.onDocumentKeyDown的绑定形态）：tablist聚焦后←→/↑↓环绕选择、Enter确认。
+  // 选项元素均tabIndex=-1，焦点始终落在组根，React事件即覆盖全部按键目标
   const handleGroupKeyDown = useGroupKeyboardSelection<string | number>({
     disabled,
     selectableValues,
     value: currentValue,
-    onCommit: commit,
+    onCommit: commitIfChanged,
   });
 
   /** 键盘导航入口：先透传调用方onKeyDown，再处理导航键 */

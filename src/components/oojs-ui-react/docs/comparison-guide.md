@@ -59,19 +59,22 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - a11y 布尔属性（`aria-selected`/`aria-checked` 等）写实际布尔值，不要写死 `false`。
 - **`tabIndex` 统一走 `resolveTabIndex(tabIndex, disabled)`**（utils.ts）：原版 `TabIndexedElement.updateTabIndex` 是 **disabled 覆盖显式值**（`isDisabled() ? -1 : tabIndex`，注释 "Do not index over disabled elements"），启用时缺省 0。两个落点规则同样来自原版：① tabIndex 必须落在与 `$tabIndexed` 相同的元素上（Button/ToggleButton→锚点 `a`、InputWidget 全族含 Checkbox/Radio/ComboBox→`input`、ButtonInput→真实 button/input、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根元素；DropdownInput/RadioSelectInput 转发给内部控件），**不要落在不可聚焦的外层容器上**；② `aria-disabled` 也写在该元素上——ChromeVox/NVDA 不继承父元素的 `aria-disabled`，只标根会读不到。新增"可聚焦元素与根不同"的组件时按此两条接入。
 - **"隐藏"的类未必是 `display:none`**：主题对隐藏菜单用 `width/height:0 + overflow:hidden`（`oo-ui-menuLayout-hideMenu`），其中可聚焦元素仍在 tab 序，构成隐形焦点陷阱。此类隐藏必须卸载子树或设 `inert`，只加 `aria-hidden` 不够。判断前先查主题 CSS 的实际属性。
+- **选择组的键盘形态由选项的 `static.highlightable` 决定**：原版 `SelectWidget.onDocumentKeyDown`/`onDocumentKeyPress` 对命中项分流——可高亮则 `highlightItem`（↑↓移动高亮、Enter 选中），不可高亮则直接 `chooseItem`（↑↓即改选）。已核对的静态配置：`OptionWidget`/`MenuOptionWidget`/`OutlineOptionWidget` 为可高亮，`RadioOptionWidget`/`TabOptionWidget`/`ButtonOptionWidget`/`MenuSectionOptionWidget` 为不可高亮。故新增选择组时先查该静态值再决定用 `useMenuPopup` 的高亮导航还是 `useGroupKeyboardSelection`；`aria-activedescendant` 也随之分流（可高亮指向高亮项，不可高亮指向选中项）。
+- **`choose` 与 `select` 是两个事件，别合并成一个回调**：原版 `chooseItem` 先 `selectItem`（命中已选中项时提前返回、不派发 `select`），再无条件的派发 `choose`；菜单的收起走的是 `MenuSelectWidget.hideOnChoose` 这一 `choose` 路径，与值是否变化无关。本工程菜单显隐由调用方持有，故 `Select` 同时给出 `onChange`（值变化）与 `onChoose`（每次选定，含重复选定当前项），前者先派发、后者随后，Dropdown/ComboBoxInput 用后者收起菜单——只用 `onChange` 会导致"重复选定当前项时菜单关不掉"。
+- **按钮式选项要放行 mousedown**：原版 `ButtonElement.static.cancelButtonMouseDownEvents` 缺省 `true`（mousedown 时 `preventDefault` 以阻止焦点转移），`ButtonOptionWidget` 专门置为 `false` 让事件穿透给父级选择组（否则父级的按压/拖拽选择收不到），`ButtonWidget` 同样为 `false`。React 版中选项不自行处理 mousedown，由 `useOptionDrag` 在组根上统一接管。
 - **组级禁用经 Context 下发，不用 `cloneElement`**：`ButtonGroup` 经 `ButtonGroupDisabledProvider`/`useButtonGroupDisabled` 下发组禁用态，组内按钮自行与 `disabled` 取或。`cloneElement` + `child.type === Button` 会静默漏掉 ToggleButton 等组合形态、包一层的 Button 与 memo 后的 Button（原实现即存在此漏失）。
 
 ### 共享抽象（改动前先查是否已有对应 hook）
 
 `src/hooks.ts` 与 `src/utils.ts` 收敛了跨组件重复逻辑，新增/修改组件应优先复用而非再写一份：
 
-- `useControlledValue` / `useControlledValueNotify`：受控/非受控值状态；后者在受控值非法（不在可用值集合内）时把生效值回写父级，同一非法值仅回写一次（父级未采纳时不反复触发），`useLayoutSelection` 的受控回写共用同一守卫。
+- `useControlledValue` / `useControlledValueNotify`：受控/非受控值状态；后者在受控值非法（不在可用值集合内）时把生效值回写父级，同一非法值仅回写一次（父级未采纳时不反复触发），`useLayoutSelection` 的受控回写共用同一守卫。返回值含 `commit` 与 `commitIfChanged`：**选择集类组件的选中提交一律用后者**（对齐原版 `selectItem` 对已选中项的提前返回，重复选中同一项不派发事件；Select/TabSelect/ButtonSelect/Dropdown/ComboBoxInput 皆此），输入类组件必须用前者（"始终转发"是刻意语义）。
 - `useMergedRefs`：同时持有元素引用并向外转发 ref（替代 `useImperativeHandle` 手工桥接）。
 - `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。
 - `useDismissablePopover`：浮层的外点/Escape 关闭，Escape 为捕获阶段 + `defaultPrevented` 守卫。`ignore` 为忽略目标白名单（ref 或真实元素数组），浮层自身根节点须列入（Popup 传入 portal 根 `rootRef` 与 `autoCloseIgnore`）。
 - `useMenuPopup`：Dropdown/ComboBoxInput 共用的菜单开合与键盘高亮（端点钳制不环绕）。导航键（↑↓/Home/End/PageUp/PageDown）经返回的 `handleNavigationKey` 统一处理（翻页 ±10 与原版一致），组件内不要再手写按键分支。
 - `usePressedState`：鼠标/键盘按压态的进入与复位（document 级 capture `mouseup`/`keyup` 兜底），Button/ButtonInput/Tool 组共用。组内委托场景经 `resolveTarget` 从事件 target 解析目标、`canPress` 过滤、`onTrigger` 在释放落在发起目标上时回调（Tool 组的 `onSelect` 位）。
-- `useGroupKeyboardSelection`：直选型选项组（TabSelect/RadioSelect）的键盘改选，`selectableValues` 由调用方按展示顺序给出。与 `useMenuPopup` 同样的"同类交互收敛到同一 hook"约束。
+- `useGroupKeyboardSelection`：直选型选项组（TabSelect/RadioSelect/ButtonSelect）的键盘改选，`selectableValues` 由调用方按展示顺序给出。选中提交带"值未变化不提交"守卫（对齐原版 `selectItem` 对已选中项的提前返回，`Select` 的 Enter 与拖拽提交同理）。与 `useMenuPopup` 同样的"同类交互收敛到同一 hook"约束。
 - `findRelativeSelectableItem`（utils.ts）：相对定位可选值的纯函数，Select/TabSelect/RadioSelect 与菜单导航共用；`offset` 为相对步数（±1 步进、±10 翻页），`filter` 供前缀跳转。改端点/环绕/无选中起步等边界规则只改这一处。
 - `useLatestRef`：渲染期同步最新值的 ref，供事件监听/定时器读取最新 props 而不重挂监听；`useControlledValue.commit`、`useControlledValueNotify`、`useDismissablePopover`、`useValidityFlag`、`useAutoFocusPanel`、`usePressedState` 等内部回调均经它稳定化。
 - **选项集工具**（`utils.ts`）：`isSelectableOption`（带 value 且未禁用）、`getSelectableValues`（可选值序列）、`resolveSelectableValue`（非法受控值回退首个可选值）、`resolveOptionDisabled`（选项未声明 disabled 时继承组级 disabled）。Select/Dropdown/DropdownInput/ComboBoxInput/RadioSelect/RadioSelectInput/TabSelect/CheckboxMultiselect 一律经此，不要再写一遍 `filter(…).map(…)` 或 `=== void 0 ?` 继承表达式；判定高频调用处（拖拽 `mousemove`、悬停）另建 `Set` 做 O(1) 命中。
@@ -123,13 +126,18 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 
 不映射的宿主环境全局（`bind`/`infuse`/`warnDeprecation`/`getUserLanguages`/`isSafeUrl`/`EventSequencer` 等）见 TODO.md 舍弃节；`debounce`/`throttle` 不进导出面，内部直接用 es-toolkit。
 
-## 浏览器自动化验证注意（trae 浏览器桥限制）
+## 浏览器自动化验证
 
-- `browser_evaluate` 的脚本**不能包含 IIFE/`function` 关键字**（静默返回 undefined），用语句序列 + 箭头函数 + 末尾表达式：`var el=...;JSON.stringify(...)`。
-- `press_key` 的修饰键（Ctrl/Alt）不生效，`click` 不设置 DOM focus。需要修饰键或精确焦点时，向目标元素 `dispatchEvent(new KeyboardEvent('keydown', {key, ctrlKey, bubbles: true}))`（React 合成事件靠冒泡捕获 ✓）。
-- 桥单次往返 >250ms，无法抓动画中间帧；时序验证用 `MutationObserver` 记录 class 变更时间线。
-- 页面上有多个同类控件时，`querySelector` 全局查询会串结果（如侧栏的语言下拉、原版残留的选中高亮），读取时限定容器或按索引取。
-- 控制台错误用 `console_messages` 的 `[error]` 段定位；注意 dev-server 自身的 URL 含 "errors=true" 会干扰过滤。
+工具选择：优先用当前工具链里能直接驱动浏览器的方式（IDE 内置的浏览器工具最省事）；没有则检查 `agent-browser`、`playwright` 是否可用；都没有时不要凭源码臆测交互结果，直接告知用户需要可用的浏览器工具。
+
+无论用哪套工具，验证时按以下策略：
+
+- 对照页必须**等原版脚本注入完成**后再断言（等待固定时长或轮询"原版已就绪"），否则会读到未初始化的原版侧。
+- 行为断言以 **DOM 类名与 aria 属性**为准（`aria-selected`/`aria-activedescendant`/`oo-ui-widget-disabled` 等），与原版侧逐项比对，而非只看渲染结果。
+- **浮层选择器必须分侧限定**：React 侧浮层 portal 到 `body`，原版侧挂在控件自身子树内；全局查询会先命中**另一侧已隐藏但仍留在 DOM 里**的浮层（隐藏是加 `oo-ui-element-hidden` 类而非移除节点），导致点错元素或"被其它元素遮挡"的误报。
+- **逐步断言**：先读基线，再单步交互，再读增量。聚焦类操作本身可能顺带触发一次选中（语义随工具/浏览器而异），把多步操作塞进一次断言会让事件计数对不上。
+- 视觉一致性用截图肉眼核对；出现疑似配色差异时用计算样式（`getComputedStyle`）复核，避免被截图缩放与抗锯齿误导。
+- 验收结束后关闭浏览器会话，并复原环境（停掉自己启动的 dev server、清理临时文件）。
 
 ## 验收清单
 

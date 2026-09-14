@@ -97,6 +97,7 @@ export function useLatestRef<T>(value: T): MutableRefObject<T> {
  * 传入`value`即受控模式（内部state不生效）；否则维护内部state并以`defaultValue`初始化。
  * `commit`供事件回调使用：非受控时同步内部state，并始终转发给`onChange`；
  * 入参支持函数式更新（对齐setState惯例，经ref取最新已提交值）。
+ * 另返回`commitIfChanged`（仅值变化时提交），供选择集类组件使用。
  * `commit`经useCallback稳定（内部经ref读最新值与回调），依赖它的effect不会因回调
  * 身份每渲染变化而重跑
  */
@@ -120,7 +121,17 @@ export function useControlledValue<T, E = never>(
     }
     onChangeRef.current?.(resolved, event);
   }, [isControlled, currentValueRef, onChangeRef]);
-  return { value: currentValue, isControlled, commit } as const;
+  /**
+   * 仅当值变化时提交。选择集类组件（Select/TabSelect/ButtonSelect/Dropdown/ComboBoxInput）的
+   * 选中语义用它——对齐原版`SelectWidget.selectItem`对已选中项的提前返回（重复选中同一项不
+   * 派发事件）。输入类组件**不要**用它：其`commit`的"始终转发"语义是刻意的（见上）
+   */
+  const commitIfChanged = useCallback((nextValue: T, event?: E) => {
+    if (nextValue !== currentValueRef.current) {
+      commit(nextValue, event);
+    }
+  }, [commit, currentValueRef]);
+  return { value: currentValue, isControlled, commit, commitIfChanged } as const;
 }
 
 /**
@@ -793,10 +804,11 @@ export function useMenuPopup<T extends string | number>({
 }
 
 /**
- * 直选型选项组的键盘改选（TabSelect/RadioSelect共用，对齐原版SelectWidget.onDocumentKeyDown
- * 的直接改选形态）：↑↓←→在可选值间环绕移动并直接改选（选项无高亮态），无选中项时↓自首项、
- * ↑自末项起步；Enter重申当前选中项（无选中项不响应）；Home/End/PageUp/PageDown不消费
- * （static.handleNavigationKeys=false）。仅消费上述按键，其余交还原生行为
+ * 直选型选项组的键盘改选（TabSelect/RadioSelect/ButtonSelect共用）。
+ * 对齐原版`SelectWidget.onDocumentKeyDown`的直接改选形态：↑↓←→在可选值间环绕移动并直接改选
+ * （选项无高亮态），无选中项时↓自首项、↑自末项起步；Enter重申当前选中项（值未变化故不提交，
+ * 无选中项不响应）；Home/End/PageUp/PageDown不消费（static.handleNavigationKeys=false）。
+ * 仅消费上述按键，其余交还原生行为
  */
 export function useGroupKeyboardSelection<T extends string | number>({
   disabled,
@@ -810,7 +822,7 @@ export function useGroupKeyboardSelection<T extends string | number>({
   selectableValues: T[];
   /** 当前选中值 */
   value: T | undefined;
-  /** 改选回调（Enter重申当前项时同样调用） */
+  /** 改选回调（仅值变化时调用：Enter重申当前项、组内仅一个可选值时方向键环绕回自身均不触发） */
   onCommit: (value: T) => void;
 }): KeyboardEventHandler<HTMLElement> {
   return (e) => {
@@ -839,7 +851,9 @@ export function useGroupKeyboardSelection<T extends string | number>({
         handled = true;
         break;
     }
-    if (next !== undefined) {
+    // 目标值即当前值（Enter重申，或组内仅一个可选值时方向键环绕回自身）时不提交：
+    // 对齐原版SelectWidget.selectItem对已选中项的提前返回（不派发select事件）
+    if (next !== undefined && next !== value) {
       onCommit(next);
     }
     if (handled) {

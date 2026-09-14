@@ -34,6 +34,9 @@ export { SearchInput, type SearchInputProps } from './widgets/SearchInput';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 
+// 随表单提交的隐藏值（原版HiddenInputWidget）
+export { HiddenInputWidget, type HiddenInputWidgetProps } from './widgets/HiddenInputWidget';
+
 // 消息提示
 export { Message, type MessageProps, type MessageType } from './widgets/Message';
 
@@ -65,6 +68,11 @@ export { Dropdown, type DropdownProps, type DropdownOptionProps } from './widget
 export { Select, type SelectProps, type SelectOptionProps } from './widgets/Select';
 export { TabSelect, type TabSelectProps, type TabSelectOptionProps } from './widgets/TabSelect';
 export { OutlineSelect, type OutlineSelectProps } from './widgets/OutlineSelect';
+export {
+  ButtonSelect,
+  type ButtonSelectProps,
+  type ButtonSelectOptionProps,
+} from './widgets/ButtonSelect';
 
 // 布局
 export { Layout, type LayoutProps } from './layouts/Layout';
@@ -78,6 +86,11 @@ export { FieldsetLayout, type FieldsetLayoutProps } from './layouts/FieldsetLayo
 export { ActionFieldLayout, type ActionFieldLayoutProps } from './layouts/ActionFieldLayout';
 export { FormLayout, type FormLayoutProps } from './layouts/FormLayout';
 export { HorizontalLayout, type HorizontalLayoutProps } from './layouts/HorizontalLayout';
+export {
+  CopyTextLayout,
+  type CopyTextLayoutProps,
+  type CopyTextLayoutTextInputProps,
+} from './layouts/CopyTextLayout';
 export {
   IndexLayout,
   type IndexLayoutProps,

@@ -18,4 +18,5 @@ export const zhHans: Partial<Record<MessageKey, MessageValue>> = {
   'ooui-popup-widget-close-button-aria-label': '关闭',
   'ooui-item-remove': '移除',
   'ooui-field-help': '帮助',
+  'ooui-copytextlayout-copy': '复制',
 };

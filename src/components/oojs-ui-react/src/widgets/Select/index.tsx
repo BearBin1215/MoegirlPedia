@@ -38,8 +38,15 @@ const KEY_PRESS_BUFFER_MS = 1500;
 const NAVIGATION_STEPS = { home: 1, end: -1, pageUp: -10, pageDown: 10 } as const;
 
 export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {
-  /** 选中选项回调函数（值优先） */
+  /** 选中选项回调函数（值优先）。对齐原版select事件：仅值发生变化时触发 */
   onChange?: ChangeHandler<string | number>;
+
+  /**
+   * 选定选项回调（值优先）。对齐原版choose事件：每一次选定（点击/拖拽/Enter）都触发，
+   * 含重复选定当前项。菜单类容器用它收起菜单——原版由MenuSelectWidget的hideOnChoose
+   * 承担，本工程的显隐由调用方持有，故需该无条件通道
+   */
+  onChoose?: ChangeHandler<string | number>;
 
   /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
@@ -75,6 +82,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   className,
   disabled,
   onChange,
+  onChoose,
   value,
   defaultValue,
   outline,
@@ -89,7 +97,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   'aria-labelledby': ariaLabelledBy,
   ...rest
 }, ref) => {
-  const { value: currentValue, commit } = useControlledValue<string | number>({ value, defaultValue }, onChange);
+  const { value: currentValue, commitIfChanged } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   // 高亮半受控：传入highlightedValue即由上层管理（如Dropdown的键盘导航与hover高亮），
   // 独立使用时内部维护。undefined也是合法写入值（Escape/Tab清除高亮）
   const { value: currentHighlighted, commit: setHighlighted } = useControlledValue<string | number | undefined>(
@@ -127,11 +135,20 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   /** 值是否可选（在可选值集合内） */
   const isValueSelectable = (optionValue: string | number) => selectableValueSet.has(optionValue);
 
+  /**
+   * 选定选项：先按值变化提交（对齐原版`chooseItem`先`selectItem`），再无条件的派发onChoose
+   * （对齐其后的`emit('choose')`——菜单据此收起）。重复选中同一项只收起菜单、不派发选中事件
+   */
+  const commitSelection = (optionValue: string | number) => {
+    commitIfChanged(optionValue);
+    onChoose?.(optionValue);
+  };
+
   const { pressed, pressedValue, handleMouseDown, handleUnpress } = useOptionDrag<string | number>({
     disabled,
     isValueSelectable,
     findItemFromNode,
-    onCommit: commit,
+    onCommit: commitSelection,
   });
 
   const classes = clsx(
@@ -217,7 +234,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
     switch (e.key) {
       case 'Enter':
         if (current !== undefined) {
-          commit(current);
+          // 对齐原版chooseItem→selectItem：命中已选中项时无变化、不派发选中事件
+          commitSelection(current);
           handled = true;
         }
         break;

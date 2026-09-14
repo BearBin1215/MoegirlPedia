@@ -9,6 +9,7 @@ import {
   FieldLayout,
   FieldsetLayout,
   FormLayout,
+  HiddenInputWidget,
   RadioSelectInput,
   TextInput,
 } from 'oojs-ui-react';
@@ -54,6 +55,7 @@ function OriginalForm() {
       ButtonInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       ButtonWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       DropdownWidget: new (config?: Record<string, unknown>) => { $element: unknown };
+      HiddenInputWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       MenuOptionWidget: new (config?: Record<string, unknown>) => { $element: unknown };
       FieldLayout: new (field: unknown, config?: Record<string, unknown>) => { $element: unknown };
       FieldsetLayout: new (config?: Record<string, unknown>) => { $element: unknown; addItems: (items: unknown[]) => void };
@@ -82,6 +84,7 @@ function OriginalForm() {
       value: ['c1'],
     });
     const button = new ui.ButtonWidget({ label: '按钮' });
+    const hidden = new ui.HiddenInputWidget({ name: 'hidden', value: 'hidden-value' });
     const dropdownWidget = new ui.DropdownWidget({
       label: '选择',
       menu: {
@@ -123,9 +126,10 @@ function OriginalForm() {
       new ui.FieldLayout(checks, { label: '多选组', align: 'top' }),
       new ui.FieldLayout(button, { label: '按钮（标签点击聚焦）', align: 'top' }),
       new ui.FieldLayout(dropdownWidget, { label: '下拉（标签点击聚焦）', align: 'top' }),
+      new ui.FieldLayout(hidden, { label: '隐藏值（提交结果应含hidden）', align: 'top' }),
     ];
     register(
-      username, dropdown, radio, checks, button, dropdownWidget,
+      username, dropdown, radio, checks, button, hidden, dropdownWidget,
       searchInput, searchButton, searchField,
       searchInput2, searchButton2, searchField2,
       fieldset, ...fieldLayouts,
@@ -215,6 +219,9 @@ function ReactForm() {
               ]}
             />
           </FieldLayout>
+          <FieldLayout label='隐藏值（提交结果应含hidden）' align='top'>
+            <HiddenInputWidget name='hidden' value='hidden-value' />
+          </FieldLayout>
           <ActionFieldLayout label='ActionField（input标签按钮）' align='top' button={<ButtonInput type='submit' flags='primary' useInputTag>搜索</ButtonInput>}>
             <TextInput placeholder='搜索' name='search' />
           </ActionFieldLayout>
@@ -277,7 +284,7 @@ function FormComparePage() {
           RadioSelectInput（默认选中首项语义）、CheckboxMultiselectInput（checkbox的name/value表单提交）、
           ButtonInput（submit按钮触发原生提交，两种标签形态）、ActionFieldLayout（输入框+按钮组合）、
           FieldLayout标签联动（点击标签聚焦输入框/勾选首个非禁用项/按钮/下拉把手）、
-          点击两侧提交按钮后FormData序列化结果应一致。
+          HiddenInputWidget（隐藏值随表单提交）、点击两侧提交按钮后FormData序列化结果应一致。
         </>
       )}
     >

@@ -7,7 +7,7 @@
 
 基本上都支持常见标准属性，如`id`、`className`、`ref`、`onClick`等。
 
-主要用于生成oojs-ui的元素，api、使用逻辑可能有很大出入。
+主要用于生成OOUI（oojs-ui）的元素，api、使用逻辑可能有很大出入。
 
 ## 文档
 

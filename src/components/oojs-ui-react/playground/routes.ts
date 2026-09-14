@@ -27,6 +27,12 @@ export const compareRoutes: CompareRoute[] = [
     Component: lazy(() => import('./pages/button-checkbox-compare')),
   },
   {
+    path: 'button-select-compare',
+    title: 'ButtonSelect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/button-select-compare')),
+  },
+  {
     path: 'combobox-compare',
     title: 'ComboBoxInput',
     group: 'Widgets',
@@ -77,6 +83,12 @@ export const compareRoutes: CompareRoute[] = [
   // #endregion
 
   // #region Layouts
+  {
+    path: 'copytext-compare',
+    title: 'CopyTextLayout',
+    group: 'Layouts',
+    Component: lazy(() => import('./pages/copytext-compare')),
+  },
   {
     path: 'fieldset-compare',
     title: 'FieldsetLayout',

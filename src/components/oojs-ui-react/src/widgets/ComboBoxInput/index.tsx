@@ -79,7 +79,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   tabIndex,
   ...rest
 }, ref) => {
-  const { value: currentValue, commit } = useControlledValue<string>({ value, defaultValue }, onChange);
+  const { value: currentValue, commit, commitIfChanged } = useControlledValue<string>({ value, defaultValue }, onChange);
   const [open, setOpen] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -155,7 +155,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
         if (open) {
           event.preventDefault();
           if (highlightedValue !== undefined) {
-            commit(String(highlightedValue));
+            commitIfChanged(String(highlightedValue));
           }
         }
         setOpen(false);
@@ -190,12 +190,12 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   };
 
   /**
-   * 选定菜单项：值经String归一化后写入输入框，对齐原版InputWidget.cleanUpValue（强制String）。
-   * 注意数值型选项值与原版一致不会呈现选中态——原版findItemFromData按OO.getHash
-   * （JSON.stringify）比较，数字与字符串不等价
+   * 选定菜单项：值经String归一化后写入输入框，对齐原版InputWidget.cleanUpValue（强制String），
+   * 并收起菜单（对齐原版MenuSelectWidget.hideOnChoose）。注意数值型选项值与原版一致不会
+   * 呈现选中态——原版findItemFromData按OO.getHash（JSON.stringify）比较，数字与字符串不等价
    */
   const selectOption = (optionValue: string | number) => {
-    commit(String(optionValue));
+    commitIfChanged(String(optionValue));
     setOpen(false);
   };
 
@@ -264,7 +264,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
         ref={menuRef}
         id={menuId}
         container={elementRef}
-        onChange={selectOption}
+        onChoose={selectOption}
         value={currentValue}
         open={open}
         options={options}

@@ -1,7 +1,7 @@
 /**
  * 消息键：键名对齐原版OOUI的i18n键（ooui-*），便于MediaWiki场景直接映射
  * mw.msg的同名消息。仅收录本工程已实现组件涉及的系统级默认文案，
- * 未实现组件（selectfile/copytextlayout等）的键不入列
+ * 未实现组件（selectfile等）的键不入列
  */
 export type MessageKey =
   | 'ooui-dialog-message-accept'
@@ -19,7 +19,8 @@ export type MessageKey =
   | 'ooui-combobox-button-label'
   | 'ooui-popup-widget-close-button-aria-label'
   | 'ooui-item-remove'
-  | 'ooui-field-help';
+  | 'ooui-field-help'
+  | 'ooui-copytextlayout-copy';
 
 /** 消息值：字符串或延迟解析函数（如站点侧 () => mw.msg(key) 接入MediaWiki语言体系，对齐原版deferMsg语义） */
 export type MessageValue = string | (() => string);
@@ -42,6 +43,7 @@ const en: Record<MessageKey, string> = {
   'ooui-popup-widget-close-button-aria-label': 'Close',
   'ooui-item-remove': 'Remove',
   'ooui-field-help': 'Help',
+  'ooui-copytextlayout-copy': 'Copy',
 };
 
 // 模块级覆盖表：registerMessages写入，msg读取。命令式API（confirm/alert/prompt）在

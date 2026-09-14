@@ -3,7 +3,7 @@
 各组件的使用示例与 API。示例基于以下约定：
 
 - 基本上都支持常见标准属性，如`id`、`className`、`ref`、`onClick`等
-- 主要用于生成oojs-ui的元素，api、使用逻辑可能有很大出入
+- 主要用于生成OOUI（oojs-ui）的元素，api、使用逻辑可能有很大出入
 
 ## 基本类型
 
@@ -300,3 +300,112 @@ const App = () => {
 
 export default App;
 ```
+
+## HiddenInputWidget
+
+隐藏输入，用于承载不展示但要随表单提交的值。
+
+```jsx
+import React from 'react';
+import { FieldLayout, FormLayout, HiddenInputWidget } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <FormLayout method='post' onSubmit={(event) => event.preventDefault()}>
+      <FieldLayout label='隐藏值' align='top'>
+        <HiddenInputWidget name='hidden' value='hidden-value' />
+      </FieldLayout>
+    </FormLayout>
+  );
+};
+
+export default App;
+```
+
+| 参数     | 说明                     | 类型      |
+| -------- | ------------------------ | --------- |
+| value    | 提交的值，默认为空串     | `string`  |
+| name     | 表单字段名               | `string`  |
+| disabled | 是否禁用（不参与表单提交） | `boolean` |
+
+## ButtonSelect
+
+按钮式选择，选项以一排按钮呈现，同时只能选中一个。
+
+```jsx
+import React from 'react';
+import { ButtonSelect } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <ButtonSelect
+      defaultValue='b'
+      options={[
+        { value: 'a', children: '选项A' },
+        { value: 'b', children: '选项B', icon: 'edit' },
+        { value: 'c', children: '禁用项', disabled: true },
+      ]}
+      onChange={(value) => console.log(value)}
+    />
+  );
+};
+
+export default App;
+```
+
+选项对象中`value`必须，其余字段与其它选择类组件一致（`children`为文本、`disabled`、`icon`、`indicator`），
+另有`framed`（是否带边框，缺省带边框）。选中值经`value`/`defaultValue`/`onChange`受控或非受控。
+
+| 参数           | 说明                     | 类型                                            |
+| -------------- | ------------------------ | ----------------------------------------------- |
+| options        | 选项集                   | `ButtonSelectOptionProps[]`                     |
+| value          | 当前选中值（受控）       | `string \| number`                              |
+| defaultValue   | 非受控初始选中值         | `string \| number`                              |
+| onChange       | 选中变化回调（值优先）   | [`ChangeHandler<string \| number>`](#基本类型)  |
+| disabled       | 整组禁用（选项一并禁用） | `boolean`                                       |
+
+## CopyTextLayout
+
+只读文本框加复制按钮，聚焦文本框或点击按钮时自动全选文本，点击按钮写入剪贴板并回调结果。
+
+```jsx
+import React from 'react';
+import { CopyTextLayout } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <CopyTextLayout
+      label='分享链接'
+      copyText='https://zh.moegirl.org.cn/Special:Random'
+      onCopyResult={(copied) => console.log(copied)}
+    />
+  );
+};
+
+export default App;
+```
+
+```jsx
+// 多行：文本框换用MultilineTextInput，复制按钮换行右浮
+<CopyTextLayout
+  label='批量文本'
+  multiline
+  copyText={'第一行\n第二行'}
+  buttonProps={{ children: '复制文本', icon: 'link' }}
+/>
+```
+
+| 参数          | 说明                                        | 类型                                              |
+| ------------- | ------------------------------------------- | ------------------------------------------------- |
+| copyText      | 待复制文本，作为文本框初始值                | `string`                                          |
+| multiline     | 是否多行                                    | `boolean`                                         |
+| textInputProps | 文本框props覆盖（`readOnly`缺省`true`）    | `CopyTextLayoutTextInputProps`                    |
+| buttonProps   | 复制按钮props覆盖（`children`为按钮文本）   | `Partial<ButtonProps>`                            |
+| onCopyResult  | 复制结束回调，入参为是否成功                | `(copied: boolean) => void`                       |
+
+其余字段与`FieldLayout`一致（`label`、`align`、`disabled`等）。
+复制优先走`navigator.clipboard`，不可用或被拒时回落到`document.execCommand('copy')`。
+
+`CopyTextLayoutTextInputProps` = `Partial<TextInputProps<HTMLInputElement | HTMLTextAreaElement>>`（去掉`inputRef`，
+布局自身占用该ref）再交叉多行专属的`rows`/`maxRows`/`autosize`，故单行与多行两种形态共用同一份配置。
+
