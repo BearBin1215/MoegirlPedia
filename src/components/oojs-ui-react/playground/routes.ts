@@ -80,6 +80,12 @@ export const compareRoutes: CompareRoute[] = [
     group: 'Widgets',
     Component: lazy(() => import('./pages/toggle-compare')),
   },
+  {
+    path: 'tag-multiselect-compare',
+    title: 'TagMultiselect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/tag-multiselect-compare')),
+  },
   // #endregion
 
   // #region Layouts

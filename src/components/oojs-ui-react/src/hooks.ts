@@ -371,13 +371,16 @@ export function useCleanId(): string {
  * 浮层关闭：点击浮层与锚点之外（document mousedown）或按Escape时请求关闭。
  * Escape在捕获阶段处理：先于React根容器上的冒泡处理器（如Dialog的onKeyDown），
  * 处理后`stopPropagation`使嵌套浮层只关最内层（对齐原版Popup的onDocumentKeyDown），
- * 已`defaultPrevented`的Escape不重复处理。
+ * 已`defaultPrevented`的Escape不重复处理。`onEscape`在Escape触发关闭后附加执行——
+ * 捕获层吞键后组件的onKeyDown收不到该事件，原版中经输入框keydown处理的附带动作
+ * （如TagMultiselectWidget的Escape清空输入文本）须经此回调补齐。
  * 回调与忽略目标经ref读取最新，内联函数不导致监听反复重挂
  */
 export function useDismissablePopover({
   enabled,
   onClose,
   ignore,
+  onEscape,
 }: {
   /** 是否处于需响应关闭的开启态；关闭时不挂监听，避免吞掉外层浮层的Escape */
   enabled: boolean;
@@ -385,9 +388,12 @@ export function useDismissablePopover({
   onClose: () => void;
   /** 视为内部的目标：其内部点击不触发关闭（组件根、portal后的浮层等） */
   ignore?: ElementOrRef[];
+  /** Escape触发关闭后的附加动作（与onClose同批调用，仅Escape路径触发） */
+  onEscape?: () => void;
 }): void {
   const onCloseRef = useLatestRef(onClose);
   const ignoreRef = useLatestRef(ignore);
+  const onEscapeRef = useLatestRef(onEscape);
   useEffect(() => {
     if (!enabled) {
       return;
@@ -404,6 +410,7 @@ export function useDismissablePopover({
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape' && !event.defaultPrevented) {
         onCloseRef.current();
+        onEscapeRef.current?.();
         event.preventDefault();
         event.stopPropagation();
       }
@@ -414,7 +421,7 @@ export function useDismissablePopover({
       document.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [enabled, onCloseRef, ignoreRef]);
+  }, [enabled, onCloseRef, ignoreRef, onEscapeRef]);
 }
 
 /**
@@ -835,12 +842,15 @@ export function useMenuPopup<T extends string | number>({
   onClose,
   values,
   ignore,
+  onEscape,
 }: {
   open: boolean;
   onClose: () => void;
   /** 可选项值集合（有value且未禁用） */
   values: T[];
   ignore?: ElementOrRef[];
+  /** Escape触发关闭后的附加动作（如TagMultiselect清空输入文本，对齐原版doInputEscape） */
+  onEscape?: () => void;
 }) {
   const [highlightedValue, setHighlightedValue] = useState<T>();
 
@@ -889,7 +899,7 @@ export function useMenuPopup<T extends string | number>({
     }
   };
 
-  useDismissablePopover({ enabled: open, onClose, ignore });
+  useDismissablePopover({ enabled: open, onClose, ignore, onEscape });
 
   /**
    * 菜单展开时消费导航键（对齐原版`SelectWidget.onDocumentKeyDown`由基类统一处理，

@@ -51,7 +51,6 @@ export const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProp
       ref={ref}
     >
       <legend className='oo-ui-fieldsetLayout-header'>
-        {/* 对齐原版IconElement混入：legend内为纯icon span，不带IconWidget的widget类，避免行内布局错位 */}
         <IconBase icon={icon} />
         <LabelBase>{label}</LabelBase>
         {help && !helpInline && (

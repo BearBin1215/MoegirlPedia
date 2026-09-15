@@ -54,6 +54,13 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
   /** 非受控初始选中值 */
   defaultValue?: string | number;
 
+  /**
+   * 多选选中值集合（受控）。传入即进入多选展示：命中集合的选项输出选中态、
+   * `aria-multiselectable=true`，`value`/`defaultValue` 的单值选中态不再参与展示。
+   * 选中提交仍经 `onChange`/`onChoose`（单值语义），多选语义由调用方维护（MenuTagMultiselect）
+   */
+  selectedValues?: (string | number)[];
+
   /** 是否渲染OutlineOption */
   outline?: boolean;
 
@@ -85,6 +92,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   onChoose,
   value,
   defaultValue,
+  selectedValues,
   outline,
   options,
   highlightedValue,
@@ -321,7 +329,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       className={classes}
       aria-disabled={disabled || undefined}
       role='listbox'
-      aria-multiselectable={false}
+      aria-multiselectable={selectedValues !== undefined}
       // 高亮项关联：对齐原版SelectWidget.highlightItem将高亮项id写入$focusOwner（本工程为listbox根）
       // 的aria-activedescendant；无高亮时不输出
       aria-activedescendant={highlightedIndex >= 0 ? optionElementId(highlightedIndex) : undefined}
@@ -343,7 +351,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
             />
           );
         }
-        const selected = currentValue === option.value;
+        // 多选展示（selectedValues）优先于单值选中态
+        const selected = selectedValues !== undefined
+          ? selectedValues.includes(option.value)
+          : currentValue === option.value;
         const isHighlighted = currentHighlighted === option.value;
         const itemRef = registerItem(option.value);
         return outline ? (

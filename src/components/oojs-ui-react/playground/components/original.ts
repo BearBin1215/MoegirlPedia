@@ -12,7 +12,7 @@ export type OriginalBuilder = (
 ) => void;
 
 /**
- * 生成“名称+控件”行输出器：在容器内输出一行原版控件（与React侧的p行结构一致，
+ * 生成“名称+控件”行输出器：在容器内输出一行原版控件（与React侧的div行结构一致，
  * 保证两侧逐行对照），并返回创建出的控件实例供页面绑事件。
  */
 export function createRowAppender(container: HTMLElement, register: RegisterWidget) {
@@ -23,10 +23,12 @@ export function createRowAppender(container: HTMLElement, register: RegisterWidg
   ): T => {
     const widget = new Widget(config);
     register(widget);
-    const p = document.createElement('p');
-    p.textContent = name;
-    p.appendChild(unwrapJQuery(widget.$element));
-    container.appendChild(p);
+    // 不用p：p的内容模型为phrasing content，块级widget入p属不合规结构，且其UA默认
+    // 上下margin会使左右两侧行距不一致（React侧行容器为div、无margin）
+    const row = document.createElement('div');
+    row.textContent = name;
+    row.appendChild(unwrapJQuery(widget.$element));
+    container.appendChild(row);
     return widget;
   };
 }

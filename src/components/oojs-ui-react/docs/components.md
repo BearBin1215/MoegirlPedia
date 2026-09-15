@@ -409,3 +409,66 @@ export default App;
 `CopyTextLayoutTextInputProps` = `Partial<TextInputProps<HTMLInputElement | HTMLTextAreaElement>>`（去掉`inputRef`，
 布局自身占用该ref）再交叉多行专属的`rows`/`maxRows`/`autosize`，故单行与多行两种形态共用同一份配置。
 
+## TagMultiselect / MenuTagMultiselect
+
+标签多选输入框（chip输入）。`TagMultiselect`为自由输入形态，`MenuTagMultiselect`在其上提供候选菜单。
+
+```jsx
+import React from 'react';
+import { MenuTagMultiselect, TagMultiselect } from 'oojs-ui-react';
+
+const App = () => {
+  return (
+    <>
+      {/* 自由输入：回车添加任意标签 */}
+      <TagMultiselect allowArbitrary placeholder='输入后回车添加' onChange={(v) => console.log(v)} />
+      {/* 白名单：仅列表内的值可添加 */}
+      <TagMultiselect allowedValues={['foo', 'bar', 'baz']} placeholder='foo / bar / baz' />
+      {/* 带候选菜单：输入过滤、↑↓高亮、Enter选定、点击切换 */}
+      <MenuTagMultiselect
+        defaultValue={['option1']}
+        options={[
+          { value: 'option1', label: '选项一' },
+          { value: 'option2', label: '选项二' },
+          { value: 'option3', label: '选项三', icon: 'tag' },
+        ]}
+      />
+    </>
+  );
+};
+
+export default App;
+```
+
+交互与原版一致：输入后回车添加；输入为空时按Backspace移除末尾标签并把其文本回填输入框（按Ctrl/Cmd则纯删除）；
+点击标签把其移回输入框编辑（`allowEditTags`）；←→在标签与输入框间移动焦点；Escape清空输入；
+失焦时把输入框文本提交为标签；拖动标签可调整顺序（`allowReordering`，drop后按新顺序写回值）。
+`inputPosition='inline'`时输入框自动铺满所在行的剩余空间，空间不足时换行取整行宽度（对齐原版`updateInputSize`）。
+值为`(string | number)[]`，经`value`/`defaultValue`/`onChange`受控或非受控。
+
+| 参数                  | 说明                                                          | 类型                                    |
+| --------------------- | ------------------------------------------------------------- | --------------------------------------- |
+| value / defaultValue  | 标签值集合（当前/初始）                                       | `(string \| number)[]`                  |
+| onChange              | 标签增删回调                                                  | [`ChangeHandler<(string \| number)[]>`](#基本类型) |
+| inputPosition         | 输入框位置：`inline`（标签区末尾）/`outline`（标签区下方）/`none`（无输入） | `'inline' \| 'outline' \| 'none'`       |
+| allowArbitrary        | 允许添加任意值（否则仅`allowedValues`/菜单选项）              | `boolean`                               |
+| allowDuplicates       | 允许重复值                                                    | `boolean`                               |
+| allowReordering       | 允许拖拽调整标签顺序；关闭时不可拖拽，且新增标签按 `allowedValues`/菜单选项的给定顺序插入 | `boolean` |
+| allowedValues         | 合法值白名单                                                  | `(string \| number)[]`                  |
+| allowDisplayInvalidTags | 非法/重复值也显示（呈invalid态），整体随之标记为非法        | `boolean`                               |
+| tagLimit              | 标签数量上限（满额输入禁用）                                  | `number`                                |
+| allowEditTags         | 允许点击标签移回输入框编辑                                    | `boolean`                               |
+| placeholder           | 输入框占位符                                                  | `string`                                |
+| name                  | 输入框`name`属性                                              | `string`                                |
+| icon / indicator / flags | 图标/指示器/标志                                           | 同其余组件                              |
+
+`MenuTagMultiselect`另有：
+
+| 参数              | 说明                                                       | 类型              |
+| ----------------- | ---------------------------------------------------------- | ----------------- |
+| options           | 菜单选项集（`label`为标签与菜单项文本，`children`可自定义菜单项渲染） | `TagOptionProps[]` |
+| clearInputOnChoose | 选定菜单项后清空过滤文本                                  | `boolean`         |
+
+未开启`allowArbitrary`时，菜单选项构成标签的合法值域；已添加标签对应的菜单项呈选中态，点击已选中项即移除该标签。
+`TagOptionProps` = `{ value, label?, children?, icon?, disabled?, fixed? }`，`fixed`为真时该标签不可移除、不可拖拽，且拖拽不会把其它标签移到它之前（固定项顺序不受拖拽影响）。
+

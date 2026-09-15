@@ -74,6 +74,19 @@ export {
   type ButtonSelectOptionProps,
 } from './widgets/ButtonSelect';
 
+// 标签多选族：TagMultiselect为基础形态，MenuTagMultiselect在其上提供候选菜单
+export {
+  TagMultiselect,
+  type TagMultiselectProps,
+  type TagInputPosition,
+  type TagOptionProps,
+} from './widgets/TagMultiselect';
+export {
+  MenuTagMultiselect,
+  type MenuTagMultiselectProps,
+  type MenuTagMultiselectOptionProps,
+} from './widgets/MenuTagMultiselect';
+
 // 布局
 export { Layout, type LayoutProps } from './layouts/Layout';
 export { PanelLayout, type PanelLayoutProps } from './layouts/PanelLayout';
@@ -96,6 +109,7 @@ export {
   type IndexLayoutProps,
   type IndexLayoutTabProps,
 } from './layouts/IndexLayout';
+export { MenuLayout, type MenuLayoutProps } from './layouts/MenuLayout';
 
 // 工具栏
 export { Toolbar, type ToolbarProps } from './toolbars/Toolbar';

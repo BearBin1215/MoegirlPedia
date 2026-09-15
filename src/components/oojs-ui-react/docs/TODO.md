@@ -36,7 +36,7 @@
 - [x] Menu
 - [x] 搜索输入框（SearchInput）
 - [x] 复制文本布局（CopyTextLayout）
-- [ ] 标签多选族（MultiselectWidget/TagMultiselectWidget/MenuTagMultiselectWidget/TagItemWidget）
+- [x] 标签多选族（TagMultiselect/TagItem，及带菜单的MenuTagMultiselect；含拖拽重排与inline输入框宽度自适应）
 - [ ] 文件选择输入框（SelectFileInputWidget）
 - [ ] 工具栏剩余（PopupTool/ToolGroupTool/LabelToolGroup）
 - [ ] 其他布局类组件
@@ -64,6 +64,10 @@
 - **Select 系选项的选中态统一用基类 `OptionProps.selected`**，Radio/Checkbox 型选项在内层原生控件上再映射为 `checked`。原版各 OptionWidget 分别用 `setSelected`/`setChecked` 等维护；React 版认为选中语义相同，不对外暴露多种命名。
 - **布局组件的受控 API 统一为 `value`/`defaultValue`/`onChange`**（`StackLayout`、`IndexLayout`、`BookletLayout`）。原版经 `setItem`/`setPage`/`setTabPanel` 等 setter 命令式切换；`StackLayout` 原先公开的 `activeValue` 已并入 `value`。
 - **选项族不支持 `flags`**。原版 `OptionWidget` 混入 `FlaggedElement`，选项可经 `flags` 输出 `oo-ui-flaggedElement-*` 并影响图标变体（progressive/destructive/error/warning/success）；本工程选项族（MenuOption/OutlineOption/TabOption/ButtonOption 等）未开放该配置，`ButtonOption` 的图标/指示器变体只按"带边框且激活或禁用则反色"输出。
+- **TagMultiselect 的 `value`/`onChange` 包含非法标签**。原版 `getValue()` 只返回合法标签（`items.filter(item => item.isValid())`），非法标签仅展示、不进值；React 版的 `value` 即标签集合本身（含非法项），以适应受控语义——若按原版过滤，受控父级回写会丢失非法标签（显示项与值不一致）。
+- **未实现 `PopupTagMultiselectWidget`**。原版该类构造期即 `warnDeprecation`（建议改用 `MenuTagMultiselectWidget`），本工程不提供。
+- **标签数据限于 `string | number`**。原版标签 data 可为任意对象（`{data,label}` 形态），本工程与选择族一致，值统一为 `string | number`，标签文本取自菜单选项 `label` 或值本身。
+- **TagMultiselect 不开放替换内部输入控件**。原版 `config.input`/`config.inputWidget` 可替换内部输入控件，React 版内置输入框，对齐其余组件不暴露内部输入控件的做法。
 - **`TabIndexedElement` 的 `setTabIndex(null)` 语义未实现**。原版传 `null` 时移除该元素的 `tabindex` 与 `aria-disabled`；React 的 `tabIndex` 类型不接受 `null`，经 `...rest` 透传到 DOM 会破坏属性类型，故统一收为 `number`——需要"不参与Tab序"时用 `-1`（焦点可达性等价）。其余 tabIndex 行为已对齐：`disabled` 覆盖显式值、落点与原版 `$tabIndexed` 一致（Button→锚点、输入类→`input`、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根）、`aria-disabled` 写在该元素上。
 
 ### 增强
@@ -78,6 +82,7 @@
 - **HiddenInputWidget 的 `disabled` 落到原生属性上**。原版经 `Widget.setDisabled` 只切换 `oo-ui-widget-*` 类并移除 `aria-disabled`，被"禁用"的隐藏输入仍会随表单提交；React 版按标准 `disabled` 语义让它退出提交。
 - **ButtonOption 的选中态图标/指示器一律反色**。原版 `ButtonOptionWidget` 构造期 `setSelected` 会 `setActive(true)`，但随后 `ButtonElement` 构造函数把 `this.active` 复位为 `false`，导致"初始选中"的按钮不反色、"用户点选后"的按钮才反色（同一状态两种表现，实测确认）；React 版按主题规则（带边框按钮在激活或禁用时反色）统一输出。
 - **Button 系列不输出 `oo-ui-buttonElement-size-medium`**。原版 `ButtonElement.setSize` 缺省写入尺寸类（`medium`），该类在 wikimediaui/apex 主题 CSS 中均无定义、不产生样式；React 版 Button/ButtonInput/ButtonOption 一律不输出。
+- **固定标签不可拖拽，且非固定标签不得被拖到固定标签之前**。原版虽在 `TagItemWidget` 上实现了 `fixed`（不渲染关闭按钮、不可移除/编辑），但标签多选族没有开放该配置的入口（`MenuTagMultiselectWidget.createTagItemWidget` 不传 `fixed`），故实际不可达、标签恒可拖可移除。React 版在 `TagOptionProps` 上开放 `fixed`，并让拖拽的目标下标钳制在固定区之后，使固定项顺序不受拖拽影响。
 
 ### 暂不实现
 
