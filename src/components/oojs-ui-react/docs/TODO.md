@@ -22,7 +22,7 @@
 - [x] 消息（Message）
 - [x] 输入弹窗（prompt）
 - [x] 表单（FormLayout/ActionFieldLayout，及ButtonInput/DropdownInput/RadioSelectInput/CheckboxMultiselectInput）
-- [x] 工具栏（Toolbar/Bar/List/MenuToolGroup）
+- [x] 工具栏（Toolbar/Bar/List/Menu/LabelToolGroup）
 - [x] 备选项输入框（ComboBox）
 - [x] 流程弹窗（ProcessDialog）与进度条（ProgressBar）
 - [x] 切换按钮（ToggleButton）
@@ -34,11 +34,11 @@
 - [x] 滑动（ToggleSwitch）
 - [x] Tab（IndexLayout/TabSelect/TabOption/TabPanelLayout）
 - [x] Menu
-- [x] 搜索输入框（SearchInput）
+- [x] 搜索输入框与搜索组件（SearchInput/SearchWidget）
 - [x] 复制文本布局（CopyTextLayout）
 - [x] 标签多选族（TagMultiselect/TagItem，及带菜单的MenuTagMultiselect；含拖拽重排与inline输入框宽度自适应）
 - [ ] 文件选择输入框（SelectFileInputWidget）
-- [ ] 工具栏剩余（PopupTool/ToolGroupTool/LabelToolGroup）
+- [ ] 工具栏剩余（PopupTool/ToolGroupTool）
 - [ ] 其他布局类组件
 
 ## 未对齐行为记录
@@ -98,6 +98,7 @@
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定起始边对齐（LTR左/RTL右，经 `useAnchoredPanelLayout` 与 MenuSelect 共用实现）；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
   - `PopupTool` 与 `ToolGroupTool`：工具内嵌工具组的场景。
+- **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（`resolveTabIndex` 对"不输出tabindex"的既有等效约定，见本文件前文），差别仅在 `-1` 元素可被编程聚焦。**焦点归属本身已对齐**：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的焦点陷阱大部分已对齐，剩下 `toggleIsolation` 未实现**：

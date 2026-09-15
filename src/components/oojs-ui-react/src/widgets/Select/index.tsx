@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEventHandler,
+  type RefObject,
 } from 'react';
 import clsx from 'clsx';
 import { MenuOption, type MenuOptionProps } from '../MenuOption';
@@ -78,6 +79,15 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
 
   /** 键盘导航到端点后是否环绕，对齐原版static.listWrapsAround */
   listWrapsAround?: boolean;
+
+  /**
+   * 焦点归属元素（对齐原版`SelectWidget.setFocusOwner`）：有值时高亮项的
+   * `aria-activedescendant`输出到该元素、列表根不再输出。供"键盘焦点在别处、
+   * 由该处驱动列表高亮"的组合使用（SearchWidget的查询框即此，原版经
+   * `results.setFocusOwner(query.$input)`实现）。配合`tabIndex={-1}`
+   * 可让列表不作独立Tab停靠点（原版SelectWidget根无tabindex）
+   */
+  focusOwnerRef?: RefObject<HTMLElement | null>;
 }
 
 /**
@@ -99,6 +109,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   onHighlightedChange,
   handleNavigationKeys = false,
   listWrapsAround = true,
+  focusOwnerRef,
   tabIndex,
   onKeyDown,
   onMouseLeave,
@@ -318,10 +329,29 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
    * 选项元素id（对齐原版OptionWidget.getElementId）：调用方未显式给id时按数组下标生成
    * （useCleanId已去除`:`），供aria-activedescendant指向高亮项；下标口径与highlightedIndex一致
    */
-  const optionElementId = (index: number) => options[index]?.id ?? `${optionIdBase}-${index}`;
+  const optionElementId = useCallback(
+    (index: number) => options[index]?.id ?? `${optionIdBase}-${index}`,
+    [options, optionIdBase],
+  );
   const highlightedIndex = currentHighlighted === undefined
     ? -1
     : options.findIndex((option) => option.value === currentHighlighted);
+
+  // 焦点归属元素（对齐原版setFocusOwner下的$focusOwner.attr/removeAttr）：指定时由该元素
+  // 承载aria-activedescendant——屏幕阅读器读的是**持有DOM焦点的元素**，列表根本身无焦点
+  // （指定focusOwnerRef的场景即为此）时挂在根上不会被读出
+  useEffect(() => {
+    const owner = focusOwnerRef?.current;
+    if (!owner) {
+      return;
+    }
+    if (highlightedIndex >= 0) {
+      owner.setAttribute('aria-activedescendant', optionElementId(highlightedIndex));
+    } else {
+      owner.removeAttribute('aria-activedescendant');
+    }
+    return () => owner.removeAttribute('aria-activedescendant');
+  }, [focusOwnerRef, highlightedIndex, optionElementId]);
 
   return (
     <div
@@ -330,9 +360,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
       aria-disabled={disabled || undefined}
       role='listbox'
       aria-multiselectable={selectedValues !== undefined}
-      // 高亮项关联：对齐原版SelectWidget.highlightItem将高亮项id写入$focusOwner（本工程为listbox根）
-      // 的aria-activedescendant；无高亮时不输出
-      aria-activedescendant={highlightedIndex >= 0 ? optionElementId(highlightedIndex) : undefined}
+      // 高亮项关联：对齐原版SelectWidget.highlightItem将高亮项id写入$focusOwner（缺省为listbox根，
+      // 见下方focusOwnerRef）的aria-activedescendant；无高亮时不输出
+      aria-activedescendant={focusOwnerRef || highlightedIndex < 0 ? undefined : optionElementId(highlightedIndex)}
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       tabIndex={resolveTabIndex(tabIndex, disabled)}
       onKeyDown={handleKeyDown}

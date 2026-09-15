@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   BarToolGroup,
+  LabelToolGroup,
   ListToolGroup,
   MenuToolGroup,
   Toolbar,
@@ -64,11 +65,15 @@ function OriginalToolbar() {
     toolGroupFactory.register(ui.BarToolGroup);
     toolGroupFactory.register(ui.ListToolGroup);
     toolGroupFactory.register(ui.MenuToolGroup);
+    // LabelToolGroup不能容纳工具（populate为空实现），仅展示标签
+    toolGroupFactory.register(ui.LabelToolGroup);
 
     // 工厂供两条工具栏共享（工具实例由各工具组自行创建），分组结构对齐React侧
     const top = new ui.Toolbar(toolFactory, toolGroupFactory);
     top.setup([
       { type: 'bar', include: ['person', 'help'] },
+      { type: 'label', label: '标签组', icon: 'userAvatar', indicator: 'down', title: '标签工具组' },
+      { type: 'label', label: '纯文本' },
       { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
       // align:'after'：工具组排到工具栏右侧的$after容器（原版insertItemElements）
@@ -168,6 +173,9 @@ function ReactToolbar() {
           未激活本组工具时把手标签显示组标签而非激活项标题 */}
       <Toolbar>
         <ReactBarGroup onLog={handleSelect} />
+        {/* 标签组：不可交互、不承载工具，仅展示文本/图标/指示器 */}
+        <LabelToolGroup label='标签组' icon='userAvatar' indicator='down' title='标签工具组' />
+        <LabelToolGroup label='纯文本' />
         <ReactListGroup onLog={handleSelect} label='更多' indicator='down' />
         <ReactMenuGroup onLog={handleSelect} label='菜单' />
         {/* align='after'：排到工具栏右侧（对应原版ToolGroup的align配置） */}
@@ -192,8 +200,9 @@ function ToolbarComparePage() {
       title='Toolbar 对照'
       description={(
         <>
-          对照点：Bar组平铺按钮（标题tooltip、按压态）、List组下拉面板（选中收起、标题为标签文本）、
-          Menu组（把手标签按激活工具合成、选中不关闭时更新标签）、工具active态样式。
+          对照点：Bar组平铺按钮（标题tooltip、按压态）、Label组（不可交互、不承载工具的纯文本/图标/
+          指示器）、List组下拉面板（选中收起、标题为标签文本）、Menu组（把手标签按激活工具合成、
+          选中不关闭时更新标签）、工具active态样式。
           原版为ToolFactory/ToolGroupFactory注册模式，React版为声明式tools props。
         </>
       )}

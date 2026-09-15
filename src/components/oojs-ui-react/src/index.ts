@@ -31,6 +31,7 @@ export {
   type TextInputValidate,
 } from './widgets/TextInput';
 export { SearchInput, type SearchInputProps } from './widgets/SearchInput';
+export { SearchWidget, type SearchWidgetProps } from './widgets/SearchWidget';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 
@@ -116,6 +117,7 @@ export { Toolbar, type ToolbarProps } from './toolbars/Toolbar';
 export { BarToolGroup, type BarToolGroupProps } from './toolbars/BarToolGroup';
 export { ListToolGroup, type ListToolGroupProps } from './toolbars/ListToolGroup';
 export { MenuToolGroup, type MenuToolGroupProps } from './toolbars/MenuToolGroup';
+export { LabelToolGroup, type LabelToolGroupProps } from './toolbars/LabelToolGroup';
 // tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置
 export type { ToolProps } from './toolbars/Tool';
 

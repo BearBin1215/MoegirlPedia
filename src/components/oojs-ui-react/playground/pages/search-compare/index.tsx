@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { SearchInput } from 'oojs-ui-react';
+import React, { useMemo, useState } from 'react';
+import { SearchInput, SearchWidget } from 'oojs-ui-react';
+import { unwrapJQuery } from '../../components/ooui';
 import { createRowAppender, useOriginalWidgets } from '../../components/original';
 import { CompareColumns, CompareLayout } from '../../components/CompareLayout';
 
@@ -45,6 +46,105 @@ function ReactSearchInputs({ addLog }: { addLog: (msg: string) => void }) {
   );
 }
 
+/** SearchWidget的候选结果（两侧共用，按查询前缀过滤；含共同前缀以便用↑↓对照多变结果） */
+const SEARCH_CANDIDATES = ['alpha', 'alto', 'beta', 'delta'];
+
+/**
+ * SearchWidget宿主尺寸：原版query/results均为绝对定位（`top:0`与`top:4em;bottom:0`），
+ * 高宽由宿主提供（原版的使用场景是Dialog），故此处用固定尺寸盒替代
+ */
+const SEARCH_WIDGET_BOX: React.CSSProperties = {
+  position: 'relative',
+  width: 420,
+  height: 240,
+  border: '1px solid #c8ccd1',
+  overflow: 'hidden',
+};
+
+type SearchWidgetUi = {
+  SearchWidget: new (config?: Record<string, unknown>) => {
+    $element: unknown;
+    getQuery: () => {
+      getValue: () => string;
+      on: (event: string, handler: () => void) => void;
+    };
+    getResults: () => {
+      clearItems: () => void;
+      addItems: (items: unknown[]) => void;
+      on: (event: string, handler: (item: { getData: () => string }) => void) => void;
+    };
+  };
+  MenuOptionWidget: new (config?: Record<string, unknown>) => unknown;
+};
+
+/** 原版侧：本组件不实现检索，须自行监听查询并重填结果（对齐原版分工） */
+function OriginalSearchWidget() {
+  const [chosen, setChosen] = useState('');
+  const { containerRef } = useOriginalWidgets((oo, container, register) => {
+    const ui = oo.ui as unknown as SearchWidgetUi;
+    const host = document.createElement('div');
+    host.style.cssText = 'position:relative;width:420px;height:240px;border:1px solid #c8ccd1;overflow:hidden;';
+
+    const search = new ui.SearchWidget({ placeholder: '输入 al / beta / delta 试试' });
+    register(search);
+    host.appendChild(unwrapJQuery(search.$element));
+    container.appendChild(host);
+
+    const query = search.getQuery();
+    const results = search.getResults();
+    const fill = () => {
+      results.clearItems();
+      const value = query.getValue();
+      if (!value) {
+        return;
+      }
+      results.addItems(
+        SEARCH_CANDIDATES
+          .filter((candidate) => candidate.startsWith(value))
+          .map((candidate) => new ui.MenuOptionWidget({ data: candidate, label: candidate })),
+      );
+    };
+    query.on('change', fill);
+    results.on('choose', (item) => setChosen(item.getData()));
+  });
+
+  return (
+    <div>
+      <div ref={containerRef} />
+      <p>已选：{chosen === '' ? '（无）' : chosen}</p>
+    </div>
+  );
+}
+
+/** React侧：结果由调用方按查询填入results（与SearchInput+Select组合等价） */
+function ReactSearchWidget() {
+  const [query, setQuery] = useState('');
+  const [chosen, setChosen] = useState('');
+  const results = useMemo(
+    () => (query === ''
+      ? []
+      : SEARCH_CANDIDATES
+        .filter((candidate) => candidate.startsWith(query))
+        .map((candidate) => ({ value: candidate, children: candidate }))),
+    [query],
+  );
+
+  return (
+    <div>
+      <div style={SEARCH_WIDGET_BOX}>
+        <SearchWidget
+          placeholder='输入 al / beta / delta 试试'
+          value={query}
+          onQueryChange={setQuery}
+          results={results}
+          onChoose={(value) => setChosen(String(value))}
+        />
+      </div>
+      <p>已选：{chosen === '' ? '（无）' : chosen}</p>
+    </div>
+  );
+}
+
 function SearchComparePage() {
   const [log, setLog] = useState<string[]>([]);
 
@@ -52,18 +152,25 @@ function SearchComparePage() {
 
   return (
     <CompareLayout
-      title='SearchInput 对照'
+      title='SearchInput / SearchWidget 对照'
       description={(
         <>
-          对照点：type=search语义与search缺省图标、clear清除指示器的显隐
+          SearchInput对照点：type=search语义与search缺省图标、clear清除指示器的显隐
           （值非空且未禁用/只读时显示，对齐updateSearchIndicator）、点击指示器或在其上按Enter
           清空并回焦输入框、指示器role=button与aria-label（ooui-item-remove消息）。
+          SearchWidget对照点：查询框与始终可见的结果列表的布局、输入即由调用方重填结果、
+          焦点留在查询框时↑↓移动结果高亮（端点环绕）、Enter选定高亮结果。
         </>
       )}
     >
       <h2>SearchInput</h2>
       <CompareColumns original={<OriginalSearchInputs />}>
         <ReactSearchInputs addLog={addLog} />
+      </CompareColumns>
+
+      <h2>SearchWidget</h2>
+      <CompareColumns original={<OriginalSearchWidget />}>
+        <ReactSearchWidget />
       </CompareColumns>
 
       <h2>事件日志（React侧）</h2>

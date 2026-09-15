@@ -472,3 +472,83 @@ export default App;
 未开启`allowArbitrary`时，菜单选项构成标签的合法值域；已添加标签对应的菜单项呈选中态，点击已选中项即移除该标签。
 `TagOptionProps` = `{ value, label?, children?, icon?, disabled?, fixed? }`，`fixed`为真时该标签不可移除、不可拖拽，且拖拽不会把其它标签移到它之前（固定项顺序不受拖拽影响）。
 
+## LabelToolGroup
+
+工具栏内的静态标签组，只展示文本/图标/指示器，**不可交互、不能承载工具**
+（对齐原版`OO.ui.LabelToolGroup`：`populate`为空实现且移除了`.oo-ui-toolGroup-tools`容器）。
+
+```jsx
+import React from 'react';
+import { LabelToolGroup, Toolbar } from 'oojs-ui-react';
+
+const App = () => (
+  <Toolbar>
+    <LabelToolGroup label='标签组' icon='userAvatar' indicator='down' title='标签工具组' />
+    <LabelToolGroup label='纯文本' />
+  </Toolbar>
+);
+
+export default App;
+```
+
+| 参数      | 说明                                                              | 类型                  |
+| --------- | ----------------------------------------------------------------- | --------------------- |
+| label     | 把手标签                                                          | `ReactNode`           |
+| icon      | 把手图标                                                          | `string`              |
+| indicator | 把手指示器                                                        | `Indicators`          |
+| title     | 把手tooltip（落在**根元素**，对齐原版TitledElement的`$titled=$element`） | `string`         |
+| align     | `before`排左侧/`after`排到工具栏右侧                              | `'before' \| 'after'` |
+
+其余字段与`Widget`一致（`disabled`等）。
+
+## SearchWidget
+
+查询输入框 + **始终可见**的结果列表（对齐原版`OO.ui.SearchWidget`，与浮层式查找菜单相对）。
+组件本身不实现检索：查询变化只经`onQueryChange`回调，结果由调用方填入`results`
+（对齐原版"查询变化清空结果、由子类重填"的分工）。焦点留在查询框，
+↑↓在结果间移动高亮（端点环绕）、Enter选定高亮结果、点击结果亦可选定。
+
+```jsx
+import React, { useMemo, useState } from 'react';
+import { SearchWidget } from 'oojs-ui-react';
+
+const candidates = ['alpha', 'alto', 'beta'];
+
+const App = () => {
+  const [query, setQuery] = useState('');
+  const results = useMemo(
+    () => candidates.filter((c) => c.startsWith(query)).map((c) => ({ value: c, children: c })),
+    [query],
+  );
+
+  return (
+    // 根与两个子块均为绝对定位，须由宿主给出尺寸与定位（原版的使用场景是Dialog）
+    <div style={{ position: 'relative', width: 420, height: 240 }}>
+      <SearchWidget
+        placeholder='输入 al 试试'
+        value={query}
+        onQueryChange={setQuery}
+        results={results}
+        onChoose={(value) => console.log(value)}
+      />
+    </div>
+  );
+};
+
+export default App;
+```
+
+| 参数          | 说明                                                         | 类型                                          |
+| ------------- | ------------------------------------------------------------ | --------------------------------------------- |
+| results       | 结果选项集（由调用方按查询重填）                             | `SelectOptionProps[]`                         |
+| value / defaultValue | 查询值（受控/初始）                                   | `string`                                      |
+| onQueryChange | 查询变化回调                                                 | [`ChangeHandler<string>`](#基本类型)          |
+| onChoose      | 选定结果回调（Enter选定高亮项、或点击结果）                   | [`ChangeHandler<string \| number>`](#基本类型) |
+| placeholder   | 查询框占位符                                                 | `string`                                      |
+| inputProps    | 查询框props覆盖（`value`/`defaultValue`/`onChange`由组件接管，`inputRef`与内部ref合并） | `Partial<SearchInputProps>`                   |
+
+其余字段与`Widget`一致。查询框即`SearchInput`（`type=search` + 清空指示器）。
+`results`与HTML原生`results`属性（`<input type=search>`）同名，故props类型先`Omit`掉原生属性再声明。
+结果列表的`aria-activedescendant`归属**查询框**（对齐原版`results.setFocusOwner(query.$input)`）、
+列表自身不作Tab停靠点（`tabIndex=-1`），点击结果不改变焦点。
+
