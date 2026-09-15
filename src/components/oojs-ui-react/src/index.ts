@@ -118,8 +118,9 @@ export { BarToolGroup, type BarToolGroupProps } from './toolbars/BarToolGroup';
 export { ListToolGroup, type ListToolGroupProps } from './toolbars/ListToolGroup';
 export { MenuToolGroup, type MenuToolGroupProps } from './toolbars/MenuToolGroup';
 export { LabelToolGroup, type LabelToolGroupProps } from './toolbars/LabelToolGroup';
-// tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置
-export type { ToolProps } from './toolbars/Tool';
+// tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置；
+// ToolPopupProps为ToolProps.popup的类型（工具的弹出浮层，对齐原版PopupTool）
+export type { ToolProps, ToolPopupProps } from './toolbars/Tool';
 
 // 弹窗
 export { Dialog, type DialogProps } from './dialogs/Dialog';

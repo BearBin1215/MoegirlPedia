@@ -117,6 +117,9 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - **原版 `Tool.active` 兼作瞬时按压视觉态**：`ToolGroup` 在 mousedown 时 `pressed.setActive(true)`、松开复位，故原版 `onSelect` 内不能以 `isActive()` 取反实现切换（读到的是按压态），须用应用自有标志（官方 Demo 的 `reallyActive` 模式）。React 版已将两者分离：`pressed` prop 承载瞬时按压，`active` prop 为受控激活态，二者都映射到 `oo-ui-tool-active` 类。
 - **工具组的 `align`**：原版 `Toolbar.insertItemElements` 把 `align:'after'` 的工具组移到 `$after` 容器（主题 CSS `.oo-ui-toolbar-after { float: right }`）。React 版由 `Toolbar` 按子元素的 `align` prop 分组渲染；工具组本体需把 `align` 解构掉，避免落成 DOM 属性。
 - **工具按压视觉随指针/焦点移出清除**：原版 `ToolGroup` 把 `mouseover/mouseout/focus/blur` 一并委托在 `$group` 上，经 `onMouseOutBlur` 仅清除按压视觉，按压流本身继续（在同工具上松开仍会触发选择）。React 版中 `useToolGroupPressed` 返回的 `pressedName` 在被移出时上报 `null`，组容器经 `getToolHoverHandlers` 接入四个事件。
+- **按压流只派发 `onSelect`，不承担工具自身的浮层显隐**：原版 `ToolGroup.onMouseKeyUp` 调用 `pressed.onSelect()`，而 `PopupTool.onSelect` 就是 `popup.toggle()`，二者是同一个入口；React 版 `onSelect` 保留为调用方回调（原版它被占用、调用方收不到通知），浮层开合改由 `ToolView` 在工具链接上的 `onClick`/`onKeyUp` 驱动，打开态另经 `popup.onOpenChange` 通知（见 docs/TODO.md 增强节）。新增"选中即开合某物"的工具形态时按此分工接入，不要把开合塞进 `onSelect`。
+- **工具承载子内容的两个通道是 `ToolProps.popup` 与 `ToolProps.group`**（对齐原版 `PopupTool`/`ToolGroupTool`）：前者为浮层配置对象（工具选中即开合，锚点与 `autoCloseIgnore` 均为工具元素，对应原版 `PopupElement` 的 `$floatableContainer`/`$autoCloseIgnore`）；后者为**React元素**（原版经 `groupConfig`+`ToolGroupFactory` 创建 list 组）。用元素而非配置对象是为了让"工具组再嵌工具组"的递归交给组件树——若由库内渲染内嵌组，`Tool`（渲染工具）与 `ListToolGroup`/`MenuToolGroup`（渲染面板）会形成模块循环依赖。内嵌工具组工具不渲染链接、也不带 `data-tool-name`，故不参与外层组的按压流；原版的对应机制是 `ToolGroupTool` 构造期 `$link.remove()`，使外层组 `findTargetTool` 只认 `.oo-ui-tool-link` 时解析不到工具（不是靠阻止冒泡）。注意内嵌工具组的面板虽 portal 至 body，React 合成事件仍会冒到外层组容器，当前靠 `useToolGroupPressed` 的 `canPress` 在外层 tools 里查不到内嵌工具名而安全，不要改成"按事件目标直接触发"。
+- **浮层打开态回调统一命名 `onOpenChange`**（现用于 `ToolProps.popup.onOpenChange`）：选中工具/点外部/关闭按钮/Escape 任一路径都回调，配合 `open`/`defaultOpen` 构成受控通道。`PopupButton.onClose` 是既有例外（只在关闭时触发），新增浮层组件不要再造 `onOpen`/`onToggle` 之类名字。
 
 ### 对照排查提醒
 

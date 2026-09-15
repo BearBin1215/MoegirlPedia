@@ -1,14 +1,44 @@
 import React, {
+  useContext,
+  useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
 } from 'react';
 import clsx from 'clsx';
 import { Icon } from '../../widgets/Icon';
 import { IconBase } from '../../widgets/Icon/Base';
+import { Popup, type PopupProps } from '../../widgets/Popup';
 import { getWidgetClassName } from '../../utils';
-import { useLatestRef, usePressedState } from '../../hooks';
+import { useControlledValue, useLatestRef, usePressedState } from '../../hooks';
+import { ToolbarPositionContext } from '../Toolbar';
 import type { WidgetProps } from '../../widgets/Widget';
+
+/**
+ * 弹出工具的浮层配置（对齐原版OO.ui.PopupTool的`popup`配置）。
+ * 显隐由"选中工具"驱动（选中即开合，浮层显隐期间工具呈激活态，对齐原版
+ * onSelect与onPopupToggle），`open`/`defaultOpen`/`onOpenChange`为可选受控通道；
+ * 浮层的定位与自动关闭由工具自身接管，故`container`/`autoClose`/`position`等不接受覆盖
+ */
+// content与HTML原生属性同名（<meta content>），须先Omit再声明为ReactNode
+export interface ToolPopupProps extends
+  Omit<PopupProps, 'open' | 'onClose' | 'autoClose' | 'autoCloseIgnore' | 'container' | 'position' | 'content' | 'children'> {
+
+  /** 浮层内容 */
+  content: ReactNode;
+
+  /** 是否打开（受控，传入即受控模式） */
+  open?: boolean;
+
+  /** 非受控初始打开态 */
+  defaultOpen?: boolean;
+
+  /** 打开态变化回调（选中工具、点击外部、关闭按钮、Escape均触发） */
+  onOpenChange?: (open: boolean) => void;
+}
 
 /**
  * 工具定义（对齐原版Tool的static属性，声明式传入ToolGroup）。
@@ -36,11 +66,35 @@ export interface ToolProps {
 
   /** 选择回调（点击或键盘Enter/空格触发） */
   onSelect?: () => void;
+
+  /**
+   * 弹出浮层（对齐原版OO.ui.PopupTool）：存在时该工具为弹出工具，选中即开合浮层，
+   * 浮层显隐期间工具呈激活态。`onSelect`仍在选中时触发（本工程保留为通用回调）
+   */
+  popup?: ToolPopupProps;
+
+  /**
+   * 内嵌工具组（对齐原版OO.ui.ToolGroupTool）：工具位渲染为该工具组（如`<ListToolGroup/>`），
+   * 不再渲染工具链接——把手与面板由内嵌工具组自行提供，选中工具与激活态也由它内部处理
+   * （故`title`/`icon`/`active`/`onSelect`对本工具不生效，原版`$link.remove()`同样如此）。
+   * 以React元素而非配置对象给出：工具组可再嵌工具组，递归由React的组件树承担，
+   * 无需原版`ToolGroupFactory`式的注册（本工程已舍弃工厂，见docs/TODO.md）。
+   * 须传入带`tools`的工具组元素（JSX元素类型不校验具体组件）；与`popup`同时给出时本项优先
+   */
+  group?: ReactElement<ToolGroupBaseProps>;
 }
 
 /** 路径形式符号名的类名转换（'a/b/c'→'oo-ui-tool-name-a-b'） */
 export const getToolNameClassName = (name: string): string =>
   `oo-ui-tool-name-${name.replace(/^([^/]+)\/([^/]+).*$/, '$1-$2')}`;
+
+/**
+ * 全部工具禁用时组自动禁用，驱动组容器的disabled-tools类。
+ * 空组同样判为禁用——对齐原版`updateDisabled`（items为空时循环不执行，allDisabled保持true），
+ * 空组另有`oo-ui-toolGroup-empty`整体隐藏（见各工具组）
+ */
+export const isGroupAutoDisabled = (tools: ToolProps[], disabled?: boolean): boolean =>
+  !!disabled || tools.every((tool) => tool.disabled);
 
 export interface ToolViewProps {
 
@@ -56,20 +110,102 @@ export interface ToolViewProps {
   groupDisabled?: boolean;
 }
 
+/**
+ * 弹出工具的浮层（对齐原版PopupTool的PopupElement）：锚定并忽略工具元素自身
+ * （原版`$floatableContainer`/`$autoCloseIgnore`均为`this.$element`），故点击工具只触发
+ * 开合、不触发自动关闭；方位按工具栏位置取below/above（原版构造期按toolbar.position设置）
+ */
+function ToolPopupView({ config, anchorRef, open, setOpen, position }: {
+  /** 浮层配置 */
+  config: ToolPopupProps;
+  /** 工具根元素（浮层的定位锚点与自动关闭忽略目标） */
+  anchorRef: RefObject<HTMLSpanElement | null>;
+  /** 当前打开态 */
+  open: boolean;
+  /** 切换打开态 */
+  setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
+  /** 工具栏位置 */
+  position: 'top' | 'bottom';
+}) {
+  const {
+    content,
+    // 受控三项由ToolView消费（驱动工具激活态），不透传给Popup
+    open: _open,
+    defaultOpen: _defaultOpen,
+    onOpenChange: _onOpenChange,
+    autoFlip,
+    className,
+    ...popupProps
+  } = config;
+
+  return (
+    <Popup
+      {...popupProps}
+      className={clsx('oo-ui-popupTool-popup', className)}
+      open={open}
+      container={anchorRef}
+      autoClose
+      autoCloseIgnore={anchorRef}
+      // 对齐原版构造期的setAutoFlip(false)：工具栏内浮层不随空间翻转
+      autoFlip={autoFlip ?? false}
+      position={position === 'bottom' ? 'above' : 'below'}
+      onClose={() => setOpen(false)}
+    >
+      {content}
+    </Popup>
+  );
+}
+
 /** 工具渲染，对齐原版Tool的DOM：span.oo-ui-tool > a.oo-ui-tool-link > checkIcon+icon+title+accel */
 export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled }: ToolViewProps) {
   const linkDisabled = !!tool.disabled || !!groupDisabled;
+  // 工具根元素：弹出工具的浮层锚点与自动关闭忽略目标（见ToolPopupView）
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const { value: popupOpen, commit: setPopupOpen } = useControlledValue<boolean>(
+    { value: tool.popup?.open, defaultValue: tool.popup?.defaultOpen ?? false },
+    (next) => tool.popup?.onOpenChange?.(next),
+  );
+  const position = useContext(ToolbarPositionContext);
+
+  // 内嵌工具组（ToolGroupTool）：工具位不渲染链接，把手与面板由内嵌工具组自行提供。
+  // 禁用态取内嵌工具组（自身disabled或组内工具全禁用，对齐原版onToolGroupDisable的反向同步）
+  // 与工具自身/外层组的或；反向不传导——与原版一致，工具自身的disabled不下发给内嵌工具组，
+  // 需在内嵌组的元素上自行声明
+  if (tool.group) {
+    // 元素props为any（JSX元素类型不约束具体工具组），未给tools的元素兜底空集
+    const nestedTools: ToolProps[] = tool.group.props.tools ?? [];
+    const nestedDisabled = isGroupAutoDisabled(
+      nestedTools,
+      tool.group.props.disabled || tool.disabled || groupDisabled,
+    );
+    return (
+      <span
+        className={clsx(
+          getWidgetClassName({ disabled: nestedDisabled }),
+          'oo-ui-tool',
+          'oo-ui-toolGroupTool',
+          getToolNameClassName(tool.name),
+        )}
+        aria-disabled={nestedDisabled || undefined}
+      >
+        {tool.group}
+      </span>
+    );
+  }
+
   const classes = clsx(
     getWidgetClassName({ disabled: tool.disabled, icon: tool.icon }),
     'oo-ui-tool',
     getToolNameClassName(tool.name),
     tool.icon && 'oo-ui-tool-with-icon',
     !!tool.title && tool.displayBothIconAndLabel && 'oo-ui-tool-with-label',
-    (pressed || tool.active) && 'oo-ui-tool-active',
+    // 浮层开启期间工具呈激活态（对齐原版onPopupToggle的setActive）
+    (pressed || tool.active || (!!tool.popup && popupOpen)) && 'oo-ui-tool-active',
+    tool.popup && 'oo-ui-popupTool',
   );
 
   return (
-    <span className={classes} aria-disabled={tool.disabled || undefined}>
+    <span className={classes} aria-disabled={tool.disabled || undefined} ref={anchorRef}>
       <a
         className='oo-ui-tool-link'
         role='button'
@@ -77,6 +213,18 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
         aria-disabled={linkDisabled || undefined}
         title={tooltip ? tool.title : undefined}
         data-tool-name={tool.name}
+        // 弹出工具的开合走工具自身的点击/按键：原版onSelect即popup.toggle()，
+        // 而本工程的onSelect是调用方回调，按压流不会把它转成浮层显隐
+        onClick={() => {
+          if (tool.popup && !linkDisabled) {
+            setPopupOpen((prev) => !prev);
+          }
+        }}
+        onKeyUp={(e) => {
+          if (tool.popup && !linkDisabled && (e.key === 'Enter' || e.key === ' ')) {
+            setPopupOpen((prev) => !prev);
+          }
+        }}
       >
         {/* checkIcon为完整IconWidget（对齐原版），工具图标为IconElement裸span */}
         <Icon icon='check' className='oo-ui-tool-checkIcon' />
@@ -85,6 +233,15 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
         {/* 快捷键标签：原版OOUI不含快捷键系统，此为占位（getToolAccelerator缺省返回undefined） */}
         <span className='oo-ui-tool-accel' dir='ltr' lang='en' />
       </a>
+      {tool.popup && (
+        <ToolPopupView
+          config={tool.popup}
+          anchorRef={anchorRef}
+          open={popupOpen}
+          setOpen={setPopupOpen}
+          position={position}
+        />
+      )}
     </span>
   );
 }
@@ -192,7 +349,3 @@ export interface ToolGroupBaseProps extends Omit<WidgetProps<HTMLDivElement>, 'c
    */
   align?: 'before' | 'after';
 }
-
-/** 全部工具禁用时组自动禁用，驱动组容器的disabled-tools类 */
-export const isGroupAutoDisabled = (tools: ToolProps[], disabled?: boolean): boolean =>
-  !!disabled || (tools.length > 0 && tools.every((tool) => tool.disabled));

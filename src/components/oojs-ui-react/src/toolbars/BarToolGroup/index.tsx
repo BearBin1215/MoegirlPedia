@@ -26,12 +26,14 @@ export const BarToolGroup = forwardRef<HTMLDivElement, BarToolGroupProps>(({
   const groupDisabled = isGroupAutoDisabled(tools, disabled);
   const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange } = useToolGroupPressed(tools, groupDisabled);
 
-  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
+  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换。
+  // 空组加oo-ui-toolGroup-empty整体隐藏（对齐原版populate末尾的toggleClass）
   const classes = clsx(
     className,
     getWidgetClassName({ disabled: groupDisabled }),
     'oo-ui-toolGroup',
     'oo-ui-barToolGroup',
+    tools.length === 0 && 'oo-ui-toolGroup-empty',
   );
 
   return (

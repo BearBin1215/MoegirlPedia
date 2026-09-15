@@ -42,6 +42,28 @@ function OriginalToolbar() {
       return DemoTool;
     };
 
+    // 弹出工具（PopupTool）：onSelect/onUpdateState由基类实现——选中即开合浮层，
+    // 浮层显隐经onPopupToggle回写工具激活态
+    const createPopupTool = (name: string, title: string, icon: string) => {
+      class DemoPopupTool extends ui.PopupTool {
+        constructor(toolGroup: unknown, config: unknown) {
+          super(toolGroup, Object.assign({ popup: { padded: true, label: title, head: true } }, config));
+          this.popup.$body.append('<p>这是弹出工具的内容，与原版 OO.ui.PopupTool 对照。</p>');
+        }
+      }
+      DemoPopupTool.static = Object.create(ui.PopupTool.static);
+      Object.assign(DemoPopupTool.static, { name, title, icon, group: 'demo' });
+      return DemoPopupTool;
+    };
+    // 内嵌工具组工具（ToolGroupTool）：工具位渲染为groupConfig声明的内嵌工具组
+    // （原版经toolbar.getToolGroupFactory()创建list组），把手与面板由内嵌组提供
+    const createToolGroupTool = (name: string, title: string, icon: string, groupConfig: unknown) => {
+      class DemoToolGroupTool extends ui.ToolGroupTool {}
+      DemoToolGroupTool.static = Object.create(ui.ToolGroupTool.static);
+      Object.assign(DemoToolGroupTool.static, { name, title, icon, group: 'demo', groupConfig });
+      return DemoToolGroupTool;
+    };
+
     const toolFactory = new ui.ToolFactory();
     for (const tool of [
       // 图标名须为当前版本主题CSS实际存在的图标（user/comment在该版本不存在，渲染为空白）
@@ -58,6 +80,15 @@ function OriginalToolbar() {
       // 同一工具不能同时进两个工具组，右侧组须用独立工具
       createTool('optionFour', '选项四'),
       createTool('optionFive', '选项五'),
+      // 弹出工具与内嵌工具组工具（第二组bar），及其内嵌组引用的工具
+      createPopupTool('helpPopup', '帮助', 'help'),
+      createTool('settingOne', '设置一'),
+      createTool('settingTwo', '设置二'),
+      createToolGroupTool('settingsGroup', '设置', 'settings', {
+        icon: 'settings',
+        label: '设置',
+        include: ['settingOne', 'settingTwo'],
+      }),
     ]) {
       toolFactory.register(tool);
     }
@@ -72,6 +103,10 @@ function OriginalToolbar() {
     const top = new ui.Toolbar(toolFactory, toolGroupFactory);
     top.setup([
       { type: 'bar', include: ['person', 'help'] },
+      // 弹出工具与内嵌工具组工具：二者都在bar组内，工具位分别渲染为浮层把手与内嵌list组
+      { type: 'bar', include: ['helpPopup', 'settingsGroup'] },
+      // 空工具组：两侧均输出oo-ui-toolGroup-empty（主题display:none）整体隐藏
+      { type: 'bar', include: [] },
       { type: 'label', label: '标签组', icon: 'userAvatar', indicator: 'down', title: '标签工具组' },
       { type: 'label', label: '纯文本' },
       { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
@@ -126,6 +161,11 @@ const rightMenuTools = (active: Record<string, boolean>, toggle: (name: string) 
   { name: 'optionFour', title: '选项四', active: !!active.optionFour, onSelect: () => toggle('optionFour') },
   { name: 'optionFive', title: '选项五', active: !!active.optionFive, onSelect: () => toggle('optionFive') },
 ];
+// 内嵌工具组的工具（对齐原版ToolGroupTool的groupConfig.include）
+const settingTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
+  { name: 'settingOne', title: '设置一', active: !!active.settingOne, onSelect: () => toggle('settingOne') },
+  { name: 'settingTwo', title: '设置二', active: !!active.settingTwo, onSelect: () => toggle('settingTwo') },
+];
 
 /** 每个工具组独立的active状态：toggle切换本组激活项并记录点击的工具标题 */
 function useGroupTools(
@@ -160,6 +200,29 @@ function ReactMenuGroup({ onLog, label, align, defs = menuTools }: {
   return <MenuToolGroup label={label} icon='ellipsis' align={align} tools={tools} />;
 }
 
+/** 弹出工具与内嵌工具组（对应原版第二组bar的PopupTool/ToolGroupTool） */
+function ReactPopupAndGroupTools({ onLog }: { onLog: (title: string) => void }) {
+  const settings = useGroupTools(settingTools, onLog);
+  const tools: ToolProps[] = [
+    {
+      name: 'helpPopup',
+      title: '帮助',
+      icon: 'help',
+      // 弹出工具：选中开合浮层，浮层显隐期间工具呈激活态（对齐原版onPopupToggle）
+      popup: {
+        content: <p>这是弹出工具的内容，与原版 OO.ui.PopupTool 对照。</p>,
+        head: true,
+        label: '帮助',
+        padded: true,
+        onOpenChange: (open) => open && onLog('弹出工具：帮助'),
+      },
+    },
+    // 内嵌工具组：工具位渲染为该工具组，把手与面板由它自行提供（工具本身不渲染链接）
+    { name: 'settingsGroup', title: '设置', group: <ListToolGroup icon='settings' label='设置' tools={settings} /> },
+  ];
+  return <BarToolGroup tools={tools} />;
+}
+
 function ReactToolbar() {
   const [log, setLog] = useState<string[]>([]);
 
@@ -173,6 +236,10 @@ function ReactToolbar() {
           未激活本组工具时把手标签显示组标签而非激活项标题 */}
       <Toolbar>
         <ReactBarGroup onLog={handleSelect} />
+        {/* 弹出工具（点击开合浮层）与内嵌工具组（工具位渲染为list组） */}
+        <ReactPopupAndGroupTools onLog={handleSelect} />
+        {/* 空工具组：无工具时整体隐藏（对齐原版oo-ui-toolGroup-empty） */}
+        <BarToolGroup tools={[]} />
         {/* 标签组：不可交互、不承载工具，仅展示文本/图标/指示器 */}
         <LabelToolGroup label='标签组' icon='userAvatar' indicator='down' title='标签工具组' />
         <LabelToolGroup label='纯文本' />
@@ -202,8 +269,13 @@ function ToolbarComparePage() {
         <>
           对照点：Bar组平铺按钮（标题tooltip、按压态）、Label组（不可交互、不承载工具的纯文本/图标/
           指示器）、List组下拉面板（选中收起、标题为标签文本）、Menu组（把手标签按激活工具合成、
-          选中不关闭时更新标签）、工具active态样式。
-          原版为ToolFactory/ToolGroupFactory注册模式，React版为声明式tools props。
+          选中不关闭时更新标签）、工具active态样式；第二组bar为PopupTool（点击工具开合浮层、
+          浮层显隐期间工具呈激活态）与ToolGroupTool（工具位渲染为内嵌list组）；第三组为空工具组
+          （无工具时两侧均整体隐藏，且判为禁用）。
+          原版为ToolFactory/ToolGroupFactory注册模式，React版为声明式tools props
+          （内嵌工具组以React元素经`tools[].group`传入，递归由组件树承担）。
+          原版PopupTool的onSelect被浮层开合占用、调用方收不到通知，故React侧的"弹出工具：帮助"
+          记录经`popup.onOpenChange`产生（见docs/TODO.md增强节），原版侧无对应记录。
         </>
       )}
     >

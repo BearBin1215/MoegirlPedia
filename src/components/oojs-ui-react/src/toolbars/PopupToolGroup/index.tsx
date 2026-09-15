@@ -155,12 +155,14 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     }
   };
 
-  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
+  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换。
+  // 空组加oo-ui-toolGroup-empty整体隐藏（对齐原版populate末尾的toggleClass）
   const classes = clsx(
     className,
     getWidgetClassName({ disabled: groupDisabled, icon, indicator: effectiveIndicator, label }),
     'oo-ui-toolGroup',
     'oo-ui-popupToolGroup',
+    tools.length === 0 && 'oo-ui-toolGroup-empty',
     open && 'oo-ui-popupToolGroup-active',
   );
 

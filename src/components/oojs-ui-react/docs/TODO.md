@@ -38,7 +38,7 @@
 - [x] 复制文本布局（CopyTextLayout）
 - [x] 标签多选族（TagMultiselect/TagItem，及带菜单的MenuTagMultiselect；含拖拽重排与inline输入框宽度自适应）
 - [ ] 文件选择输入框（SelectFileInputWidget）
-- [ ] 工具栏剩余（PopupTool/ToolGroupTool）
+- [x] 工具栏剩余（PopupTool/ToolGroupTool）
 - [ ] 其他布局类组件
 
 ## 未对齐行为记录
@@ -56,6 +56,8 @@
 - **prompt 的 `textInput.value` 只作为初始值**。弹窗存活期间无法从外部修改输入值，输入内容由 prompt 内部维护。这一点与原版语义一致：原版 `TextInputWidget` 的 `value` 配置同样只在构造时生效。
 - **Message 的关闭按钮只回调 `onClose`，不自行隐藏**，显隐交由调用方控制。这是对齐 React 受控惯例；原版 `toggle(false)` 会内置隐藏。
 - **工具栏不再经 `ToolFactory` 注册工具**，改为 ToolGroup 的声明式 `tools` props，工具激活态由调用方受控。对应原版的 `tool.setActive` + toolbar `updateState` 事件。
+- **内嵌工具组（`ToolProps.group`）的工具位不输出图标与标签类**。原版这两个类确实加在工具根元素上（构造期 `IconElement.setIcon`/`Tool.setIcon`），但主题里依赖它们的规则全部以 `.oo-ui-tool-link` 为后代选择器，而该链接已被 `ToolGroupTool` 移除（`this.$link.remove()`），类无生效规则；React 版干脆不输出。
+- **工具栏/工具组无事件面**。原版 `Toolbar` 与 `ToolGroup` 都有事件（`updateState`/`active`/`disable` 等，`PopupTool.onPopupToggle` 与 `ToolGroupTool` 都会经工具组 `active` 事件冒泡到 `Toolbar.active`，MediaWiki 侧常用于保持工具栏可见）；React 版全部改为受控 props 与回调，不移植事件系统。
 - **未实现工具级快捷键提示**。原版 OOUI 本身也没有快捷键系统，`getToolAccelerator` 只是留给宿主覆写的钩子。
 - **ProcessDialog 用 `onAction` 异步回调编排动作**，替代原版 `getActionProcess` 的 `OO.ui.Process` 多步 `.next()` 链。多步流程在同一异步函数内串联，因此不可中断（原版可 abort）。
 - **原版 OO.ui 命名空间中宿主环境性质的全局工具不映射**：`bind`（jQuery proxy）、`infuse`（PHP 服务端渲染水合）、`warnDeprecation`、`getUserLanguages`/`getLocalValue`（MediaWiki 多语言回退）、`isSafeUrl`（仅 TabOption href 使用，本工程已舍弃该能力）、`EventSequencer`（底层事件时序，React 事件系统无使用场景）、`generateElementId`（React `useId` 已覆盖）。`debounce`/`throttle` 亦不进导出面，组件内部直接使用 es-toolkit。
@@ -73,6 +75,8 @@
 
 - **TabSelect 修掉了原版拖拽的一个缺陷**。原版的 `selecting` 在丢失 mouseup（例如按住鼠标拖出窗口再松开）后会残留，下次点击空白处会误提交旧选项；React 版在 mousedown 时重置拖拽状态，并监听 `pointercancel` 清理。（按住拖动跨选项选择原版已实现，未改动。）
 - **工具栏面板支持按 Escape 收起**。原版只能靠鼠标或键盘在面板外松开时收起，没有 Escape 键。
+- **弹出工具（`ToolProps.popup`）的 `onSelect` 仍会触发**。原版 `PopupTool.onSelect` 被 `popup.toggle()` 占用，调用方拿不到选中通知；React 版按压流照常回调 `onSelect`，浮层开合由工具自身的点击/按键驱动，显隐变化另经 `popup.onOpenChange` 通知。
+- **弹出工具的 `autoFlip` 可配置**。原版构造期无条件 `setAutoFlip(false)`，`config.popup.autoFlip` 传了也不生效；React 版默认同样为 `false`（对齐原版），但允许调用方显式打开翻转。
 - **BookletLayout 在激活页签被移除时自动补选相邻页签**，非受控直接生效，受控则由父组件决定是否采纳。原版不补选，其 `removePages` 注释明确表示「选哪页属业务逻辑」。
 - **ProgressBar 把 `progress` 钳制在 0–100**，非有限值（NaN 等）按不定进度处理。原版 `setProgress` 不钳制，NaN 会直接输出 `width: NaN%` 和 `aria-valuenow="NaN"`。
 - **Select 根元素可聚焦，FieldLayout 标签点击会聚焦根**。原版 `SelectWidget` 无 `TabIndexedElement`（根不可聚焦），`simulateLabelClick` 继承基类的空操作，标签点击无任何效果；React 版为 listbox 键盘可达性给根加了 `tabIndex`，标签点击随之聚焦根（与 RadioSelect 行为一致）。
@@ -91,7 +95,8 @@
 - **ActionFieldLayout 用 `fieldInline` prop 声明输入区包装元素**（默认 `div`）。原版靠字段控件根元素的 tagName 自动判断 span/div，React 无法探测子组件的元素类型。
 - **FieldLayout 的 `align='inline'` 降级校验同理不需要**（与上一条同源）。原版在字段非内联时把 `align='inline'` 降级为 `'top'`；React 版由调用方经 `fieldInline` 显式声明是否内联，无需运行时探测降级。
 - **Popup 的自动翻转判定改按预计算的两侧空间比较**（原版先定位再测量）：判定时机不同，翻转结果目标一致。
-- **菜单类浮层经 portal 至 body 定位**（原版 `FloatableElement` 基于 offsetParent 相对定位并计入 RTL 方向）：React 版用页面坐标定位，RTL 起始边对齐已对齐。`$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
+- **菜单类与工具栏类浮层经 portal 至 body 定位**（原版 `FloatableElement` 基于 offsetParent 相对定位并计入 RTL 方向；工具组面板与弹出工具浮层原版挂 `toolbar.$popups`）：React 版一律用页面坐标定位，RTL 起始边对齐已对齐。`$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
+- **`ToolGroupTool` 的内嵌工具组以 React 元素给出**（`ToolProps.group`，如 `<ListToolGroup/>`），原版经 `groupConfig`+`ToolGroupFactory` 创建 list 组：工具组再嵌工具组的递归由组件树承担，无需工厂注册；内嵌组的开合由它自己的把手承担（原版 `ToolGroupTool.onSelect` 因 `$link.remove()` 后 `findTargetTool` 只认 `.oo-ui-tool-link` 而不可达，等价）。工具位因此不再有链接，`title`/`icon`/`active`/`onSelect` 对 `group` 工具不生效（原版 `$link.remove()` 同样使前三者无效），只保留 `disabled`（同步为工具位的禁用态，且按原版不下发给内嵌组）。
 - **ComboBoxInput 的菜单展开时机是等效实现**：原版 `onEdit` 监听多种事件后再 toggle。
 - **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（同上方 `setTabIndex` 条），差别仅在 `-1` 元素可被编程聚焦。焦点归属已对齐：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
 - **Dialog 焦点陷阱的已对齐部分**（对应关系留档）：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
@@ -108,7 +113,9 @@
 - **工具栏的以下能力未实现**：
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定起始边对齐（LTR左/RTL右，经 `useAnchoredPanelLayout` 与 MenuSelect 共用实现）；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
-  - `PopupTool` 与 `ToolGroupTool`：工具内嵌工具组的场景。
+  - **弹出工具置于 List/Menu 组内不可用**（原版同样不可用，故不修）：选中工具会先收起组面板，浮层锚点随面板 `display:none` 归零。实测原版侧工具转激活态但浮层不显示（`hideWhenOutOfView` 判定），React 侧浮层弹出但定位到视口左上角。
+  - **弹出工具浮层未包窄栏载体**：工具组面板有专门的窄栏载体承接 `oo-ui-toolbar-narrow`（见上），弹出工具浮层直接 portal 至 body，浮层内容里的窄栏后代选择器不命中。
+- **浮层自动关闭未监听 `click`**：原版 `PopupWidget` 除 `mousedown` 外还监听 `click`（注释说明 iOS Safari 需要，dist 6162-6172）；`useDismissablePopover` 只监听 `mousedown`，影响所有走该 hook 的浮层。
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的 `toggleIsolation` 未实现**：原版会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。

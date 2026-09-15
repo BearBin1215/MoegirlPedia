@@ -501,6 +501,71 @@ export default App;
 
 其余字段与`Widget`一致（`disabled`等）。
 
+## PopupTool / ToolGroupTool
+
+二者不是独立组件，而是**工具的两个扩展配置**（`ToolProps`字段），可出现在任意工具组的`tools`里。
+
+- `popup`（对齐原版`OO.ui.PopupTool`）：工具选中即开合浮层，浮层显隐期间工具呈激活态
+  （对齐原版`onSelect`/`onPopupToggle`）。方位随工具栏位置（`bottom`时向上，同原版），
+  不自动翻转（原版构造期`setAutoFlip(false)`），portal至body定位。
+- `group`（对齐原版`OO.ui.ToolGroupTool`）：工具位渲染为该工具组元素，**不再渲染工具链接**，
+  把手与面板由它自行提供。以React元素给出，故工具组可再嵌工具组（递归由组件树承担，
+  无需原版`ToolGroupFactory`式的注册）。必须是带`tools`的工具组元素——JSX元素的类型不校验
+  具体组件，传错组件不会报错。
+
+```tsx
+import React from 'react';
+import { BarToolGroup, ListToolGroup, Toolbar, type ToolProps } from 'oojs-ui-react';
+
+const tools: ToolProps[] = [
+  { name: 'bold', title: '加粗', icon: 'bold', onSelect: () => {} },
+  {
+    name: 'help',
+    title: '帮助',
+    icon: 'help',
+    popup: {
+      content: <p>使用说明……</p>,
+      head: true,
+      label: '帮助',
+      padded: true,
+      onOpenChange: (open) => console.log(open),
+    },
+  },
+  {
+    name: 'settings',
+    title: '设置',
+    // 内嵌工具组：把手与面板由它提供，其禁用需在元素上自行声明
+    group: <ListToolGroup icon='settings' label='设置' tools={[
+      { name: 'setting1', title: '设置一', onSelect: () => {} },
+      { name: 'setting2', title: '设置二', onSelect: () => {} },
+    ]} />,
+  },
+];
+
+const App = () => (
+  <Toolbar>
+    <BarToolGroup tools={tools} />
+  </Toolbar>
+);
+
+export default App;
+```
+
+| 参数               | 说明                                                  | 类型                                                  |
+| ------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
+| popup.content      | 浮层内容                                              | `ReactNode`                                           |
+| popup.open         | 受控打开态（传入即受控）                              | `boolean`                                             |
+| popup.defaultOpen  | 非受控初始打开态                                      | `boolean`                                             |
+| popup.onOpenChange | 打开态变化回调（选中工具/点外部/关闭按钮/Escape）     | `(open: boolean) => void`                             |
+| group              | 内嵌工具组元素（如`<ListToolGroup/>`/`<MenuToolGroup/>`） | `ReactElement<ToolGroupBaseProps>`（类型不校验组件） |
+
+`popup`的其余字段与`Popup`一致（`head`/`hideCloseButton`/`padded`/`width`/`height`/`footer`/`align`/`anchor`/`autoFlip`/`hideWhenOutOfView`/`containerPadding`等），`container`/`autoClose`/`position`由工具自身接管。
+弹出工具的`title`/`icon`/`active`/`disabled`照常生效，`onSelect`在选中时仍会触发（原版该回调被浮层开合占用，见docs/TODO.md）；
+`group`工具因不渲染链接，`title`/`icon`/`active`/`onSelect`**不生效**（原版`$link.remove()`同样如此），只有`disabled`同步为工具位的禁用态（且不下发给内嵌组，内嵌组需自行声明）。
+另：**弹出工具不要置于List/Menu组内**。选中工具会先收起该组面板，浮层虽经portal挂在body
+（原版追加到`toolbar.$popups`）不会被面板的`display:none`连带隐藏，但锚点（工具元素）随面板隐藏而
+矩形归零。实测：原版侧工具转为激活态但浮层不显示，React侧浮层会弹出但定位到视口左上角——两侧均不可用。
+
 ## SearchWidget
 
 查询输入框 + **始终可见**的结果列表（对齐原版`OO.ui.SearchWidget`，与浮层式查找菜单相对）。
