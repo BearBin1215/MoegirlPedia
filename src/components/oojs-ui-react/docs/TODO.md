@@ -43,10 +43,11 @@
 
 ## 未对齐行为记录
 
-与原版 oojs-ui 的行为差异，按性质分三部分：
+与原版 oojs-ui 的行为差异，按性质分四部分：
 
 - **舍弃**：有意不做。原版行为对本工程没有使用场景，或 React 版有意采用不同做法。
 - **增强**：有意多做。原版没有、React 版主动新增的行为或能力（含修正原版缺陷）。
+- **等效替代**：原版行为本工程也具备，只是实现形态、落点或通道不同（含已对齐项的对应关系留档），效果等价——**无需补做**。与「舍弃」的界限是能力作不作数，与「暂不实现」的界限是有没有缺口。
 - **暂不实现**：原版有、本工程也认可其价值，但当前没做（含只做了简化版）。
 
 ### 舍弃
@@ -54,7 +55,6 @@
 - **TabOption 不支持 `href` 链接**。原版这个能力只有 PHP 端在用，React 版暂无需求。
 - **prompt 的 `textInput.value` 只作为初始值**。弹窗存活期间无法从外部修改输入值，输入内容由 prompt 内部维护。这一点与原版语义一致：原版 `TextInputWidget` 的 `value` 配置同样只在构造时生效。
 - **Message 的关闭按钮只回调 `onClose`，不自行隐藏**，显隐交由调用方控制。这是对齐 React 受控惯例；原版 `toggle(false)` 会内置隐藏。
-- **ActionFieldLayout 用 `fieldInline` prop 声明输入区包装元素**（默认 `div`）。原版靠字段控件根元素的 tagName 自动判断 span/div，React 无法探测子组件的元素类型。
 - **工具栏不再经 `ToolFactory` 注册工具**，改为 ToolGroup 的声明式 `tools` props，工具激活态由调用方受控。对应原版的 `tool.setActive` + toolbar `updateState` 事件。
 - **未实现工具级快捷键提示**。原版 OOUI 本身也没有快捷键系统，`getToolAccelerator` 只是留给宿主覆写的钩子。
 - **ProcessDialog 用 `onAction` 异步回调编排动作**，替代原版 `getActionProcess` 的 `OO.ui.Process` 多步 `.next()` 链。多步流程在同一异步函数内串联，因此不可中断（原版可 abort）。
@@ -68,7 +68,6 @@
 - **未实现 `PopupTagMultiselectWidget`**。原版该类构造期即 `warnDeprecation`（建议改用 `MenuTagMultiselectWidget`），本工程不提供。
 - **标签数据限于 `string | number`**。原版标签 data 可为任意对象（`{data,label}` 形态），本工程与选择族一致，值统一为 `string | number`，标签文本取自菜单选项 `label` 或值本身。
 - **TagMultiselect 不开放替换内部输入控件**。原版 `config.input`/`config.inputWidget` 可替换内部输入控件，React 版内置输入框，对齐其余组件不暴露内部输入控件的做法。
-- **`TabIndexedElement` 的 `setTabIndex(null)` 语义未实现**。原版传 `null` 时移除该元素的 `tabindex` 与 `aria-disabled`；React 的 `tabIndex` 类型不接受 `null`，经 `...rest` 透传到 DOM 会破坏属性类型，故统一收为 `number`——需要"不参与Tab序"时用 `-1`（焦点可达性等价）。其余 tabIndex 行为已对齐：`disabled` 覆盖显式值、落点与原版 `$tabIndexed` 一致（Button→锚点、输入类→`input`、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根）、`aria-disabled` 写在该元素上。
 
 ### 增强
 
@@ -84,25 +83,32 @@
 - **Button 系列不输出 `oo-ui-buttonElement-size-medium`**。原版 `ButtonElement.setSize` 缺省写入尺寸类（`medium`），该类在 wikimediaui/apex 主题 CSS 中均无定义、不产生样式；React 版 Button/ButtonInput/ButtonOption 一律不输出。
 - **固定标签不可拖拽，且非固定标签不得被拖到固定标签之前**。原版虽在 `TagItemWidget` 上实现了 `fixed`（不渲染关闭按钮、不可移除/编辑），但标签多选族没有开放该配置的入口（`MenuTagMultiselectWidget.createTagItemWidget` 不传 `fixed`），故实际不可达、标签恒可拖可移除。React 版在 `TagOptionProps` 上开放 `fixed`，并让拖拽的目标下标钳制在固定区之后，使固定项顺序不受拖拽影响。
 
+### 等效替代
+
+原版行为本工程也具备，只是实现形态、落点或通道不同（含已对齐项的对应关系留档），效果等价，无需补做。
+
+- **`TabIndexedElement` 的 `setTabIndex(null)` 语义不做，改用 `-1` 等效**。原版传 `null` 时移除该元素的 `tabindex` 与 `aria-disabled`；React 的 `tabIndex` 类型不接受 `null`，经 `...rest` 透传到 DOM 会破坏属性类型，故统一收为 `number`——需要"不参与Tab序"时用 `-1`（焦点可达性等价）。其余 tabIndex 行为已对齐：`disabled` 覆盖显式值、落点与原版 `$tabIndexed` 一致（Button→锚点、输入类→`input`、Dropdown→handle、ToggleSwitch/RadioSelect/TabSelect→根）、`aria-disabled` 写在该元素上。
+- **ActionFieldLayout 用 `fieldInline` prop 声明输入区包装元素**（默认 `div`）。原版靠字段控件根元素的 tagName 自动判断 span/div，React 无法探测子组件的元素类型。
+- **FieldLayout 的 `align='inline'` 降级校验同理不需要**（与上一条同源）。原版在字段非内联时把 `align='inline'` 降级为 `'top'`；React 版由调用方经 `fieldInline` 显式声明是否内联，无需运行时探测降级。
+- **Popup 的自动翻转判定改按预计算的两侧空间比较**（原版先定位再测量）：判定时机不同，翻转结果目标一致。
+- **菜单类浮层经 portal 至 body 定位**（原版 `FloatableElement` 基于 offsetParent 相对定位并计入 RTL 方向）：React 版用页面坐标定位，RTL 起始边对齐已对齐。`$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
+- **ComboBoxInput 的菜单展开时机是等效实现**：原版 `onEdit` 监听多种事件后再 toggle。
+- **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（同上方 `setTabIndex` 条），差别仅在 `-1` 元素可被编程聚焦。焦点归属已对齐：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
+- **Dialog 焦点陷阱的已对齐部分**（对应关系留档）：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
+- **裸 `Dialog` 无内置标题**：调用方自行渲染标题并以 `aria-labelledby` 关联（`MessageDialog`/`ProcessDialog` 的内置标题已含该关联）。
+
 ### 暂不实现
 
-- **Popup 的容器探测与翻转判定是简化版**：
-  - 容器钳制：原版会按 `$container`（默认就近滚动容器）和 `containerPadding` 把弹层钳制在容器内；React 版只向上找第一个 `overflow: auto/scroll` 祖先，未完整复刻 `getClosestScrollableElementContainer`。
-  - 自动翻转：React 版按预计算的两侧空间比较，原版是先定位再测量。
-- **MenuSelect（Dropdown 菜单）的浮动定位是简化版**：
-  - 定位方式：原版 `FloatableElement` 基于 offsetParent 做相对定位，并计入 RTL 方向与滚动条沟槽；React 版直接 portal 至 body，用页面坐标定位（RTL 起始边对齐已对齐，滚动条沟槽未计入）。
+原版有、本工程也认可其价值，但当前没做（含只做了简化版）。
+
+- **Popup 的容器钳制是简化版**：原版会按 `$container`（默认就近滚动容器）和 `containerPadding` 把弹层钳制在容器内；React 版只向上找第一个 `overflow: auto/scroll` 祖先，未完整复刻 `getClosestScrollableElementContainer`。
+- **菜单浮层定位的两处简化**（Dropdown 的 MenuSelect 与 ComboBoxInput 的菜单同源）：
+  - 滚动条沟槽未计入（原版 offsetParent 相对定位会计入）。
   - 裁剪锚点：原版 `ClippableElement` 锚定就近滚动容器；React 版锚定视口，`hideWhenOutOfView` 也简化成视口判定，未复刻基于 `$floatableClosestScrollable` 的精确判定。
-  - `$overlay` 配置已由 `OOUIProvider.getPortalContainer` 承接，不再是差异。
-- **ComboBoxInput 的菜单浮层定位同上**（MenuSelect 简化版）。菜单展开时机是等效实现：原版 `onEdit` 监听多种事件后再 toggle。
 - **工具栏的以下能力未实现**：
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定起始边对齐（LTR左/RTL右，经 `useAnchoredPanelLayout` 与 MenuSelect 共用实现）；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体。
   - `narrowConfig`：窄栏下切换工具或把手的配置。
   - `PopupTool` 与 `ToolGroupTool`：工具内嵌工具组的场景。
-- **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（`resolveTabIndex` 对"不输出tabindex"的既有等效约定，见本文件前文），差别仅在 `-1` 元素可被编程聚焦。**焦点归属本身已对齐**：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
-- **Dialog 的焦点陷阱大部分已对齐，剩下 `toggleIsolation` 未实现**：
-  - 已对齐：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
-  - 未实现：原版 `toggleIsolation` 会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。
-  - 另外，裸 `Dialog` 没有内置标题，调用方需自行用 `aria-labelledby` 关联。
-- **FieldLayout 未复刻原版 `align='inline'` 在字段非内联时降级为 `'top'` 的校验**。原因与 `ActionFieldLayout` 的 `fieldInline` 同源：React 无法探测子组件的元素类型。
+- **Dialog 的 `toggleIsolation` 未实现**：原版会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。
