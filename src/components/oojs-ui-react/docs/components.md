@@ -617,3 +617,98 @@ export default App;
 结果列表的`aria-activedescendant`归属**查询框**（对齐原版`results.setFocusOwner(query.$input)`）、
 列表自身不作Tab停靠点（`tabIndex=-1`），点击结果不改变焦点。
 
+## SelectFileInputWidget
+
+文件选择输入框，对齐原版`OO.ui.SelectFileInputWidget`：信息框（只读展示文件名，**清空指示器是唯一的清除入口**）
++ 选择按钮（`<input type=file>`覆盖在其锚点上，点击即开系统选择器），二者经`ActionFieldLayout`按`align='top'`排布。
+
+```jsx
+import React, { useState } from 'react';
+import { SelectFileInputWidget } from 'oojs-ui-react';
+
+const App = () => {
+  const [files, setFiles] = useState([]);
+
+  return (
+    <SelectFileInputWidget
+      accept={['image/*']}
+      multiple
+      // 非受控时也可直接用非受控初始值：defaultValue={[someFile]}
+      value={files}
+      onChange={setFiles}
+    />
+  );
+};
+
+export default App;
+```
+
+三种形态（对齐原版同名配置）：
+
+- 默认：信息框 + 选择按钮，经`ActionFieldLayout`排布。
+- `showDropTarget`：整块拖放区（含缩略图，非多选时加载），空态整块可点击开选择器；拖放中按能否接收切换`canDrop`/`cantDrop`类。
+- `buttonOnly`：只渲染选择按钮，**根元素即按钮**（组件ref此时指向按钮元素）。
+
+| 参数                | 说明                                                                     | 类型                                        |
+| ------------------- | ------------------------------------------------------------------------ | ------------------------------------------- |
+| value / defaultValue | 文件集（受控/初始）。对齐原版`getValue`的数组化，非多选时只保留首个文件    | `File[]`                                    |
+| onChange            | 文件集变化回调（选择/拖放/清除；与原值等价时不触发）                        | `(files: File[]) => void`                   |
+| accept              | 接受类型（MIME或`image/*`），同时写`accept`属性并按此过滤选择与拖放         | `string[]`                                  |
+| multiple            | 是否多选                                                                 | `boolean`                                   |
+| droppable           | 是否可拖放（缺省`true`；`DataTransfer`不可用时强制关闭）                    | `boolean`                                   |
+| showDropTarget      | 是否用拖放区形态（须`droppable`）                                          | `boolean`                                   |
+| buttonOnly          | 只渲染选择按钮                                                            | `boolean`                                   |
+| thumbnailSizeLimit  | 缩略图大小上限（MB，缺省20）                                              | `number`                                    |
+| placeholder / icon  | 信息框占位文案（缺省`ooui-selectfile-placeholder`消息）/ 信息框图标（缺省无图标） | `string`                             |
+| required            | 是否必填（落在文件`input`的`required`上）                                  | `boolean`                                   |
+| name                | 文件字段名（写在文件`input`上，用于表单提交）                              | `string`                                    |
+| buttonLabel / buttonProps | 选择按钮文案（缺省按`multiple`取消息）/ 按钮属性覆盖                  | `string` / `Partial<ButtonProps>`           |
+| inputRef            | 获取内部文件`input`元素引用                                                | `Ref<HTMLInputElement>`                     |
+
+**焦点与键盘**：Tab停靠点是选择按钮（原版把`$tabIndexed`让给`selectButton.$button`），信息框`input`为`tabindex=-1`
+且恒为`disabled`（对齐原版`setDisabled`里那条无条件的`info.$input.attr('disabled', true)`），清除指示器置`tabindex=0`保证键盘可达。
+
+**与其余组件一致的两点**：`value`/`defaultValue`声明初始文件集在 React 版**直接生效**（原版构造期传`value`会被丢弃，
+属已修正的原版缺陷，见`docs/TODO.md`「增强」）；选择按钮根元素沿用 Button 的`<span>`（原版为`<label>`，见「等效替代」）。
+
+## ButtonMenuSelectWidget
+
+按钮式菜单选择，对齐原版`OO.ui.ButtonMenuSelectWidget`：**真 Button**（Tab 停靠点）触发菜单，
+菜单浮动于按钮下方（间距 4px）。菜单是**命令菜单**——选定即回调并收起。
+
+```jsx
+import React from 'react';
+import { ButtonMenuSelectWidget } from 'oojs-ui-react';
+
+const options = [
+  { value: 'edit', children: '编辑' },
+  { value: 'delete', children: '删除' },
+];
+
+const App = () => (
+  <ButtonMenuSelectWidget options={options} onChoose={(value) => console.log(value)}>
+    更多操作
+  </ButtonMenuSelectWidget>
+);
+
+export default App;
+```
+
+| 参数                        | 说明                                                                             | 类型                                          |
+| --------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------- |
+| options                     | 菜单选项集                                                                       | `SelectOptionProps[]`                         |
+| open / defaultOpen          | 菜单打开态（受控/初始）                                                           | `boolean`                                     |
+| onOpenChange                | 菜单开合回调                                                                     | `(open: boolean) => void`                     |
+| onChoose                    | 选定选项回调（每次选定都触发，随后收起）                                          | [`ChangeHandler<string \| number>`](#基本类型) |
+| clearOnSelect               | 选定后是否清除菜单选中态（缺省`true`即纯命令菜单；`false`保留最后选定项）          | `boolean`                                     |
+| onClick                     | 点击回调（在切换开合前触发）                                                      | `ButtonProps['onClick']`                      |
+| menuSpacing                 | 菜单与按钮的间距（px，缺省4，对齐原版`menu.spacing`）                             | `number`                                      |
+| menuProps                   | 菜单属性覆盖（`open`/`container`/`options`/`onChoose`/`id`/`spacing`/`clearOnChoose`由本组件接管） | `Omit<MenuSelectProps, …>`                    |
+
+其余字段与`Button`一致（按钮文本经`children`，另有`icon`/`flags`/`framed`/`disabled`等）。
+
+**焦点与 aria**：焦点始终在按钮上（菜单不是Tab停靠点）；锚点上写`aria-haspopup`/`aria-expanded`/`aria-owns`，
+高亮项的`aria-activedescendant`也落在锚点上；菜单打开期间按钮呈`oo-ui-buttonElement-pressed`。
+键盘：收起时 Enter/空格/↑/↓展开（方向键展开为 React 版增强，见`docs/TODO.md`），展开后↑↓移动高亮、
+Enter/空格选定（空格选定为本工程增强，原版空格仅关闭菜单，见`docs/TODO.md`）。
+

@@ -1,7 +1,6 @@
 /**
  * 消息键：键名对齐原版OOUI的i18n键（ooui-*），便于MediaWiki场景直接映射
- * mw.msg的同名消息。仅收录本工程已实现组件涉及的系统级默认文案，
- * 未实现组件（selectfile等）的键不入列
+ * mw.msg的同名消息。仅收录本工程已实现组件涉及的系统级默认文案
  */
 export type MessageKey =
   | 'ooui-dialog-message-accept'
@@ -20,7 +19,12 @@ export type MessageKey =
   | 'ooui-popup-widget-close-button-aria-label'
   | 'ooui-item-remove'
   | 'ooui-field-help'
-  | 'ooui-copytextlayout-copy';
+  | 'ooui-copytextlayout-copy'
+  | 'ooui-selectfile-button-select'
+  | 'ooui-selectfile-button-select-multiple'
+  | 'ooui-selectfile-placeholder'
+  | 'ooui-selectfile-dragdrop-placeholder'
+  | 'ooui-selectfile-dragdrop-placeholder-multiple';
 
 /** 消息值：字符串或延迟解析函数（如站点侧 () => mw.msg(key) 接入MediaWiki语言体系，对齐原版deferMsg语义） */
 export type MessageValue = string | (() => string);
@@ -44,6 +48,11 @@ const en: Record<MessageKey, string> = {
   'ooui-item-remove': 'Remove',
   'ooui-field-help': 'Help',
   'ooui-copytextlayout-copy': 'Copy',
+  'ooui-selectfile-button-select': 'Select a file',
+  'ooui-selectfile-button-select-multiple': 'Select files',
+  'ooui-selectfile-placeholder': 'No file is selected',
+  'ooui-selectfile-dragdrop-placeholder': 'Drop file here',
+  'ooui-selectfile-dragdrop-placeholder-multiple': 'Drop files here',
 };
 
 // 模块级覆盖表：registerMessages写入，msg读取。命令式API（confirm/alert/prompt）在

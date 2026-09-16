@@ -15,7 +15,7 @@ function OriginalToolbar() {
   const [log, setLog] = useState<string[]>([]);
   const { containerRef } = useOriginalWidgets((oo, container, register) => {
     const ui = oo.ui as any;
-    const createTool = (name: string, title: string, icon?: string) => {
+    const createTool = (name: string, title: string, icon?: string, narrowConfig?: Record<string, unknown>) => {
       class DemoTool extends ui.Tool {
         constructor(...args: unknown[]) {
           super(...args);
@@ -38,7 +38,7 @@ function OriginalToolbar() {
         onUpdateState() { /* 演示工具不响应应用状态 */ }
       }
       DemoTool.static = Object.create(ui.Tool.static);
-      Object.assign(DemoTool.static, { name, title, icon, group: 'demo' });
+      Object.assign(DemoTool.static, { name, title, icon, group: 'demo', narrowConfig });
       return DemoTool;
     };
 
@@ -69,7 +69,8 @@ function OriginalToolbar() {
       // 图标名须为当前版本主题CSS实际存在的图标（user/comment在该版本不存在，渲染为空白）
       createTool('person', '个人', 'userAvatar'),
       createTool('help', '帮助', 'help'),
-      createTool('comment', '评论', 'speechBubbles'),
+      // narrowConfig：窄栏下换成另一套图标/标题（对应React侧同名配置）
+      createTool('comment', '评论', 'speechBubbles', { icon: 'image', title: '评论（窄）' }),
       createTool('settings', '设置', 'settings'),
       createTool('image', '图片', 'image'),
       // menu组工具无图标，与React侧menuTools一致
@@ -109,7 +110,15 @@ function OriginalToolbar() {
       { type: 'bar', include: [] },
       { type: 'label', label: '标签组', icon: 'userAvatar', indicator: 'down', title: '标签工具组' },
       { type: 'label', label: '纯文本' },
-      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
+      // narrowConfig：窄栏下把手换图标/标签（对应React侧ListToolGroup的narrowConfig）
+      {
+        type: 'list',
+        include: ['comment', 'settings', 'image'],
+        icon: 'ellipsis',
+        indicator: 'down',
+        label: '更多',
+        narrowConfig: { icon: 'help', label: '更多（窄）' },
+      },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
       // align:'after'：工具组排到工具栏右侧的$after容器（原版insertItemElements）
       { type: 'menu', include: ['optionFour', 'optionFive'], icon: 'ellipsis', label: '右侧', align: 'after' },
@@ -119,11 +128,11 @@ function OriginalToolbar() {
     top.initialize();
     register(top);
 
-    // bottom工具栏：弹层面板向上展开、indicator随position翻转（原版由
-    // oo-ui-toolbar-position-bottom的CSS承接），对照React侧的组件缺省展示
+    // bottom工具栏：弹层面板向上展开、indicator随position翻转（两侧均不传indicator，
+    // 对照PopupToolGroup构造期的缺省逻辑：position bottom→up、其余down）
     const bottom = new ui.Toolbar(toolFactory, toolGroupFactory, { position: 'bottom' });
     bottom.setup([
-      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
+      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', label: '更多' },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
     ]);
     container.appendChild(unwrapJQuery(bottom.$element));
@@ -147,7 +156,15 @@ const barTools = (active: Record<string, boolean>, toggle: (name: string) => voi
   { name: 'help', title: '帮助', icon: 'help', active: !!active.help, onSelect: () => toggle('help') },
 ];
 const listTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
-  { name: 'comment', title: '评论', icon: 'speechBubbles', active: !!active.comment, onSelect: () => toggle('comment') },
+  {
+    name: 'comment',
+    title: '评论',
+    icon: 'speechBubbles',
+    // 窄栏配置：窄栏下换成另一套图标/标题（对应原版Tool.static.narrowConfig）
+    narrowConfig: { icon: 'image', title: '评论（窄）' },
+    active: !!active.comment,
+    onSelect: () => toggle('comment'),
+  },
   { name: 'settings', title: '设置', icon: 'settings', active: !!active.settings, onSelect: () => toggle('settings') },
   { name: 'image', title: '图片', icon: 'image', active: !!active.image, onSelect: () => toggle('image') },
 ];
@@ -185,9 +202,22 @@ function ReactBarGroup({ onLog }: { onLog: (title: string) => void }) {
   return <BarToolGroup tools={tools} />;
 }
 
-function ReactListGroup({ onLog, label, indicator }: { onLog: (title: string) => void; label: string; indicator?: 'down' }) {
+function ReactListGroup({ onLog, label, indicator, narrowConfig }: {
+  onLog: (title: string) => void;
+  label: string;
+  indicator?: 'down';
+  narrowConfig?: { icon?: string; label?: React.ReactNode };
+}) {
   const tools = useGroupTools(listTools, onLog);
-  return <ListToolGroup label={label} icon='ellipsis' indicator={indicator} tools={tools} />;
+  return (
+    <ListToolGroup
+      label={label}
+      icon='ellipsis'
+      indicator={indicator}
+      narrowConfig={narrowConfig}
+      tools={tools}
+    />
+  );
 }
 
 function ReactMenuGroup({ onLog, label, align, defs = menuTools }: {
@@ -243,7 +273,12 @@ function ReactToolbar() {
         {/* 标签组：不可交互、不承载工具，仅展示文本/图标/指示器 */}
         <LabelToolGroup label='标签组' icon='userAvatar' indicator='down' title='标签工具组' />
         <LabelToolGroup label='纯文本' />
-        <ReactListGroup onLog={handleSelect} label='更多' indicator='down' />
+        <ReactListGroup
+          onLog={handleSelect}
+          label='更多'
+          indicator='down'
+          narrowConfig={{ icon: 'help', label: '更多（窄）' }}
+        />
         <ReactMenuGroup onLog={handleSelect} label='菜单' />
         {/* align='after'：排到工具栏右侧（对应原版ToolGroup的align配置） */}
         <ReactMenuGroup onLog={handleSelect} label='右侧' align='after' defs={rightMenuTools} />

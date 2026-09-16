@@ -22,6 +22,7 @@ import { useDir, useViewportSpacing } from './config';
 import {
   findRelativeSelectableItem,
   getFirstFocusable,
+  findScrollableContainer,
   getElementDir,
   resolveElement,
   type ElementOrRef,
@@ -368,7 +369,9 @@ export function useCleanId(): string {
 }
 
 /**
- * 浮层关闭：点击浮层与锚点之外（document mousedown）或按Escape时请求关闭。
+ * 浮层关闭：点击浮层与锚点之外（document mousedown，弹层类另绑click）或按Escape时请求关闭。
+ * 弹层类同绑click对齐原版`PopupWidget.bindDocumentMouseDownListener`（click为iOS Safari
+ * 所需，以先触发者为准）；滚动条目标（documentElement）不触发关闭。
  * Escape在捕获阶段处理：先于React根容器上的冒泡处理器（如Dialog的onKeyDown），
  * 处理后`stopPropagation`使嵌套浮层只关最内层（对齐原版Popup的onDocumentKeyDown），
  * 已`defaultPrevented`的Escape不重复处理。`onEscape`在Escape触发关闭后附加执行——
@@ -381,6 +384,7 @@ export function useDismissablePopover({
   onClose,
   ignore,
   onEscape,
+  dismissOnClick = false,
 }: {
   /** 是否处于需响应关闭的开启态；关闭时不挂监听，避免吞掉外层浮层的Escape */
   enabled: boolean;
@@ -390,6 +394,14 @@ export function useDismissablePopover({
   ignore?: ElementOrRef[];
   /** Escape触发关闭后的附加动作（与onClose同批调用，仅Escape路径触发） */
   onEscape?: () => void;
+  /**
+   * 是否同时监听`click`。缺省false——只监听`mousedown`，对齐原版**菜单类**浮层
+   * （`MenuSelectWidget`的autoHide只绑mousedown）；**弹层类**（本工程Popup/PopupToolGroup）
+   * 应置true：原版`PopupWidget.bindDocumentMouseDownListener`同绑mousedown与click
+   * （iOS Safari所需，以先触发者为准）；PopupToolGroup原版绑的是mouseup/keyup，
+   * 本工程统一以mousedown+click承担同样的外点关闭
+   */
+  dismissOnClick?: boolean;
 }): void {
   const onCloseRef = useLatestRef(onClose);
   const ignoreRef = useLatestRef(ignore);
@@ -398,15 +410,31 @@ export function useDismissablePopover({
     if (!enabled) {
       return;
     }
-    const handleMouseDown = (event: globalThis.MouseEvent) => {
+    // 同一次手势里mousedown与click都会派发（dismissOnClick时）：以先触发者为准。
+    // 原版靠isVisible()短路，本hook不掌握可见态，故以mousedown重置标记、
+    // click见标记已置位则跳过，避免重复请求关闭
+    let requestedInGesture = false;
+    const handleMouseEvent = (event: globalThis.MouseEvent, isMouseDown: boolean) => {
+      // 滚动条上的按下/点击以documentElement为target，不应关闭浮层（对齐原版onDocumentMouseDown）
+      if (event.target === document.documentElement) {
+        return;
+      }
+      if (isMouseDown) {
+        requestedInGesture = false;
+      } else if (requestedInGesture) {
+        return;
+      }
       const target = event.target as Node;
       for (const item of ignoreRef.current ?? []) {
         if (resolveElement(item)?.contains(target)) {
           return;
         }
       }
+      requestedInGesture = true;
       onCloseRef.current();
     };
+    const handleMouseDown = (event: globalThis.MouseEvent) => handleMouseEvent(event, true);
+    const handleClick = (event: globalThis.MouseEvent) => handleMouseEvent(event, false);
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape' && !event.defaultPrevented) {
         onCloseRef.current();
@@ -416,12 +444,16 @@ export function useDismissablePopover({
       }
     };
     document.addEventListener('mousedown', handleMouseDown);
+    if (dismissOnClick) {
+      document.addEventListener('click', handleClick);
+    }
     document.addEventListener('keydown', handleKeyDown, true);
     return () => {
       document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [enabled, onCloseRef, ignoreRef, onEscapeRef]);
+  }, [enabled, dismissOnClick, onCloseRef, ignoreRef, onEscapeRef]);
 }
 
 /**
@@ -1016,6 +1048,7 @@ export function useAnchoredPanelLayout({
   matchAnchorWidth = false,
   hideWhenOutOfView = false,
   clip = true,
+  offset = 0,
   recomputeKey,
 }: {
   open: boolean;
@@ -1030,6 +1063,11 @@ export function useAnchoredPanelLayout({
   hideWhenOutOfView?: boolean;
   /** 是否按视口空间钳高（关闭则只定位） */
   clip?: boolean;
+  /**
+   * 面板与锚点之间的间距（px），对齐原版`FloatableElement` config.spacing：
+   * 计入可用空间，故贴边时钳高会相应减少
+   */
+  offset?: number;
   /** 额外重算触发源（如PopupToolGroup的工具集变化导致面板高度变化） */
   recomputeKey?: unknown;
 }): AnchoredPanelLayout | null {
@@ -1073,27 +1111,38 @@ export function useAnchoredPanelLayout({
       const rect = anchorEl.getBoundingClientRect();
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      // 裁剪/钳高与滚出判定以锚点就近的可滚动容器为准（对齐原版$floatableClosestScrollable），
+      // 无则回退视口；元素容器的可视边须扣除滚动条沟槽（对齐原版getDimensions.scrollbar，
+      // 视口按原版计0——window.innerWidth/Height即含沟槽的口径）
+      const scroller = findScrollableContainer(anchorEl);
+      const isViewport = scroller === document.documentElement;
+      const box = isViewport
+        ? { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight }
+        : (() => {
+          const sr = scroller.getBoundingClientRect();
+          return { top: sr.top, left: sr.left, right: sr.right, bottom: sr.bottom };
+        })();
+      const visibleRight = box.right - (isViewport ? 0 : scroller.offsetWidth - scroller.clientWidth);
+      const visibleBottom = box.bottom - (isViewport ? 0 : scroller.offsetHeight - scroller.clientHeight);
       const outOfView = hideWhenOutOfView
-        && (rect.bottom < 0 || rect.top > vh || rect.right < 0 || rect.left > vw);
+        && (rect.bottom < box.top || rect.top > visibleBottom || rect.right < box.left || rect.left > visibleRight);
       // maxHeight为content-box高度：需扣除面板上下border，否则钳高后面板边缘仍越界视口
       const naturalHeight = el.offsetHeight;
       const borderHeight = el.offsetHeight - el.clientHeight;
       let top: number;
       let maxHeight: number | undefined;
       if (position === 'above') {
-        const available = Math.max(0, rect.top - spacing.top);
-        // 钳高后底缘仍贴锚点顶缘，向上收缩
+        const available = Math.max(0, rect.top - box.top - spacing.top - offset);
+        // 钳高后底缘仍贴锚点顶缘（再让出offset），向上收缩
         const clampedHeight = Math.min(naturalHeight, available);
-        top = rect.top + scrollY - clampedHeight;
+        top = rect.top + scrollY - offset - clampedHeight;
         if (naturalHeight > available) {
           maxHeight = Math.max(0, available - borderHeight);
         }
       } else {
-        top = rect.bottom + scrollY;
+        top = rect.bottom + scrollY + offset;
         if (!outOfView && clip) {
-          const available = vh - rect.bottom - spacing.bottom;
+          const available = visibleBottom - rect.bottom - spacing.bottom - offset;
           if (naturalHeight > available) {
             maxHeight = Math.max(0, available - borderHeight);
           }
@@ -1121,7 +1170,7 @@ export function useAnchoredPanelLayout({
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, recomputeKey, configDir, spacing]);
+  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, offset, recomputeKey, configDir, spacing]);
 
   return layout;
 }

@@ -32,6 +32,10 @@ export {
 } from './widgets/TextInput';
 export { SearchInput, type SearchInputProps } from './widgets/SearchInput';
 export { SearchWidget, type SearchWidgetProps } from './widgets/SearchWidget';
+export {
+  SelectFileInputWidget,
+  type SelectFileInputWidgetProps,
+} from './widgets/SelectFileInputWidget';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
 
@@ -66,6 +70,10 @@ export { CheckboxMultiselectInput, type CheckboxMultiselectInputProps } from './
 // 选择框。Select系可独立使用（也作为Dropdown/BookletLayout/IndexLayout的内部构建件），
 // options数组项类型随组件导出（声明式props数组的标注所需）
 export { Dropdown, type DropdownProps, type DropdownOptionProps } from './widgets/Dropdown';
+export {
+  ButtonMenuSelectWidget,
+  type ButtonMenuSelectWidgetProps,
+} from './widgets/ButtonMenuSelectWidget';
 export { Select, type SelectProps, type SelectOptionProps } from './widgets/Select';
 export { TabSelect, type TabSelectProps, type TabSelectOptionProps } from './widgets/TabSelect';
 export { OutlineSelect, type OutlineSelectProps } from './widgets/OutlineSelect';

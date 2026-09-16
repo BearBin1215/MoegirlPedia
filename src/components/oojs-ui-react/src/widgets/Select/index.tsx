@@ -49,6 +49,14 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
    */
   onChoose?: ChangeHandler<string | number>;
 
+  /**
+   * 选定后是否清除选中态（命令菜单形态，对齐原版`ButtonMenuSelectWidget`经
+   * `onMenuSelect`调`menu.selectItem()`清除的净效果）：置true时选定只派发`onChoose`、
+   * 不改选中值（受控与非受控一致，展示上从不出现选中态）。原版清除时会额外派发
+   * select(null)，本工程`onChange`不表达空值，故不派发
+   */
+  clearOnChoose?: boolean;
+
   /** 当前选中值（受控，传入即受控模式） */
   value?: string | number;
 
@@ -100,6 +108,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   disabled,
   onChange,
   onChoose,
+  clearOnChoose = false,
   value,
   defaultValue,
   selectedValues,
@@ -150,9 +159,15 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
 
   /**
    * 选定选项：先按值变化提交（对齐原版`chooseItem`先`selectItem`），再无条件的派发onChoose
-   * （对齐其后的`emit('choose')`——菜单据此收起）。重复选中同一项只收起菜单、不派发选中事件
+   * （对齐其后的`emit('choose')`——菜单据此收起）。重复选定同一项只收起菜单、不派发选中事件
    */
   const commitSelection = (optionValue: string | number) => {
+    // 命令菜单形态（clearOnChoose）：只派发onChoose、不改选中值——对齐原版"选定后
+    // selectItem()清除"的净效果（选定态一闪即清，展示上从未出现）
+    if (clearOnChoose) {
+      onChoose?.(optionValue);
+      return;
+    }
     commitIfChanged(optionValue);
     onChoose?.(optionValue);
   };

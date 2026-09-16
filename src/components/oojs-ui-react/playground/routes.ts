@@ -75,6 +75,18 @@ export const compareRoutes: CompareRoute[] = [
     Component: lazy(() => import('./pages/search-compare')),
   },
   {
+    path: 'file-input-compare',
+    title: 'SelectFileInput',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/file-input-compare')),
+  },
+  {
+    path: 'button-menu-compare',
+    title: 'ButtonMenuSelect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/button-menu-compare')),
+  },
+  {
     path: 'toggle-compare',
     title: 'ToggleSwitch / ToggleButton',
     group: 'Widgets',

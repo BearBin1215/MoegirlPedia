@@ -74,6 +74,14 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 - **原生 HTML5 DnD 的类由主题 CSS 承担，JS 只需输出类与属性**：`oo-ui-draggableElement-handle:not(-undraggable)` 给 grab 光标、`-placeholder{opacity:.2}` 给原地占位观感、`-clone` 在 wikimediaui 无规则（仅用于 Chrome 原生拖影）；不可拖时靠 `-undraggable` + `draggable=false` 撤下（原版 `toggleDraggable` 即如此）。原版把项下标写进 jQuery 内部数据（`$element.data('index')`，DOM 上不可见），React 版写成 `data-index` 属性以便 dragover 命中——行为等价，仅是取值通道不同。
 - **`updateInputSize` 的基准是 `position: relative` 的 content 元素**：原版 `$lastItem.position().left` 取的是相对 offsetParent（即 `.oo-ui-tagMultiselectWidget-content`，它 `position: relative`）的位置再减去元素自身 `marginLeft`。inline 模式下输入框恒为标签组末个子元素，故 `$lastItem` 就是输入框自身；实测空态 `474 − (−2) − 14 − 13 = 449` 与该式吻合。复刻时必须先把输入框钳到 `1em` 再读位置：否则过宽的旧宽度会把输入框挤到下一行，读到的是换行后的位置。
 
+- **`<input type=file>` 的值只能命令式写回**：`files` 是只读 `FileList`，React 无法经 props 表达。受控值→DOM 须在 effect 里用 `DataTransfer` 造 `FileList` 再赋给 `input.files`，且**赋值前先与 DOM 现有集合比较**（按 `name`/`size`/`type`/`lastModified` 四字段，`File` 字段不可枚举），否则会把用户刚在系统选择器里选中的文件清掉。`DataTransfer` 构造器在 Safari<14 缺失，原版以 `canSetFiles` 探测并连带关闭拖放，`SelectFileInputWidget` 同此。
+- **原生控件必须挂进某个内部元素（而非组件根）时，给基础组件加窄通道**：`SelectFileInputWidget` 的 `<input type=file>` 必须是 `.oo-ui-buttonElement-button` 的**直接子元素**——主题以 `> [type='file']` 选中它并做成铺满按钮的透明覆盖层，点击才开系统选择器。React 版为此给 `Button` 加了 `anchorContent`（渲染在图标/标签/指示器之后的原生内容，与 `widgetNames` 同属组件内部组合通道），而不是 portal 出去或命令式 `appendChild`（后者会被下次渲染抹掉）。同理，`aria-haspopup`/`aria-owns`/`aria-expanded` 这类"状态挂在触发控件上"的语义，原版都写在锚点（`$button`）上——`Button.anchorProps` 即此通道（`PopupButton` 与后续 ButtonMenuSelectWidget 共用）；**不要经 `rest` 传**（会落到根 `span`，读屏与 AT 都认不到）。
+- **原版"只能构造后 `setValue`"的状态，在 React 受控语义下会提前生效**：`SelectFileInputWidget` 构造期传 `value` 会被原版丢弃（彼时 `$input` 还不是 `type=file`，写回 `input.files` 无效，构造末尾又被 `$input.files` 覆盖）；React 的 `value`/`defaultValue` 直接生效。此类差异按"修正原版缺陷"记入 TODO.md 增强节，不要为对齐而故意延迟生效；但**对照页要按原版可用的路径构造**（构造后 `setValue`），否则两侧同一行会呈现不同状态、看起来像 React 侧实现错了。
+
+- **浮层的"点击外部关闭"须按原版分两档**：`useDismissablePopover`的`dismissOnClick`缺省false（只监听`mousedown`）——对齐原版**菜单类**浮层（`MenuSelectWidget`的autoHide只绑mousedown）；**弹层类**（本工程Popup/PopupToolGroup）须置true——原版`PopupWidget.bindDocumentMouseDownListener`同绑`mousedown`与`click`（iOS Safari所需），PopupToolGroup原版绑的是`mouseup`/`keyup`，本工程统一以mousedown+click承担同样的外点关闭。两侧都忽略`document.documentElement`目标（滚动条上的按下不关浮层）；同绑两个事件时须做"以先触发者为准"的去重，否则受控父级会收到两次关闭请求。
+- **窄栏（narrow）能力分两层**：`Tool.narrowConfig`（`displayBothIconAndLabel`/`title`/`icon`）与`PopupToolGroup.narrowConfig`（`invisibleLabel`/`label`/`icon`）。原版经`onToolbarResize`在进入窄栏时替换、退出时用wide*快照还原；React 版按`ToolbarNarrowContext`声明式重算即可，无需快照回滚。另有"浮层内的窄栏祖先"问题：浮层portal至body会丢失工具栏的`oo-ui-toolbar-narrow`祖先，须自备载体（工具组面板用载体div、弹出工具浮层把该类落在浮层根，见TODO等效替代）。
+- **浮层与锚点的间距**：原版`FloatableElement` config.spacing（DropdownWidget为0、ButtonMenuSelectWidget为4）由`useAnchoredPanelLayout`的`offset`承担，并计入可用空间（贴边时的钳高相应减少）。
+
 ### 共享抽象（改动前先查是否已有对应 hook）
 
 `src/hooks.ts` 与 `src/utils.ts` 收敛了跨组件重复逻辑，新增/修改组件应优先复用而非再写一份：

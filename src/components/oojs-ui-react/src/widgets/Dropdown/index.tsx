@@ -78,6 +78,9 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   // handle内label元素id：原版DropdownWidget构造期setLabelId并把它并入handle的
   // aria-labelledby，使combobox的可访问名称为字段label+当前显示文本
   const ownLabelId = useCleanId();
+  // 菜单id：展开时经aria-owns关联portal化的菜单面板（对齐原版MenuSelectWidget.onToggle
+  // 在$focusOwner即本handle上写入aria-owns、收起时移除）
+  const menuId = useCleanId();
 
   const classes = clsx(
     className,
@@ -179,6 +182,8 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         role='combobox'
         aria-autocomplete='list'
         aria-expanded={open}
+        // 展开时声明所拥有的菜单（收起即移除，对齐原版MenuSelectWidget.onToggle）
+        aria-owns={open ? menuId : undefined}
         // aria-labelledby落在handle：原版$tabIndexed=$handle且setLabelledBy覆写写$handle，
         // 并入handle内label元素id（构造期setLabelId分配）使名称含当前显示文本
         aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ownLabelId, ariaLabelledBy)}
@@ -191,6 +196,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       </span>
       <MenuSelect
         ref={menuRef}
+        id={menuId}
         container={elementRef}
         onChoose={selectOption}
         value={currentValue}

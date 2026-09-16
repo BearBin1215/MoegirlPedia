@@ -36,6 +36,19 @@ export interface PopupToolGroupBaseProps extends ToolGroupBaseProps {
   /** 把手图标 */
   icon?: string;
 
+  /** 把手标签可视（视觉隐藏但保留可访问名称，对齐原版LabelElement的invisibleLabel） */
+  invisibleLabel?: boolean;
+
+  /**
+   * 窄栏配置（对齐原版`PopupToolGroup`的`config.narrowConfig`/`static.narrowConfig`）：
+   * 工具栏处于窄栏时以其**已定义**字段替换把手的`invisibleLabel`/`label`/`icon`，退出窄栏还原
+   */
+  narrowConfig?: {
+    invisibleLabel?: boolean;
+    label?: React.ReactNode;
+    icon?: string;
+  };
+
   /** 把手指示器（缺省随工具栏位置翻转：bottom时up、其余down） */
   indicator?: Indicators;
 
@@ -65,6 +78,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   tools,
   label,
   icon,
+  invisibleLabel,
+  narrowConfig,
   indicator,
   title,
   header,
@@ -89,6 +104,13 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   const toolsRef = useRef<HTMLDivElement>(null);
   const groupDisabled = isGroupAutoDisabled(tools, disabled);
   const effectiveIndicator = indicator ?? (position === 'bottom' ? 'up' : 'down');
+  // 窄栏配置：窄栏时替换把手字段（对齐原版PopupToolGroup.onToolbarResize），退出窄栏即还原
+  const activeNarrowConfig = narrow ? narrowConfig : undefined;
+  const effectiveIcon = activeNarrowConfig?.icon !== undefined ? activeNarrowConfig.icon : icon;
+  const effectiveLabel = activeNarrowConfig?.label !== undefined ? activeNarrowConfig.label : label;
+  const effectiveInvisibleLabel = activeNarrowConfig?.invisibleLabel !== undefined
+    ? activeNarrowConfig.invisibleLabel
+    : invisibleLabel;
 
   /** 工具选中后收起面板（keepOpenToolNames除外），并转发onSelect */
   const wrappedTools = useMemo(() => tools.map((tool) => ({
@@ -124,11 +146,13 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     }
   }, [groupDisabled, open]);
 
-  // 点击面板与把手之外、或按Escape时收起（Escape捕获阶段处理，嵌套于Dialog时不误关弹窗）
+  // 点击面板与把手之外、或按Escape时收起（Escape捕获阶段处理，嵌套于Dialog时不误关弹窗）。
+  // 弹层类同绑click（iOS Safari加固，对齐Popup的 dismissOnClick 通道）
   useDismissablePopover({
     enabled: open,
     onClose: () => setOpen(false),
     ignore: [rootRef, toolsRef],
+    dismissOnClick: true,
   });
 
   /** 面板内可聚焦工具链接（禁用工具链接tabIndex=-1已被排除） */
@@ -159,7 +183,13 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   // 空组加oo-ui-toolGroup-empty整体隐藏（对齐原版populate末尾的toggleClass）
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled: groupDisabled, icon, indicator: effectiveIndicator, label }),
+    getWidgetClassName({
+      disabled: groupDisabled,
+      icon: effectiveIcon,
+      indicator: effectiveIndicator,
+      label: effectiveLabel,
+      invisibleLabel: effectiveInvisibleLabel,
+    }),
     'oo-ui-toolGroup',
     'oo-ui-popupToolGroup',
     tools.length === 0 && 'oo-ui-toolGroup-empty',
@@ -175,7 +205,10 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     >
       <span
         ref={handleRef}
-        className='oo-ui-popupToolGroup-handle'
+        // 双类对齐原版构造期的$handle.addClass：主题的把手尺寸/内边距规则均挂在
+        // .oo-ui-popupToolGroup .oo-ui-toolGroup-handle后代选择器上，缺toolGroup-handle
+        // 会全部不命中（把手塌缩、内容溢出重叠）
+        className='oo-ui-toolGroup-handle oo-ui-popupToolGroup-handle'
         role='button'
         aria-expanded={open}
         aria-disabled={groupDisabled || undefined}
@@ -188,8 +221,11 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
         }}
         onKeyDown={handleHandleKeyDown}
       >
-        <IconBase icon={icon} />
-        <LabelBase>{label}</LabelBase>
+        <IconBase icon={effectiveIcon} />
+        {/* invisible类须落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
+        <LabelBase className={clsx(effectiveInvisibleLabel && 'oo-ui-labelElement-invisible')}>
+          {effectiveLabel}
+        </LabelBase>
         <IndicatorBase indicator={effectiveIndicator} />
       </span>
       {createPortal(

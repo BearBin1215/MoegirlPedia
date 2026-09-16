@@ -197,16 +197,3 @@ export function clampPopupToBounds(
   }
   return 0;
 }
-
-/** 就近可滚动容器（对齐原版getClosestScrollableElementContainer的简化版），无则回退根元素 */
-export function findScrollableContainer(el: HTMLElement | null): HTMLElement {
-  let current = el?.parentElement ?? null;
-  while (current && current !== document.body) {
-    const style = getComputedStyle(current);
-    if (/(auto|scroll|overlay)/.test(style.overflowY) || /(auto|scroll|overlay)/.test(style.overflowX)) {
-      return current;
-    }
-    current = current.parentElement;
-  }
-  return document.documentElement;
-}

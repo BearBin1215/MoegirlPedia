@@ -31,7 +31,7 @@ function OriginalDropdown() {
   return (
     <div>
       <div ref={containerRef} />
-      <p>键盘：聚焦handle后Enter/Space开合菜单，↑↓移动高亮，Enter选中，ESC关闭</p>
+      <p>键盘：聚焦handle后Enter/Space开合菜单，↑↓移动高亮，Enter/Space选中（空格选中为本工程增强），ESC关闭</p>
     </div>
   );
 }
@@ -54,7 +54,7 @@ function ReactDropdown() {
         value={value}
         onChange={(v) => setValue(v)}
       />
-      <p>键盘：聚焦handle后Enter/Space开合菜单，↑↓移动高亮，Enter选中，ESC关闭</p>
+      <p>键盘：聚焦handle后Enter/Space开合菜单，↑↓移动高亮，Enter/Space选中（空格选中为本工程增强），ESC关闭</p>
     </div>
   );
 }
@@ -112,14 +112,72 @@ function ReactGroupedDropdown() {
   );
 }
 
+/**
+ * 可滚动容器场景（对照"裁剪锚点=就近滚动容器"与"锚点滚出容器即隐藏菜单"）：
+ * 容器固定高度、内容撑超出以产生滚动条，两侧同配
+ */
+const SCROLLER_STYLE = 'height:8em;overflow-y:auto;border:1px solid #c8ccd1;';
+
+/** 原版侧：下拉位于可滚动容器内（容器即菜单的裁剪锚点） */
+function OriginalScrolledDropdown() {
+  const { containerRef } = useOriginalWidgets((oo, container, register) => {
+    const ui = oo.ui as unknown as DropdownUi;
+    const box = document.createElement('div');
+    box.style.cssText = SCROLLER_STYLE;
+    const dropdown = new ui.DropdownWidget({
+      label: '滚动容器内',
+      menu: {
+        items: [
+          new ui.MenuOptionWidget({ data: 'a', label: 'foo' }),
+          new ui.MenuOptionWidget({ data: 'b', label: 'bar' }),
+          new ui.MenuOptionWidget({ data: 'c', label: 'baz' }),
+          new ui.MenuOptionWidget({ data: 'd', label: 'qux' }),
+        ],
+      },
+    });
+    register(dropdown);
+    box.appendChild(unwrapJQuery(dropdown.$element));
+    box.append(Object.assign(document.createElement('div'), { style: 'height:20em' }));
+    container.appendChild(box);
+  });
+
+  return (
+    <div>
+      <div ref={containerRef} />
+    </div>
+  );
+}
+
+function ReactScrolledDropdown() {
+  const [value, setValue] = useState<string | number | undefined>();
+
+  return (
+    <div style={{ height: '8em', overflowY: 'auto', border: '1px solid #c8ccd1' }}>
+      <Dropdown
+        label='滚动容器内'
+        options={[
+          { value: 'a', children: 'foo' },
+          { value: 'b', children: 'bar' },
+          { value: 'c', children: 'baz' },
+          { value: 'd', children: 'qux' },
+        ]}
+        value={value}
+        onChange={(v) => setValue(v)}
+      />
+      <div style={{ height: '20em' }} />
+    </div>
+  );
+}
+
 function DropdownComparePage() {
   return (
     <CompareLayout
       title='Dropdown 对照'
       description={(
         <>
-          对照点：点击/Enter/Space开合菜单、↑↓键盘高亮移动、Enter选中高亮项、
-          Home/End跳转、ESC/点击外部关闭、选中后label更新、分组标题项。
+          对照点：点击/Enter/Space开合菜单、↑↓键盘高亮移动、Enter/Space选中高亮项（空格选中为本工程增强）、
+          Home/End跳转、ESC/点击外部关闭、选中后label更新、分组标题项；
+          菜单浮动于handle下方并按就近可滚动容器钳高（含滚动条沟槽）、锚点滚出该容器即隐藏。
         </>
       )}
     >
@@ -131,6 +189,11 @@ function DropdownComparePage() {
       <h2>分组</h2>
       <CompareColumns original={<OriginalGroupedDropdown />}>
         <ReactGroupedDropdown />
+      </CompareColumns>
+
+      <h2>可滚动容器内（裁剪锚点＝就近滚动容器）</h2>
+      <CompareColumns original={<OriginalScrolledDropdown />}>
+        <ReactScrolledDropdown />
       </CompareColumns>
     </CompareLayout>
   );

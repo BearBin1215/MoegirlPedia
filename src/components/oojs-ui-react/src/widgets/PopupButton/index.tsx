@@ -2,7 +2,7 @@ import React, { useRef, forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { Button, type ButtonProps } from '../Button';
 import { Popup, type PopupProps } from '../Popup';
-import { useControlledValue, useMergedRefs } from '../../hooks';
+import { useCleanId, useControlledValue, useMergedRefs } from '../../hooks';
 
 export type PopupButtonProps = Omit<ButtonProps, 'onClick' | 'active'> &
   Omit<PopupProps, 'open' | 'onClose' | 'autoClose' | 'autoCloseIgnore' | 'children'> & {
@@ -30,6 +30,8 @@ export const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
   defaultOpen = false,
   onClose,
   onClick,
+  // framed在本组件内消费：它决定弹层的-framed-popup/-frameless-popup类（对齐原版isFramed()）
+  framed = true,
   // Popup专属参数经单次解构归组后整体转发（而非逐个手抄），
   // 避免新增Popup prop时遗漏其落入buttonRest被误传给Button
   position,
@@ -52,6 +54,9 @@ export const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
 }, ref) => {
   const buttonRef = useRef<HTMLSpanElement | null>(null);
   const mergedRef = useMergedRefs(buttonRef, ref);
+  // 触发按钮与弹层的互相引用id（对齐原版PopupButtonWidget构造期的getElementId与popup.getElementId）
+  const buttonId = useCleanId();
+  const popupId = useCleanId();
   const popupProps: Omit<PopupProps, 'open' | 'onClose' | 'autoClose' | 'autoCloseIgnore' | 'children'> = {
     position,
     align,
@@ -83,9 +88,14 @@ export const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
     <>
       <Button
         {...buttonRest}
+        id={buttonId}
+        framed={framed}
         icon={icon}
         invisibleLabel={invisibleLabel}
         className={clsx(buttonRest.className, 'oo-ui-popupButtonWidget')}
+        // 触发按钮的aria写在锚点上：haspopup=dialog并owns弹层
+        // （对齐原版PopupButtonWidget构造期对$button的写入）
+        anchorProps={{ ...buttonRest.anchorProps, 'aria-haspopup': 'dialog', 'aria-owns': popupId }}
         ref={mergedRef}
         onClick={(ev) => {
           onClick?.(ev);
@@ -96,6 +106,14 @@ export const PopupButton = forwardRef<HTMLSpanElement, PopupButtonProps>(({
       </Button>
       <Popup
         {...popupProps}
+        id={popupId}
+        className={clsx(
+          'oo-ui-popupButtonWidget-popup',
+          framed ? 'oo-ui-popupButtonWidget-framed-popup' : 'oo-ui-popupButtonWidget-frameless-popup',
+        )}
+        // 弹层为对话框语义并反向关联触发按钮（对齐原版PopupButtonWidget构造期对popup.$element的写入）
+        role='dialog'
+        aria-describedby={buttonId}
         open={open}
         autoClose
         autoCloseIgnore={buttonRef}

@@ -193,6 +193,22 @@ export const VIEWPORT_SPACING = 5;
 export const OFFSCREEN_POSITION = -9999;
 
 /**
+ * 就近可滚动容器（对齐原版`getClosestScrollableElementContainer`的简化版），无则回退根元素。
+ * 浮层的裁剪/钳高与滚出判定以此为可视区，视口即根元素
+ */
+export function findScrollableContainer(el: HTMLElement | null): HTMLElement {
+  let current = el?.parentElement ?? null;
+  while (current && current !== document.body) {
+    const style = getComputedStyle(current);
+    if (/(auto|scroll|overlay)/.test(style.overflowY) || /(auto|scroll|overlay)/.test(style.overflowX)) {
+      return current;
+    }
+    current = current.parentElement;
+  }
+  return document.documentElement;
+}
+
+/**
  * 取元素的有效文本方向（'ltr'|'rtl'）。读取computed direction（继承dir属性与CSS），
  * 对齐原版`OO.ui.Element.static.getDir`的语义。portal至body的浮层无法继承内容区方向，
  * 以锚点元素的有效方向为准

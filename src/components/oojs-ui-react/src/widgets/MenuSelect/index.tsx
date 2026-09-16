@@ -17,6 +17,12 @@ export interface MenuSelectProps extends SelectProps {
    * 指定的容器）上、无法回退到DOM父节点，故定位依赖此参数（Dropdown等调用方须显式传入）
    */
   container?: React.RefObject<HTMLElement | null> | HTMLElement | null;
+
+  /**
+   * 菜单与锚点之间的间距（px，对齐原版`FloatableElement` config.spacing）。
+   * 缺省0（贴合锚点，DropdownWidget即此）；ButtonMenuSelectWidget用4
+   */
+  spacing?: number;
 }
 
 /**
@@ -29,6 +35,10 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,
   open = false,
   container,
+  spacing = 0,
+  // 菜单不作Tab停靠点（对齐原版MenuSelectWidget：根无tabindex，焦点由触发控件持有、
+  // activedescendant落在触发元素上）。缺省-1，调用方需要菜单自身可聚焦时显式覆盖
+  tabIndex = -1,
   id: idProp,
   // 取值对齐原版static（见组件注释），须显式下发以覆盖Select自身的缺省false/true
   handleNavigationKeys = true,
@@ -48,6 +58,7 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
     panelRef: menuRef,
     matchAnchorWidth: true,
     hideWhenOutOfView: true,
+    offset: spacing,
   });
   // 菜单portal容器：配置的getPortalContainer以锚点元素调用，缺省document.body
   const getPortalContainer = usePortalContainer();
@@ -66,6 +77,7 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
       {...rest}
       id={menuId}
       ref={mergedRef}
+      tabIndex={tabIndex}
       handleNavigationKeys={handleNavigationKeys}
       listWrapsAround={listWrapsAround}
       className={clsx(classes, layout?.outOfView && 'oo-ui-element-hidden')}

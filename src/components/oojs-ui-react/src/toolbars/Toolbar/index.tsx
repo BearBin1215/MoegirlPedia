@@ -49,8 +49,8 @@ export const ToolbarNarrowContext = createContext(false);
 /**
  * 工具栏，对齐原版OO.ui.Toolbar：横栏容器承载各工具组。原版通过ToolFactory/ToolGroupFactory
  * 注册类并以include/exclude/promote/demote配置组装，本工程按声明式惯例改为直接传入
- * 工具组组件（工具为纯数据props）。窄栏模式的oo-ui-toolbar-narrow类对齐原版，
- * 窄栏下切换把手标签/图标（narrowConfig）未实现，见docs/TODO.md
+ * 工具组组件（工具为纯数据props）。窄栏模式与窄栏下切换把手/工具配置（narrowConfig）
+ * 对齐原版setNarrow/onToolbarResize
  */
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
   children,
@@ -70,6 +70,12 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
   // state才是权威源；measure()内临时remove/add与setNarrow同源，仅用于取未压缩宽度
   const [narrow, setNarrow] = useState(false);
   const rafRef = useRef(0);
+  // measure经rAF在重渲染前也可能再次触发：narrowRef供其读写最新窄栏态
+  // （渲染期同步兜底StrictMode重挂载等state存续而ref重建的场景）
+  const narrowRef = useRef(narrow);
+  narrowRef.current = narrow;
+  // 窄栏判定基准（宽栏内容总宽）缓存：窄栏态复用，见measure内注释
+  const thresholdRef = useRef<number | null>(null);
 
   /** 对齐原版onPointerDown（原版mousedown/keydown共用同一handler）：事件目标不在任何子
    * .oo-ui-widget内（点在工具栏空白处）或与工具栏自身同属一个widget时，返回false等效的
@@ -88,7 +94,10 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
   };
 
   useEffect(() => {
-    // 窄栏判定：栏宽不足以容纳内容总宽时进入窄栏（bar.clientWidth <= contentWidth）
+    // 窄栏判定：栏宽不足以容纳内容总宽时进入窄栏（bar.clientWidth <= contentWidth）。
+    // 内容基准阈值按原版getNarrowThreshold缓存（见下方measure内注释），effect重跑
+    // （children/position/className变化，即内容集变化）时重置重测
+    thresholdRef.current = null;
     const measure = () => {
       const bar = barRef.current;
       const root = rootRef.current;
@@ -96,20 +105,25 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
         return;
       }
       // narrow类会压缩工具组宽度（主题CSS有多处.narrow规则），以压缩后宽度为基准会
-      // 误判（判定撤销→内容恢复自然宽度溢出→bar宽度未变、RO不回调→状态长期错误）。
-      // 测量期临时移除该类取自然宽度（withTemporaryClass保证恢复），判定后按结果同步
-      // 写回——对齐原版getNarrowThreshold惰性缓存「未压缩内容宽度」的基准语义，且能
-      // 感知工具组增减（同步块内完成，paint不发生于中间，无闪烁）
-      let contentWidth = 0;
-      withTemporaryClass(root, NARROW_CLASS, () => {
-        contentWidth = (toolsRef.current?.offsetWidth ?? 0) +
-          (afterRef.current?.offsetWidth ?? 0) +
-          (actionsRef.current?.offsetWidth ?? 0);
-      });
-      const next = bar.clientWidth <= contentWidth;
+      // 误判；且窄栏态下narrowConfig已替换把手/工具文本，重测会以窄栏内容为基准导致
+      // 无法退出窄栏（退出须以宽栏内容宽度为准）。故仅宽栏态重测基准（测量期临时
+      // 移除该类取自然宽度，withTemporaryClass保证恢复），窄栏态复用缓存——对齐原版
+      // getNarrowThreshold只做首次（宽栏）测量的缓存语义，且能感知工具组增减（原版
+      // 缓存至reset，本实现随effect重跑重置；React下工具组变化必经props，覆盖面不小于原版）
+      if (!narrowRef.current || thresholdRef.current === null) {
+        let contentWidth = 0;
+        withTemporaryClass(root, NARROW_CLASS, () => {
+          contentWidth = (toolsRef.current?.offsetWidth ?? 0) +
+            (afterRef.current?.offsetWidth ?? 0) +
+            (actionsRef.current?.offsetWidth ?? 0);
+        });
+        thresholdRef.current = contentWidth;
+      }
+      const next = bar.clientWidth <= thresholdRef.current;
       // classList同步写回：与下方由state派生的className同值，仅为免去等React提交的闪烁，
       // 不构成第二个真相来源（state始终是权威值）
       root.classList.toggle(NARROW_CLASS, next);
+      narrowRef.current = next;
       setNarrow(next);
     };
     measure();

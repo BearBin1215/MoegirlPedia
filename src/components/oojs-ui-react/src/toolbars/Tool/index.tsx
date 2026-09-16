@@ -14,7 +14,7 @@ import { IconBase } from '../../widgets/Icon/Base';
 import { Popup, type PopupProps } from '../../widgets/Popup';
 import { getWidgetClassName } from '../../utils';
 import { useControlledValue, useLatestRef, usePressedState } from '../../hooks';
-import { ToolbarPositionContext } from '../Toolbar';
+import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
 import type { WidgetProps } from '../../widgets/Widget';
 
 /**
@@ -54,6 +54,16 @@ export interface ToolProps {
 
   /** 工具图标 */
   icon?: string;
+
+  /**
+   * 窄栏配置（对齐原版`Tool`的`config.narrowConfig`/`static.narrowConfig`）：工具栏处于
+   * 窄栏时以其**已定义**字段替换工具的`displayBothIconAndLabel`/`title`/`icon`，退出窄栏还原
+   */
+  narrowConfig?: {
+    displayBothIconAndLabel?: boolean;
+    title?: string;
+    icon?: string;
+  };
 
   /** Bar组中同时展示图标与标签（默认仅图标，无图标时仅标签） */
   displayBothIconAndLabel?: boolean;
@@ -115,7 +125,7 @@ export interface ToolViewProps {
  * （原版`$floatableContainer`/`$autoCloseIgnore`均为`this.$element`），故点击工具只触发
  * 开合、不触发自动关闭；方位按工具栏位置取below/above（原版构造期按toolbar.position设置）
  */
-function ToolPopupView({ config, anchorRef, open, setOpen, position }: {
+function ToolPopupView({ config, anchorRef, open, setOpen, position, narrow }: {
   /** 浮层配置 */
   config: ToolPopupProps;
   /** 工具根元素（浮层的定位锚点与自动关闭忽略目标） */
@@ -126,6 +136,8 @@ function ToolPopupView({ config, anchorRef, open, setOpen, position }: {
   setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
   /** 工具栏位置 */
   position: 'top' | 'bottom';
+  /** 工具栏窄栏态（浮层内容里的窄栏后代选择器须由本浮层承接，见下方className） */
+  narrow: boolean;
 }) {
   const {
     content,
@@ -141,7 +153,9 @@ function ToolPopupView({ config, anchorRef, open, setOpen, position }: {
   return (
     <Popup
       {...popupProps}
-      className={clsx('oo-ui-popupTool-popup', className)}
+      // 窄栏载体：原版浮层挂在$popups（带oo-ui-toolbar-narrow）内，本工程portal至body后
+      // 失去该祖先，故把窄栏类落在浮层根上，使浮层内容里的窄栏后代选择器同样命中
+      className={clsx('oo-ui-popupTool-popup', narrow && 'oo-ui-toolbar-narrow', className)}
       open={open}
       container={anchorRef}
       autoClose
@@ -156,9 +170,30 @@ function ToolPopupView({ config, anchorRef, open, setOpen, position }: {
   );
 }
 
+/**
+ * 应用窄栏配置（对齐原版`Tool.onToolbarResize`）：窄栏时以`narrowConfig`里的已定义字段
+ * 替换工具字段，退出窄栏即还原——声明式下按narrow重算即可，无需原版wide*快照回滚
+ */
+function applyToolNarrowConfig(tool: ToolProps, narrow: boolean): ToolProps {
+  const config = narrow ? tool.narrowConfig : undefined;
+  if (!config) {
+    return tool;
+  }
+  return {
+    ...tool,
+    ...(config.displayBothIconAndLabel !== undefined
+      && { displayBothIconAndLabel: config.displayBothIconAndLabel }),
+    ...(config.title !== undefined && { title: config.title }),
+    ...(config.icon !== undefined && { icon: config.icon }),
+  };
+}
+
 /** 工具渲染，对齐原版Tool的DOM：span.oo-ui-tool > a.oo-ui-tool-link > checkIcon+icon+title+accel */
 export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled }: ToolViewProps) {
   const linkDisabled = !!tool.disabled || !!groupDisabled;
+  const narrow = useContext(ToolbarNarrowContext);
+  // 窄栏配置：窄栏时替换icon/title/displayBothIconAndLabel（对齐原版Tool.onToolbarResize）
+  const effective = applyToolNarrowConfig(tool, narrow);
   // 工具根元素：弹出工具的浮层锚点与自动关闭忽略目标（见ToolPopupView）
   const anchorRef = useRef<HTMLSpanElement>(null);
   const { value: popupOpen, commit: setPopupOpen } = useControlledValue<boolean>(
@@ -194,11 +229,11 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
   }
 
   const classes = clsx(
-    getWidgetClassName({ disabled: tool.disabled, icon: tool.icon }),
+    getWidgetClassName({ disabled: tool.disabled, icon: effective.icon }),
     'oo-ui-tool',
     getToolNameClassName(tool.name),
-    tool.icon && 'oo-ui-tool-with-icon',
-    !!tool.title && tool.displayBothIconAndLabel && 'oo-ui-tool-with-label',
+    effective.icon && 'oo-ui-tool-with-icon',
+    !!effective.title && effective.displayBothIconAndLabel && 'oo-ui-tool-with-label',
     // 浮层开启期间工具呈激活态（对齐原版onPopupToggle的setActive）
     (pressed || tool.active || (!!tool.popup && popupOpen)) && 'oo-ui-tool-active',
     tool.popup && 'oo-ui-popupTool',
@@ -211,7 +246,7 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
         role='button'
         tabIndex={linkDisabled ? -1 : 0}
         aria-disabled={linkDisabled || undefined}
-        title={tooltip ? tool.title : undefined}
+        title={tooltip ? effective.title : undefined}
         data-tool-name={tool.name}
         // 弹出工具的开合走工具自身的点击/按键：原版onSelect即popup.toggle()，
         // 而本工程的onSelect是调用方回调，按压流不会把它转成浮层显隐
@@ -228,8 +263,8 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
       >
         {/* checkIcon为完整IconWidget（对齐原版），工具图标为IconElement裸span */}
         <Icon icon='check' className='oo-ui-tool-checkIcon' />
-        <IconBase icon={tool.icon} />
-        <span className='oo-ui-tool-title'>{tool.title}</span>
+        <IconBase icon={effective.icon} />
+        <span className='oo-ui-tool-title'>{effective.title}</span>
         {/* 快捷键标签：原版OOUI不含快捷键系统，此为占位（getToolAccelerator缺省返回undefined） */}
         <span className='oo-ui-tool-accel' dir='ltr' lang='en' />
       </a>
@@ -240,6 +275,7 @@ export function ToolView({ tool, pressed = false, tooltip = false, groupDisabled
           open={popupOpen}
           setOpen={setPopupOpen}
           position={position}
+          narrow={narrow}
         />
       )}
     </span>

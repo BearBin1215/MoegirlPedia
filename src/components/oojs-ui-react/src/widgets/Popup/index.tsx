@@ -19,6 +19,7 @@ import {
   getFocusableElements,
   getElementDir,
   resolveElement,
+  findScrollableContainer,
   OFFSCREEN_POSITION,
 } from '../../utils';
 import type { WidgetProps } from '../Widget';
@@ -28,7 +29,6 @@ import {
   EMPTY_RECT,
   POPUP_ANCHOR_SIZE,
   clampPopupToBounds,
-  findScrollableContainer,
   getAnchorEdge,
   getClampBounds,
   getPositionSpaces,
@@ -265,6 +265,8 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
     enabled: open && !!autoClose,
     onClose: () => onClose?.(),
     ignore: [rootRef, autoCloseIgnore],
+    // 弹层类同绑click（对齐原版PopupWidget.bindDocumentMouseDownListener，iOS Safari所需）
+    dismissOnClick: true,
   });
 
   // 对齐原版toggle中的焦点圈闭：autoClose时，Tab走出最后一个焦点元素（或Shift+Tab走出第一个）即关闭弹层

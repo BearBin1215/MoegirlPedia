@@ -19,4 +19,9 @@ export const zhHans: Partial<Record<MessageKey, MessageValue>> = {
   'ooui-item-remove': '移除',
   'ooui-field-help': '帮助',
   'ooui-copytextlayout-copy': '复制',
+  'ooui-selectfile-button-select': '选择文件',
+  'ooui-selectfile-button-select-multiple': '选择多个文件',
+  'ooui-selectfile-placeholder': '未选择文件',
+  'ooui-selectfile-dragdrop-placeholder': '拖放文件到此处',
+  'ooui-selectfile-dragdrop-placeholder-multiple': '拖放多个文件到此处',
 };

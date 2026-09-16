@@ -1,8 +1,10 @@
 import React, {
   forwardRef,
+  type HTMLAttributes,
   type KeyboardEventHandler,
   type MouseEvent,
   type KeyboardEvent,
+  type ReactNode,
   type Ref,
 } from 'react';
 import clsx from 'clsx';
@@ -94,6 +96,20 @@ export interface ButtonProps extends
 
   /** 获取内部`<a>`元素引用（组件ref指向外层span，用于聚焦等直接操作链接的场景） */
   anchorRef?: Ref<HTMLAnchorElement>;
+
+  /**
+   * 内部`<a>`的附加属性。供"按钮触发浮层/菜单"的组合把 `aria-haspopup`/`aria-owns`/`aria-expanded`
+   * 写到锚点上——原版这类组件的 aria 状态挂在 `$button`（即锚点）上
+   * （PopupButtonWidget、ButtonMenuSelectWidget）。组件自身计算的属性（role/tabIndex/aria-disabled 等）优先
+   */
+  anchorProps?: HTMLAttributes<HTMLAnchorElement>;
+
+  /**
+   * 锚点内的附加内容（渲染在图标/标签/指示器之后）。供需要把原生控件挂进
+   * `.oo-ui-buttonElement-button`的场景使用——主题CSS以该锚点为直接父元素做选择
+   * （如SelectFileInputWidget的`<input type=file>`覆盖层）。组件内部组合通道
+   */
+  anchorContent?: ReactNode;
 }
 
 /**
@@ -103,6 +119,8 @@ export interface ButtonProps extends
 export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   active,
   accessKey,
+  anchorContent,
+  anchorProps,
   children,
   className,
   disabled,
@@ -211,6 +229,7 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
       aria-disabled={isDisabled || undefined}
     >
       <a
+        {...anchorProps}
         className='oo-ui-buttonElement-button'
         role='button'
         ref={setAnchorRef}
@@ -242,6 +261,7 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
           className={iconClasses}
           title={indicatorTitle}
         />
+        {anchorContent}
       </a>
     </span>
   );

@@ -37,8 +37,9 @@
 - [x] 搜索输入框与搜索组件（SearchInput/SearchWidget）
 - [x] 复制文本布局（CopyTextLayout）
 - [x] 标签多选族（TagMultiselect/TagItem，及带菜单的MenuTagMultiselect；含拖拽重排与inline输入框宽度自适应）
-- [ ] 文件选择输入框（SelectFileInputWidget）
+- [x] 文件选择输入框（SelectFileInputWidget，含accept过滤/多选/拖放区/缩略图/buttonOnly）
 - [x] 工具栏剩余（PopupTool/ToolGroupTool）
+- [x] 按钮式菜单选择（ButtonMenuSelectWidget：Button触发MenuSelect，含clearOnSelect与按下态；Dropdown只对齐了DropdownWidget）
 - [ ] 其他布局类组件
 
 ## 未对齐行为记录
@@ -86,6 +87,11 @@
 - **ButtonOption 的选中态图标/指示器一律反色**。原版 `ButtonOptionWidget` 构造期 `setSelected` 会 `setActive(true)`，但随后 `ButtonElement` 构造函数把 `this.active` 复位为 `false`，导致"初始选中"的按钮不反色、"用户点选后"的按钮才反色（同一状态两种表现，实测确认）；React 版按主题规则（带边框按钮在激活或禁用时反色）统一输出。
 - **Button 系列不输出 `oo-ui-buttonElement-size-medium`**。原版 `ButtonElement.setSize` 缺省写入尺寸类（`medium`），该类在 wikimediaui/apex 主题 CSS 中均无定义、不产生样式；React 版 Button/ButtonInput/ButtonOption 一律不输出。
 - **固定标签不可拖拽，且非固定标签不得被拖到固定标签之前**。原版虽在 `TagItemWidget` 上实现了 `fixed`（不渲染关闭按钮、不可移除/编辑），但标签多选族没有开放该配置的入口（`MenuTagMultiselectWidget.createTagItemWidget` 不传 `fixed`），故实际不可达、标签恒可拖可移除。React 版在 `TagOptionProps` 上开放 `fixed`，并让拖拽的目标下标钳制在固定区之后，使固定项顺序不受拖拽影响。
+- **ButtonMenuSelectWidget 的 `aria-owns` 常驻，键盘展开同样输出按压态**。原版构造期写入的 `aria-owns` 会被菜单关闭时的 `MenuSelectWidget.onToggle`（`removeAttr('aria-owns')`）一并清掉，此后触发器不再声明所拥有的菜单；键盘展开的按压态也会被随后的 keyup 复位流清掉（鼠标展开则是按压态，同一状态两种表现）。React 版按声明式状态输出：`aria-owns` 常驻、`oo-ui-buttonElement-pressed` 恒随打开态。
+- **ButtonMenuSelectWidget 支持方向键展开**（收起时↑/↓即展开）。原版仅 Enter/空格可展开（ButtonWidget 无方向键处理，菜单未展开时也不监听 document 键盘），方向键只在展开后由菜单接管。React 版与 Dropdown 行为一致：收起时↑/↓展开，展开后↑/↓移动高亮。
+- **ButtonMenuSelectWidget 的键盘手势去重，选定/展开后不因 keypress 激活通道重新切换**。原版按键流里菜单的 document keydown 处理器虽对已消费按键 `preventDefault`，Chrome 仍会派发 keypress，`ButtonElement.onKeyPress` 的 click 模拟随即再次 `menu.toggle()`——键盘选定/展开后菜单会被重新开合（同一手势两次切换）。React 版以手势标记跳过同一次手势内 keypress 经 Button 键盘激活通道的重复切换（keyup 复位，抑制 keypress 的浏览器也不受影响）。
+- **ButtonMenuSelectWidget/Dropdown 展开后空格可选定**。原版展开态按空格不被菜单消费（`MenuSelectWidget.onDocumentKeyDown` 无 SPACE 分支），keypress 照发经 `ButtonElement.onKeyPress` 的 click 模拟仅关闭菜单；React 版空格与 Enter 同分支直接选定高亮项（与按钮空格激活的 ARIA 惯例一致，Dropdown 同）。
+- **SelectFileInputWidget 的初始文件集可用 `value`/`defaultValue` 声明**。原版构造期传 `value` 会被丢弃：彼时 `$input` 尚未置 `type=file`，`setValue` 写回 `input.files` 无效，而构造末尾又用 `$input.files` 覆盖了 `currentFiles`（实测 `new SelectFileInputWidget({value:[file]})` 后 `currentFiles`/`input.files` 均为空、`oo-ui-selectFileInputWidget-empty` 未摘除），原版只能构造后调 `setValue`。React 版按受控惯例直接生效，并把文件集写回 DOM `input.files`（经 `DataTransfer`），表单提交正常。
 
 ### 等效替代
 
@@ -101,21 +107,17 @@
 - **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（同上方 `setTabIndex` 条），差别仅在 `-1` 元素可被编程聚焦。焦点归属已对齐：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
 - **Dialog 焦点陷阱的已对齐部分**（对应关系留档）：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
 - **裸 `Dialog` 无内置标题**：调用方自行渲染标题并以 `aria-labelledby` 关联（`MessageDialog`/`ProcessDialog` 的内置标题已含该关联）。
+- **工具栏窄栏类在浮层内的承接位置**：原版把 `oo-ui-toolbar-narrow` 加在工具栏根与 `$popups` 容器上（工具组面板与弹出工具浮层都在其中，主题的窄栏规则均为后代选择器）；本工程浮层 portal 至 body 后失去该祖先，工具组面板经一层窄栏载体 div 承接、弹出工具浮层则把该类落在浮层根上。承载元素不同，但"浮层内容存在含窄栏类的祖先"这一前提两侧一致（对照以祖先判定为断言）。
+- **SelectFileInputWidget 的选择按钮根元素是`<span>`而非原版的`<label>`**：原版把按钮根换成`<label>`借原生关联内含的 file input；本工程沿用 Button 一律`<span>`（内层`<a class="oo-ui-buttonElement-button">`）的约定，点击开选择器由主题 CSS 的文件input覆盖层承担——实测按钮中心的最上层元素两侧同为`input[type=file]`，行为一致。
 
 ### 暂不实现
 
 原版有、本工程也认可其价值，但当前没做（含只做了简化版）。
 
 - **Popup 的容器钳制是简化版**：原版会按 `$container`（默认就近滚动容器）和 `containerPadding` 把弹层钳制在容器内；React 版只向上找第一个 `overflow: auto/scroll` 祖先，未完整复刻 `getClosestScrollableElementContainer`。
-- **菜单浮层定位的两处简化**（Dropdown 的 MenuSelect 与 ComboBoxInput 的菜单同源）：
-  - 滚动条沟槽未计入（原版 offsetParent 相对定位会计入）。
-  - 裁剪锚点：原版 `ClippableElement` 锚定就近滚动容器；React 版锚定视口，`hideWhenOutOfView` 也简化成视口判定，未复刻基于 `$floatableClosestScrollable` 的精确判定。
 - **工具栏的以下能力未实现**：
   - PopupToolGroup：面板 portal 至 body 后按视口口径定位、固定起始边对齐（LTR左/RTL右，经 `useAnchoredPanelLayout` 与 MenuSelect 共用实现）；原版 `FloatableElement` 会按左右空间选择对齐侧、空间不足时填充容器，这部分未实现。窄栏类已按原版 `setNarrow` 下发到面板的窄栏载体。
-  - `narrowConfig`：窄栏下切换工具或把手的配置。
   - **弹出工具置于 List/Menu 组内不可用**（原版同样不可用，故不修）：选中工具会先收起组面板，浮层锚点随面板 `display:none` 归零。实测原版侧工具转激活态但浮层不显示（`hideWhenOutOfView` 判定），React 侧浮层弹出但定位到视口左上角。
-  - **弹出工具浮层未包窄栏载体**：工具组面板有专门的窄栏载体承接 `oo-ui-toolbar-narrow`（见上），弹出工具浮层直接 portal 至 body，浮层内容里的窄栏后代选择器不命中。
-- **浮层自动关闭未监听 `click`**：原版 `PopupWidget` 除 `mousedown` 外还监听 `click`（注释说明 iOS Safari 需要，dist 6162-6172）；`useDismissablePopover` 只监听 `mousedown`，影响所有走该 hook 的浮层。
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的 `toggleIsolation` 未实现**：原版会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。
