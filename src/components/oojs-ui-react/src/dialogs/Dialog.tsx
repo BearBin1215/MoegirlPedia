@@ -12,6 +12,7 @@ import { debounce } from 'es-toolkit';
 import type { ElementProps } from '../Element';
 import { getFocusableElements } from '../utils';
 import { useLatestRef } from '../hooks';
+import { acquireScrollLock, releaseScrollLock } from './scrollLock';
 import { WindowManager } from './WindowManager';
 
 /**
@@ -105,6 +106,8 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   const footRef = useRef<HTMLDivElement>(null);
   // 打开前的焦点元素，关闭teardown后归还焦点
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  // 滚动锁登记句柄：实例内恒定的空对象，作为scrollLock登记表的key
+  const scrollLockHandleRef = useRef({});
 
   const classes = clsx(
     className,
@@ -299,6 +302,20 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
     }
     return () => timers.forEach(clearTimeout);
   }, [open]);
+
+  // 滚动锁：打开周期（open||active）内经scrollLock登记，body/html获得modal-active类锁定
+  // 背景滚动。对齐原版toggleGlobalEvents的上锁窗口（openWindow同步上锁、teardown完成解锁），
+  // 故判定用open||active而非open——关闭动画期间保持锁定；full翻转（窄屏自动满屏）经依赖
+  // 重新登记同步fullscreen变体。清理对称注销，StrictMode双调用下登记收敛
+  useEffect(() => {
+    const handle = scrollLockHandleRef.current;
+    if (open || active) {
+      acquireScrollLock(handle, full);
+    } else {
+      releaseScrollLock(handle);
+    }
+    return () => releaseScrollLock(handle);
+  }, [open, active, full]);
 
   return (
     <WindowManager

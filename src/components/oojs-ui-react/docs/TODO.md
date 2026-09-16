@@ -27,6 +27,7 @@
 - **未实现 `PopupTagMultiselectWidget`**。原版该类构造期即 `warnDeprecation`（建议改用 `MenuTagMultiselectWidget`），本工程不提供。
 - **标签数据限于 `string | number`**。原版标签 data 可为任意对象（`{data,label}` 形态），本工程与选择族一致，值统一为 `string | number`，标签文本取自菜单选项 `label` 或值本身。
 - **TagMultiselect 不开放替换内部输入控件**。原版 `config.input`/`config.inputWidget` 可替换内部输入控件，React 版内置输入框，对齐其余组件不暴露内部输入控件的做法。
+- **弹窗滚动锁不含 iOS 触摸滚动 hack**。原版 `togglePreventIosScrolling` 针对 iOS Safari 无视 `body { overflow: hidden }` 的问题，仅在 iOS 设备且打开 full 尺寸弹窗时保存/恢复滚动位置并加 `oo-ui-windowManager-ios-modal-ready` 类；触发条件窄且需移动滚动位置，成本与收益不对等，React 版不实现。
 
 ### 增强
 
@@ -62,6 +63,7 @@
 - **ComboBoxInput 的菜单展开时机是等效实现**：原版 `onEdit` 监听多种事件后再 toggle。
 - **SearchWidget 的结果列表带 `tabindex="-1"`**（原版该元素无 `tabindex` 属性）：不可Tab聚焦的效果一致（同上方 `setTabIndex` 条），差别仅在 `-1` 元素可被编程聚焦。焦点归属已对齐：`aria-activedescendant` 经 `Select` 的 `focusOwnerRef`（对齐原版 `results.setFocusOwner(query.$input)`）落在查询框上、列表根不再输出；点击结果两侧都不改变焦点。
 - **Dialog 焦点陷阱的已对齐部分**（对应关系留档）：Tab 闭环（focusTrap 类 + focus 重定向 + content `tabIndex=-1`）、`role='dialog'` 挂载在 `.oo-ui-window` 根、关闭 teardown 后归还打开前的焦点（对应原版 `WindowManager.$returnFocusTo`）；带标题的 `ProcessDialog`/`MessageDialog` 已用 `aria-labelledby` 关联标题（对应原版 `Dialog.initialize` 的 `title.getElementId()`）。
+- **Dialog 的滚动锁经 scrollLock 模块登记实现**（对应关系留档）：原版 `WindowManager.toggleGlobalEvents` 在 body data 上维护 `windowManagerGlobalEvents` 栈并给 body/html 加 `oo-ui-windowManager-modal-active`（body `overflow: hidden`、html 非满屏 `scrollbar-gutter: stable`，类规则由主题 CSS 承接）；React 版每个 Dialog 自带 manager、无共享容器承载该栈，改为模块级登记表（`src/dialogs/scrollLock.ts`）按打开周期（`open||active`，对应原版 openWindow 上锁、teardown 完成解锁）计数。`modal-active-fullscreen` 变体取 Dialog 的 `full` 实态，与原版 `getSize() === 'full'` 等价——原版 `getSize()` 同样含窄屏视口判定（视口宽不足档位宽即返回 `'full'`）。
 - **裸 `Dialog` 无内置标题**：调用方自行渲染标题并以 `aria-labelledby` 关联（`MessageDialog`/`ProcessDialog` 的内置标题已含该关联）。
 - **工具栏窄栏类在浮层内的承接位置**：原版把 `oo-ui-toolbar-narrow` 加在工具栏根与 `$popups` 容器上（工具组面板与弹出工具浮层都在其中，主题的窄栏规则均为后代选择器）；本工程浮层 portal 至 body 后失去该祖先，工具组面板经一层窄栏载体 div 承接、弹出工具浮层则把该类落在浮层根上。承载元素不同，但"浮层内容存在含窄栏类的祖先"这一前提两侧一致（对照以祖先判定为断言）。
 - **SelectFileInputWidget 的选择按钮根元素是`<span>`而非原版的`<label>`**：原版把按钮根换成`<label>`借原生关联内含的 file input；本工程沿用 Button 一律`<span>`（内层`<a class="oo-ui-buttonElement-button">`）的约定，点击开选择器由主题 CSS 的文件input覆盖层承担——实测按钮中心的最上层元素两侧同为`input[type=file]`，行为一致。
