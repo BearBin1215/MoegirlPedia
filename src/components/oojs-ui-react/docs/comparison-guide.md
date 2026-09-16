@@ -86,6 +86,10 @@ playground 头部下拉可在 wikimediaui/apex 两个原版主题间切换。主
 
 `src/hooks.ts` 与 `src/utils.ts` 收敛了跨组件重复逻辑，新增/修改组件应优先复用而非再写一份：
 
+- **元素 mixin 的契约类型集中在 `src/Element.ts`**（IconElement/IndicatorElement/LabelElement/AccessKeyedElement/FlaggedElement 与 IconFlag/ButtonFlag 等联合类型）：组件目录只放渲染组件，类型经 `import type` 从 Element 取——避免 utils ↔ widgets 互相取类型形成潜在循环。新增元素级 props 先查 Element.ts。
+- `buttonElementClasses` / `imageVariantClasses` / `getButtonIconClasses`（`utils.ts`）：ButtonElement 的根类贡献、image 变体类与按钮内图标/指示器着色规则（边框按钮 active/disabled/primary 反色）。Button/ButtonInput/ButtonOption 共用，新增按钮形态勿再手写类组。
+- `ButtonSlots`（`widgets/Button/slots.tsx`）：图标→标签→指示器的三元排布（无图标/指示器时照常输出 noIcon/noIndicator 空占位）。按钮系（Button/ButtonOption/ButtonInput、ComboBoxInput 下拉按钮）与装饰选项（DecoratedOption）共用。guide:55 的「同类收敛」原则同样适用于 DOM 结构与类名派生（`buttonElementClasses` 即此类收敛产物），勿在新组件里手抄三元。
+
 - `useControlledValue` / `useControlledValueNotify`：受控/非受控值状态；后者在受控值非法（不在可用值集合内）时把生效值回写父级，同一非法值仅回写一次（父级未采纳时不反复触发），`useLayoutSelection` 的受控回写共用同一守卫。返回值含 `commit` 与 `commitIfChanged`：**选择集类组件的选中提交一律用后者**（对齐原版 `selectItem` 对已选中项的提前返回，重复选中同一项不派发事件；Select/TabSelect/ButtonSelect/Dropdown/ComboBoxInput 皆此），输入类组件必须用前者（"始终转发"是刻意语义）。
 - `useMergedRefs`：同时持有元素引用并向外转发 ref（替代 `useImperativeHandle` 手工桥接）。
 - `useCleanId`：生成不含 `:` 的 id 片段（`useId` 的 `:` 在 CSS 选择器中非法）。

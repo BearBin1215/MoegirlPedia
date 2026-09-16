@@ -1,8 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { Button, type ButtonProps } from '../Button';
-import { useControlledValue, useFieldLabelFocus } from '../../hooks';
-import { mergeAriaLabelledBy } from '../../utils';
+import { useControlledValue } from '../../hooks';
 
 /**
  * 切换按钮属性：按钮形态复用ButtonProps（图标/指示器/标签/flags/framed等）。
@@ -30,7 +29,8 @@ export type ToggleButtonProps = Omit<
  * 结构与原版一致——根span（继承链ToggleWidget→ToggleButtonWidget，经widgetNames
  * 对齐，不含oo-ui-buttonWidget）承载开关类（oo-ui-toggleWidget-on/off）与buttonElement类，
  * 开启态经Button的active输出`oo-ui-buttonElement-active`，aria-pressed落在按钮元素上；
- * 点击切换（对齐原版onAction）
+ * 点击切换（对齐原版onAction）。FieldLayout标签联动由Button内部对锚点的注册承担
+ * （点击标签聚焦按钮元素），本组件无需自建接线
  */
 export const ToggleButton = forwardRef<HTMLSpanElement, ToggleButtonProps>(({
   checked,
@@ -46,13 +46,6 @@ export const ToggleButton = forwardRef<HTMLSpanElement, ToggleButtonProps>(({
     { value: checked, defaultValue: defaultChecked ?? false },
     onChange,
   );
-  // FieldLayout标签联动（通道B）：点击标签聚焦按钮元素（对齐原版TabIndexedElement.simulateLabelClick
-  // 基线focus()，禁用时不聚焦）
-  const { setRef: setRootRef, fieldLabelId } = useFieldLabelFocus<HTMLSpanElement>({
-    ref,
-    disabled,
-    activate: (el) => el?.querySelector<HTMLElement>('a[role=button]')?.focus(),
-  });
 
   return (
     <Button
@@ -64,11 +57,11 @@ export const ToggleButton = forwardRef<HTMLSpanElement, ToggleButtonProps>(({
         isChecked ? 'oo-ui-toggleWidget-on' : 'oo-ui-toggleWidget-off',
       )}
       widgetNames={['toggle', 'toggleButton']}
-      aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
+      aria-labelledby={ariaLabelledBy}
       active={isChecked}
       aria-pressed={isChecked}
       onClick={() => commit(!isChecked)}
-      ref={setRootRef}
+      ref={ref}
     >
       {children}
     </Button>

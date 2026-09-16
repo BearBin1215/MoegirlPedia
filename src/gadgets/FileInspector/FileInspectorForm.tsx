@@ -5,14 +5,13 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  type MouseEvent,
-  type KeyboardEvent,
   type ChangeEvent,
 } from 'react';
 import { chunk } from 'es-toolkit';
 import {
   Button,
   NumberInput,
+  type ButtonClickEvent,
   type ChangeHandler,
 } from 'oojs-ui-react';
 import { copyText } from '@/utils/clipboard';
@@ -41,12 +40,6 @@ interface FileData {
   /** 是否在共享站使用 */
   cmused?: boolean;
 }
-
-/**
- * Button组件的点击事件参数
- * 鼠标点击为MouseEvent，键盘Enter/空格触发时为KeyboardEvent
- */
-type ButtonClickEvent = MouseEvent<HTMLSpanElement> | KeyboardEvent<HTMLSpanElement>;
 
 function FileInspectorForm({ username }: { username: string }) {
   // 当前状态，就绪/读取失败/查询中/查询完毕

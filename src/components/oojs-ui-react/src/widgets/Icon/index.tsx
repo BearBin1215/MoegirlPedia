@@ -1,11 +1,9 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { flaggedElementClasses, getWidgetClassName, toFlagArray } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, imageVariantClasses, toFlagArray } from '../../utils';
+import type { IconElement, IconFlag } from '../../Element';
 import type { WidgetProps } from '../Widget';
-import { IconBase, type IconElement } from './Base';
-
-/** 主题支持的图标变体（对齐wikimediaui主题variants） */
-export type IconFlag = 'progressive' | 'destructive' | 'invert' | 'error' | 'warning' | 'success';
+import { IconBase } from './Base';
 
 export interface IconProps extends
   WidgetProps<HTMLSpanElement>,
@@ -13,9 +11,6 @@ export interface IconProps extends
 
   /** 附加给图标的标志 */
   flags?: IconFlag | IconFlag[];
-
-  /** 图标title提示 */
-  iconTitle?: string;
 }
 
 /** 独立图标组件，对齐原版OO.ui.IconWidget：基于IconBase附加Widget类名与flag变体 */
@@ -24,8 +19,6 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
   className,
   disabled,
   flags = [],
-  iconTitle,
-  title,
   ...rest
 }, ref) => {
 
@@ -37,7 +30,7 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
     'oo-ui-labelElement-invisible',
     flaggedElementClasses(flags),
     // 主题按image-{flag}给图标着色（FlaggedElement之外Icon的专属类）
-    toFlagArray(flags).map((flag) => `oo-ui-image-${flag}`),
+    imageVariantClasses(toFlagArray(flags)),
   );
 
   return (
@@ -45,7 +38,6 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
       {...rest}
       className={classes}
       icon={icon}
-      title={title ?? iconTitle}
       aria-disabled={disabled || undefined}
       ref={ref}
     />
@@ -53,5 +45,3 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(({
 });
 
 Icon.displayName = 'Icon';
-
-export { IconElement };

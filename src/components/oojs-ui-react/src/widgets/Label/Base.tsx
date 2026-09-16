@@ -1,16 +1,9 @@
 import React, {
   forwardRef,
-  type ReactNode,
   type HTMLAttributes,
 } from 'react';
 import clsx from 'clsx';
-
-export interface LabelElement {
-  /** 标签显示内容 */
-  label?: ReactNode;
-  /** 标签可视 */
-  invisibleLabel?: boolean;
-}
+import type { LabelElement } from '../../Element';
 
 export type LabelBaseProps = HTMLAttributes<HTMLSpanElement> & LabelElement;
 

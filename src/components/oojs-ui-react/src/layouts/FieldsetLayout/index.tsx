@@ -6,8 +6,7 @@ import { IconBase } from '../../widgets/Icon/Base';
 import { Label } from '../../widgets/Label';
 import { PopupButton } from '../../widgets/PopupButton';
 import type { WidgetProps } from '../../widgets/Widget';
-import type { IconElement } from '../../widgets/Icon';
-import type { LabelElement } from '../../widgets/Label';
+import type { IconElement, LabelElement } from '../../Element';
 import { useMessage } from '../../config';
 
 export interface FieldsetLayoutProps extends

@@ -14,13 +14,11 @@ import {
   getWidgetClassName,
   mergeAriaLabelledBy,
   resolveTabIndex,
-  type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';
 import type { WidgetProps } from '../Widget';
-import type { LabelElement } from '../Label';
-import type { IconElement } from '../Icon';
+import type { AccessKeyedElement, IconElement, LabelElement } from '../../Element';
 import type { SelectOptionProps } from '../Select';
 import { MenuSelect } from '../MenuSelect';
 export type DropdownOptionProps = SelectOptionProps;

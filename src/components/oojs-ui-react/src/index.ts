@@ -11,10 +11,10 @@ export { Label, type LabelProps } from './widgets/Label';
 
 // 图标
 export { Icon, type IconProps } from './widgets/Icon';
-export { Indicator, type IndicatorProps, type Indicators } from './widgets/Indicator';
+export { Indicator, type IndicatorProps } from './widgets/Indicator';
 
 // 按钮
-export { Button, type ButtonProps } from './widgets/Button';
+export { Button, type ButtonProps, type ButtonClickEvent } from './widgets/Button';
 export { ToggleButton, type ToggleButtonProps } from './widgets/ToggleButton';
 export { ToggleSwitch, type ToggleSwitchProps } from './widgets/ToggleSwitch';
 export { ButtonGroup, type ButtonGroupProps } from './widgets/ButtonGroup';
@@ -160,5 +160,6 @@ export { msg, deferMsg, resolveMsg, registerMessages } from './i18n';
 export type { MessageKey, MessageValue } from './i18n';
 export { zhHans } from './locales/zh-hans';
 
-// 类型
-export type { AccessKeyedElement, ChangeHandler, FlaggedElement } from './utils';
+// 类型。元素mixin契约类型（含Indicators等紧邻类型）集中于Element.ts
+export type { AccessKeyedElement, FlaggedElement, Indicators } from './Element';
+export type { ChangeHandler } from './utils';

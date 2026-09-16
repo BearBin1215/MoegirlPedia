@@ -23,8 +23,7 @@ import {
   OFFSCREEN_POSITION,
 } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
-import type { LabelElement } from '../Label';
+import type { IconElement, LabelElement } from '../../Element';
 import {
   EMPTY_RECT,
   POPUP_ANCHOR_SIZE,

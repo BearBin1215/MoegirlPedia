@@ -7,17 +7,17 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
-import { IndicatorBase, type Indicators } from '../Indicator/Base';
-import { LabelBase } from '../Label/Base';
+import { IndicatorBase } from '../Indicator/Base';
+import { ButtonSlots } from '../Button/slots';
 import {
   getSelectableValues,
   getWidgetClassName,
   resolveTabIndex,
-  type AccessKeyedElement,
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useFieldInputId, useMenuPopup } from '../../hooks';
 import { useMessage } from '../../config';
+import type { AccessKeyedElement, Indicators } from '../../Element';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
 import { MenuSelect } from '../MenuSelect';
@@ -247,7 +247,6 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
             'oo-ui-buttonElement',
             // 对齐原版默认framed按钮（主题CSS的下拉按钮边框/背景样式依赖该类）
             'oo-ui-buttonElement-framed',
-            controlsDisabled && 'oo-ui-buttonElement-disabled',
             'oo-ui-buttonWidget',
           )}
         >
@@ -260,8 +259,8 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
             aria-controls={menuId}
             onClick={handleDropdownButtonClick}
           >
-            <LabelBase className='oo-ui-labelElement-invisible'>{toggleOptionsLabel}</LabelBase>
-            <IndicatorBase indicator='down' />
+            {/* 原版此按钮为真ButtonWidget（label+indicator，icon缺省照常输出noIcon占位） */}
+            <ButtonSlots label={toggleOptionsLabel} labelInvisible indicator='down' />
           </span>
         </span>
       </div>

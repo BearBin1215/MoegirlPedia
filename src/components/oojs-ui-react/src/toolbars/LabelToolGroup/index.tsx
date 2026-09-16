@@ -1,7 +1,8 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../../widgets/Icon/Base';
-import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
+import { IndicatorBase } from '../../widgets/Indicator/Base';
+import type { Indicators } from '../../Element';
 import { LabelBase } from '../../widgets/Label/Base';
 import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../../widgets/Widget';

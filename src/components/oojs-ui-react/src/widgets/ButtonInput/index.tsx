@@ -6,15 +6,11 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import { IconBase } from '../Icon/Base';
-import { IndicatorBase } from '../Indicator/Base';
-import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, resolveTabIndex, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, resolveTabIndex, toFlagArray } from '../../utils';
 import { usePressedState } from '../../hooks';
+import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
-import { getButtonIconClasses, type ButtonFlag } from '../Button';
+import { ButtonSlots } from '../Button/slots';
 
 export interface ButtonInputProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children' | 'onClick' | 'onMouseDown' | 'onMouseUp' | 'onKeyDown' | 'onKeyUp'>,
@@ -119,11 +115,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
       indicator: useInputTag ? undefined : indicator,
       label: children,
     }, 'input', 'buttonInput'),
-    'oo-ui-buttonElement',
-    framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    flaggedElementClasses(flags),
-    active && 'oo-ui-buttonElement-active',
-    pressed && !disabled && 'oo-ui-buttonElement-pressed',
+    buttonElementClasses({ framed, active, disabled, pressed, flags: flagList }),
   );
 
   const handleClick: ButtonInputProps['onClick'] = (ev) => {
@@ -164,14 +156,11 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
         />
       ) : (
         <button {...inputProps} value={value}>
-          <IconBase
+          <ButtonSlots
             icon={icon}
-            className={iconClasses}
-          />
-          <LabelBase>{children}</LabelBase>
-          <IndicatorBase
+            variantClasses={iconClasses}
+            label={children}
             indicator={indicator}
-            className={iconClasses}
           />
         </button>
       )}
@@ -180,4 +169,3 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
 });
 
 ButtonInput.displayName = 'ButtonInput';
-

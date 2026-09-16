@@ -7,15 +7,13 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
-import { IndicatorBase, type IndicatorBaseProps, type Indicators } from '../Indicator/Base';
+import { IndicatorBase, type IndicatorBaseProps } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray } from '../../utils';
 import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
-import type { LabelElement, LabelPosition } from '../Label';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
-import type { FlaggedElement } from '../../utils';
+import type { LabelPosition } from '../Label';
+import type { FlaggedElement, IconElement, IndicatorElement, Indicators, LabelElement } from '../../Element';
 
 /** type prop的合法值：原版getValidType白名单并入'search'——原版该类型经SearchInputWidget子类
  * 覆写getValidType绕过白名单实现，React版为免组合层另开口子而统一放行 */

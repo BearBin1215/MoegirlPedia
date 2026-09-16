@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import { LabelBase, type LabelElement } from './Base';
+import { LabelBase } from './Base';
 
 /** 标签相对控件的位置（输入类组件经labelPosition使用） */
 export type LabelPosition = 'before' | 'after';
@@ -35,5 +35,3 @@ export const Label = forwardRef<HTMLSpanElement, LabelProps>(({
 });
 
 Label.displayName = 'Label';
-
-export { LabelElement };

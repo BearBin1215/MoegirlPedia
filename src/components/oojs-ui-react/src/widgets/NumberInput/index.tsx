@@ -11,12 +11,11 @@ import { Button } from '../Button';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray, type AccessKeyedElement, type FlaggedElement } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray} from '../../utils';
 import { useControlledValue, useFieldInputId, useLatestRef, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
-import type { LabelElement, LabelPosition } from '../Label';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
+import type { LabelPosition } from '../Label';
+import type { AccessKeyedElement, FlaggedElement, IconElement, IndicatorElement, LabelElement } from '../../Element';
 
 /** allowInteger的强制步长与buttonStep的缺省步长（对齐原版setStep的`step || 1`） */
 const DEFAULT_STEP = 1;

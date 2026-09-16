@@ -1,14 +1,10 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
-import { IconBase } from '../Icon/Base';
-import { IndicatorBase } from '../Indicator/Base';
-import { LabelBase } from '../Label/Base';
-import { getWidgetClassName } from '../../utils';
-import { getButtonIconClasses } from '../Button';
+import { buttonElementClasses, getButtonIconClasses, getWidgetClassName } from '../../utils';
+import type { IconElement, IndicatorElement } from '../../Element';
 import type { OptionProps } from '../Option';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
+import { ButtonSlots } from '../Button/slots';
 
 export interface ButtonOptionProps extends OptionProps, IconElement, IndicatorElement {
   /** 是否为鼠标按压中的选项（由ButtonSelect拖拽逻辑驱动） */
@@ -50,14 +46,10 @@ export const ButtonOption = forwardRef<HTMLDivElement, ButtonOptionProps>(({
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, label: children, icon, indicator }, 'option', 'buttonOption'),
-    'oo-ui-buttonElement',
-    isFramed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    selected && 'oo-ui-optionWidget-selected',
     // 原版ButtonOptionWidget.setSelected连带setActive：选中即按钮激活态（主题按激活态给底色与反色文字）
-    selected && 'oo-ui-buttonElement-active',
+    buttonElementClasses({ framed: isFramed, active: selected, disabled, pressed }),
+    selected && 'oo-ui-optionWidget-selected',
     pressed && 'oo-ui-optionWidget-pressed',
-    // 原版按下选项时ButtonElement自身也切按压类（opacity等样式挂在该类上）
-    pressed && 'oo-ui-buttonElement-pressed',
   );
 
   return (
@@ -73,14 +65,11 @@ export const ButtonOption = forwardRef<HTMLDivElement, ButtonOptionProps>(({
       {/* role=button：对齐原版setButtonElement对A元素补role；title落点同原版setTitledElement($button)。
           accessKey经rest落在根上（原版$accessKeyed即$element，根可编程聚焦，快捷键可达） */}
       <a className='oo-ui-buttonElement-button' role='button' title={title}>
-        <IconBase
+        <ButtonSlots
           icon={icon}
-          className={iconClasses}
-        />
-        <LabelBase>{children}</LabelBase>
-        <IndicatorBase
+          variantClasses={iconClasses}
+          label={children}
           indicator={indicator}
-          className={iconClasses}
         />
       </a>
     </div>

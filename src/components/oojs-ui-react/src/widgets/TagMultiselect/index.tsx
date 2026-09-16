@@ -25,12 +25,10 @@ import {
   resolveTabIndex,
   toFlagArray,
   type ChangeHandler,
-  type FlaggedElement,
 } from '../../utils';
 import { useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
+import type { FlaggedElement, IconElement, IndicatorElement } from '../../Element';
 import type { SelectOptionProps } from '../Select';
 import { useDraggableKeys } from './useDraggableKeys';
 import { useInlineInputWidth } from './useInlineInputWidth';

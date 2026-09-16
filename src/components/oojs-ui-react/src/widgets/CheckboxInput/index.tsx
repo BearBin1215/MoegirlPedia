@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { Icon } from '../Icon';
-import { getWidgetClassName, resolveTabIndex, type AccessKeyedElement } from '../../utils';
+import { getWidgetClassName, resolveTabIndex } from '../../utils';
+import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useFieldInputId, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
 

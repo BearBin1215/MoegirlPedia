@@ -68,7 +68,12 @@ function ReactButtons({ addLog }: { addLog: (msg: string) => void }) {
       </div>
       <div>
         图标/指示器title
-        <Button icon='help' iconTitle='图标提示' indicator='down' indicatorTitle='指示器提示'>
+        <Button
+          icon='help'
+          iconProps={{ title: '图标提示' }}
+          indicator='down'
+          indicatorProps={{ title: '指示器提示' }}
+        >
           Titles
         </Button>
       </div>

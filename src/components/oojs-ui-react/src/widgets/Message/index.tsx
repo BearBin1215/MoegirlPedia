@@ -6,7 +6,7 @@ import { Button } from '../Button';
 import { flaggedElementClasses, getWidgetClassName } from '../../utils';
 import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
+import type { IconElement } from '../../Element';
 
 /** 消息类型（非法值回退notice） */
 export type MessageType = 'notice' | 'error' | 'warning' | 'success';

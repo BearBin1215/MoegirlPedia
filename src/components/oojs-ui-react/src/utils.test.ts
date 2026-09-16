@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buttonElementClasses,
   flaggedElementClasses,
+  getButtonIconClasses,
   getWidgetClassName,
   hasLabel,
   iconElementClasses,
+  imageVariantClasses,
   indicatorElementClasses,
   labelElementClasses,
   mergeInvalidFlag,
@@ -89,6 +92,65 @@ describe('flaggedElementClasses（FlaggedElement mixin贡献）', () => {
   it('无flag输出空串', () => {
     expect(flaggedElementClasses()).toBe('');
     expect(flaggedElementClasses([])).toBe('');
+  });
+});
+
+describe('buttonElementClasses（ButtonElement mixin贡献）', () => {
+  it('缺省输出buttonElement与framed', () => {
+    expect(buttonElementClasses({})).toBe('oo-ui-buttonElement oo-ui-buttonElement-framed');
+  });
+
+  it('framed=false输出frameless', () => {
+    expect(buttonElementClasses({ framed: false })).toBe('oo-ui-buttonElement oo-ui-buttonElement-frameless');
+  });
+
+  it('active/pressed输出激活与按压态', () => {
+    expect(buttonElementClasses({ active: true, pressed: true }))
+      .toBe('oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-buttonElement-active oo-ui-buttonElement-pressed');
+  });
+
+  it('disabled抑制按压类（对齐原版isDisabled下不输出pressed），其余类不受影响', () => {
+    expect(buttonElementClasses({ disabled: true, pressed: true, flags: 'primary' }))
+      .toBe('oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-flaggedElement-primary');
+  });
+
+  it('多flag按序全部输出（含非image位）', () => {
+    expect(buttonElementClasses({ flags: ['progressive', 'primary'] }))
+      .toBe('oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-flaggedElement-progressive oo-ui-flaggedElement-primary');
+  });
+});
+
+describe('imageVariantClasses（image变体类）', () => {
+  it('ICON_FLAGS全集逐位输出image类', () => {
+    expect(imageVariantClasses(['progressive', 'destructive', 'invert', 'error', 'warning', 'success']))
+      .toBe('oo-ui-image-progressive oo-ui-image-destructive oo-ui-image-invert oo-ui-image-error oo-ui-image-warning oo-ui-image-success');
+  });
+
+  it('保持入参次序', () => {
+    expect(imageVariantClasses(['success', 'progressive']))
+      .toBe('oo-ui-image-success oo-ui-image-progressive');
+  });
+
+  it('ButtonFlag的非image位（primary/safe/back/close）不产生类', () => {
+    expect(imageVariantClasses(['primary', 'safe', 'back', 'close'])).toBe('');
+  });
+});
+
+describe('getButtonIconClasses（按钮内图标/指示器变体）', () => {
+  it('边框按钮在激活、禁用或primary时整体反色（invert）', () => {
+    expect(getButtonIconClasses(true, true, false, [])).toBe('oo-ui-image-invert');
+    expect(getButtonIconClasses(true, false, true, [])).toBe('oo-ui-image-invert');
+    expect(getButtonIconClasses(true, false, false, ['primary'])).toBe('oo-ui-image-invert');
+  });
+
+  it('无边框按钮禁用时不出变体', () => {
+    expect(getButtonIconClasses(false, false, true, ['progressive'])).toBeUndefined();
+  });
+
+  it('其余按标志叠加image变体，非image位不产生类', () => {
+    expect(getButtonIconClasses(true, false, false, ['progressive', 'destructive']))
+      .toBe('oo-ui-image-progressive oo-ui-image-destructive');
+    expect(getButtonIconClasses(true, false, false, ['safe', 'close'])).toBe('');
   });
 });
 

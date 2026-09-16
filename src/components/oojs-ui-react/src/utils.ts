@@ -1,25 +1,8 @@
 import type { ChangeEvent, RefObject } from 'react';
 import clsx from 'clsx';
+import { ICON_FLAGS } from './Element';
 import type { WidgetProps } from './widgets/Widget';
-import type { LabelElement } from './widgets/Label';
-import type { IconElement } from './widgets/Icon';
-import type { IndicatorElement } from './widgets/Indicator';
-
-/** 快捷键元素参数 */
-export interface AccessKeyedElement {
-  /** 快捷键 */
-  accessKey?: string;
-}
-
-/**
- * FlaggedElement mixin的props类型（对齐原版OO.ui.mixin.FlaggedElement，仅类型，无渲染组件）：
- * 每个标志输出`oo-ui-flaggedElement-{flag}`类（类生成走flaggedElementClasses）。
- * 原版config.flags的对象形态为setFlags命令式toggle所用，声明式props仅收字符串/数组
- */
-export interface FlaggedElement {
-  /** 附加标志集；组件内部机制（如软校验的invalid）在其上叠加输出 */
-  flags?: string | string[];
-}
+import type { ButtonFlag, IconElement, IndicatorElement, LabelElement } from './Element';
 
 /**
  * 合并软校验的invalid标志与配置flags（对齐原版setValidityFlag的setFlags({invalid})合并语义）：
@@ -298,6 +281,73 @@ export function flaggedElementClasses(flags?: string | string[]): string {
   return clsx(toFlagArray(flags).map((flag) => `oo-ui-flaggedElement-${flag}`));
 }
 
+/**
+ * 图标/指示器变体类（对齐wikimediaui主题按image-{flag}着色的规则）。
+ * 仅映射主题存在的image变体位——调用方可能传入ButtonFlag全集（如primary），
+ * 非image位（primary/safe/back/close）不产生类。变体集即Element.ts的ICON_FLAGS
+ * （IconFlag由其派生，两侧不会失配）。Icon与按钮系图标/指示器共用
+ */
+export function imageVariantClasses(flags: readonly string[]): string {
+  return clsx(
+    flags
+      .filter((flag) => (ICON_FLAGS as readonly string[]).includes(flag))
+      .map((flag) => `oo-ui-image-${flag}`),
+  );
+}
+
+/**
+ * 按wikimediaui主题规则生成按钮内图标/指示器变体类（Button/ButtonInput/ButtonOption共用）：
+ * 边框按钮在激活（选中）、禁用或primary时整体反色；禁用且非反色场景不出变体；
+ * 其余按标志叠加image变体
+ */
+export function getButtonIconClasses(
+  framed: boolean,
+  active: boolean | undefined,
+  disabled: boolean | undefined,
+  flags: ButtonFlag[],
+): string | undefined {
+  if (framed && (active || disabled || flags.includes('primary'))) {
+    return 'oo-ui-image-invert';
+  }
+  if (disabled) {
+    return undefined;
+  }
+  return imageVariantClasses(flags);
+}
+
+/**
+ * ButtonElement mixin的类贡献（对齐原版OO.ui.mixin.ButtonElement，Button/ButtonInput/ButtonOption共用）：
+ * 根基类 + framed/frameless互斥态 + flagged变体 + 激活/按压态。pressed由调用方取或
+ * （内部按压流usePressedState与外部受控按压，如ButtonMenuSelectWidget菜单打开期），
+ * 禁用下的按压抑制由本函数的disabled位统一承担（对齐原版isDisabled时不输出按压类）
+ */
+export function buttonElementClasses({
+  framed = true,
+  active,
+  disabled,
+  pressed,
+  flags = [],
+}: {
+  /** 是否生成边框（缺省带边框，对齐原版ButtonElement的framed缺省） */
+  framed?: boolean;
+  /** 是否为激活状态 */
+  active?: boolean;
+  /** 是否禁用（仅抑制按压类；widget禁用类由Widget基类贡献器承担） */
+  disabled?: boolean;
+  /** 是否为按压态（调用方取或后的最终值） */
+  pressed?: boolean;
+  /** 附加给按钮的标志 */
+  flags?: ButtonFlag | ButtonFlag[];
+}): string {
+  return clsx(
+    'oo-ui-buttonElement',
+    framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
+    flaggedElementClasses(flags),
+    active && 'oo-ui-buttonElement-active',
+    !disabled && pressed && 'oo-ui-buttonElement-pressed',
+  );
+}
+
 /** Widget型组件的名称类：`oo-ui-{name}Widget`（多个按原版继承链叠加，如input/textInput/numberInput） */
 export function widgetNameClasses(...widgetNames: string[]): string {
   return clsx(widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`));
@@ -305,8 +355,8 @@ export function widgetNameClasses(...widgetNames: string[]): string {
 
 /**
  * 组装Widget型组件的根类。折叠自上方各mixin贡献器（对齐原版Widget+Element mixin的
- * 类派生规则），供整组类一起输出的常规场景；单独需要某个mixin的类时（如ButtonInput
- * 自组flag类）直接调用对应贡献器
+ * 类派生规则），供整组类一起输出的常规场景；折叠组之外的贡献器（如按钮系的
+ * buttonElementClasses）直接单独调用
  * @param props 组件属性，仅读取基础类相关字段
  * @param widgetNames 组件名，按原版继承链顺序叠加`oo-ui-{name}Widget`
  */

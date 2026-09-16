@@ -11,7 +11,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { ActionFieldLayout } from '../../layouts/ActionFieldLayout';
-import { getWidgetClassName, type AccessKeyedElement } from '../../utils';
+import { getWidgetClassName } from '../../utils';
+import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useLatestRef, useMergedRefs } from '../../hooks';
 import { useMessage } from '../../config';
 import { Button, type ButtonProps } from '../Button';

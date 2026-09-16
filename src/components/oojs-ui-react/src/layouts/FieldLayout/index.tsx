@@ -4,7 +4,7 @@ import { FieldLabelLinkProvider, useCleanId, type FieldLabelLink } from '../../h
 import { hasLabel } from '../../utils';
 import { Layout } from '../Layout';
 import type { WidgetProps } from '../../widgets/Widget';
-import type { LabelElement } from '../../widgets/Label';
+import type { LabelElement } from '../../Element';
 
 export interface FieldLayoutProps extends
   WidgetProps<HTMLDivElement>,

@@ -1,12 +1,9 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import { IconBase } from '../Icon/Base';
-import { IndicatorBase } from '../Indicator/Base';
-import { LabelBase } from '../Label/Base';
 import { getWidgetClassName } from '../../utils';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
+import type { IconElement, IndicatorElement } from '../../Element';
+import { ButtonSlots } from '../Button/slots';
 
 export type DecoratedOptionProps =
   WidgetProps<HTMLDivElement> &
@@ -46,9 +43,7 @@ export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(
       {...rest}
       ref={ref}
     >
-      <IconBase icon={icon} />
-      <LabelBase>{children}</LabelBase>
-      <IndicatorBase indicator={indicator} />
+      <ButtonSlots icon={icon} label={children} indicator={indicator} />
     </div>
   );
 });

@@ -1,14 +1,6 @@
 import React, { forwardRef, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
-
-/** 主题支持的指示器集合 */
-export type Indicators = 'clear' | 'up' | 'down' | 'required';
-
-/** 指示器元素参数 */
-export interface IndicatorElement {
-  /** 组件指示器 */
-  indicator?: Indicators;
-}
+import type { IndicatorElement } from '../../Element';
 
 export type IndicatorBaseProps =
   HTMLAttributes<HTMLSpanElement> &

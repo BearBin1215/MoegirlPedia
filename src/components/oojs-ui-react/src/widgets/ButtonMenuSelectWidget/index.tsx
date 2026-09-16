@@ -169,9 +169,10 @@ export const ButtonMenuSelectWidget = forwardRef<HTMLSpanElement, ButtonMenuSele
         className={clsx(
           className,
           'oo-ui-buttonMenuSelectWidget',
-          // 菜单打开期间按钮呈按压态（对齐原版onMenuToggle对根元素的pressed类切换）
-          open && 'oo-ui-buttonElement-pressed',
         )}
+        // 菜单打开期间按钮呈按压态（对齐原版onMenuToggle对根元素的pressed类切换），
+        // 经Button的受控pressed输出
+        pressed={open}
         anchorProps={{
           ...anchorProps,
           'aria-haspopup': 'true',

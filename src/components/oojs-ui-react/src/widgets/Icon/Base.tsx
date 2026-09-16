@@ -1,14 +1,6 @@
 import React, { forwardRef, type HTMLAttributes } from 'react';
 import clsx from 'clsx';
-
-/** 图标元素参数 */
-export interface IconElement {
-  /**
-   * 组件图标
-   * @see https://doc.wikimedia.org/oojs-ui/master/demos/?page=icons
-   */
-  icon?: string;
-}
+import type { IconElement } from '../../Element';
 
 export type IconBaseProps =
   HTMLAttributes<HTMLSpanElement> &
@@ -32,4 +24,3 @@ export const IconBase = forwardRef<HTMLSpanElement, IconBaseProps>(({
 });
 
 IconBase.displayName = 'IconBase';
-

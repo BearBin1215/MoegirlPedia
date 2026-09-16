@@ -10,7 +10,8 @@ import React, {
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { IconBase } from '../../widgets/Icon/Base';
-import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
+import { IndicatorBase } from '../../widgets/Indicator/Base';
+import type { Indicators } from '../../Element';
 import { LabelBase } from '../../widgets/Label/Base';
 import { getWidgetClassName, OFFSCREEN_POSITION } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
