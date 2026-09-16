@@ -47,16 +47,16 @@ function OriginalButtons() {
 function ReactButtons({ addLog }: { addLog: (msg: string) => void }) {
   return (
     <div>
-      {/* 名称与控件同行，与原版row()的p内嵌结构一致，保证两侧逐行对照 */}
-      <p>常规<Button onClick={() => addLog('click 常规')}>Button</Button></p>
-      <p>primary<Button flags='primary'>Primary</Button></p>
-      <p>progressive<Button flags='progressive'>Progressive</Button></p>
-      <p>destructive<Button flags='destructive'>Destructive</Button></p>
-      <p>error<Button flags='error'>Error</Button></p>
-      <p>无边框destructive<Button framed={false} flags='destructive'>Frameless</Button></p>
-      <p>激活<Button active>Active</Button></p>
-      <p>禁用带链接<Button disabled href='https://www.example.com'>Disabled</Button></p>
-      <p>
+      {/* 名称与控件同行，与原版row()的div行结构一致（块级widget入p不合规），保证两侧逐行对照 */}
+      <div>常规<Button onClick={() => addLog('click 常规')}>Button</Button></div>
+      <div>primary<Button flags='primary'>Primary</Button></div>
+      <div>progressive<Button flags='progressive'>Progressive</Button></div>
+      <div>destructive<Button flags='destructive'>Destructive</Button></div>
+      <div>error<Button flags='error'>Error</Button></div>
+      <div>无边框destructive<Button framed={false} flags='destructive'>Frameless</Button></div>
+      <div>激活<Button active>Active</Button></div>
+      <div>禁用带链接<Button disabled href='https://www.example.com'>Disabled</Button></div>
+      <div>
         target+rel数组
         <Button
           href='https://www.example.com'
@@ -65,13 +65,13 @@ function ReactButtons({ addLog }: { addLog: (msg: string) => void }) {
         >
           Target
         </Button>
-      </p>
-      <p>
+      </div>
+      <div>
         图标/指示器title
         <Button icon='help' iconTitle='图标提示' indicator='down' indicatorTitle='指示器提示'>
           Titles
         </Button>
-      </p>
+      </div>
     </div>
   );
 }
@@ -94,10 +94,10 @@ function OriginalCheckboxes() {
     toggleButton.addEventListener('click', () => {
       halfCheckbox.setIndeterminate(!halfCheckbox.isIndeterminate());
     });
-    const halfP = document.createElement('p');
-    halfP.textContent = '半选';
-    halfP.append(toggleButton, unwrapJQuery(halfCheckbox.$element));
-    container.appendChild(halfP);
+    const halfRow = document.createElement('div');
+    halfRow.textContent = '半选';
+    halfRow.append(toggleButton, unwrapJQuery(halfCheckbox.$element));
+    container.appendChild(halfRow);
 
     row(ui.CheckboxInputWidget, '必填', { required: true, selected: false });
     row(ui.CheckboxInputWidget, '禁用', { disabled: true, selected: true });
@@ -117,17 +117,17 @@ function ReactCheckboxes({ addLog, indeterminate, toggleIndeterminate }: {
 }) {
   return (
     <div>
-      <p>常规<CheckboxInput onChange={(value) => addLog(`change 常规=${value}`)} /></p>
-      <p>选中<CheckboxInput checked onChange={(value) => addLog(`change 选中=${value}`)} /></p>
-      <p>
+      <div>常规<CheckboxInput onChange={(value) => addLog(`change 常规=${value}`)} /></div>
+      <div>选中<CheckboxInput checked onChange={(value) => addLog(`change 选中=${value}`)} /></div>
+      <div>
         半选
         <button type='button' onClick={toggleIndeterminate}>
           切换indeterminate
         </button>
         <CheckboxInput indeterminate={indeterminate} />
-      </p>
-      <p>必填<CheckboxInput required /></p>
-      <p>禁用<CheckboxInput disabled checked /></p>
+      </div>
+      <div>必填<CheckboxInput required /></div>
+      <div>禁用<CheckboxInput disabled checked /></div>
     </div>
   );
 }
@@ -256,20 +256,19 @@ function OriginalButtonGroups() {
 function ReactButtonGroups() {
   return (
     <div>
-      <p>
-        <ButtonGroup>
-          <Button icon='tag'>One</Button>
-          <Button>Two</Button>
-          <Button disabled>Three</Button>
-        </ButtonGroup>
-      </p>
-      <p>
-        <ButtonGroup disabled>
-          <Button icon='tag'>One</Button>
-          <Button>Two</Button>
-          <Button>Three</Button>
-        </ButtonGroup>
-      </p>
+      {/* 与原版侧一致：ButtonGroup为inline-block且无纵向margin，用br换行分隔（原版亦为group+br成对输出） */}
+      <ButtonGroup>
+        <Button icon='tag'>One</Button>
+        <Button>Two</Button>
+        <Button disabled>Three</Button>
+      </ButtonGroup>
+      <br />
+      <ButtonGroup disabled>
+        <Button icon='tag'>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <br />
     </div>
   );
 }

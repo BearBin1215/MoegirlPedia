@@ -261,15 +261,15 @@ function ReactTextInputVariants() {
 
   return (
     <div>
-      <p>label after（默认）<TextInput placeholder='after (default)' label='after (default)' /></p>
-      <p>label before<TextInput placeholder='before' label='before' labelPosition='before' /></p>
-      <p>图标+指示器<TextInput icon='search' indicator='required' /></p>
-      <p>
+      <div>label after（默认）<TextInput placeholder='after (default)' label='after (default)' /></div>
+      <div>label before<TextInput placeholder='before' label='before' labelPosition='before' /></div>
+      <div>图标+指示器<TextInput icon='search' indicator='required' /></div>
+      <div>
         maxLength=10（label配合onChange显示剩余长度）
         <TextInput maxLength={10} label={10 - length} onChange={(value) => setLength(value.length)} />
-      </p>
-      <p>validate=integer（键入非整数或失焦时标红，聚焦清除）<TextInput placeholder='整数' validate='integer' /></p>
-      <p>禁用<TextInput disabled /></p>
+      </div>
+      <div>validate=integer（键入非整数或失焦时标红，聚焦清除）<TextInput placeholder='整数' validate='integer' /></div>
+      <div>禁用<TextInput disabled /></div>
     </div>
   );
 }

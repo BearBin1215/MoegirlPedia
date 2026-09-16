@@ -94,11 +94,11 @@ function OriginalVariants() {
 function ReactVariants() {
   return (
     <div>
-      <p>设定行数（rows=3）<MultilineTextInput rows={3} /></p>
-      <p>带图标<MultilineTextInput rows={3} icon='edit' indicator='required' /></p>
-      <p>label after（默认）<MultilineTextInput rows={3} label='after (default)' /></p>
-      <p>label before<MultilineTextInput rows={3} label='before' labelPosition='before' /></p>
-      <p>禁用<MultilineTextInput rows={3} disabled /></p>
+      <div>设定行数（rows=3）<MultilineTextInput rows={3} /></div>
+      <div>带图标<MultilineTextInput rows={3} icon='edit' indicator='required' /></div>
+      <div>label after（默认）<MultilineTextInput rows={3} label='after (default)' /></div>
+      <div>label before<MultilineTextInput rows={3} label='before' labelPosition='before' /></div>
+      <div>禁用<MultilineTextInput rows={3} disabled /></div>
     </div>
   );
 }

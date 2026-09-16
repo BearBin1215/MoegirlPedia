@@ -4,9 +4,12 @@ import oojsUrl from 'oojs/dist/oojs.js?url';
 import oouiUrl from 'oojs-ui/dist/oojs-ui.js?url';
 import oouiThemeUrl from 'oojs-ui/dist/oojs-ui-wikimediaui.js?url';
 import oouiApexThemeUrl from 'oojs-ui/dist/oojs-ui-apex.js?url';
-// 主题CSS以?inline文本导出：走Vite CSS管线，图标相对url已被重写为构建资源URL
+// 主题CSS以?inline文本导出：走Vite CSS管线，图标相对url已被重写为构建资源URL。
+// 每个主题另有.rtl.css整文件翻转版（无[dir]选择器，仅按方向选用其一），LTR/RTL各注入其一
 import oouiWikimediaCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.css?inline';
 import oouiApexCssText from 'oojs-ui/dist/oojs-ui-apex.css?inline';
+import oouiWikimediaRtlCssText from 'oojs-ui/dist/oojs-ui-wikimediaui.rtl.css?inline';
+import oouiApexRtlCssText from 'oojs-ui/dist/oojs-ui-apex.rtl.css?inline';
 // 0.54起主题CSS引用Codex设计令牌（var(--*)，约450处）但自身不定义，令牌表须一并注入
 import codexTokensCssText from '@wikimedia/codex-design-tokens/dist/theme-wikimedia-ui.css?inline';
 
@@ -178,8 +181,14 @@ export function createOOUIWidgets() {
 /** 演示工程可切换的原版主题 */
 export type OOUITheme = 'wikimediaui' | 'apex';
 
+/** 演示工程可切换的文本方向（对齐RTL站点：由根元素dir驱动继承与样式表选择） */
+export type OOUIDirection = 'ltr' | 'rtl';
+
 /** 默认主题：选项列表、state初值与首帧applyThemeCss共用同一来源 */
 export const DEFAULT_THEME: OOUITheme = 'wikimediaui';
+
+/** 默认方向：state初值与首帧applyThemeCss共用 */
+export const DEFAULT_DIR: OOUIDirection = 'ltr';
 
 // 主题脚本内含主题类定义并在末尾实例化OO.ui.theme，两份脚本加载后类共存于OO.ui，可随时重建实例切换
 const THEME_CLASSES: Record<OOUITheme, string> = {
@@ -193,22 +202,23 @@ const THEME_SCRIPTS: Record<OOUITheme, [id: string, url: string]> = {
   apex: ['ooui-loader-theme-apex', oouiApexThemeUrl],
 };
 
-const THEME_CSS_TEXT: Record<OOUITheme, string> = {
-  wikimediaui: oouiWikimediaCssText,
-  apex: oouiApexCssText,
+const THEME_CSS_TEXT: Record<OOUITheme, Record<OOUIDirection, string>> = {
+  wikimediaui: { ltr: oouiWikimediaCssText, rtl: oouiWikimediaRtlCssText },
+  apex: { ltr: oouiApexCssText, rtl: oouiApexRtlCssText },
 };
 
-const themeCssUrls = new Map<OOUITheme, string>();
+const themeCssUrls = new Map<string, string>();
 
-/** 主题CSS文本（图标url已被构建期重写为资源URL）+前置Codex令牌表，包成Blob URL（结果缓存） */
-function getThemeCssUrl(theme: OOUITheme): string {
-  let url = themeCssUrls.get(theme);
+/** 主题+方向CSS文本（图标url已被构建期重写为资源URL）+前置Codex令牌表，包成Blob URL（结果缓存） */
+function getThemeCssUrl(theme: OOUITheme, dir: OOUIDirection): string {
+  const key = `${theme}:${dir}`;
+  let url = themeCssUrls.get(key);
   if (!url) {
     url = URL.createObjectURL(new Blob(
-      [codexTokensCssText, THEME_CSS_TEXT[theme]],
+      [codexTokensCssText, THEME_CSS_TEXT[theme][dir]],
       { type: 'text/css' },
     ));
-    themeCssUrls.set(theme, url);
+    themeCssUrls.set(key, url);
   }
   return url;
 }
@@ -216,18 +226,19 @@ function getThemeCssUrl(theme: OOUITheme): string {
 let activeThemeLink: HTMLLinkElement | null = null;
 
 /**
- * 应用原版主题样式表：同一时刻仅注入当前主题一个<link>，切换时替换节点强制重新加载。
+ * 应用原版主题样式表：同一时刻仅注入当前主题+方向一个<link>，切换时替换节点强制重新加载。
  * 不用link.disabled互斥切换——disabled在样式表加载完成前设置会中止加载，后续翻转标志不会恢复
  */
-export function applyThemeCss(theme: OOUITheme): void {
-  if (activeThemeLink?.dataset.theme === theme) {
+export function applyThemeCss(theme: OOUITheme, dir: OOUIDirection): void {
+  if (activeThemeLink?.dataset.theme === theme && activeThemeLink?.dataset.dir === dir) {
     return;
   }
   activeThemeLink?.remove();
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.dataset.theme = theme;
-  link.href = getThemeCssUrl(theme);
+  link.dataset.dir = dir;
+  link.href = getThemeCssUrl(theme, dir);
   document.head.appendChild(link);
   activeThemeLink = link;
 }

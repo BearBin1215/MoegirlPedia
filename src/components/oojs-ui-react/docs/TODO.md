@@ -1,55 +1,11 @@
-## 底层
-
-- [x] 将Icon、Indicator等常见复用元素封装
-- [x] 复用组件类生成逻辑（mixin贡献器 + `getWidgetClassName` 折叠层，如根据disabled生成`oo-ui-widget-disabled`或`oo-ui-widget-enabled`类）
-- [ ] 错误处理逻辑
-
-## 优先实现
-
-- [x] 图标（Icon、Indicator）
-- [x] 按钮（Button）
-- [x] 文本输入框（TextInput）
-- [x] 数字输入框（NumberInput）
-- [x] 勾选框（CheckboxInput）
-- [x] 下拉框选择（Dropdown）
-- [x] 多行输入框（MultilineTextInput）
-- [x] 单选框（RadioSelect）
-- [x] 弹窗（Dialog）
-- [x] popup（Popup/PopupButton）
-- [x] 字段集（FieldsetLayout，含弹出帮助）
-- [x] 多选框组（CheckboxMultiselect，含Shift+点击范围选择、方向键焦点导航）
-- [x] 册页布局（BookletLayout，含outlined/continuous/autoFocus/editable）
-- [x] 消息（Message）
-- [x] 输入弹窗（prompt）
-- [x] 表单（FormLayout/ActionFieldLayout，及ButtonInput/DropdownInput/RadioSelectInput/CheckboxMultiselectInput）
-- [x] 工具栏（Toolbar/Bar/List/Menu/LabelToolGroup）
-- [x] 备选项输入框（ComboBox）
-- [x] 流程弹窗（ProcessDialog）与进度条（ProgressBar）
-- [x] 切换按钮（ToggleButton）
-- [x] 按钮式选择（ButtonSelect/ButtonOption，含拖拽选择）
-- [x] 隐藏输入（HiddenInputWidget）
-
-## 低优先度实现
-
-- [x] 滑动（ToggleSwitch）
-- [x] Tab（IndexLayout/TabSelect/TabOption/TabPanelLayout）
-- [x] Menu
-- [x] 搜索输入框与搜索组件（SearchInput/SearchWidget）
-- [x] 复制文本布局（CopyTextLayout）
-- [x] 标签多选族（TagMultiselect/TagItem，及带菜单的MenuTagMultiselect；含拖拽重排与inline输入框宽度自适应）
-- [x] 文件选择输入框（SelectFileInputWidget，含accept过滤/多选/拖放区/缩略图/buttonOnly）
-- [x] 工具栏剩余（PopupTool/ToolGroupTool）
-- [x] 按钮式菜单选择（ButtonMenuSelectWidget：Button触发MenuSelect，含clearOnSelect与按下态；Dropdown只对齐了DropdownWidget）
-- [ ] 其他布局类组件
-
 ## 未对齐行为记录
 
 与原版 oojs-ui 的行为差异，按性质分四部分：
 
 - **舍弃**：有意不做。原版行为对本工程没有使用场景，或 React 版有意采用不同做法。
 - **增强**：有意多做。原版没有、React 版主动新增的行为或能力（含修正原版缺陷）。
-- **等效替代**：原版行为本工程也具备，只是实现形态、落点或通道不同（含已对齐项的对应关系留档），效果等价——**无需补做**。与「舍弃」的界限是能力作不作数，与「暂不实现」的界限是有没有缺口。
-- **暂不实现**：原版有、本工程也认可其价值，但当前没做（含只做了简化版）。
+- **等效替代**：原版行为本工程也具备，只是实现形态、落点或通道不同（含已对齐项的对应关系留档），效果等价——**无需补做**。与「舍弃」的界限是能力作不作数，与「暂未实现」的界限是有没有缺口。
+- **暂未实现**：原版有、本工程也认可其价值，但当前没做（含只做了简化版），最终发布应当清空。
 
 ### 舍弃
 
@@ -110,7 +66,7 @@
 - **工具栏窄栏类在浮层内的承接位置**：原版把 `oo-ui-toolbar-narrow` 加在工具栏根与 `$popups` 容器上（工具组面板与弹出工具浮层都在其中，主题的窄栏规则均为后代选择器）；本工程浮层 portal 至 body 后失去该祖先，工具组面板经一层窄栏载体 div 承接、弹出工具浮层则把该类落在浮层根上。承载元素不同，但"浮层内容存在含窄栏类的祖先"这一前提两侧一致（对照以祖先判定为断言）。
 - **SelectFileInputWidget 的选择按钮根元素是`<span>`而非原版的`<label>`**：原版把按钮根换成`<label>`借原生关联内含的 file input；本工程沿用 Button 一律`<span>`（内层`<a class="oo-ui-buttonElement-button">`）的约定，点击开选择器由主题 CSS 的文件input覆盖层承担——实测按钮中心的最上层元素两侧同为`input[type=file]`，行为一致。
 
-### 暂不实现
+### 暂未实现
 
 原版有、本工程也认可其价值，但当前没做（含只做了简化版）。
 

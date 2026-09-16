@@ -74,7 +74,7 @@ function ReactCopyTextLayouts({ addLog }: { addLog: (msg: string) => void }) {
   return (
     <div>
       {variants.map((variant) => (
-        <p key={variant.name}>
+        <div key={variant.name}>
           {variant.name}
           <CopyTextLayout
             label={variant.label}
@@ -84,7 +84,7 @@ function ReactCopyTextLayouts({ addLog }: { addLog: (msg: string) => void }) {
             buttonProps={variant.button ? { children: variant.button.label, icon: variant.button.icon } : undefined}
             onCopyResult={(copied) => addLog(`React ${variant.name} copy=${String(copied)}`)}
           />
-        </p>
+        </div>
       ))}
     </div>
   );

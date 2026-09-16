@@ -117,7 +117,7 @@ function ReactButtonSelects({ addLog }: { addLog: (msg: string) => void }) {
   return (
     <div>
       {variants.map((variant) => (
-        <p key={variant.name}>
+        <div key={variant.name}>
           {variant.name}
           <ButtonSelect
             disabled={variant.disabled}
@@ -131,7 +131,7 @@ function ReactButtonSelects({ addLog }: { addLog: (msg: string) => void }) {
             defaultValue={variant.options.find((option) => option.selected)?.data}
             onChange={(value) => addLog(`React ${variant.name} select=${String(value)}`)}
           />
-        </p>
+        </div>
       ))}
     </div>
   );

@@ -32,16 +32,16 @@ function ReactSearchInputs({ addLog }: { addLog: (msg: string) => void }) {
 
   return (
     <div>
-      {/* 名称与控件同行，与原版row()的p内嵌结构一致，保证两侧逐行对照 */}
-      <p>常规（空值无清除指示器）<SearchInput placeholder='Search' onChange={(v) => addLog(`change 常规=${v}`)} /></p>
-      <p>带值（显示clear指示器）<SearchInput defaultValue='MediaWiki' /></p>
-      <p>
+      {/* 名称与控件同行，与原版row()的div行结构一致（块级widget入p不合规），保证两侧逐行对照 */}
+      <div>常规（空值无清除指示器）<SearchInput placeholder='Search' onChange={(v) => addLog(`change 常规=${v}`)} /></div>
+      <div>带值（显示clear指示器）<SearchInput defaultValue='MediaWiki' /></div>
+      <div>
         受控（当前：{value === '' ? '（空）' : value}）
         <SearchInput value={value} onChange={setValue} />
-      </p>
-      <p>禁用·带值（指示器隐藏）<SearchInput defaultValue='MediaWiki' disabled /></p>
-      <p>只读·带值（指示器隐藏）<SearchInput defaultValue='MediaWiki' readOnly /></p>
-      <p>required（空值不回退required指示器）<SearchInput required /></p>
+      </div>
+      <div>禁用·带值（指示器隐藏）<SearchInput defaultValue='MediaWiki' disabled /></div>
+      <div>只读·带值（指示器隐藏）<SearchInput defaultValue='MediaWiki' readOnly /></div>
+      <div>required（空值不回退required指示器）<SearchInput required /></div>
     </div>
   );
 }

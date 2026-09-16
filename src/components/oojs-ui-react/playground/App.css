@@ -56,7 +56,8 @@ body {
 .playground-sider {
   /* 视口较矮时侧栏菜单自身滚动，不撑破骨架 */
   overflow-y: auto;
-  border-right: 1px solid #f0f0f0;
+  /* 逻辑边框：RTL下侧栏随flex反向后仍朝向内容区 */
+  border-inline-end: 1px solid #f0f0f0;
 
   /* 分组标题与首组顶格 */
   .ant-menu-item-group-title {
