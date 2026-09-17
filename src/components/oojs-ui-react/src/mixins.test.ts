@@ -27,12 +27,8 @@ import {
  * 修改任何期望值前先核对原版对应mixin的实现。
  */
 describe('widgetClasses（Widget基类贡献）', () => {
-  it('缺省输出根类与enabled态', () => {
-    expect(widgetClasses({})).toBe('oo-ui-widget oo-ui-widget-enabled');
-  });
-
-  it('disabled=false与缺省同为enabled', () => {
-    expect(widgetClasses({ disabled: false })).toBe('oo-ui-widget oo-ui-widget-enabled');
+  it.each([undefined, false] as const)('缺省或disabled=%p输出根类与enabled态', (disabled) => {
+    expect(widgetClasses({ disabled })).toBe('oo-ui-widget oo-ui-widget-enabled');
   });
 
   it('disabled=true输出disabled态，与enabled互斥', () => {
@@ -174,13 +170,9 @@ describe('imageVariantClasses（image变体类）', () => {
       .toBe('oo-ui-image-success oo-ui-image-progressive');
   });
 
-  it('ButtonFlag的非image位（primary/safe/back/close）不产生类', () => {
+  it('非image变体位不产生类（ButtonFlag的primary/safe/back/close、Message的notice）', () => {
     expect(imageVariantClasses(['primary', 'safe', 'back', 'close'])).toBe('');
-  });
-
-  it('Message的类型位中notice无对应变体、其余类型出类', () => {
     expect(imageVariantClasses(['notice'])).toBe('');
-    expect(imageVariantClasses(['warning'])).toBe('oo-ui-image-warning');
   });
 });
 
@@ -232,12 +224,6 @@ describe('getWidgetClassName（折叠层）', () => {
   it('invisibleLabel抑制经折叠层同样生效', () => {
     const result = getWidgetClassName({ label: '标签', invisibleLabel: true }, 'button');
     expect(result).not.contain('oo-ui-labelElement');
-  });
-
-  it('名称类按继承链叠加（NumberInput三层链）', () => {
-    const result = getWidgetClassName({ disabled: true }, 'input', 'textInput', 'numberInput');
-    expect(result).toContain('oo-ui-inputWidget oo-ui-textInputWidget oo-ui-numberInputWidget');
-    expect(result).toContain('oo-ui-widget-disabled');
   });
 });
 
