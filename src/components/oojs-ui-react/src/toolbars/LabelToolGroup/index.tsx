@@ -4,7 +4,7 @@ import { IconBase } from '../../widgets/Icon/Base';
 import { IndicatorBase } from '../../widgets/Indicator/Base';
 import type { Indicators } from '../../Element';
 import { LabelBase } from '../../widgets/Label/Base';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 import type { WidgetProps } from '../../widgets/Widget';
 
 export interface LabelToolGroupProps extends Omit<WidgetProps<HTMLDivElement>, 'children'> {

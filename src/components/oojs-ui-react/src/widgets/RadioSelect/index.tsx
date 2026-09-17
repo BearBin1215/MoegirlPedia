@@ -10,11 +10,13 @@ import React, {
 import clsx from 'clsx';
 import { RadioOption, type RadioOptionProps } from '../RadioOption';
 import {
-  getSelectableValues,
   getWidgetClassName,
   mergeAriaLabelledBy,
-  resolveOptionDisabled,
   resolveTabIndex,
+} from '../../mixins';
+import {
+  getSelectableValues,
+  resolveOptionDisabled,
   type ChangeHandler,
 } from '../../utils';
 import {

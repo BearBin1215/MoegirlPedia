@@ -10,9 +10,14 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { ButtonSlots } from '../Button/slots';
 import {
-  getSelectableValues,
+  buttonElementClasses,
   getWidgetClassName,
+  indicatorElementClasses,
   resolveTabIndex,
+  resolveTitle,
+} from '../../mixins';
+import {
+  getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useFieldInputId, useMenuPopup } from '../../hooks';
@@ -75,8 +80,10 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   value,
   defaultValue,
   onChange,
-  // tabIndex落在input上（对齐原版ComboBoxInputWidget继承InputWidget的$tabIndexed=$input）
+  // tabIndex/title落在input上（对齐原版ComboBoxInputWidget继承InputWidget的
+  // $tabIndexed与$titled均为$input）
   tabIndex,
+  title,
   ...rest
 }, ref) => {
   // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
@@ -233,6 +240,9 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
           className='oo-ui-inputWidget-input'
           // 归一化后恒为string（非受控缺省''），无需再兜底空串
           value={currentValue}
+          // title/accessKey同落input（原版$titled=$accessKeyed=$input）；本组件无标签元素，
+          // 不做invisibleLabel兜底
+          title={resolveTitle({ title, accessKey })}
           onChange={(event) => handleInputChange(event.target.value)}
           onKeyDown={handleInputKeyDown}
         />
@@ -241,19 +251,18 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
         <span
           className={clsx(
             'oo-ui-comboBoxInputWidget-dropdownButton',
-            'oo-ui-widget',
-            controlsDisabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled',
-            'oo-ui-indicatorElement',
-            'oo-ui-buttonElement',
-            // 对齐原版默认framed按钮（主题CSS的下拉按钮边框/背景样式依赖该类）
-            'oo-ui-buttonElement-framed',
-            'oo-ui-buttonWidget',
+            // 该span对应原版自动生成的真ButtonWidget（indicator:'down'、默认framed）：
+            // Widget/ButtonElement/IndicatorElement的类贡献均走贡献器（禁用态随readOnly）。
+            // 指示器此处只输出类——图标/标签/指示器槽位由下方ButtonSlots承担
+            getWidgetClassName({ disabled: controlsDisabled }, 'button'),
+            buttonElementClasses({ framed: true, disabled: controlsDisabled }),
+            indicatorElementClasses({ indicator: 'down' }),
           )}
         >
           <span
             className='oo-ui-buttonElement-button'
             role='button'
-            tabIndex={controlsDisabled ? -1 : 0}
+            tabIndex={resolveTabIndex(undefined, controlsDisabled)}
             aria-disabled={controlsDisabled || undefined}
             aria-haspopup='listbox'
             aria-controls={menuId}

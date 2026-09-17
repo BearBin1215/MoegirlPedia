@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
+import { optionWidgetClasses } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export type MenuOptionProps =
@@ -19,12 +20,11 @@ export const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   pressed,
   ...rest
 }, ref) => {
+  // 原版MenuOptionWidget沿用OptionWidget基类static（selectable/highlightable/pressable皆true）
   const classes = clsx(
     className,
     'oo-ui-menuOptionWidget',
-    pressed && 'oo-ui-optionWidget-pressed',
-    highlighted && 'oo-ui-optionWidget-highlighted',
-    selected && 'oo-ui-optionWidget-selected',
+    optionWidgetClasses({ selected, highlighted, pressed }),
   );
 
   return (

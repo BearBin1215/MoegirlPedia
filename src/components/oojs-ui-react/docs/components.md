@@ -96,7 +96,7 @@ export default App;
 | icon      | 图标                                   | `string`                                                                                         |
 | indicator | 右侧指示器                             | [`Indicator`](#基本类型)                                                                         |
 | rel       | 内部<a>标签的rel属性，默认为`nofollow` | `string`                                                                                         |
-| title     | 内部<a>标签的title属性                 | `string`                                                                                         |
+| title     | 内部<a>标签的title属性；未显式传且`invisibleLabel`为真时以标签文本兜底，`accessKey`有值时末尾附`[键]` | `string` |
 
 ## TextInput
 
@@ -662,6 +662,7 @@ export default App;
 | placeholder / icon  | 信息框占位文案（缺省`ooui-selectfile-placeholder`消息）/ 信息框图标（缺省无图标） | `string`                             |
 | required            | 是否必填（落在文件`input`的`required`上）                                  | `boolean`                                   |
 | name                | 文件字段名（写在文件`input`上，用于表单提交）                              | `string`                                    |
+| title / accessKey   | 文件`input`的title与快捷键：title缺省为`''`（抑制浏览器"未选文件"默认提示），显式传入落在`input`上；`accessKey`有值时title末尾附`[键]` | `string` |
 | buttonLabel / buttonProps | 选择按钮文案（缺省按`multiple`取消息）/ 按钮属性覆盖                  | `string` / `Partial<ButtonProps>`           |
 | inputRef            | 获取内部文件`input`元素引用                                                | `Ref<HTMLInputElement>`                     |
 

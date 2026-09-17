@@ -9,10 +9,10 @@ import { LabelBase } from '../Label/Base';
 import { Button } from '../Button';
 import {
   flaggedElementClasses,
-  getElementDir,
   getWidgetClassName,
   resolveTabIndex,
-} from '../../utils';
+} from '../../mixins';
+import { getElementDir } from '../../utils';
 import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 

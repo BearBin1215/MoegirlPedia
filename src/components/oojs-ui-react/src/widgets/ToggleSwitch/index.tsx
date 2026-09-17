@@ -4,7 +4,7 @@ import React, {
   type MouseEvent,
 } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex } from '../../utils';
+import { getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex } from '../../mixins';
 import { useControlledValue, useFieldLabelFocus } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 

@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase, type IndicatorBaseProps } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveRequiredIndicator, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
 import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelPosition } from '../Label';
@@ -113,6 +113,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   icon,
   indicator,
   label,
+  invisibleLabel,
   labelPosition = 'after',
   readOnly,
   validate,
@@ -148,11 +149,12 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   // type白名单校验（对齐原版getValidType）
   const validType = VALID_INPUT_TYPES.includes(type) ? type : 'text';
   // 指示器解析（对齐原版构造期语义）：indicatorOverride非undefined时完全接管
-  // （SearchInput内部通道）；否则indicator falsy（未指定）时回退required缺省——
-  // 原版config无法表达"显式无"，falsy指示器+required同样显示required指示器
+  // （SearchInput内部通道，null=明确无）；否则经RequiredElement的缺省回退解析
   const resolvedIndicator = indicatorOverride !== undefined
     ? indicatorOverride
-    : indicator || (required ? 'required' : undefined);
+    : resolveRequiredIndicator(indicator, required);
+  // title/accessKey同落input（原版$titled=$accessKeyed=$input，解析见resolveTitle）
+  const resolvedTitle = resolveTitle({ title, label, invisibleLabel, accessKey });
 
   /** 对齐原版onIconMouseDown/onIndicatorMouseDown：左键点击图标/指示器聚焦输入框（preventDefault阻止焦点转移后显式聚焦） */
   const handleDecorationMouseDown: MouseEventHandler = (e) => {
@@ -164,7 +166,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    getWidgetClassName({ disabled, icon, indicator, label, invisibleLabel }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     `oo-ui-textInputWidget-type-${validType}`,
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
@@ -201,7 +203,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
         aria-required={required}
         placeholder={placeholder}
         maxLength={maxLength}
-        title={title}
+        title={resolvedTitle}
         dir={dir}
         style={inputStyle}
       />
@@ -214,7 +216,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
           indicatorProps?.onMouseDown?.(event);
         }}
       />
-      {hasLabel(label) && <LabelBase ref={labelRef}>{label}</LabelBase>}
+      {hasLabel(label) && <LabelBase ref={labelRef} invisible={invisibleLabel}>{label}</LabelBase>}
     </div>
   );
 });

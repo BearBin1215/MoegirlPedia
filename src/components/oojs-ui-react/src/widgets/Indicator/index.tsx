@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 import type { IndicatorElement } from '../../Element';
 import type { WidgetProps } from '../Widget';
 import { IndicatorBase } from './Base';

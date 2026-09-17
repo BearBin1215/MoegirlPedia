@@ -3,8 +3,8 @@ import type { HTMLAttributes, ReactNode } from 'react';
 /**
  * 基础元素参数（对齐原版抽象基类Element，仅类型，无对应渲染组件）。
  * 各元素mixin（Icon/Indicator/Label/AccessKeyed/Flagged等）的契约类型与flag联合类型
- * （IconFlag/ButtonFlag等）集中于此，供组件与utils共享，避免类型散落在渲染组件目录
- * 造成依赖方向倒置
+ * （IconFlag/ButtonFlag等）集中于此，供组件与mixins.ts共享，避免类型散落在渲染组件目录
+ * 造成依赖方向倒置；对应的类名贡献与元素级状态解析见mixins.ts
  */
 export type ElementProps<T = HTMLDivElement> = Omit<HTMLAttributes<T>, 'defaultValue' | 'defaultChecked'>;
 

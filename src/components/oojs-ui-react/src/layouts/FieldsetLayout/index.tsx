@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { hasLabel } from '../../utils';
+import { iconElementClasses, labelElementClasses } from '../../mixins';
 import { LabelBase } from '../../widgets/Label/Base';
 import { IconBase } from '../../widgets/Icon/Base';
 import { Label } from '../../widgets/Label';
@@ -29,6 +29,7 @@ export const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProp
   children,
   className,
   label,
+  invisibleLabel,
   icon,
   help,
   helpInline = false,
@@ -36,10 +37,13 @@ export const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProp
 }, ref) => {
   // 帮助按钮的无障碍标签（对齐原版ooui-field-help消息）
   const helpAriaLabel = useMessage('ooui-field-help');
+  // LabelElement/IconElement mixin贡献（FieldsetLayout是Layout而非Widget，故不走getWidgetClassName）
   const classes = clsx(
     className,
-    hasLabel(label) && 'oo-ui-labelElement',
-    icon && 'oo-ui-iconElement',
+    // 根为原生<fieldset>、不经Layout组件，oo-ui-layout在此补齐（对齐原版继承OO.ui.Layout的根类）
+    'oo-ui-layout',
+    labelElementClasses({ label, invisibleLabel }),
+    iconElementClasses({ icon }),
     'oo-ui-fieldsetLayout',
   );
 
@@ -51,7 +55,7 @@ export const FieldsetLayout = forwardRef<HTMLFieldSetElement, FieldsetLayoutProp
     >
       <legend className='oo-ui-fieldsetLayout-header'>
         <IconBase icon={icon} />
-        <LabelBase>{label}</LabelBase>
+        <LabelBase invisible={invisibleLabel}>{label}</LabelBase>
         {help && !helpInline && (
           <PopupButton
             className='oo-ui-fieldsetLayout-help'

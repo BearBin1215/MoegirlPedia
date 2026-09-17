@@ -11,7 +11,7 @@ import { OutlineSelect } from '../../widgets/OutlineSelect';
 import { Button } from '../../widgets/Button';
 import { StackLayout } from '../StackLayout';
 import type { PageLayoutProps } from '../PageLayout';
-import { type ChangeHandler } from '../../utils';
+import type { ChangeHandler } from '../../utils';
 import { useAutoFocusPanel, useLayoutSelection } from '../../hooks';
 import { useIsMobile, useMessage } from '../../config';
 

@@ -8,7 +8,7 @@ import React, {
   type Ref,
 } from 'react';
 import clsx from 'clsx';
-import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex, toFlagArray } from '../../utils';
+import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
 import { useFieldLabelFocus, usePressedState } from '../../hooks';
 import { useButtonGroupDisabled } from '../ButtonGroup/context';
 import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
@@ -153,7 +153,9 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   const { setRef: setAnchorRef, fieldLabelId } = useFieldLabelFocus<HTMLAnchorElement>({ ref: anchorRef, disabled: isDisabled });
   const flagList = toFlagArray(flags);
   const relList = typeof rel === 'string' ? [rel] : rel;
-  const iconClasses = getButtonIconClasses(framed, active, isDisabled, flagList);
+  const iconClasses = getButtonIconClasses({ framed, active, disabled: isDisabled, flags: flagList });
+  // title/accessKey同落锚点（原版$titled=$accessKeyed=$button，解析见resolveTitle）
+  const resolvedTitle = resolveTitle({ title, label: children, invisibleLabel, accessKey });
 
   const classes = clsx(
     className,
@@ -211,7 +213,7 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
         href={isDisabled ? undefined : href}
         target={target}
         rel={relList.join(' ') || undefined}
-        title={title}
+        title={resolvedTitle}
         accessKey={accessKey}
         // aria-label/aria-pressed/aria-labelledby须落在可聚焦的<a>上（外层span为generic
         // 元素不可命名）：aria-label供显式命名，aria-pressed供ToggleButton等开关形态，

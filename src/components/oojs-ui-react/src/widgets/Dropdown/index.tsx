@@ -10,10 +10,12 @@ import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
 import {
-  getSelectableValues,
   getWidgetClassName,
   mergeAriaLabelledBy,
   resolveTabIndex,
+} from '../../mixins';
+import {
+  getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';

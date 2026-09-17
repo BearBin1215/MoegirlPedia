@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { Icon } from '../Icon';
-import { getWidgetClassName, resolveTabIndex } from '../../utils';
+import { getWidgetClassName, resolveTabIndex, resolveTitle } from '../../mixins';
 import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useFieldInputId, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
@@ -94,7 +94,9 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         type='checkbox'
         value={value === undefined ? undefined : String(value)}
         required={required}
-        title={title}
+        // title/accessKey同落input（原版InputWidget的$titled=$accessKeyed=$input）；
+        // 本组件无标签元素，不做invisibleLabel兜底
+        title={resolveTitle({ title, accessKey })}
         dir={dir}
         accessKey={accessKey}
         tabIndex={resolveTabIndex(tabIndex, disabled)}

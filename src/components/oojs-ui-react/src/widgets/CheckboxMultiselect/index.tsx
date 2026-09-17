@@ -4,6 +4,8 @@ import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxM
 import {
   getWidgetClassName,
   mergeAriaLabelledBy,
+} from '../../mixins';
+import {
   resolveOptionDisabled,
   type ChangeHandler,
 } from '../../utils';
@@ -70,9 +72,11 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
   // 通道A屏蔽：组内每个checkbox都会认领同一字段id（重复id且label误切首个选项），禁用之
   const groupLink = useFieldGroupLabelLink();
 
+  // 对齐原版CheckboxMultiselectWidget继承的MultiselectWidget：根类为oo-ui-multiselectWidget
+  // （非SelectWidget系）
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled }, 'select', 'checkboxMultiselect'),
+    getWidgetClassName({ disabled }, 'multiselect', 'checkboxMultiselect'),
   );
 
   const handleChange = (optionValue: string | number, checked: boolean, event?: ChangeEvent<HTMLInputElement>) => {

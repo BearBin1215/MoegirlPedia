@@ -21,9 +21,10 @@ oojs-ui-react/
 │  ├─ dialogs/              # 弹窗（Dialog/MessageDialog/WindowManager）
 │  ├─ toolbars/             # 工具栏（Toolbar/各ToolGroup/Tool）
 │  ├─ locales/              # 语言包（zh-hans）
-│  ├─ Element.ts            # 基础元素类型（仅类型，无渲染组件）
+│  ├─ Element.ts            # 元素mixin的契约类型（仅类型，无渲染组件）
+│  ├─ mixins.ts             # 对齐OO.ui.mixin的纯函数层（类名贡献/元素级状态解析）
 │  ├─ hooks.ts              # 共享hook（受控值/浮层/选项导航等）
-│  ├─ utils.ts              # 共享工具（类名生成/ChangeHandler等）
+│  ├─ utils.ts              # 共享工具（选择集/DOM工具/常量/ChangeHandler）
 │  ├─ i18n.ts               # 消息键与英文默认表
 │  ├─ config.tsx            # OOUIProvider与全局配置hook
 │  └─ index.ts              # 导出面
@@ -42,7 +43,7 @@ oojs-ui-react/
 
 ## 核心约定
 
-- **公共导出面（`src/index.ts`）只含消费者直接使用的组件与类型**：对齐原版类层级的中间件（`Widget`、各种`Option`、`MenuSelect` 等）不从 index.ts 导出，仅供组件内部经相对路径引用；目录结构按原版类层级组织（便于对照开发）。`Select`/`TabSelect`/`OutlineSelect` 有独立使用场景，保留导出。`utils` 仅导出类型，`generateWidgetClassName` 为内部函数。新增组件时先判断它是消费者 API 还是内部实现，“对齐原版”针对的是行为契约（交互/a11y/类名），而非导出面镜像。
+- **公共导出面（`src/index.ts`）只含消费者直接使用的组件与类型**：对齐原版类层级的中间件（`Widget`、各种`Option`、`MenuSelect` 等）不从 index.ts 导出，仅供组件内部经相对路径引用；目录结构按原版类层级组织（便于对照开发）。`Select`/`TabSelect`/`OutlineSelect` 有独立使用场景，保留导出。`utils`/`mixins` 只经 index.ts 导出 `ChangeHandler` 等类型，类名贡献器（`getWidgetClassName` 等）与选项集工具为内部件。新增组件时先判断它是消费者 API 还是内部实现，“对齐原版”针对的是行为契约（交互/a11y/类名），而非导出面镜像。
 - **组件开发必须与原版ooui做行为对照**（源码比对 + 对照页实测），流程、加载机制、踩坑经验、验收清单详见 [docs/comparison-guide.md](./docs/comparison-guide.md)。开发中新的通用规则应当记入docs/comparison-guide.md。
 - playground只保留对照页（不做单组件示例页），对照页放 `playground/pages/xxx-compare/` 并在 `playground/routes.ts` 注册；原版库通过 `playground/components/ooui.ts` 的 `ensureOOUI()` 加载（不要自行打包引入原版库，勿把原版 dist 文件拷入仓库）。原版侧控件统一经 `playground/components/original.ts` 的 `useOriginalWidgets` 创建，两侧内容置于 `CompareColumns` 区块内。
 - 本组件库使用场景往往对于产物体积较为敏感，对于实现成本高、价值过低的功能和用户确认后可以先不实现。

@@ -13,7 +13,8 @@ import { IconBase } from '../../widgets/Icon/Base';
 import { IndicatorBase } from '../../widgets/Indicator/Base';
 import type { Indicators } from '../../Element';
 import { LabelBase } from '../../widgets/Label/Base';
-import { getWidgetClassName, OFFSCREEN_POSITION } from '../../utils';
+import { getWidgetClassName, resolveTitle } from '../../mixins';
+import { OFFSCREEN_POSITION } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
@@ -201,6 +202,9 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     <div
       {...rest}
       className={classes}
+      // title落在组根元素：对齐原版PopupToolGroup混入的TitledElement（$titled为$element）；
+      // 标签不可见（含窄栏替换）时以label兜底，使窄栏下仍有tooltip
+      title={resolveTitle({ title, label: effectiveLabel, invisibleLabel: effectiveInvisibleLabel })}
       aria-disabled={groupDisabled || undefined}
       ref={mergedRef}
     >
@@ -214,7 +218,6 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
         aria-expanded={open}
         aria-disabled={groupDisabled || undefined}
         tabIndex={groupDisabled ? -1 : 0}
-        title={title}
         onClick={() => {
           if (!groupDisabled) {
             setOpen((prev) => !prev);
@@ -223,8 +226,7 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
         onKeyDown={handleHandleKeyDown}
       >
         <IconBase icon={effectiveIcon} />
-        {/* invisible类须落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
-        <LabelBase className={clsx(effectiveInvisibleLabel && 'oo-ui-labelElement-invisible')}>
+        <LabelBase invisible={effectiveInvisibleLabel}>
           {effectiveLabel}
         </LabelBase>
         <IndicatorBase indicator={effectiveIndicator} />

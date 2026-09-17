@@ -2,10 +2,10 @@ import React, { useMemo, forwardRef } from 'react';
 import clsx from 'clsx';
 import { Dropdown, type DropdownOptionProps } from '../Dropdown';
 import { Indicator } from '../Indicator';
-import { type SelectOptionProps } from '../Select';
+import type { SelectOptionProps } from '../Select';
+import { getWidgetClassName } from '../../mixins';
 import {
   getSelectableValues,
-  getWidgetClassName,
   resolveSelectableValue,
   type ChangeHandler,
 } from '../../utils';

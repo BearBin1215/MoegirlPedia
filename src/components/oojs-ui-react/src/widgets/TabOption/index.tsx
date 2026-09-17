@@ -2,7 +2,7 @@ import React, { forwardRef, type MouseEventHandler } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName, optionWidgetClasses } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export type TabOptionProps = OptionProps & {
@@ -25,8 +25,8 @@ export const TabOption = forwardRef<HTMLDivElement, TabOptionProps>(({
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, label: children }, 'option', 'tabOption'),
-    selected && 'oo-ui-optionWidget-selected',
-    pressed && 'oo-ui-optionWidget-pressed',
+    // 原版TabOptionWidget.static.highlightable=false（页签无高亮态，按压态still由pressable承担）
+    optionWidgetClasses({ selected, pressed, highlightable: false }),
   );
 
   /** 阻止默认行为以保持焦点在tablist上（原版onMouseDown返回false） */

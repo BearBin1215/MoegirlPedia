@@ -1,6 +1,6 @@
 import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 import type { WidgetProps } from '../Widget';
 import type { IconElement, IndicatorElement } from '../../Element';
 import { ButtonSlots } from '../Button/slots';

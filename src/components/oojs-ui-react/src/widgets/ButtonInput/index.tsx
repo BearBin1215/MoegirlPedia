@@ -6,7 +6,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, resolveTabIndex, toFlagArray } from '../../utils';
+import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
 import { usePressedState } from '../../hooks';
 import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
 import type { WidgetProps } from '../Widget';
@@ -32,6 +32,9 @@ export interface ButtonInputProps extends
 
   /** 是否生成边框 */
   framed?: boolean;
+
+  /** 标签可视（视觉隐藏但保留可访问名称，对齐原版LabelElement的invisibleLabel） */
+  invisibleLabel?: boolean;
 
   /** 附加给按钮的标志 */
   flags?: ButtonFlag | ButtonFlag[];
@@ -71,6 +74,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
   formNoValidate,
   icon,
   indicator,
+  invisibleLabel,
   name,
   type = 'button',
   useInputTag = false,
@@ -104,7 +108,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     onKeyUp,
   });
   const flagList = toFlagArray(flags);
-  const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
+  const iconClasses = getButtonIconClasses({ framed, active, disabled, flags: flagList });
 
   const classes = clsx(
     className,
@@ -114,6 +118,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
       icon: useInputTag ? undefined : icon,
       indicator: useInputTag ? undefined : indicator,
       label: children,
+      invisibleLabel,
     }, 'input', 'buttonInput'),
     buttonElementClasses({ framed, active, disabled, pressed, flags: flagList }),
   );
@@ -131,7 +136,9 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     disabled,
     tabIndex: resolveTabIndex(tabIndex, disabled),
     'aria-disabled': disabled || undefined,
-    title,
+    // title落真实button/input并做invisibleLabel兜底：原版ButtonInputWidget不混TitledElement
+    // （title本无落点），此为本工程增强（见docs/TODO.md增强节）
+    title: resolveTitle({ title, label: children, invisibleLabel, accessKey }),
     accessKey,
     formNoValidate: formNoValidate || undefined,
     onClick: handleClick,
@@ -160,6 +167,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
             icon={icon}
             variantClasses={iconClasses}
             label={children}
+            labelInvisible={invisibleLabel}
             indicator={indicator}
           />
         </button>

@@ -17,13 +17,15 @@ import { TagItem } from '../TagItem';
 import { MenuSelect } from '../MenuSelect';
 import {
   flaggedElementClasses,
-  getElementDir,
-  getSelectableValues,
   getWidgetClassName,
   mergeAriaLabelledBy,
   mergeInvalidFlag,
   resolveTabIndex,
   toFlagArray,
+} from '../../mixins';
+import {
+  getElementDir,
+  getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
 import { useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';

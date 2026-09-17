@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { Icon } from '../../widgets/Icon';
 import { IconBase } from '../../widgets/Icon/Base';
 import { Popup, type PopupProps } from '../../widgets/Popup';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 import { useControlledValue, useLatestRef, usePressedState } from '../../hooks';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
 import type { WidgetProps } from '../../widgets/Widget';

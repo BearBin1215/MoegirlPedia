@@ -10,10 +10,10 @@ import React, {
 import clsx from 'clsx';
 import { SearchInput, type SearchInputProps } from '../SearchInput';
 import { Select, type SelectOptionProps } from '../Select';
+import { getWidgetClassName } from '../../mixins';
 import {
   findRelativeSelectableItem,
   getSelectableValues,
-  getWidgetClassName,
   type ChangeHandler,
 } from '../../utils';
 import { useControlledValue, useMergedRefs } from '../../hooks';

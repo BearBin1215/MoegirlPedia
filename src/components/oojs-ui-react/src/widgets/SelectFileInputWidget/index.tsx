@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { ActionFieldLayout } from '../../layouts/ActionFieldLayout';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName, pendingElementClasses, resolveTitle } from '../../mixins';
 import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useLatestRef, useMergedRefs } from '../../hooks';
 import { useMessage } from '../../config';
@@ -167,6 +167,7 @@ export const SelectFileInputWidget = forwardRef<HTMLDivElement, SelectFileInputW
   showDropTarget = false,
   tabIndex,
   thumbnailSizeLimit = 20,
+  title,
   value,
   ...rest
 }, ref) => {
@@ -392,8 +393,9 @@ export const SelectFileInputWidget = forwardRef<HTMLDivElement, SelectFileInputW
       tabIndex={-1}
       name={name}
       accessKey={accessKey}
-      // 空title抑制浏览器对file input的默认提示（原版静态title=''，经TitledElement落在$input上）
-      title=''
+      // 空title抑制浏览器对file input的默认提示（原版static.title=''，经TitledElement落在
+      // $input上，调用方title同落此处）；accessKey有值时附加键位后缀，解析见resolveTitle
+      title={resolveTitle({ title: title ?? '', accessKey })}
       accept={acceptList ? acceptList.join(', ') : undefined}
       multiple={multiple || undefined}
       required={required}
@@ -482,7 +484,7 @@ export const SelectFileInputWidget = forwardRef<HTMLDivElement, SelectFileInputW
             <div
               className={clsx(
                 'oo-ui-selectFileInputWidget-thumbnail oo-ui-selectFileWidget-thumbnail',
-                thumbnailPending && 'oo-ui-pendingElement-pending',
+                pendingElementClasses(thumbnailPending),
               )}
               style={thumbnail.url ? { backgroundImage: `url( ${thumbnail.url} )` } : undefined}
             >

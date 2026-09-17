@@ -11,7 +11,7 @@ import { Button } from '../Button';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveTabIndex, toFlagArray} from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveRequiredIndicator, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
 import { useControlledValue, useFieldInputId, useLatestRef, useValidityFlag } from '../../hooks';
 import type { InputProps } from '../Input';
 import type { LabelPosition } from '../Label';
@@ -73,6 +73,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   icon,
   indicator,
   label,
+  invisibleLabel,
   labelPosition = 'after',
   min,
   max,
@@ -88,6 +89,8 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   buttonStep: buttonStepProp,
   pageStep: pageStepProp,
   flags,
+  // title落在input上（对齐原版InputWidget的TitledElement落点$input），不放外层div
+  title,
   value: controlledValue,
   defaultValue,
   ...rest
@@ -190,12 +193,15 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput', 'numberInput'),
+    getWidgetClassName({ disabled, icon, indicator, label, invisibleLabel }, 'input', 'textInput', 'numberInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-number',
     showButtons && 'oo-ui-numberInputWidget-buttoned',
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
+
+  // title/accessKey同落input（原版$titled=$accessKeyed=$input，解析见resolveTitle）
+  const resolvedTitle = resolveTitle({ title, label, invisibleLabel, accessKey });
 
   /** 值变更，对齐原版语义：保留输入不做钳制，空串保持为空 */
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -238,8 +244,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
       ref={ref}
     >
       <IconBase icon={icon} />
-      {/* required指示器回退对齐原版RequiredElement：未显式声明indicator时输出required */}
-      <IndicatorBase indicator={indicator || (required ? 'required' : undefined)} />
+      <IndicatorBase indicator={resolveRequiredIndicator(indicator, required)} />
       <div className='oo-ui-numberInputWidget-field'>
         {showButtons && (
           <Button
@@ -266,6 +271,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           aria-required={required}
           value={displayValue}
           placeholder={placeholder}
+          title={resolvedTitle}
           min={min}
           max={max}
           // step缺省'any'（不限制小数），对齐原版setStep的attr输出
@@ -287,7 +293,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
           />
         )}
       </div>
-      {hasLabel(label) && <LabelBase>{label}</LabelBase>}
+      {hasLabel(label) && <LabelBase invisible={invisibleLabel}>{label}</LabelBase>}
     </div>
   );
 });

@@ -10,7 +10,7 @@ import React, {
 import clsx from 'clsx';
 import { useCleanId } from '../hooks';
 import { useIsMobile, useMessage } from '../config';
-import { toFlagArray } from '../utils';
+import { pendingElementClasses, toFlagArray } from '../mixins';
 import { Button } from '../widgets/Button';
 import type { ButtonFlag } from '../Element';
 import { Label } from '../widgets/Label';
@@ -262,7 +262,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     return (
       <Button
         key={action.action}
-        className={clsx('oo-ui-actionWidget', action.pending && 'oo-ui-pendingElement-pending')}
+        className={clsx('oo-ui-actionWidget', pendingElementClasses(action.pending))}
         framed
         flags={flags}
         icon={iconOnlyIcon}
@@ -305,7 +305,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
           </div>
           {pending && (
             <div
-              className='oo-ui-pendingElement-pending'
+              className={pendingElementClasses(pending)}
               style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             />
           )}

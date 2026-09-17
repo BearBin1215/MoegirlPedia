@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { LabelBase } from '../Label/Base';
 import { Button } from '../Button';
-import { flaggedElementClasses, getWidgetClassName } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, imageVariantClasses, resolveTitle } from '../../mixins';
 import { useMessage } from '../../config';
 import type { WidgetProps } from '../Widget';
 import type { IconElement } from '../../Element';
@@ -55,6 +55,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(({
   inline = false,
   showClose = false,
   onClose,
+  title,
   ...rest
 }, ref) => {
   // 非法type回退notice
@@ -79,15 +80,17 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(({
     <div
       {...rest}
       className={classes}
+      // title解析走resolveTitle（原版MessageWidget混入TitledElement，$titled即根元素）
+      title={resolveTitle({ title, label: children, invisibleLabel })}
       aria-disabled={disabled || undefined}
       // 对齐原版setType：error用role=alert打断式播报，其余类型polite播报
       role={messageType === 'error' ? 'alert' : undefined}
       aria-live={messageType === 'error' ? undefined : 'polite'}
       ref={ref}
     >
-      {/* 图标变体类跟随消息类型（对齐原版oo-ui-image-{type}），notice无对应变体样式仅回退默认色 */}
-      <IconBase icon={displayIcon} className={`oo-ui-image-${messageType}`} />
-      <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{children}</LabelBase>
+      {/* 图标变体类跟随消息类型（对齐原版oo-ui-image-{type}）；notice无对应变体，经变体表过滤后不出类 */}
+      <IconBase icon={displayIcon} className={imageVariantClasses([messageType])} />
+      <LabelBase invisible={invisibleLabel}>{children}</LabelBase>
       {showCloseButton && (
         <Button
           className='oo-ui-messageWidget-close'

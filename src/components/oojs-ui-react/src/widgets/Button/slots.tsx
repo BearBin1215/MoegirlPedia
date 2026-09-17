@@ -47,8 +47,7 @@ export function ButtonSlots({
         {...iconProps}
         className={clsx(variantClasses, iconProps?.className)}
       />
-      {/* invisible类须落在label元素上（对齐原版LabelElement.setInvisibleLabel），裁剪样式以该元素为选择器 */}
-      <LabelBase className={clsx(labelInvisible && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
+      <LabelBase invisible={labelInvisible}>{label}</LabelBase>
       <IndicatorBase
         indicator={indicator}
         {...indicatorProps}

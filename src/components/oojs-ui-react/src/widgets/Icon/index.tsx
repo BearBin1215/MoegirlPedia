@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { flaggedElementClasses, getWidgetClassName, imageVariantClasses, toFlagArray } from '../../utils';
+import { flaggedElementClasses, getWidgetClassName, imageVariantClasses, toFlagArray } from '../../mixins';
 import type { IconElement, IconFlag } from '../../Element';
 import type { WidgetProps } from '../Widget';
 import { IconBase } from './Base';

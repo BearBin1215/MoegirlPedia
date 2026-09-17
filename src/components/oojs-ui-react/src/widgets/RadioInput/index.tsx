@@ -3,7 +3,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import clsx from 'clsx';
-import { getWidgetClassName, resolveTabIndex } from '../../utils';
+import { getWidgetClassName, resolveTabIndex, resolveTitle } from '../../mixins';
 import { useControlledValue, useFieldInputId } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -70,7 +70,9 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         checked={isChecked}
         name={name}
         id={fieldInputId}
-        title={title}
+        // title/accessKey同落input（原版InputWidget的$titled=$accessKeyed=$input）；
+        // 本组件无标签元素，不做invisibleLabel兜底
+        title={resolveTitle({ title, accessKey })}
         dir={dir}
         role={role}
         onChange={handleChange}

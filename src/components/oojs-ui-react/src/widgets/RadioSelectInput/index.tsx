@@ -1,10 +1,10 @@
 import React, { useMemo, forwardRef } from 'react';
 import clsx from 'clsx';
 import { RadioSelect } from '../RadioSelect';
-import { type RadioOptionProps } from '../RadioOption';
+import type { RadioOptionProps } from '../RadioOption';
+import { getWidgetClassName } from '../../mixins';
 import {
   getSelectableValues,
-  getWidgetClassName,
   resolveSelectableValue,
   type ChangeHandler,
 } from '../../utils';

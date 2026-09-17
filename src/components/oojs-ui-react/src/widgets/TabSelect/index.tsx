@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { TabOption, type TabOptionProps } from '../TabOption';
-import { getSelectableValues, getWidgetClassName, resolveTabIndex, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, resolveTabIndex } from '../../mixins';
+import { getSelectableValues, type ChangeHandler } from '../../utils';
 import { useControlledValue, useGroupKeyboardSelection, useMergedRefs, useOptionDrag, useOptionRegistry } from '../../hooks';
 import { useIsMobile } from '../../config';
 import type { WidgetProps } from '../Widget';

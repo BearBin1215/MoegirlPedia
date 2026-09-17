@@ -10,7 +10,7 @@ import { MenuLayout, type MenuLayoutProps } from '../MenuLayout';
 import { PanelLayout } from '../PanelLayout';
 import { TabPanelLayout, type TabPanelLayoutProps } from '../TabPanelLayout';
 import { TabSelect } from '../../widgets/TabSelect';
-import { type ChangeHandler } from '../../utils';
+import type { ChangeHandler } from '../../utils';
 import { useIsMobile } from '../../config';
 import { useAutoFocusPanel, useCleanId, useLatestRef, useLayoutSelection } from '../../hooks';
 

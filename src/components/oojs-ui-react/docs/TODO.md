@@ -28,6 +28,7 @@
 - **标签数据限于 `string | number`**。原版标签 data 可为任意对象（`{data,label}` 形态），本工程与选择族一致，值统一为 `string | number`，标签文本取自菜单选项 `label` 或值本身。
 - **TagMultiselect 不开放替换内部输入控件**。原版 `config.input`/`config.inputWidget` 可替换内部输入控件，React 版内置输入框，对齐其余组件不暴露内部输入控件的做法。
 - **弹窗滚动锁不含 iOS 触摸滚动 hack**。原版 `togglePreventIosScrolling` 针对 iOS Safari 无视 `body { overflow: hidden }` 的问题，仅在 iOS 设备且打开 full 尺寸弹窗时保存/恢复滚动位置并加 `oo-ui-windowManager-ios-modal-ready` 类；触发条件窄且需移动滚动位置，成本与收益不对等，React 版不实现。
+- **`label` 的有效性真值与原版不同**。原版 `LabelElement.setLabel` 只认非空字符串（数字、布尔一律归为无标签），本工程 `hasLabel` 把 `0`/`true` 等可渲染 ReactNode 视为有标签（JSX 会实际渲染出内容），相应输出 `oo-ui-labelElement` 与标签内容。
 
 ### 增强
 
@@ -48,7 +49,10 @@
 - **ButtonMenuSelectWidget 支持方向键展开**（收起时↑/↓即展开）。原版仅 Enter/空格可展开（ButtonWidget 无方向键处理，菜单未展开时也不监听 document 键盘），方向键只在展开后由菜单接管。React 版与 Dropdown 行为一致：收起时↑/↓展开，展开后↑/↓移动高亮。
 - **ButtonMenuSelectWidget 的键盘手势去重，选定/展开后不因 keypress 激活通道重新切换**。原版按键流里菜单的 document keydown 处理器虽对已消费按键 `preventDefault`，Chrome 仍会派发 keypress，`ButtonElement.onKeyPress` 的 click 模拟随即再次 `menu.toggle()`——键盘选定/展开后菜单会被重新开合（同一手势两次切换）。React 版以手势标记跳过同一次手势内 keypress 经 Button 键盘激活通道的重复切换（keyup 复位，抑制 keypress 的浏览器也不受影响）。
 - **ButtonMenuSelectWidget/Dropdown 展开后空格可选定**。原版展开态按空格不被菜单消费（`MenuSelectWidget.onDocumentKeyDown` 无 SPACE 分支），keypress 照发经 `ButtonElement.onKeyPress` 的 click 模拟仅关闭菜单；React 版空格与 Enter 同分支直接选定高亮项（与按钮空格激活的 ARIA 惯例一致，Dropdown 同）。
+- **PopupToolGroup 的 title 按窄栏生效值兜底**。原版 TitledElement 的「invisibleLabel → title」兜底只在构造期求值，而窄栏切换（`onToolbarResize` 只改写 invisibleLabel/label/icon）不会重算 title，故原版窄栏把手下没有 tooltip；React 版按窄栏生效的 `invisibleLabel`/`label` 计算，窄栏下仍有 tooltip。未设置 invisibleLabel 时两侧一致。
+- **ButtonGroup 的组禁用下发给组内按钮**。原版 `ButtonGroupWidget` 无 `setDisabled` 覆写，仅给组根切换 `oo-ui-widget-disabled`/`-enabled`，组内按钮仍为 enabled（图标/指示器也因此不反色）；React 版经 Context 把组禁用与按钮自身 disabled 取或，组内按钮输出 disabled 态、按压与点击被拦截（对齐本工程「组禁用即各项禁用」的一贯口径）。对照页 `button-checkbox-compare` 的 ButtonGroup 区块可见两侧差异。
 - **SelectFileInputWidget 的初始文件集可用 `value`/`defaultValue` 声明**。原版构造期传 `value` 会被丢弃：彼时 `$input` 尚未置 `type=file`，`setValue` 写回 `input.files` 无效，而构造末尾又用 `$input.files` 覆盖了 `currentFiles`（实测 `new SelectFileInputWidget({value:[file]})` 后 `currentFiles`/`input.files` 均为空、`oo-ui-selectFileInputWidget-empty` 未摘除），原版只能构造后调 `setValue`。React 版按受控惯例直接生效，并把文件集写回 DOM `input.files`（经 `DataTransfer`），表单提交正常。
+- **ButtonInput 的 title 落真实 button/input 并支持 invisibleLabel 兜底**。原版 `ButtonInputWidget` 不混入 `TitledElement`（mixin 清单仅 Button/Icon/Indicator/Label/FlaggedElement 五个 Element），`title` 本无落点；React 版把 `title` 接入 `resolveTitle` 落在真实 `button`/`input` 上（invisibleLabel 时以标签兜底、accessKey 附加键位后缀），与其余按钮形态（Button/ButtonOption）的 tooltip 行为看齐。
 
 ### 等效替代
 
@@ -67,6 +71,10 @@
 - **裸 `Dialog` 无内置标题**：调用方自行渲染标题并以 `aria-labelledby` 关联（`MessageDialog`/`ProcessDialog` 的内置标题已含该关联）。
 - **工具栏窄栏类在浮层内的承接位置**：原版把 `oo-ui-toolbar-narrow` 加在工具栏根与 `$popups` 容器上（工具组面板与弹出工具浮层都在其中，主题的窄栏规则均为后代选择器）；本工程浮层 portal 至 body 后失去该祖先，工具组面板经一层窄栏载体 div 承接、弹出工具浮层则把该类落在浮层根上。承载元素不同，但"浮层内容存在含窄栏类的祖先"这一前提两侧一致（对照以祖先判定为断言）。
 - **SelectFileInputWidget 的选择按钮根元素是`<span>`而非原版的`<label>`**：原版把按钮根换成`<label>`借原生关联内含的 file input；本工程沿用 Button 一律`<span>`（内层`<a class="oo-ui-buttonElement-button">`）的约定，点击开选择器由主题 CSS 的文件input覆盖层承担——实测按钮中心的最上层元素两侧同为`input[type=file]`，行为一致。
+- **Dropdown 的 `title` 落在根元素**（原版 `DropdownWidget` 的 `$titled` 为内部 `$label`）。tooltip 位于控件子树内、可视结果一致，仅 DOM 落点不同。其余混入 TitledElement 的组件已按原版落点接入（见 comparison-guide.md「共享抽象」的 `resolveTitle` 条目）。
+- **Message 的 `notice` 类型不输出 `oo-ui-image-notice`**：原版按类型给图标加 `oo-ui-image-{type}`，本工程经 `imageVariantClasses` 只输出主题存在的 image 变体位（notice 不在其中）。两个主题 CSS 均无该类规则，视觉等价。
+- **`aria-required` 是原版 DOM 之外的附加属性**：原版 `RequiredElement` 只写原生 `required`，本工程同时输出 `aria-required`（对原生 input 而言冗余但无害，不改变 AT 播报）。保留以不改变既有 a11y 输出。
+- **`resolveTitle` 的兜底随 props 重渲染重算**：原版 TitledElement 的「invisibleLabel → title」兜底只在构造期求值（后续 `setLabel`/`setInvisibleLabel` 不重算 title），React 版每次渲染按当前 props 计算，label 后续变化会联动 title——声明式求值时机的固有差异，兜底能力本身两侧一致。
 
 ### 暂未实现
 
@@ -79,3 +87,8 @@
 - **`confirm`/`alert`/`prompt` 是简化实现**：原版经全局单例 WindowManager 异步开关窗口（`openWindow`/`closeWindow` 返回 Promise），React 版各弹窗独立挂载、无同一管理器的开窗队列（重复调用会层叠而非替换前一个）；ESC/焦点陷阱绑定在弹窗自身，多层层叠时天然只有顶层响应。
 - **MessageDialog/ProcessDialog 的移动端与 RTL 适配分支未实现**：原版 `fitActions`/`fitLabel` 在移动端（`oo-ui-isMobile`）与 RTL 下有独立的空间分配布局；React 版已按原版构造函数下发 `oo-ui-isMobile` 类（`OOUIProvider.isMobile`），适配布局本身未实现。
 - **Dialog 的 `toggleIsolation` 未实现**：原版会给兄弟节点加 `inert`/`aria-hidden` 做隔离。本工程浮层默认 portal 至 body，一刀切隔离会误伤弹窗内的浮层（导致无法交互）；`OOUIProvider.getPortalContainer` 已支持把浮层指入弹窗容器（豁免通道），实现隔离时还需按浮层的 portal 归属判定豁免，故仍未做。
+- **TitledElement 的修饰键文案未接**：原版 `formatTitleWithAccessKey` 优先取 `jquery.accessKeyLabel` 的 `getAccessKeyLabel`（MediaWiki 侧显示“Alt+Shift+k”一类本地化组合键），纯 DOM 环境不可得；本工程按原版的回落分支只输出原键值（`title [k]`）。需要时可由宿主提供等价的标签解析通道接入 `resolveTitle`。
+- **CheckboxMultiselect 未渲染原版 `MultiselectWidget` 的 `$group` 容器**：原版在根元素内还有一层 `.oo-ui-multiselectWidget-group`，选项是该容器的子节点；本工程选项直接作为根元素的子节点（根元素类已对齐 `oo-ui-multiselectWidget`）。站点若按原版结构写 `.oo-ui-multiselectWidget-group` 选择器不会命中。
+- **Popup 未开放 `icon`**：原版 `PopupWidget` 混入 IconElement，`config.icon` 会在浮层头部渲染图标（根元素随之输出 `oo-ui-iconElement`）；本工程 Popup 未提供该 prop。
+- **选项族选中/按压态的图标自动着色未实现**：原版 wikimediaui 主题 `getElementClasses` 对选中或按压的 MenuOptionWidget/OutlineOptionWidget 自动给图标加 `oo-ui-image-progressive`（不依赖 flags 配置）；本工程除 ButtonOption 按"激活/禁用反色"规则输出变体外，其余选项形态的图标无自动着色。
+- **FieldLayout 的 title 缺字段控件 accessKey 委托**：原版 FieldLayout 构造末尾经覆写的 `formatTitleWithAccessKey` 委托字段控件，label 的 tooltip 会附上字段 accessKey（`Title [k]`）；React 版 FieldLayout 拿不到字段控件的 accessKey，title 为纯文本（title/accessKey 同传的组件已由 `resolveTitle` 覆盖键位后缀）。

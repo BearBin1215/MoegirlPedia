@@ -1,30 +1,17 @@
 import type { ChangeEvent, RefObject } from 'react';
-import clsx from 'clsx';
-import { ICON_FLAGS } from './Element';
-import type { WidgetProps } from './widgets/Widget';
-import type { ButtonFlag, IconElement, IndicatorElement, LabelElement } from './Element';
 
 /**
- * 合并软校验的invalid标志与配置flags（对齐原版setValidityFlag的setFlags({invalid})合并语义）：
- * 校验非法时invalid标志叠加在配置flags之上，合法时仅保留配置flags——配置flags为声明式
- * 基线，不随校验通过移除（原版config.flags与setFlags共享存储的移除语义不适用于声明式props）
+ * 与具体mixin无关的共享工具：选择集的判定与派生（对齐原版SelectWidget/ItemWidget的方法）、
+ * DOM与浮层通用工具（对齐原版Element.static与FloatableElement/ClippableElement的辅助逻辑）、
+ * 以及跨组件共用的常量。
+ * 对齐原版OO.ui.mixin的类名贡献与元素级状态解析见src/mixins.ts，契约类型见src/Element.ts
  */
-export function mergeInvalidFlag(flags: string[], invalid: boolean): string[] {
-  return invalid && !flags.includes('invalid') ? [...flags, 'invalid'] : flags;
-}
 
 /**
  * 组件值变化回调（值优先；第二参数为触发变更的原生change事件，仅输入类组件提供）
  * @example <TextInput value={text} onChange={setText} />
  */
 export type ChangeHandler<T = any, P = HTMLElement> = (value: T, event?: ChangeEvent<P>) => void;
-
-/** Widget型组件组装基础类的完整入参（Widget基类与三个元素mixin的类型交集） */
-type WidgetClassNameProps =
-  WidgetProps &
-  LabelElement &
-  IconElement &
-  IndicatorElement;
 
 /** 浮层锚点/忽略目标的入参形态：ref或真实元素（均可空） */
 export type ElementOrRef = RefObject<HTMLElement | null> | HTMLElement | null | undefined;
@@ -141,34 +128,6 @@ export function resolveOptionDisabled(
   return option.disabled || groupDisabled;
 }
 
-/**
- * 可聚焦元素的tabIndex取值（对齐原版`OO.ui.mixin.TabIndexedElement.updateTabIndex`）：
- * 禁用时不参与Tab序——原版注释“Do not index over disabled elements”，即disabled覆盖显式值；
- * 启用时取显式tabIndex，缺省0（原版config.tabIndex缺省0）。
- * 原版`setTabIndex(null)`的“不输出tabindex”语义未实现（React的tabIndex类型不接受null，
- * 经rest透传会破坏DOM属性类型；需要时用-1获得同样的不可Tab聚焦效果），见docs/TODO.md
- */
-export function resolveTabIndex(
-  tabIndex: number | undefined,
-  disabled?: boolean,
-): number {
-  return disabled ? -1 : (tabIndex ?? 0);
-}
-
-/** label是否实际渲染内容（`null`/`undefined`/`false`/`''`均视为无标签） */
-export function hasLabel(label: unknown): boolean {
-  return label !== null && label !== undefined && label !== false && label !== '';
-}
-
-/**
- * 合并aria-labelledby取值（FieldLayout联动下发的labelId与调用方透传值并列，均有时以空格
- * 分隔），全部为空时返回undefined
- */
-export function mergeAriaLabelledBy(...values: (string | undefined)[]): string | undefined {
-  const merged = values.filter(Boolean).join(' ');
-  return merged || undefined;
-}
-
 /** 浮动定位/钳高类组件的视口四周留白缺省值（px），可经OOUIProvider.viewportSpacing覆盖；MenuSelect/Popup/PopupToolGroup共用 */
 export const VIEWPORT_SPACING = 5;
 
@@ -242,133 +201,4 @@ export function withTemporaryClass(el: HTMLElement, className: string, measure: 
       el.classList.add(className);
     }
   }
-}
-
-/**
- * 归一化标志参数：单个标志、标志数组与`undefined`统一为数组
- * （Button/ButtonInput/Icon/ProcessDialog的标志类生成共用）
- */
-export function toFlagArray<T extends string>(flags?: T | T[]): T[] {
-  return typeof flags === 'string' ? [flags] : flags ?? [];
-}
-
-/** Widget基类的类贡献：`oo-ui-widget`根类 + disabled/enabled互斥态类 */
-export function widgetClasses({ disabled }: WidgetProps): string {
-  return clsx('oo-ui-widget', disabled ? 'oo-ui-widget-disabled' : 'oo-ui-widget-enabled');
-}
-
-/** IconElement mixin的类贡献：icon有值时输出`oo-ui-iconElement` */
-export function iconElementClasses({ icon }: IconElement): string {
-  return icon ? 'oo-ui-iconElement' : '';
-}
-
-/** IndicatorElement mixin的类贡献：indicator有值时输出`oo-ui-indicatorElement` */
-export function indicatorElementClasses({ indicator }: IndicatorElement): string {
-  return indicator ? 'oo-ui-indicatorElement' : '';
-}
-
-/**
- * LabelElement mixin的类贡献：仅"有效可见标签"输出`oo-ui-labelElement`。
- * 对齐原版setInvisibleLabel的"视同无标签"语义（上游注释：Pretend that there is no
- * label，大量CSS基于该假设编写），故invisibleLabel时即使有label也不输出
- */
-export function labelElementClasses({ label, invisibleLabel }: LabelElement): string {
-  return !invisibleLabel && hasLabel(label) ? 'oo-ui-labelElement' : '';
-}
-
-/** FlaggedElement mixin的类贡献：每个flag输出`oo-ui-flaggedElement-{flag}` */
-export function flaggedElementClasses(flags?: string | string[]): string {
-  return clsx(toFlagArray(flags).map((flag) => `oo-ui-flaggedElement-${flag}`));
-}
-
-/**
- * 图标/指示器变体类（对齐wikimediaui主题按image-{flag}着色的规则）。
- * 仅映射主题存在的image变体位——调用方可能传入ButtonFlag全集（如primary），
- * 非image位（primary/safe/back/close）不产生类。变体集即Element.ts的ICON_FLAGS
- * （IconFlag由其派生，两侧不会失配）。Icon与按钮系图标/指示器共用
- */
-export function imageVariantClasses(flags: readonly string[]): string {
-  return clsx(
-    flags
-      .filter((flag) => (ICON_FLAGS as readonly string[]).includes(flag))
-      .map((flag) => `oo-ui-image-${flag}`),
-  );
-}
-
-/**
- * 按wikimediaui主题规则生成按钮内图标/指示器变体类（Button/ButtonInput/ButtonOption共用）：
- * 边框按钮在激活（选中）、禁用或primary时整体反色；禁用且非反色场景不出变体；
- * 其余按标志叠加image变体
- */
-export function getButtonIconClasses(
-  framed: boolean,
-  active: boolean | undefined,
-  disabled: boolean | undefined,
-  flags: ButtonFlag[],
-): string | undefined {
-  if (framed && (active || disabled || flags.includes('primary'))) {
-    return 'oo-ui-image-invert';
-  }
-  if (disabled) {
-    return undefined;
-  }
-  return imageVariantClasses(flags);
-}
-
-/**
- * ButtonElement mixin的类贡献（对齐原版OO.ui.mixin.ButtonElement，Button/ButtonInput/ButtonOption共用）：
- * 根基类 + framed/frameless互斥态 + flagged变体 + 激活/按压态。pressed由调用方取或
- * （内部按压流usePressedState与外部受控按压，如ButtonMenuSelectWidget菜单打开期），
- * 禁用下的按压抑制由本函数的disabled位统一承担（对齐原版isDisabled时不输出按压类）
- */
-export function buttonElementClasses({
-  framed = true,
-  active,
-  disabled,
-  pressed,
-  flags = [],
-}: {
-  /** 是否生成边框（缺省带边框，对齐原版ButtonElement的framed缺省） */
-  framed?: boolean;
-  /** 是否为激活状态 */
-  active?: boolean;
-  /** 是否禁用（仅抑制按压类；widget禁用类由Widget基类贡献器承担） */
-  disabled?: boolean;
-  /** 是否为按压态（调用方取或后的最终值） */
-  pressed?: boolean;
-  /** 附加给按钮的标志 */
-  flags?: ButtonFlag | ButtonFlag[];
-}): string {
-  return clsx(
-    'oo-ui-buttonElement',
-    framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    flaggedElementClasses(flags),
-    active && 'oo-ui-buttonElement-active',
-    !disabled && pressed && 'oo-ui-buttonElement-pressed',
-  );
-}
-
-/** Widget型组件的名称类：`oo-ui-{name}Widget`（多个按原版继承链叠加，如input/textInput/numberInput） */
-export function widgetNameClasses(...widgetNames: string[]): string {
-  return clsx(widgetNames.map((widgetName) => `oo-ui-${widgetName}Widget`));
-}
-
-/**
- * 组装Widget型组件的根类。折叠自上方各mixin贡献器（对齐原版Widget+Element mixin的
- * 类派生规则），供整组类一起输出的常规场景；折叠组之外的贡献器（如按钮系的
- * buttonElementClasses）直接单独调用
- * @param props 组件属性，仅读取基础类相关字段
- * @param widgetNames 组件名，按原版继承链顺序叠加`oo-ui-{name}Widget`
- */
-export function getWidgetClassName(
-  { disabled, label, invisibleLabel, icon, indicator }: WidgetClassNameProps,
-  ...widgetNames: string[]
-): string {
-  return clsx(
-    widgetClasses({ disabled }),
-    iconElementClasses({ icon }),
-    indicatorElementClasses({ indicator }),
-    labelElementClasses({ label, invisibleLabel }),
-    widgetNameClasses(...widgetNames),
-  );
 }

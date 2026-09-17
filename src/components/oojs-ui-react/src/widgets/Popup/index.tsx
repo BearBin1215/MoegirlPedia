@@ -14,8 +14,8 @@ import { IconBase } from '../Icon/Base';
 import { Button } from '../Button';
 import { useDir, useMessage, usePortalContainer, useViewportSpacing } from '../../config';
 import { useDismissablePopover, useMergedRefs } from '../../hooks';
+import { getWidgetClassName } from '../../mixins';
 import {
-  getWidgetClassName,
   getFocusableElements,
   getElementDir,
   resolveElement,
@@ -428,8 +428,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(({
           <div className='oo-ui-popupWidget-head'>
             {/* 原版head图标是IconElement裸span（非IconWidget）：带widget盒子类会撑高head */}
             <IconBase icon={icon} />
-            {/* invisibleLabel的裁剪类落在label元素上（对齐原版LabelElement.setInvisibleLabel） */}
-            <LabelBase className={clsx(invisibleLabel && 'oo-ui-labelElement-invisible')}>{label}</LabelBase>
+            <LabelBase invisible={invisibleLabel}>{label}</LabelBase>
             {!hideCloseButton && (
               <Button
                 framed={false}

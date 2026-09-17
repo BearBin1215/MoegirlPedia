@@ -14,11 +14,13 @@ import { MenuOption, type MenuOptionProps } from '../MenuOption';
 import { MenuSectionOption, type MenuSectionOptionProps } from '../MenuSectionOption';
 import { OutlineOption } from '../OutlineOption';
 import {
-  findRelativeSelectableItem,
-  getSelectableValues,
   getWidgetClassName,
   mergeAriaLabelledBy,
   resolveTabIndex,
+} from '../../mixins';
+import {
+  findRelativeSelectableItem,
+  getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
 import { useCleanId, useControlledValue, useFieldLabelFocus, useOptionDrag, useOptionRegistry } from '../../hooks';

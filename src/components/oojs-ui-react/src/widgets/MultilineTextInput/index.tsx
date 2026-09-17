@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, resolveTabIndex, toFlagArray } from '../../utils';
+import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, resolveRequiredIndicator, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
 import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
 import { resolveValidate, type TextInputProps } from '../TextInput';
 
@@ -45,6 +45,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   icon,
   indicator,
   label,
+  invisibleLabel,
   labelPosition = 'after',
   readOnly,
   required,
@@ -83,10 +84,12 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   });
   // FieldLayout标签联动（通道A）：textarea认领字段id与label的htmlFor原生关联
   const fieldInputId = useFieldInputId();
+  // title/accessKey同落textarea（原版$titled=$accessKeyed=$input，解析见resolveTitle）
+  const resolvedTitle = resolveTitle({ title, label, invisibleLabel, accessKey });
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled, icon, indicator, label }, 'input', 'textInput'),
+    getWidgetClassName({ disabled, icon, indicator, label, invisibleLabel }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
@@ -198,7 +201,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
         aria-required={required}
         placeholder={placeholder}
         maxLength={maxLength}
-        title={title}
+        title={resolvedTitle}
         dir={dir}
         style={inputStyle}
         rows={rows}
@@ -216,10 +219,10 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
       )}
       <IconBase icon={icon} />
       <IndicatorBase
-        indicator={indicator || (required ? 'required' : undefined)}
+        indicator={resolveRequiredIndicator(indicator, required)}
         style={{ right: INDICATOR_RIGHT_OFFSET }}
       />
-      {hasLabel(label) && <LabelBase ref={labelRef}>{label}</LabelBase>}
+      {hasLabel(label) && <LabelBase ref={labelRef} invisible={invisibleLabel}>{label}</LabelBase>}
     </div>
   );
 });

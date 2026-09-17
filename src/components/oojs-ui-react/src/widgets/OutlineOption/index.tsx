@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
 import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
+import { optionWidgetClasses } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export interface OutlineOptionProps extends Omit<DecoratedOptionProps, 'value'>, OptionProps {
@@ -23,13 +24,12 @@ export const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
 }, ref) => {
   // 对齐原版setLevel：钳制到[0, levels-1]（原版static.levels=3，主题CSS仅定义level-0/1/2）
   const clampedLevel = clamp(level, 0, 2);
+  // 原版OutlineOptionWidget沿用OptionWidget基类static（三者皆true）
   const classes = clsx(
     className,
     'oo-ui-outlineOptionWidget',
     `oo-ui-outlineOptionWidget-level-${clampedLevel}`,
-    selected && 'oo-ui-optionWidget-selected',
-    highlighted && 'oo-ui-optionWidget-highlighted',
-    pressed && 'oo-ui-optionWidget-pressed',
+    optionWidgetClasses({ selected, highlighted, pressed }),
   );
 
   return (
