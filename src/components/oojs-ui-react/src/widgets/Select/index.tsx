@@ -98,6 +98,14 @@ export interface SelectProps extends Omit<WidgetProps<HTMLDivElement>, 'children
    * 可让列表不作独立Tab停靠点（原版SelectWidget根无tabindex）
    */
   focusOwnerRef?: RefObject<HTMLElement | null>;
+
+  /**
+   * 焦点归属元素的管理期（仅与focusOwnerRef配套，缺省true即始终管理）。
+   * 对齐原版MenuSelectWidget.toggle的开合时点：激活时无高亮则指向当前选中项、
+   * 关闭时移除aria-activedescendant（隐藏选项的id不留在触发元素上）。
+   * MenuSelect传入菜单显隐；独立组合（SearchWidget输入框常驻驱动）不传即恒管理
+   */
+  focusOwnerActive?: boolean;
 }
 
 /**
@@ -121,6 +129,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   handleNavigationKeys = false,
   listWrapsAround = true,
   focusOwnerRef,
+  focusOwnerActive = true,
   tabIndex,
   onKeyDown,
   onMouseLeave,
@@ -353,22 +362,30 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(({
   const highlightedIndex = currentHighlighted === undefined
     ? -1
     : options.findIndex((option) => option.value === currentHighlighted);
+  // 无高亮时回退指向当前选中项（对齐原版MenuSelectWidget.toggle(true)的selectedItem分支；
+  // 多选展示无单值选中语义，不做回退）
+  const selectedFallbackIndex = highlightedIndex >= 0 || selectedValues !== undefined
+    ? -1
+    : options.findIndex((option) => 'value' in option && option.value === currentValue);
+  const activeDescendantIndex = highlightedIndex >= 0 ? highlightedIndex : selectedFallbackIndex;
 
-  // 焦点归属元素（对齐原版setFocusOwner下的$focusOwner.attr/removeAttr）：指定时由该元素
-  // 承载aria-activedescendant——屏幕阅读器读的是**持有DOM焦点的元素**，列表根本身无焦点
-  // （指定focusOwnerRef的场景即为此）时挂在根上不会被读出
+  // 焦点归属元素（对齐原版setFocusOwner下的$focusOwner.attr/removeAttr）：指定focusOwnerRef
+  // 时由该元素承载aria-activedescendant——屏幕阅读器读的是**持有DOM焦点的元素**，列表根
+  // （指定focusOwnerRef的场景即为此）时挂在根上不会被读出。管理期关闭（菜单已收起）时移除，
+  // 隐藏选项的id不留在触发元素上（对齐原版toggle(false)的removeAttr）
   useEffect(() => {
     const owner = focusOwnerRef?.current;
     if (!owner) {
       return;
     }
-    if (highlightedIndex >= 0) {
-      owner.setAttribute('aria-activedescendant', optionElementId(highlightedIndex));
+    const index = focusOwnerActive ? activeDescendantIndex : -1;
+    if (index >= 0) {
+      owner.setAttribute('aria-activedescendant', optionElementId(index));
     } else {
       owner.removeAttribute('aria-activedescendant');
     }
     return () => owner.removeAttribute('aria-activedescendant');
-  }, [focusOwnerRef, highlightedIndex, optionElementId]);
+  }, [focusOwnerRef, focusOwnerActive, activeDescendantIndex, optionElementId]);
 
   return (
     <div

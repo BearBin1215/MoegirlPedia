@@ -797,12 +797,14 @@ export function useOptionDrag<T extends string | number>({
  * 值不满足约束时在输入元素输出`aria-invalid`（根元素的invalid标志类由调用方按返回的
  * `invalid`输出），不改写值。触发时机对齐原版：值变更防抖250ms后校验（原版change事件
  * 的OO.ui.debounce）、失焦立即校验、聚焦视为有效（原版onFocus的setValidityFlag(true)）；
- * 初始值不主动校验（原版构造期无change事件，NumberInput的挂载期校验由调用方经revalidate补齐）
+ * 初始值不主动校验（原版构造期无change事件），需要构造期标记的形态（NumberInput）经
+ * validateOnMount开启挂载期即时校验
  */
 export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement, V extends string | number>({
   inputRef,
   value,
   validate,
+  validateOnMount = false,
 }: {
   /** 内部输入元素引用（checkValidity浏览器约束检查的载体） */
   inputRef: RefObject<T | null>;
@@ -810,6 +812,11 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
   value: V;
   /** 自定义合法性判定（缺省仅浏览器checkValidity）；返回Promise时按其决议结果标记，拒绝视为非法 */
   validate?: (value: V) => boolean | Promise<boolean>;
+  /**
+   * 挂载期即校验一次（跳过"首值不校验"）：对齐原版构造期即输出的非法标记
+   * （如空值 + required 在加载时即标记）。缺省 false——其余输入形态不在构造期标记
+   */
+  validateOnMount?: boolean;
 }): {
   /** 当前是否标记为非法 */
   invalid: boolean;
@@ -855,6 +862,17 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
     interactedRef.current = true;
     debouncedCheck();
   }, [value, debouncedCheck]);
+
+  // 挂载期即校验：以即时的 check 复现原版构造期的标记（不走防抖，挂载后立即标记）。
+  // 置于值变更effect之后——挂载时首值守卫先跳过防抖，再置interacted并即时校验，
+  // 避免挂载时额外多排一次防抖检查
+  useEffect(() => {
+    if (!validateOnMount) {
+      return;
+    }
+    interactedRef.current = true;
+    check();
+  }, [validateOnMount, check]);
 
   return {
     invalid,

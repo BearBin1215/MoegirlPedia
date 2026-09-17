@@ -2,15 +2,15 @@ import React, {
   useRef,
   forwardRef,
   type ChangeEvent,
-  type MouseEventHandler,
   type Ref,
 } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase, type IndicatorBaseProps } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, resolveRequiredIndicator, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
-import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray } from '../../mixins';
+import { useControlledValue, useMergedRefs } from '../../hooks';
+import { useInputProps, type UserInputProps } from '../Input/props';
 import type { InputProps } from '../Input';
 import type { LabelPosition } from '../Label';
 import type { FlaggedElement, IconElement, IndicatorElement, Indicators, LabelElement } from '../../Element';
@@ -77,6 +77,14 @@ export interface TextInputProps<T = HTMLInputElement, P = HTMLDivElement> extend
 
   /** 获取内部输入元素引用（组件ref指向外层div，需要聚焦输入元素等场景使用；随泛型参数化为input/textarea元素类型） */
   inputRef?: Ref<T>;
+
+  /**
+   * 内部输入元素的附加属性。组件props的`...rest`落在根元素div上，需写到原生input上时经此通道
+   * （如`role`/`aria-*`/`autoComplete`）。合并规则：非事件属性冲突时以本通道为准；
+   * onChange/onBlur/onFocus串联在组件自身逻辑之后（值管线与软校验不会被截断）；
+   * value/defaultValue由组件值管线管理，不在通道类型内
+   */
+  inputProps?: UserInputProps<T>;
 }
 
 /** 将validate入参归一化为校验函数（符号名对齐原版static.validationPatterns） */
@@ -119,6 +127,7 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   validate,
   flags,
   inputRef,
+  inputProps,
   required,
   // tabIndex落在input上（组件根为不可聚焦的div）；title/dir对齐原版InputWidget的落点
   // （TitledElement的$titled与setDir均为$input），同样不放外层div
@@ -130,7 +139,6 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   ...rest
 }, ref) => {
   const labelRef = useRef<HTMLSpanElement>(null);
-  const inputStyle = useLabelPadding(labelRef, label, labelPosition);
   // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
   const { value: currentValue, commit } = useControlledValue<string, ChangeEvent<HTMLInputElement>>(
     { value, defaultValue: defaultValue ?? '' },
@@ -138,43 +146,47 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
   );
   const internalInputRef = useRef<HTMLInputElement>(null);
   const setInputRef = useMergedRefs(inputRef, internalInputRef);
-  // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
-  const fieldInputId = useFieldInputId();
-  // 软校验反馈（对齐原版setValidityFlag）：非法时输入元素aria-invalid + 根元素invalid标志类
-  const { invalid, handleBlur, handleFocus } = useValidityFlag({
+  // 输入元素的公共属性派生：属性落点、字段id、标签让位、指示器回退、装饰聚焦、软校验
+  const {
+    inputProps: commonInputProps,
+    invalid,
+    decorationProps,
+    indicator: resolvedIndicator,
+    indicatorProps: indicatorSlotProps,
+  } = useInputProps<HTMLInputElement, string>({
     inputRef: internalInputRef,
     value: currentValue,
     validate: resolveValidate(validate),
+    disabled,
+    tabIndex,
+    accessKey,
+    name,
+    readOnly,
+    required,
+    placeholder,
+    maxLength,
+    title,
+    invisibleLabel,
+    dir,
+    labelRef,
+    label,
+    labelPosition,
+    indicator,
+    indicatorOverride,
+    indicatorProps,
+    onCommitValue: (next, event) => commit(next, event),
   });
   // type白名单校验（对齐原版getValidType）
   const validType = VALID_INPUT_TYPES.includes(type) ? type : 'text';
-  // 指示器解析（对齐原版构造期语义）：indicatorOverride非undefined时完全接管
-  // （SearchInput内部通道，null=明确无）；否则经RequiredElement的缺省回退解析
-  const resolvedIndicator = indicatorOverride !== undefined
-    ? indicatorOverride
-    : resolveRequiredIndicator(indicator, required);
-  // title/accessKey同落input（原版$titled=$accessKeyed=$input，解析见resolveTitle）
-  const resolvedTitle = resolveTitle({ title, label, invisibleLabel, accessKey });
-
-  /** 对齐原版onIconMouseDown/onIndicatorMouseDown：左键点击图标/指示器聚焦输入框（preventDefault阻止焦点转移后显式聚焦） */
-  const handleDecorationMouseDown: MouseEventHandler = (e) => {
-    if (e.button === 0) {
-      e.preventDefault();
-      internalInputRef.current?.focus();
-    }
-  };
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled, icon, indicator, label, invisibleLabel }, 'input', 'textInput'),
+    // 指示器类按解析后的取值判定：required 且未显式给 indicator 时回退为 required 指示器
+    getWidgetClassName({ disabled, icon, indicator: resolvedIndicator ?? undefined, label, invisibleLabel }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     `oo-ui-textInputWidget-type-${validType}`,
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    commit(event.target.value, event);
-  };
 
   return (
     <div
@@ -185,37 +197,11 @@ export const TextInput = forwardRef<HTMLDivElement, TextInputProps>(({
     >
       <input
         ref={setInputRef}
-        id={fieldInputId}
-        accessKey={accessKey}
-        type={validType}
-        name={name}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        tabIndex={resolveTabIndex(tabIndex, disabled)}
-        aria-disabled={disabled || undefined}
-        aria-invalid={invalid || undefined}
-        className='oo-ui-inputWidget-input'
-        disabled={disabled}
-        value={currentValue}
-        readOnly={readOnly}
-        required={required}
-        aria-required={required}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        title={resolvedTitle}
-        dir={dir}
-        style={inputStyle}
+        // 形态专属属性（type）与调用方的inputProps通道经useInputProps的合并规则并入
+        {...commonInputProps({ type: validType }, inputProps)}
       />
-      <IconBase icon={icon} onMouseDown={handleDecorationMouseDown} />
-      <IndicatorBase
-        indicator={resolvedIndicator ?? undefined}
-        {...indicatorProps}
-        onMouseDown={(event) => {
-          handleDecorationMouseDown(event);
-          indicatorProps?.onMouseDown?.(event);
-        }}
-      />
+      <IconBase icon={icon} {...decorationProps} />
+      <IndicatorBase {...indicatorSlotProps} />
       {hasLabel(label) && <LabelBase ref={labelRef} invisible={invisibleLabel}>{label}</LabelBase>}
     </div>
   );

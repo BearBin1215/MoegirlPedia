@@ -80,6 +80,9 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
       tabIndex={tabIndex}
       handleNavigationKeys={handleNavigationKeys}
       listWrapsAround={listWrapsAround}
+      // 焦点归属元素的管理期随菜单显隐开合（对齐原版MenuSelectWidget.toggle：
+      // 打开时指向选中/高亮项、关闭时移除aria-activedescendant）
+      focusOwnerActive={open}
       className={clsx(classes, layout?.outOfView && 'oo-ui-element-hidden')}
       // dir取锚点有效方向（RTL站点/Provider.dir配置下菜单文本方向正确）
       dir={layout?.dir}

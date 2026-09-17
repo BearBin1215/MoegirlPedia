@@ -49,7 +49,10 @@ export interface SearchWidgetProps
 
   /**
    * 查询输入框props覆盖（对应原版`config.input`注入自定义输入控件的能力，
-   * 此处收敛为SearchInput可定制的维度；value/defaultValue/onChange由本组件接管）
+   * 此处收敛为SearchInput可定制的维度；value/defaultValue/onChange由本组件接管）。
+   * 本prop展开为SearchInput的**组件props**；要写到原生input上的属性经`inputProps.inputProps`
+   * （即TextInput的输入元素透传通道）给入，其中事件处理器串联在组件逻辑之后、
+   * 不会接管值管线
    */
   inputProps?: Partial<Omit<SearchInputProps, 'value' | 'defaultValue' | 'onChange'>>;
 }

@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useRef,
   forwardRef,
   type ChangeEvent,
@@ -8,12 +7,14 @@ import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
 import { LabelBase } from '../Label/Base';
-import { getWidgetClassName, hasLabel, flaggedElementClasses, mergeInvalidFlag, resolveRequiredIndicator, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
-import { useControlledValue, useFieldInputId, useLabelPadding, useMergedRefs, useValidityFlag } from '../../hooks';
+import { flaggedElementClasses, getWidgetClassName, hasLabel, mergeInvalidFlag, toFlagArray } from '../../mixins';
+import { useControlledValue, useMergedRefs } from '../../hooks';
+import { useAutosize, useScrollbarOffset } from '../Input/autosize';
+import { useInputProps } from '../Input/props';
 import { resolveValidate, type TextInputProps } from '../TextInput';
 
 export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElement> {
-  /** 行数 */
+  /** 最小行数 */
   rows?: number;
 
   /** 最大行数 */
@@ -26,13 +27,13 @@ export interface MultilineTextInputProps extends TextInputProps<HTMLTextAreaElem
 /** 缺省maxRows：2×rows与10取大（对齐原版autosize缺省规则） */
 const getDefaultMaxRows = (rows?: number) => Math.max(2 * (rows || 0), 10);
 
-/** 指示器的右侧微调（px）：与TextInput系指示器的默认落点对齐，多行框需显式补回 */
-const INDICATOR_RIGHT_OFFSET = '2px';
-
 /**
- * 多行文本输入框，对齐原版OO.ui.MultilineTextInputWidget：autosize时经隐藏测量textarea
- * 实测内容与maxRows高度并回写真实input高度（测量流程见useEffect内注释），
- * 受控/非受控语义与其余输入类组件一致
+ * 多行文本输入框，对齐原版OO.ui.MultilineTextInputWidget（继承TextInputWidget，
+ * 故标签/图标/指示器/软校验等能力与TextInput同源，经由useInputProps共享派生）。
+ * autosize时经一份不可见的同源克隆textarea测量内容高度与maxRows高度并回写真实输入框
+ * （测量算法见useAutosize）；出现垂直滚动条时按滚动条宽度给指示器与后置标签让位，
+ * 并把该宽度计入输入框标签同侧的内边距（对齐原版adjustSize的scrollWidth分支与
+ * positionLabel，见useScrollbarOffset与useInputProps的scrollbarWidth）
  */
 export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputProps>(({
   accessKey,
@@ -44,6 +45,8 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   maxLength,
   icon,
   indicator,
+  indicatorProps,
+  indicatorOverride,
   label,
   invisibleLabel,
   labelPosition = 'after',
@@ -61,13 +64,13 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   dir,
   value,
   defaultValue,
-  // inputRef透传到内部textarea（父类型TextInputProps的泛型已参数化为HTMLTextAreaElement）
+  // inputRef透传到内部textarea，inputProps为原生textarea的附加属性通道
   inputRef: inputRefProp,
+  inputProps,
   ...rest
 }: MultilineTextInputProps, ref) => {
   const maxRows = maxRowsProp ?? getDefaultMaxRows(rows);
   const labelRef = useRef<HTMLSpanElement>(null);
-  const inputStyle = useLabelPadding(labelRef, label, labelPosition);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
   const setTextareaRef = useMergedRefs(textareaRef, inputRefProp);
@@ -76,105 +79,63 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     { value, defaultValue: defaultValue ?? '' },
     onChange,
   );
-  // 软校验反馈与TextInput一致（原版MultilineTextInputWidget继承TextInputWidget的校验能力）
-  const { invalid, handleBlur, handleFocus } = useValidityFlag({
+  // autosize高度：经state回到渲染流程，与标签让位的内边距共用同一处style
+  const autosizeStyle = useAutosize({
+    enabled: !!autosize,
+    textareaRef,
+    cloneRef: hiddenInputRef,
+    rows,
+    maxRows,
+    value: currentValue,
+  });
+  // 滚动条让位：垂直滚动条出现时，指示器与后置标签按滚动条宽度偏移；滚动条宽度同时计入
+  // 输入框标签同侧的内边距（对齐原版positionLabel，经useInputProps的scrollbarWidth并入）。
+  // 多行恒启用——固定行数（非autosize）时同样会出现滚动条，原版该分支也在autosize判断之外
+  const { scrollbarWidth, indicatorStyle, labelStyle } = useScrollbarOffset({
+    inputRef: textareaRef,
+    labelPosition,
+  });
+  // 输入元素的公共属性派生：属性落点、字段id、标签让位、指示器回退、装饰聚焦、软校验
+  const {
+    inputProps: commonInputProps,
+    invalid,
+    decorationProps,
+    indicator: resolvedIndicator,
+    indicatorProps: indicatorSlotProps,
+  } = useInputProps<HTMLTextAreaElement, string>({
     inputRef: textareaRef,
     value: currentValue,
     validate: resolveValidate(validate),
+    disabled,
+    tabIndex,
+    accessKey,
+    name,
+    readOnly,
+    required,
+    placeholder,
+    maxLength,
+    title,
+    invisibleLabel,
+    dir,
+    labelRef,
+    label,
+    labelPosition,
+    indicator,
+    indicatorOverride,
+    indicatorProps,
+    onCommitValue: (next, event) => commit(next, event),
+    inputStyle: autosizeStyle,
+    scrollbarWidth,
   });
-  // FieldLayout标签联动（通道A）：textarea认领字段id与label的htmlFor原生关联
-  const fieldInputId = useFieldInputId();
-  // title/accessKey同落textarea（原版$titled=$accessKeyed=$input，解析见resolveTitle）
-  const resolvedTitle = resolveTitle({ title, label, invisibleLabel, accessKey });
 
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled, icon, indicator, label, invisibleLabel }, 'input', 'textInput'),
+    // 指示器类按解析后的取值判定（required 且未显式给 indicator 时回退为 required 指示器）
+    getWidgetClassName({ disabled, icon, indicator: resolvedIndicator ?? undefined, label, invisibleLabel }, 'input', 'textInput'),
     hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
     'oo-ui-textInputWidget-type-text',
     flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
   );
-
-  const inputClasses = clsx(
-    'oo-ui-inputWidget-input',
-    autosize && 'oo-ui-textInputWidget-autosized',
-  );
-
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    commit(event.target.value, event);
-  };
-
-  /** 最小行数 */
-  const minRows = rows === undefined ? '' : String(rows);
-
-  // 最新adjustSize实现存入ref（每轮渲染后刷新），使input监听不必随value变化重挂，
-  // 避免受控模式下每次键入都remove/addEventListener
-  const adjustSizeRef = useRef<() => void>(() => {});
-
-  useEffect(() => {
-    adjustSizeRef.current = () => {
-      const input = textareaRef.current;
-      const hidden = hiddenInputRef.current;
-      if (!input || !hidden) {
-        return;
-      }
-      // 排除滚动条对测量的干扰（原版T297963：clone设overflow hidden）
-      hidden.style.overflow = 'hidden';
-      hidden.classList.remove('oo-ui-element-hidden');
-
-      // 高度设为0以获取内容的scrollHeight
-      hidden.style.height = '0';
-      hidden.setAttribute('rows', minRows);
-      hidden.value = input.value;
-      const { scrollHeight } = hidden;
-
-      // 恢复高度读取innerHeight/outerHeight
-      hidden.style.height = '';
-      const innerHeight = hidden.clientHeight;
-      const outerHeight = hidden.offsetHeight;
-
-      // 行数设为maxRows、内容清空以获取最大高度
-      hidden.setAttribute('rows', String(maxRows));
-      hidden.style.height = 'auto';
-      hidden.value = '';
-      const maxInnerHeight = hidden.clientHeight;
-
-      // Blink缩放下的测量误差补偿（原版T133347）
-      const measurementError = maxInnerHeight - hidden.scrollHeight;
-      const idealHeight = Math.min(maxInnerHeight, scrollHeight + measurementError);
-
-      hidden.classList.add('oo-ui-element-hidden');
-      hidden.style.overflow = '';
-
-      // 内容未超出maxRows时清空inline高度回退rows布局，超出时锁定高度
-      const newHeight = idealHeight > innerHeight ? `${idealHeight + (outerHeight - innerHeight)}px` : '';
-      input.style.height = newHeight;
-    };
-  });
-
-  // 键入即时调整（兼容非受控用法），监听只随autosize挂卸
-  useEffect(() => {
-    if (!autosize) {
-      return;
-    }
-    const input = textareaRef.current;
-    if (!input) {
-      return;
-    }
-    const onInput = () => adjustSizeRef.current();
-    input.addEventListener('input', onInput);
-    return () => {
-      input.removeEventListener('input', onInput);
-    };
-  }, [autosize]);
-
-  // value变化（含程序化赋值与非受控键入回流）触发重算，对齐原版change事件驱动adjustSize的语义
-  useEffect(() => {
-    if (!autosize) {
-      return;
-    }
-    adjustSizeRef.current();
-  }, [autosize, maxRows, rows, currentValue]);
 
   return (
     <div
@@ -184,48 +145,33 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
       ref={ref}
     >
       <textarea
-        accessKey={accessKey}
-        id={fieldInputId}
-        name={name}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        tabIndex={resolveTabIndex(tabIndex, disabled)}
-        aria-disabled={disabled || undefined}
-        aria-invalid={invalid || undefined}
-        className={inputClasses}
-        disabled={disabled}
-        value={currentValue}
-        readOnly={readOnly}
-        required={required}
-        aria-required={required}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        title={resolvedTitle}
-        dir={dir}
-        style={inputStyle}
-        rows={rows}
         ref={setTextareaRef}
+        // 形态专属属性（rows/autosized类）与调用方的inputProps通道经useInputProps的合并规则并入
+        {...commonInputProps({
+          rows,
+          className: autosize ? 'oo-ui-textInputWidget-autosized' : undefined,
+        }, inputProps)}
       />
       {autosize && (
-        // 测量用隐藏节点：不挂可聚焦属性（accessKey/tabIndex）与表单语义，避免主题CSS未就绪时进入tab序
+        // 测量用隐藏节点：不挂可聚焦属性（accessKey/tabIndex）与表单语义，避免主题CSS未就绪时进入tab序。
+        // 盒模型与字体由 useAutosize 在每次测量前从真实输入框同步；调用方inputProps的类与行内样式
+        // 可能携带影响排版的声明（如字体/字距），一并镜像保持测量同源（height由测量流程管理）
         <textarea
-          className='oo-ui-inputWidget-input oo-ui-element-hidden'
-          style={{ paddingRight: '0px', height: 'auto' }}
+          className={clsx('oo-ui-inputWidget-input', 'oo-ui-element-hidden', inputProps?.className)}
+          style={{ height: 'auto', ...inputProps?.style }}
           aria-hidden='true'
           rows={maxRows}
           ref={hiddenInputRef}
         />
       )}
-      <IconBase icon={icon} />
-      <IndicatorBase
-        indicator={resolveRequiredIndicator(indicator, required)}
-        style={{ right: INDICATOR_RIGHT_OFFSET }}
-      />
-      {hasLabel(label) && <LabelBase ref={labelRef} invisible={invisibleLabel}>{label}</LabelBase>}
+      <IconBase icon={icon} {...decorationProps} />
+      {/* 滚动条让位样式叠在槽位属性（含调用方indicatorProps.style）之后：让位是布局校正值 */}
+      <IndicatorBase {...indicatorSlotProps} style={{ ...indicatorSlotProps.style, ...indicatorStyle }} />
+      {hasLabel(label) && (
+        <LabelBase ref={labelRef} invisible={invisibleLabel} style={labelStyle}>{label}</LabelBase>
+      )}
     </div>
   );
 });
 
 MultilineTextInput.displayName = 'MultilineTextInput';
-

@@ -75,6 +75,12 @@ export const compareRoutes: CompareRoute[] = [
     Component: lazy(() => import('./pages/search-compare')),
   },
   {
+    path: 'text-input-compare',
+    title: 'TextInput',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/text-input-compare')),
+  },
+  {
     path: 'file-input-compare',
     title: 'SelectFileInput',
     group: 'Widgets',

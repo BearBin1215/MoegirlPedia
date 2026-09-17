@@ -4,32 +4,49 @@ import React, {
   useState,
   forwardRef,
   type KeyboardEvent as ReactKeyboardEvent,
+  type Ref,
 } from 'react';
 import clsx from 'clsx';
 import { IconBase } from '../Icon/Base';
 import { IndicatorBase } from '../Indicator/Base';
+import { LabelBase } from '../Label/Base';
 import { ButtonSlots } from '../Button/slots';
 import {
   buttonElementClasses,
+  flaggedElementClasses,
   getWidgetClassName,
+  hasLabel,
   indicatorElementClasses,
+  mergeInvalidFlag,
   resolveTabIndex,
-  resolveTitle,
+  toFlagArray,
 } from '../../mixins';
 import {
   getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
-import { useCleanId, useControlledValue, useFieldInputId, useMenuPopup } from '../../hooks';
+import { useCleanId, useControlledValue, useMergedRefs, useMenuPopup } from '../../hooks';
 import { useMessage } from '../../config';
-import type { AccessKeyedElement, Indicators } from '../../Element';
+import { useInputProps, type UserInputProps } from '../Input/props';
+import { resolveValidate, type TextInputValidate } from '../TextInput';
+import type { AccessKeyedElement, FlaggedElement, IconElement, IndicatorElement, LabelElement } from '../../Element';
+import type { LabelPosition } from '../Label';
 import type { WidgetProps } from '../Widget';
 import type { DropdownOptionProps } from '../Dropdown';
 import { MenuSelect } from '../MenuSelect';
 
+/**
+ * 备选项输入框属性。原版`ComboBoxInputWidget`继承`TextInputWidget`，故本组件与TextInput
+ * 共用同一套输入能力（标签/图标/指示器/软校验/字段id），经useInputProps共享派生；
+ * 输入框本身可自由编辑，选定只写入文本而非限定取值
+ */
 export interface ComboBoxInputProps extends
   Omit<WidgetProps<HTMLDivElement>, 'children' | 'id'>,
-  AccessKeyedElement {
+  AccessKeyedElement,
+  IconElement,
+  IndicatorElement,
+  LabelElement,
+  FlaggedElement {
 
   /** 选项集（输入时下拉展示；选定后写入输入框，输入框文本本身可自由编辑） */
   options: DropdownOptionProps[];
@@ -48,17 +65,36 @@ export interface ComboBoxInputProps extends
   /** 输入提示 */
   placeholder?: string;
 
-  /** 是否必填 */
+  /** 是否必填（required时指示器缺省回退required，与TextInput一致） */
   required?: boolean;
 
   /** 是否只读（只读时下拉按钮与菜单同步禁用） */
   readOnly?: boolean;
 
-  /** 组件图标 */
-  icon?: string;
+  /** 最大长度 */
+  maxLength?: number;
 
-  /** 组件指示器 */
-  indicator?: Indicators;
+  /**
+   * 标签位置
+   * @default 'after'
+   */
+  labelPosition?: LabelPosition;
+
+  /**
+   * 合法性校验（软反馈）：与TextInput同款，值不满足时输入框输出`aria-invalid`、
+   * 根元素输出invalid标志类，不改写值
+   */
+  validate?: TextInputValidate;
+
+  /** 获取内部input元素引用（组件ref指向外层div，需要聚焦输入元素等场景使用） */
+  inputRef?: Ref<HTMLInputElement>;
+
+  /**
+   * 内部input元素的附加属性（组件props的`...rest`落在根元素div上，需写到原生input上时经此通道）。
+   * 非事件属性冲突时以本通道为准；onChange/onBlur/onFocus串联在组件自身逻辑之后
+   * （值管线与菜单联动不会被截断）；value/defaultValue不在通道类型内
+   */
+  inputProps?: UserInputProps<HTMLInputElement>;
 }
 
 /**
@@ -77,13 +113,23 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   accessKey,
   icon,
   indicator,
+  label,
+  invisibleLabel,
+  labelPosition = 'after',
+  maxLength,
+  validate,
+  inputRef: inputRefProp,
+  inputProps,
+  flags,
   value,
   defaultValue,
   onChange,
   // tabIndex/title落在input上（对齐原版ComboBoxInputWidget继承InputWidget的
   // $tabIndexed与$titled均为$input）
   tabIndex,
+  // dir对齐原版setDir的落点（$input），不放外层div
   title,
+  dir,
   ...rest
 }, ref) => {
   // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
@@ -93,28 +139,19 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   );
   const [open, setOpen] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const internalInputRef = useRef<HTMLInputElement>(null);
+  const setInputRef = useMergedRefs(inputRefProp, internalInputRef);
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
   // 菜单id：aria-owns/aria-controls关联portal化的菜单面板
   const menuId = useCleanId();
-  // FieldLayout标签联动（通道A）：input认领字段id与label的htmlFor原生关联
-  const fieldInputId = useFieldInputId();
-
+  // 标签元素引用（原版继承TextInputWidget：input按标签宽度预留内边距）
+  const labelRef = useRef<HTMLSpanElement>(null);
   const controlsDisabled = disabled || readOnly;
   // 可选项（有value且未禁用），键盘导航的目标集合
   const selectableValues = useMemo(() => getSelectableValues(options), [options]);
   // 下拉按钮的无障碍标签（对齐原版ooui-combobox-button-label消息）
   const toggleOptionsLabel = useMessage('ooui-combobox-button-label');
-
-  const classes = clsx(
-    className,
-    getWidgetClassName({ disabled, icon, indicator }, 'input', 'textInput'),
-    'oo-ui-textInputWidget-type-text',
-    'oo-ui-comboBoxInputWidget',
-    options.length === 0 && 'oo-ui-comboBoxInputWidget-empty',
-    open && 'oo-ui-comboBoxInputWidget-open',
-  );
 
   // 菜单开合与键盘高亮（端点钳制不环绕、无高亮时↓从首项/↑从末项起步）；
   // 开启时点击外部/Escape关闭（Escape捕获阶段，嵌套于Dialog时不误关弹窗）。
@@ -134,7 +171,62 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   });
 
   /**
-   * 输入框键盘交互：↑↓展开/保持菜单并移动高亮，Home/End/PageUp/PageDown仅在菜单展开时
+   * 值管线（挂入useInputProps的onCommitValue，输入即触发）：提交输入文本并展开菜单
+   * （对齐原版onEdit的input事件分支）；已有高亮时按原版onInputChange随输入重定位到
+   * 精确匹配项（无匹配则清除高亮），避免残留上一轮高亮
+   */
+  const handleInputChange = (nextValue: string) => {
+    commit(nextValue);
+    setOpen(true);
+    setHighlightedValue((prev) => (
+      prev === undefined ? prev : selectableValues.find((optionValue) => optionValue === nextValue)
+    ));
+  };
+
+  // 输入元素的公共属性派生：原版ComboBoxInputWidget继承TextInputWidget，能力与TextInput同源
+  // （title/accessKey/dir同落input，对齐原版继承的$titled/$accessKeyed/$input）
+  const {
+    inputProps: commonInputProps,
+    invalid,
+    decorationProps,
+    indicator: resolvedIndicator,
+    indicatorProps: indicatorSlotProps,
+  } = useInputProps<HTMLInputElement, string>({
+    inputRef: internalInputRef,
+    value: currentValue,
+    validate: resolveValidate(validate),
+    disabled,
+    tabIndex,
+    accessKey,
+    name,
+    readOnly,
+    required,
+    placeholder,
+    maxLength,
+    title,
+    invisibleLabel,
+    dir,
+    labelRef,
+    label,
+    labelPosition,
+    indicator,
+    // 值管线：提交输入文本并联动菜单展开/高亮重定位（见handleInputChange）
+    onCommitValue: handleInputChange,
+  });
+
+  const classes = clsx(
+    className,
+    // indicatorElement类按解析后的指示器判定（明确无指示器时不输出）
+    getWidgetClassName({ disabled, icon, indicator: resolvedIndicator ?? undefined, label, invisibleLabel }, 'input', 'textInput'),
+    hasLabel(label) && `oo-ui-textInputWidget-labelPosition-${labelPosition}`,
+    'oo-ui-textInputWidget-type-text',
+    'oo-ui-comboBoxInputWidget',
+    options.length === 0 && 'oo-ui-comboBoxInputWidget-empty',
+    open && 'oo-ui-comboBoxInputWidget-open',
+    flaggedElementClasses(mergeInvalidFlag(toFlagArray(flags), invalid)),
+  );
+
+  /** 输入框键盘交互：↑↓展开/保持菜单并移动高亮，Home/End/PageUp/PageDown仅在菜单展开时
    * 占用按键（收起时保留输入框原生光标/滚动行为），Enter选定高亮项并收起菜单
    */
   const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
@@ -179,25 +271,13 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     }
   };
 
-  /**
-   * 输入即展开菜单（对齐原版onEdit的input事件分支）；已有高亮时按原版onInputChange
-   * 随输入重定位到精确匹配项（无匹配则清除高亮），避免残留上一轮高亮
-   */
-  const handleInputChange = (nextValue: string) => {
-    commit(nextValue);
-    setOpen(true);
-    setHighlightedValue((prev) => (
-      prev === undefined ? prev : selectableValues.find((optionValue) => optionValue === nextValue)
-    ));
-  };
-
   /** 下拉按钮开合菜单并把焦点交还输入框（对齐原版onDropdownButtonClick） */
   const handleDropdownButtonClick = () => {
     if (controlsDisabled) {
       return;
     }
     setOpen((prev) => !prev);
-    inputRef.current?.focus();
+    internalInputRef.current?.focus();
   };
 
   /**
@@ -219,35 +299,22 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     >
       <div ref={elementRef} className='oo-ui-comboBoxInputWidget-field'>
         <input
-          ref={inputRef}
-          id={fieldInputId}
-          type='text'
-          name={name}
-          accessKey={accessKey}
-          placeholder={placeholder}
-          required={required}
-          aria-required={required}
-          disabled={disabled}
-          readOnly={readOnly}
-          tabIndex={resolveTabIndex(tabIndex, disabled)}
-          aria-disabled={disabled || undefined}
-          role='combobox'
-          aria-autocomplete='list'
-          aria-expanded={open}
-          aria-owns={menuId}
-          // 对齐原版autocomplete:false默认（自定义建议菜单与浏览器原生补全不可叠加）
-          autoComplete='off'
-          className='oo-ui-inputWidget-input'
-          // 归一化后恒为string（非受控缺省''），无需再兜底空串
-          value={currentValue}
-          // title/accessKey同落input（原版$titled=$accessKeyed=$input）；本组件无标签元素，
-          // 不做invisibleLabel兜底
-          title={resolveTitle({ title, accessKey })}
-          onChange={(event) => handleInputChange(event.target.value)}
-          onKeyDown={handleInputKeyDown}
+          ref={setInputRef}
+          // 形态专属属性（combobox角色与菜单关联）与调用方的inputProps通道经useInputProps的合并规则并入
+          {...commonInputProps({
+            type: 'text',
+            role: 'combobox',
+            'aria-autocomplete': 'list',
+            'aria-expanded': open,
+            // 展开时声明所拥有的菜单（收起即移除，对齐原版菜单toggle对$focusOwner的attr/removeAttr）
+            'aria-owns': open ? menuId : undefined,
+            // 对齐原版autocomplete:false默认（自定义建议菜单与浏览器原生补全不可叠加）
+            autoComplete: 'off',
+            onKeyDown: handleInputKeyDown,
+          }, inputProps)}
         />
-        <IconBase icon={icon} />
-        <IndicatorBase indicator={indicator} />
+        <IconBase icon={icon} {...decorationProps} />
+        <IndicatorBase {...indicatorSlotProps} />
         <span
           className={clsx(
             'oo-ui-comboBoxInputWidget-dropdownButton',
@@ -273,10 +340,16 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
           </span>
         </span>
       </div>
+      {/* 标签是根元素直接子节点（对齐原版positionLabel的$element.append($label)）：
+          主题的标签定位规则均为根元素直接子选择器，放进field（display:table）会脱离定位并挤占列宽 */}
+      {hasLabel(label) && <LabelBase ref={labelRef} invisible={invisibleLabel}>{label}</LabelBase>}
       <MenuSelect
         ref={menuRef}
         id={menuId}
         container={elementRef}
+        // 高亮项的aria-activedescendant落在输入框上（对齐原版setFocusOwner(widget.$tabIndexed)，
+        // 此处$tabIndexed为$input）
+        focusOwnerRef={internalInputRef}
         onChoose={selectOption}
         value={currentValue}
         open={open}

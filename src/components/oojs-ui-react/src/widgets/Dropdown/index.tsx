@@ -26,7 +26,8 @@ import { MenuSelect } from '../MenuSelect';
 export type DropdownOptionProps = SelectOptionProps;
 
 export interface DropdownProps extends
-  WidgetProps<HTMLDivElement>,
+  // 显示文本取自label或选中项，children无渲染落点（handle与菜单为固定结构），故屏蔽
+  Omit<WidgetProps<HTMLDivElement>, 'children'>,
   AccessKeyedElement,
   IconElement,
   LabelElement {
@@ -64,6 +65,9 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   const { value: currentValue, commitIfChanged } = useControlledValue<string | number>({ value, defaultValue }, onChange);
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
+  // handle元素引用：既是标签点击的聚焦落点，也是菜单的焦点归属元素（下方MenuSelect的
+  // focusOwnerRef）——屏幕阅读器读的是持有DOM焦点的元素，菜单自身不作Tab停靠点
+  const handleRef = useRef<HTMLSpanElement>(null);
   // FieldLayout标签联动（通道B）：点击标签聚焦handle（对齐原版TabIndexedElement.simulateLabelClick
   // 基线focus()，禁用时不聚焦）。返回的rootRef兼作浮层的忽略目标
   const {
@@ -73,7 +77,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
   } = useFieldLabelFocus<HTMLDivElement>({
     ref,
     disabled,
-    activate: (el) => el?.querySelector<HTMLElement>('.oo-ui-dropdownWidget-handle')?.focus(),
+    activate: () => handleRef.current?.focus(),
   });
   // handle内label元素id：原版DropdownWidget构造期setLabelId并把它并入handle的
   // aria-labelledby，使combobox的可访问名称为字段label+当前显示文本
@@ -175,6 +179,7 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
       ref={mergedRef}
     >
       <span
+        ref={handleRef}
         tabIndex={resolveTabIndex(tabIndex, disabled)}
         aria-disabled={disabled || undefined}
         aria-haspopup='listbox'
@@ -198,6 +203,8 @@ export const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(({
         ref={menuRef}
         id={menuId}
         container={elementRef}
+        // 高亮项的aria-activedescendant落在handle上（对齐原版setFocusOwner(widget.$tabIndexed)）
+        focusOwnerRef={handleRef}
         onChoose={selectOption}
         value={currentValue}
         open={open}

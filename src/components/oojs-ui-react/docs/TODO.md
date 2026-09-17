@@ -29,6 +29,7 @@
 - **TagMultiselect 不开放替换内部输入控件**。原版 `config.input`/`config.inputWidget` 可替换内部输入控件，React 版内置输入框，对齐其余组件不暴露内部输入控件的做法。
 - **弹窗滚动锁不含 iOS 触摸滚动 hack**。原版 `togglePreventIosScrolling` 针对 iOS Safari 无视 `body { overflow: hidden }` 的问题，仅在 iOS 设备且打开 full 尺寸弹窗时保存/恢复滚动位置并加 `oo-ui-windowManager-ios-modal-ready` 类；触发条件窄且需移动滚动位置，成本与收益不对等，React 版不实现。
 - **`label` 的有效性真值与原版不同**。原版 `LabelElement.setLabel` 只认非空字符串（数字、布尔一律归为无标签），本工程 `hasLabel` 把 `0`/`true` 等可渲染 ReactNode 视为有标签（JSX 会实际渲染出内容），相应输出 `oo-ui-labelElement` 与标签内容。
+- **多行输入框不提供 `allowLinebreaks` 配置与 `enter` 事件**。原版 `MultilineTextInputWidget` 可经该配置（缺省 `true`）退化为"假装单行"形态（阻止 Enter 换行、`cleanUpValue` 把换行替换为空格）并把 Ctrl/Cmd+Enter 改作 `enter` 事件；本工程恒等价于 `allowLinebreaks=true`（Enter 插入换行），Ctrl/Cmd+Enter 无事件通道。需要禁止换行时由调用方自行清洗输入值；`enter` 事件亦无使用场景（`prompt` 的单行输入框已自行处理 Enter 提交）。对照页 `multiline-compare`「换行与Enter」区块可见差异。
 
 ### 增强
 
@@ -53,6 +54,8 @@
 - **ButtonGroup 的组禁用下发给组内按钮**。原版 `ButtonGroupWidget` 无 `setDisabled` 覆写，仅给组根切换 `oo-ui-widget-disabled`/`-enabled`，组内按钮仍为 enabled（图标/指示器也因此不反色）；React 版经 Context 把组禁用与按钮自身 disabled 取或，组内按钮输出 disabled 态、按压与点击被拦截（对齐本工程「组禁用即各项禁用」的一贯口径）。对照页 `button-checkbox-compare` 的 ButtonGroup 区块可见两侧差异。
 - **SelectFileInputWidget 的初始文件集可用 `value`/`defaultValue` 声明**。原版构造期传 `value` 会被丢弃：彼时 `$input` 尚未置 `type=file`，`setValue` 写回 `input.files` 无效，而构造末尾又用 `$input.files` 覆盖了 `currentFiles`（实测 `new SelectFileInputWidget({value:[file]})` 后 `currentFiles`/`input.files` 均为空、`oo-ui-selectFileInputWidget-empty` 未摘除），原版只能构造后调 `setValue`。React 版按受控惯例直接生效，并把文件集写回 DOM `input.files`（经 `DataTransfer`），表单提交正常。
 - **ButtonInput 的 title 落真实 button/input 并支持 invisibleLabel 兜底**。原版 `ButtonInputWidget` 不混入 `TitledElement`（mixin 清单仅 Button/Icon/Indicator/Label/FlaggedElement 五个 Element），`title` 本无落点；React 版把 `title` 接入 `resolveTitle` 落在真实 `button`/`input` 上（invisibleLabel 时以标签兜底、accessKey 附加键位后缀），与其余按钮形态（Button/ButtonOption）的 tooltip 行为看齐。
+- **多行输入框 autosize 的重测时机含盒模型/宽度变化兜底**。原版 `adjustSize` 只由 change 事件驱动（标签宽度变化、字体加载、窗口缩放后不重算，高度滞留到下一次输入）；React 版在值/行数变化同步重测之外，经 ResizeObserver 观察输入框尺寸兜底重测（首帧测量早于标签让位内边距生效的问题也因此消除）。
+- **滚动条让位的偏移侧按输入元素自身方向判定**。原版 `adjustSize` 的 scrollWidth 分支读**根元素**的 `css('direction')`，而 `dir` 配置经 `InputWidget.setDir` 只落在 `$input` 上——LTR 页面显式 `dir='rtl'` 时原版让位到 `right`，但 RTL 输入框的垂直滚动条实际在左侧；React 版读输入元素自身的有效方向，让位侧与滚动条物理位置一致。未显式传 `dir` 时两侧一致（同为继承页面方向）。
 
 ### 等效替代
 
@@ -74,6 +77,8 @@
 - **Dropdown 的 `title` 落在根元素**（原版 `DropdownWidget` 的 `$titled` 为内部 `$label`）。tooltip 位于控件子树内、可视结果一致，仅 DOM 落点不同。其余混入 TitledElement 的组件已按原版落点接入（见 comparison-guide.md「共享抽象」的 `resolveTitle` 条目）。
 - **Message 的 `notice` 类型不输出 `oo-ui-image-notice`**：原版按类型给图标加 `oo-ui-image-{type}`，本工程经 `imageVariantClasses` 只输出主题存在的 image 变体位（notice 不在其中）。两个主题 CSS 均无该类规则，视觉等价。
 - **`aria-required` 是原版 DOM 之外的附加属性**：原版 `RequiredElement` 只写原生 `required`，本工程同时输出 `aria-required`（对原生 input 而言冗余但无害，不改变 AT 播报）。保留以不改变既有 a11y 输出。
+- **NumberInput 的 `allowInteger`/`isInteger` 一并收，等价于强制 `step=1`**。原版二者均为已废弃的兼容配置（`isInteger` 为 `allowInteger` 的别名），置位时覆盖显式 `step`；本工程同样支持两个写法且不额外告警。本工程不按 React 惯例另设现代命名（如 `integerOnly`），也不额外告警——它们是原版 API 的历史包袱，仅此处保留以保持迁移路径。
+- **标签让位的内边距取值口径不同**：本工程经 `useLabelPadding` 取标签元素的 `offsetWidth`（取整）再加 2px 间距写入 input 的内边距；原版 `positionLabel` 用标签的精确宽度与自身间距（实测标签宽约 135.7px 时，原版写 137.7px、本工程写 140px，差值 1–3px）。视觉等效；内边距落在 input 上、由 labelPosition 决定落在哪一侧这一契约两侧一致。垂直滚动条出现时把滚动条宽度计入 after 标签同侧内边距的补偿（原版 `positionLabel` 的 `+ scrollWidth` 分支）已对齐。
 - **`resolveTitle` 的兜底随 props 重渲染重算**：原版 TitledElement 的「invisibleLabel → title」兜底只在构造期求值（后续 `setLabel`/`setInvisibleLabel` 不重算 title），React 版每次渲染按当前 props 计算，label 后续变化会联动 title——声明式求值时机的固有差异，兜底能力本身两侧一致。
 
 ### 暂未实现
@@ -91,4 +96,6 @@
 - **CheckboxMultiselect 未渲染原版 `MultiselectWidget` 的 `$group` 容器**：原版在根元素内还有一层 `.oo-ui-multiselectWidget-group`，选项是该容器的子节点；本工程选项直接作为根元素的子节点（根元素类已对齐 `oo-ui-multiselectWidget`）。站点若按原版结构写 `.oo-ui-multiselectWidget-group` 选择器不会命中。
 - **Popup 未开放 `icon`**：原版 `PopupWidget` 混入 IconElement，`config.icon` 会在浮层头部渲染图标（根元素随之输出 `oo-ui-iconElement`）；本工程 Popup 未提供该 prop。
 - **选项族选中/按压态的图标自动着色未实现**：原版 wikimediaui 主题 `getElementClasses` 对选中或按压的 MenuOptionWidget/OutlineOptionWidget 自动给图标加 `oo-ui-image-progressive`（不依赖 flags 配置）；本工程除 ButtonOption 按"激活/禁用反色"规则输出变体外，其余选项形态的图标无自动着色。
+- **标签多选族未接入菜单的焦点归属**。原版 `MenuTagMultiselectWidget` 的菜单以内嵌输入框为 focusOwner；本工程 `TagMultiselect`/`MenuTagMultiselect` 未传 `Select` 的 `focusOwnerRef`，高亮项的 `aria-activedescendant` 落在无 DOM 焦点的菜单根上。`Dropdown`/`ComboBoxInput` 已按原版 `setFocusOwner` 落实到持有焦点的元素，此处需先决策标签多选采用何种 combobox/listbox 角色再确定落点（原版自身对该组件是否该用兼容 ARIA 的角色也留有疑问）。
 - **FieldLayout 的 title 缺字段控件 accessKey 委托**：原版 FieldLayout 构造末尾经覆写的 `formatTitleWithAccessKey` 委托字段控件，label 的 tooltip 会附上字段 accessKey（`Title [k]`）；React 版 FieldLayout 拿不到字段控件的 accessKey，title 为纯文本（title/accessKey 同传的组件已由 `resolveTitle` 覆盖键位后缀）。
+- **标签让位内边距的取侧未随 RTL 翻转**：原版 `positionLabel` 按 `labelPosition` 与元素方向的组合决定内边距落在 `padding-left` 还是 `padding-right`（RTL 下互换）；本工程 `useLabelPadding` 固定 before→左、after→右。RTL 皮肤（主题 `.rtl.css` 把 after 标签定位到 `left: 0`）下内边距落在错误一侧；LTR 场景一致。修复需让取侧跟随输入元素有效方向并响应方向变化。
