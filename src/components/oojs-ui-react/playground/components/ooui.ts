@@ -14,8 +14,17 @@ import oouiApexRtlCssText from 'oojs-ui/dist/oojs-ui-apex.rtl.css?inline';
 import codexTokensCssText from '@wikimedia/codex-design-tokens/dist/theme-wikimedia-ui.css?inline';
 
 type OOUIWindow = {
-  // size仅在open的data中生效（MessageDialog.getSetupProcess每次open覆盖构造配置）
-  open: (data?: { title?: string; message?: string; size?: string }) => void;
+  /**
+   * size与actions仅在open的data中生效：`Dialog.getSetupProcess`每次open都以
+   * `data.size ?? static.size`、`data.actions ?? static.actions`决定本次开窗值
+   * （size覆盖构造值，actions相对静态配置解析），故长动作文案等变体不必定义子类
+   */
+  open: (data?: {
+    title?: string;
+    message?: string;
+    size?: string;
+    actions?: Record<string, unknown>[];
+  }) => void;
 };
 
 type OOUI = {

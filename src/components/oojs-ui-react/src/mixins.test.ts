@@ -3,6 +3,7 @@ import {
   buttonElementClasses,
   flaggedElementClasses,
   getButtonIconClasses,
+  getOptionIconClasses,
   getWidgetClassName,
   hasLabel,
   iconElementClasses,
@@ -293,6 +294,35 @@ describe('resolveTitle（TitledElement + AccessKeyedElement mixin）', () => {
   it('空串title照原样输出（对齐原版setTitle的title=""），并参与键位后缀', () => {
     expect(resolveTitle({ title: '' })).toBe('');
     expect(resolveTitle({ title: '', accessKey: 'd' })).toBe(' [d]');
+  });
+
+  it('提供accessKeyLabel时以宿主解析的文案替代原键值（原版jquery.accessKeyLabel分支）', () => {
+    expect(resolveTitle({ title: '删除', accessKey: 'd', accessKeyLabel: 'Alt+Shift+d' })).toBe('删除 [Alt+Shift+d]');
+  });
+
+  it('解析器给出空串时不加键位后缀（对齐原版：解析器存在但返回空串即不拼接）', () => {
+    expect(resolveTitle({ title: '删除', accessKey: 'd', accessKeyLabel: '' })).toBe('删除');
+  });
+
+  it('accessKeyLabel为undefined时回落原键值（宿主解析器返回undefined与未配置同通道，有意取舍）', () => {
+    expect(resolveTitle({ title: '删除', accessKey: 'd', accessKeyLabel: undefined })).toBe('删除 [d]');
+  });
+});
+
+describe('getOptionIconClasses（主题对选项选中/按压态的图标着色）', () => {
+  it('选中或按压时输出progressive变体', () => {
+    expect(getOptionIconClasses({ selected: true })).toBe('oo-ui-image-progressive');
+    expect(getOptionIconClasses({ pressed: true })).toBe('oo-ui-image-progressive');
+  });
+
+  it('未选中且未按压时无变体', () => {
+    expect(getOptionIconClasses({ selected: false, pressed: false })).toBe('');
+    expect(getOptionIconClasses({})).toBe('');
+  });
+
+  it('禁用项不出变体（主题对禁用项走另一分支）', () => {
+    expect(getOptionIconClasses({ selected: true, disabled: true })).toBe('');
+    expect(getOptionIconClasses({ pressed: true, disabled: true })).toBe('');
   });
 });
 

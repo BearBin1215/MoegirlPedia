@@ -72,9 +72,10 @@ export interface PopupToolGroupBaseProps extends ToolGroupBaseProps {
 
 /**
  * 弹出工具组基类（对齐原版OO.ui.PopupToolGroup，List/Menu组的公共实现，不对外导出）：
- * 把手（图标+标签+指示器）点击开合工具面板，面板portal至body定位在把手正下方
- * （原版FloatableElement会按左右空间选择对齐侧，此处简化为左对齐，见TODO），
- * 视口下方空间不足时钳高内部滚动；点击面板与把手之外或选中工具（keepOpenToolNames除外）收起
+ * 把手（图标+标签+指示器）点击开合工具面板，面板portal至body定位在把手正下方，
+ * 宽度放不下时按左右可用空间改选对齐侧（对齐原版setActive的降级顺序，见useAnchoredPanelLayout
+ * 的horizontalFit；原版的「填充容器」未实现，见TODO），视口下方空间不足时钳高内部滚动；
+ * 点击面板与把手之外或选中工具（keepOpenToolNames除外）收起
  */
 export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseProps>(({
   tools,
@@ -89,8 +90,9 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   toolsClassName,
   className,
   disabled,
-  // align由Toolbar读取后决定挂载位置，本体不渲染，解构掉避免落成DOM属性
-  align: _align,
+  // align由Toolbar读取后决定挂载位置，本体不渲染（解构掉避免落成DOM属性）；
+  // 此处另用于面板的首选对齐侧（对齐原版PopupToolGroup.setActive的before→start、其余→end）
+  align = 'before',
   onToolSelect,
   ...rest
 }, ref) => {
@@ -137,6 +139,10 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     anchor: handleRef,
     panelRef: toolsRef,
     position: position === 'bottom' ? 'above' : 'below',
+    // 面板宽度放不下时按左右空间改选对齐侧（首选侧随工具组分组：align='after'的右组取终止边），
+    // 对齐原版PopupToolGroup.setActive的降级顺序
+    horizontalFit: true,
+    preferredSide: align === 'before' ? 'start' : 'end',
     // tools入依赖：ListToolGroup经More/Fewer增减工具后面板高度变化需重新钳高
     recomputeKey: tools,
   });

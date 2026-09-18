@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { useMergedRefs } from '../../hooks';
-import { withTemporaryClass } from '../../utils';
+import { withTemporaryClasses } from '../../utils';
 import type { ElementProps } from '../../Element';
 import type { ToolGroupBaseProps } from '../Tool';
 
@@ -107,12 +107,12 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(({
       // narrow类会压缩工具组宽度（主题CSS有多处.narrow规则），以压缩后宽度为基准会
       // 误判；且窄栏态下narrowConfig已替换把手/工具文本，重测会以窄栏内容为基准导致
       // 无法退出窄栏（退出须以宽栏内容宽度为准）。故仅宽栏态重测基准（测量期临时
-      // 移除该类取自然宽度，withTemporaryClass保证恢复），窄栏态复用缓存——对齐原版
+      // 移除该类取自然宽度，withTemporaryClasses保证恢复），窄栏态复用缓存——对齐原版
       // getNarrowThreshold只做首次（宽栏）测量的缓存语义，且能感知工具组增减（原版
       // 缓存至reset，本实现随effect重跑重置；React下工具组变化必经props，覆盖面不小于原版）
       if (!narrowRef.current || thresholdRef.current === null) {
         let contentWidth = 0;
-        withTemporaryClass(root, NARROW_CLASS, () => {
+        withTemporaryClasses(root, { remove: [NARROW_CLASS] }, () => {
           contentWidth = (toolsRef.current?.offsetWidth ?? 0) +
             (afterRef.current?.offsetWidth ?? 0) +
             (actionsRef.current?.offsetWidth ?? 0);

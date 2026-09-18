@@ -12,6 +12,12 @@ export type DecoratedOptionProps =
     /** 选项集复用时随对象透入的标签/值，仅供组件吞掉以避免落成DOM属性（渲染用children） */
     label?: ReactNode;
     value?: string | number;
+
+    /**
+     * 图标/指示器的变体类（`oo-ui-image-*`）。判定由各选项形态承担
+     * （选中/按压态着色见`getOptionIconClasses`），本组件只负责透传给ButtonSlots
+     */
+    variantClasses?: string;
   };
 
 export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(({
@@ -20,6 +26,7 @@ export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(
   disabled,
   icon,
   indicator,
+  variantClasses,
   label: _label,
   value: _value,
   ...rest
@@ -43,7 +50,12 @@ export const DecoratedOption = forwardRef<HTMLDivElement, DecoratedOptionProps>(
       {...rest}
       ref={ref}
     >
-      <ButtonSlots icon={icon} label={children} indicator={indicator} />
+      <ButtonSlots
+        icon={icon}
+        variantClasses={variantClasses}
+        label={children}
+        indicator={indicator}
+      />
     </div>
   );
 });

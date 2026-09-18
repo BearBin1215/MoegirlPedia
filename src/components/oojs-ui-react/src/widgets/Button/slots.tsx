@@ -6,7 +6,10 @@ import { LabelBase } from '../Label/Base';
 import type { IconElement, IndicatorElement } from '../../Element';
 
 export interface ButtonSlotsProps extends IconElement, IndicatorElement {
-  /** 图标/指示器共用的变体类（`oo-ui-image-*`，getButtonIconClasses产物，两者同一规则着色） */
+  /**
+   * 图标/指示器共用的变体类（`oo-ui-image-*`，两者同一规则着色）。
+   * 生产者：按钮系的`getButtonIconClasses`、选项系的`getOptionIconClasses`
+   */
   variantClasses?: string;
 
   /** 图标span附加属性（对齐原版$icon上的配置能力），className与变体类合并 */

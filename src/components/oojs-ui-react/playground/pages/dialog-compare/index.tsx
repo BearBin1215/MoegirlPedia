@@ -88,6 +88,71 @@ function ReactDialogs() {
   );
 }
 
+/** 超长动作文案：验证动作区横向装不下时切竖向布局（两版fitActions） */
+const LONG_OK_LABEL = '确定并保存这个非常长的操作名称';
+const LONG_CANCEL_LABEL = '取消并放弃这个同样很长的操作';
+
+/** 原版侧：长文案经open的data.actions传入（每次打开以data.actions覆盖static.actions） */
+function OriginalLongLabelDialog() {
+  const dialogRef = useRef<OOUIWindow | null>(null);
+  const { containerRef } = useOriginalWidgets((oo, container, register) => {
+    const OriginalMessageDialog = oo.ui.MessageDialog as unknown as new (config?: Record<string, unknown>) => OOUIWindow;
+    const manager = new oo.ui.WindowManager();
+    container.appendChild(unwrapJQuery(manager.$element));
+    const dialog = new OriginalMessageDialog({ size: 'small' });
+    register(manager);
+    manager.addWindows([dialog]);
+    dialogRef.current = dialog;
+  });
+
+  return (
+    <div>
+      <p>
+        <Button
+          onClick={() => dialogRef.current?.open({
+            title: 'Long labels (small)',
+            message: 'message content',
+            size: 'small',
+            actions: [
+              // flags与React侧内置按钮（framed + primary/safe）对齐；原版默认accept动作即primary
+              { action: 'accept', label: LONG_OK_LABEL, flags: 'primary' },
+              { action: 'reject', label: LONG_CANCEL_LABEL, flags: 'safe' },
+            ],
+          })}
+        >
+          Open 长文案
+        </Button>
+      </p>
+      <div ref={containerRef} />
+    </div>
+  );
+}
+
+/** React侧：同一对超长文案，用于对照竖向动作布局与foot让位 */
+function ReactLongLabelDialog() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <p>
+        <Button onClick={() => setOpen(true)}>Open 长文案</Button>
+      </p>
+      <MessageDialog
+        open={open}
+        size='small'
+        title='Long labels (small)'
+        okLabel={LONG_OK_LABEL}
+        cancelLabel={LONG_CANCEL_LABEL}
+        onEscape={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+        onCancel={() => setOpen(false)}
+      >
+        message content
+      </MessageDialog>
+    </div>
+  );
+}
+
 /** 原版侧：OO.ui.confirm / OO.ui.alert静态命令式弹窗 */
 function OriginalImperative() {
   const [result, setResult] = useState('（尚未操作）');
@@ -167,12 +232,18 @@ function DialogComparePage() {
           左侧为本地安装的原版oojs-ui，右侧为本组件库实现。
           两者行为对照点：打开/关闭动画时序、ESC关闭、Ctrl/Cmd+Enter触发primary按钮、焦点管理；
           打开弹窗后缩放窗口跨过尺寸阈值（如 large=700px），验证宽度/高度自适应是否实时更新。
+          「长动作文案」区块验证动作区横向装不下时切竖向布局，以及 body 底部让位给 foot（首帧高度与滚动区不被遮挡）。
         </>
       )}
     >
       <h2>MessageDialog尺寸</h2>
       <CompareColumns original={<OriginalDialogs />}>
         <ReactDialogs />
+      </CompareColumns>
+
+      <h2>长动作文案（竖向动作布局）</h2>
+      <CompareColumns original={<OriginalLongLabelDialog />}>
+        <ReactLongLabelDialog />
       </CompareColumns>
 
       <h2>命令式confirm/alert</h2>

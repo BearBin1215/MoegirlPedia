@@ -63,6 +63,12 @@ export interface DialogProps extends ElementProps<HTMLDivElement> {
   overlay?: ReactNode,
   /** 附加类 */
   contentClassName?: string,
+  /**
+   * 让body底部让出foot的实测高度（对齐原版MessageDialog/ProcessDialog在setDimensions里的
+   * `$body.css('bottom', $foot.outerHeight(true))`）：foot因内容换行变高时（如MessageDialog的
+   * 竖向动作布局），body的滚动区不被foot遮挡。缺省false，由两个具体弹窗开启
+   */
+  bodyFitFoot?: boolean,
   /** 是否允许按ESC关闭 */
   escapable?: boolean,
   /** 按下ESC时的回调，由调用方负责关闭弹窗 */
@@ -87,6 +93,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
   children,
   foot,
   overlay,
+  bodyFitFoot,
   escapable = true,
   onEscape,
   onPrimaryAction,
@@ -96,6 +103,8 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
 }, ref) => {
   // size='full'时恒为满屏；窄屏自动满屏在updateSize判定
   const [full, setFull] = useState(size === 'full');
+  // body底部让位的高度（foot实测），仅bodyFitFoot开启时写入body的style
+  const [footHeight, setFootHeight] = useState(0);
   const [ready, setReady] = useState(false);
   const [setup, setSetup] = useState(false);
   const [active, setActive] = useState(false);
@@ -131,7 +140,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
 
   // 测量读取的渲染期状态（active/setup/size/frameWidth）：经ref读取，使测量函数与监听
   // 恒为最新闭包（不必用依赖数组驱动重挂）
-  const frameStateRef = useLatestRef({ active, setup, size, frameWidth });
+  const frameStateRef = useLatestRef({ active, setup, size, frameWidth, bodyFitFoot });
 
   /**
    * 重算frame高度：非满屏且视窗容得下时，以head/body/foot实测内容高度撑起frame，
@@ -143,10 +152,18 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
       setup: setupNow,
       size: sizeNow,
       frameWidth: frameWidthNow,
+      bodyFitFoot: bodyFitFootNow,
     } = frameStateRef.current;
     const frame = frameRef.current;
     if (!frame) {
       return;
+    }
+    // body底部让位（对齐原版`$body.css('bottom', $foot.outerHeight(true))`）：foot绝对定位、
+    // 高度由内容（含换行）决定，与frame高度同一次测量读出，经state回到渲染；同值不写入。
+    // 取offsetHeight即原版outerHeight(true)的口径——foot为纯定位壳、主题与其调用方均不设外边距
+    if (bodyFitFootNow && footRef.current) {
+      const footHeightNow = footRef.current.offsetHeight;
+      setFootHeight((prev) => (prev === footHeightNow ? prev : footHeightNow));
     }
     if (sizeNow === 'full') {
       // 满屏尺寸：宽高交由CSS（oo-ui-windowManager-size-full），清空内联高度避免覆盖
@@ -195,12 +212,13 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
 
   // setup拍在paint前设置最终高度（对齐原版setup()中updateSize先于addClass的时序）：
   // 动画期间布局即为最终布局，scale缩放纯靠transform，不产生滚动条，复现原版"从中间由小变大"。
-  // frameWidth入依赖：size变化时宽度与测量基准同时变化，须在同一帧重算高度
+  // frameWidth入依赖：size变化时宽度与测量基准同时变化，须在同一帧重算高度；
+  // bodyFitFoot入依赖：打开期间翻动该prop时重测一次（让位值的产出自本测量）
   useLayoutEffect(() => {
     if (active && setup) {
       measureFrame();
     }
-  }, [active, setup, frameWidth, measureFrame]);
+  }, [active, setup, frameWidth, bodyFitFoot, measureFrame]);
 
   // 键盘行为，对齐原版Dialog.prototype.onDialogKeyDown：原版将keydown绑定在弹窗自身
   // $element上（焦点须在弹窗内才生效），故此处用React的onKeyDown而非document级监听，
@@ -347,7 +365,14 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(({
           />
           <div className={contentClasses} tabIndex={-1} ref={contentRef}>
             <div className='oo-ui-window-head' ref={headRef}>{head}</div>
-            <div className='oo-ui-window-body' ref={bodyRef}>{children}</div>
+            {/* body底部让位：bottom由foot实测高度给出（对齐原版`$body.css('bottom', …)`） */}
+            <div
+              className='oo-ui-window-body'
+              ref={bodyRef}
+              style={bodyFitFoot ? { bottom: footHeight } : undefined}
+            >
+              {children}
+            </div>
             <div className='oo-ui-window-foot' ref={footRef}>{foot}</div>
             {overlay}
           </div>

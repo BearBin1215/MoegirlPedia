@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, mergeAriaLabelledBy, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
 import { useFieldLabelFocus, usePressedState } from '../../hooks';
 import { useButtonGroupDisabled } from '../ButtonGroup/context';
 import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
@@ -154,8 +155,10 @@ export const Button = forwardRef<HTMLSpanElement, ButtonProps>(({
   const flagList = toFlagArray(flags);
   const relList = typeof rel === 'string' ? [rel] : rel;
   const iconClasses = getButtonIconClasses({ framed, active, disabled: isDisabled, flags: flagList });
-  // title/accessKey同落锚点（原版$titled=$accessKeyed=$button，解析见resolveTitle）
-  const resolvedTitle = resolveTitle({ title, label: children, invisibleLabel, accessKey });
+  // title/accessKey同落锚点（原版$titled=$accessKeyed=$button，解析见resolveTitle）；
+  // 快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
+  const resolvedTitle = resolveTitle({ title, label: children, invisibleLabel, accessKey, accessKeyLabel });
 
   const classes = clsx(
     className,

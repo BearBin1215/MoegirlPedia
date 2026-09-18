@@ -154,6 +154,7 @@ export {
   useIsMobile,
   useDir,
   useViewportSpacing,
+  useAccessKeyLabel,
 } from './config';
 export type { OOUIConfig, ViewportSpacing, ViewportSpacingInput, Direction } from './config';
 export { msg, deferMsg, resolveMsg, registerMessages } from './i18n';

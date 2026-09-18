@@ -8,6 +8,7 @@ import React, {
 import clsx from 'clsx';
 import { Icon } from '../Icon';
 import { getWidgetClassName, resolveTabIndex, resolveTitle } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
 import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useFieldInputId, useMergedRefs } from '../../hooks';
 import type { InputProps } from '../Input';
@@ -59,6 +60,8 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
   );
   // FieldLayout标签联动（通道A）：显式inputId优先，否则认领字段id与label的htmlFor关联
   const fieldInputId = useFieldInputId(inputId);
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
 
   // indeterminate不是React受控属性，需手动同步到DOM
   useEffect(() => {
@@ -96,7 +99,7 @@ export const CheckboxInput = forwardRef<HTMLSpanElement, CheckboxInputProps>(({
         required={required}
         // title/accessKey同落input（原版InputWidget的$titled=$accessKeyed=$input）；
         // 本组件无标签元素，不做invisibleLabel兜底
-        title={resolveTitle({ title, accessKey })}
+        title={resolveTitle({ title, accessKey, accessKeyLabel })}
         dir={dir}
         accessKey={accessKey}
         tabIndex={resolveTabIndex(tabIndex, disabled)}

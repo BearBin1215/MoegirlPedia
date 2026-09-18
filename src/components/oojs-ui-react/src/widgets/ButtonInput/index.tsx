@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
 import { usePressedState } from '../../hooks';
 import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
 import type { WidgetProps } from '../Widget';
@@ -109,6 +110,8 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
   });
   const flagList = toFlagArray(flags);
   const iconClasses = getButtonIconClasses({ framed, active, disabled, flags: flagList });
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
 
   const classes = clsx(
     className,
@@ -138,7 +141,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     'aria-disabled': disabled || undefined,
     // title落真实button/input并做invisibleLabel兜底：原版ButtonInputWidget不混TitledElement
     // （title本无落点），此为本工程增强（见docs/TODO.md增强节）
-    title: resolveTitle({ title, label: children, invisibleLabel, accessKey }),
+    title: resolveTitle({ title, label: children, invisibleLabel, accessKey, accessKeyLabel }),
     accessKey,
     formNoValidate: formNoValidate || undefined,
     onClick: handleClick,

@@ -65,7 +65,8 @@ export function mergeAriaLabelledBy(...values: (string | undefined)[]): string |
  * present, use this as a fallback title”，使视觉上无文字的按钮仍有tooltip/可访问名；
  * ②组件同时是AccessKeyedElement时，title末尾附加快捷键提示（原版formatTitleWithAccessKey
  * 的`title + ' [' + accessKey + ']'`；原版优先取jquery.accessKeyLabel的修饰键文案——
- * MediaWiki侧经该插件显示“Alt+Shift+k”之类，纯DOM环境不可得，故按原版回落分支取原键值）。
+ * MediaWiki侧经该插件显示“Alt+Shift+k”之类，本工程由宿主经`OOUIProvider.getAccessKeyLabel`
+ * 提供等价解析，见`useAccessKeyLabel`，未提供时按原版回落分支取原键值）。
  * 返回undefined表示不输出title属性（对齐原版removeAttr('title')）
  */
 export function resolveTitle({
@@ -73,6 +74,7 @@ export function resolveTitle({
   label,
   invisibleLabel,
   accessKey,
+  accessKeyLabel,
 }: {
   /** 调用方显式传入的title */
   title?: string;
@@ -82,6 +84,11 @@ export function resolveTitle({
   invisibleLabel?: boolean;
   /** 快捷键（AccessKeyedElement），有值时附到title末尾 */
   accessKey?: string;
+  /**
+   * 快捷键的显示文案（已由宿主解析，见`useAccessKeyLabel`）：给出时替代原键值，形成
+   * `title [Alt+Shift+k]`；给出空串时按原版不加后缀（原版此时走不到拼接分支）
+   */
+  accessKeyLabel?: string;
 }): string | undefined {
   let resolved = title;
   if (resolved === undefined && invisibleLabel && typeof label === 'string') {
@@ -90,7 +97,8 @@ export function resolveTitle({
   if (resolved === undefined) {
     return undefined;
   }
-  return accessKey ? `${resolved} [${accessKey}]` : resolved;
+  const suffixKey = accessKeyLabel === undefined ? accessKey : accessKeyLabel;
+  return suffixKey ? `${resolved} [${suffixKey}]` : resolved;
 }
 
 /**
@@ -216,6 +224,30 @@ export function getButtonIconClasses({
     return '';
   }
   return imageVariantClasses(flags);
+}
+
+/**
+ * 选项族图标/指示器的变体类（对齐wikimediaui主题`getElementClasses`对
+ * `MenuOptionWidget`/`OutlineOptionWidget`的规则）：非禁用的选中或按压项以progressive着色，
+ * 与flags配置无关。主题把变体类同时加在`$icon`与`$indicator`上（`Theme.updateElementClasses`），
+ * 故经ButtonSlots的variantClasses一份给两处。不适用者：ButtonOption走按钮反色规则
+ * （getButtonIconClasses），TabOption/MenuSectionOption不在该主题分支内。
+ * `disabled`只反映选项自身的禁用态——组禁用未下发到选项（原版`isDisabled()`含组禁用），
+ * 该差异见docs/TODO.md
+ */
+export function getOptionIconClasses({
+  selected,
+  pressed,
+  disabled,
+}: {
+  /** 是否为已选中项 */
+  selected?: boolean;
+  /** 是否为鼠标按压中的项 */
+  pressed?: boolean;
+  /** 是否为禁用项（主题对禁用项不输出变体） */
+  disabled?: boolean;
+}): string {
+  return !disabled && (selected || pressed) ? 'oo-ui-image-progressive' : '';
 }
 
 /**

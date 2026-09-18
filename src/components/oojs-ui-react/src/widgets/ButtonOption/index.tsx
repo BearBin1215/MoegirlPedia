@@ -2,6 +2,7 @@ import React, { forwardRef, type ReactNode } from 'react';
 import clsx from 'clsx';
 import { omit } from 'es-toolkit';
 import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, optionWidgetClasses, resolveTitle } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
 import type { IconElement, IndicatorElement } from '../../Element';
 import type { OptionProps } from '../Option';
 import { ButtonSlots } from '../Button/slots';
@@ -44,6 +45,8 @@ export const ButtonOption = forwardRef<HTMLDivElement, ButtonOptionProps>(({
   // 末位的flags给空数组：本工程选项族不开放flags（原版选项经OptionWidget混入的
   // FlaggedElement可再取progressive/destructive等变体），见docs/TODO.md舍弃节
   const iconClasses = getButtonIconClasses({ framed: isFramed, active: selected, disabled, flags: [] });
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, label: children, icon, indicator }, 'option', 'buttonOption'),
@@ -72,7 +75,7 @@ export const ButtonOption = forwardRef<HTMLDivElement, ButtonOptionProps>(({
       <a
         className='oo-ui-buttonElement-button'
         role='button'
-        title={resolveTitle({ title, accessKey })}
+        title={resolveTitle({ title, accessKey, accessKeyLabel })}
       >
         <ButtonSlots
           icon={icon}

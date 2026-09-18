@@ -125,6 +125,9 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
   const setInputRef = useMergedRefs(inputRef, internalInputRef);
   // 标签元素引用（原版TextInputWidget的LabelElement：input按标签宽度预留内边距）
   const labelRef = useRef<HTMLSpanElement>(null);
+  // 根元素引用：标签让位的内边距落侧按根元素（样式表）方向解析（见useInputProps的rootRef）
+  const internalRootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, internalRootRef);
   /** 展示值：空值/非数字时显示为空 */
   const displayValue = typeof currentValue === 'number' && !Number.isNaN(currentValue) ? currentValue : '';
 
@@ -158,6 +161,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
     revalidate,
   } = useInputProps<HTMLInputElement, number | ''>({
     inputRef: internalInputRef,
+    rootRef: internalRootRef,
     value: currentValue,
     validate: validateNumber,
     // 挂载期即校验：复现原版构造期行为（空值+required在加载时即输出非法标记）
@@ -283,7 +287,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(({
       {...rest}
       className={classes}
       aria-disabled={disabled || undefined}
-      ref={ref}
+      ref={setRootRef}
     >
       <IconBase icon={icon} {...decorationProps} />
       <IndicatorBase {...indicatorSlotProps} />

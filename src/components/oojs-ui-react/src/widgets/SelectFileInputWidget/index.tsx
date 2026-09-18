@@ -14,7 +14,7 @@ import { ActionFieldLayout } from '../../layouts/ActionFieldLayout';
 import { getWidgetClassName, pendingElementClasses, resolveTitle } from '../../mixins';
 import type { AccessKeyedElement } from '../../Element';
 import { useControlledValue, useLatestRef, useMergedRefs } from '../../hooks';
-import { useMessage } from '../../config';
+import { useAccessKeyLabel, useMessage } from '../../config';
 import { Button, type ButtonProps } from '../Button';
 import { Icon } from '../Icon';
 import { TextInput } from '../TextInput';
@@ -297,6 +297,9 @@ export const SelectFileInputWidget = forwardRef<HTMLDivElement, SelectFileInputW
     };
   }, [files, useThumbnail, thumbnailSizeLimit]);
 
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
+
   /** 打开系统文件选择器（对齐原版onKeyPress/onDropTargetClick对`$input`触发click） */
   const openPicker = () => {
     if (!disabled) {
@@ -395,7 +398,7 @@ export const SelectFileInputWidget = forwardRef<HTMLDivElement, SelectFileInputW
       accessKey={accessKey}
       // 空title抑制浏览器对file input的默认提示（原版static.title=''，经TitledElement落在
       // $input上，调用方title同落此处）；accessKey有值时附加键位后缀，解析见resolveTitle
-      title={resolveTitle({ title: title ?? '', accessKey })}
+      title={resolveTitle({ title: title ?? '', accessKey, accessKeyLabel })}
       accept={acceptList ? acceptList.join(', ') : undefined}
       multiple={multiple || undefined}
       required={required}

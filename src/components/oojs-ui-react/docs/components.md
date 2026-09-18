@@ -443,13 +443,17 @@ export default App;
 交互与原版一致：输入后回车添加；输入为空时按Backspace移除末尾标签并把其文本回填输入框（按Ctrl/Cmd则纯删除）；
 点击标签把其移回输入框编辑（`allowEditTags`）；←→在标签与输入框间移动焦点；Escape清空输入；
 失焦时把输入框文本提交为标签；拖动标签可调整顺序（`allowReordering`，drop后按新顺序写回值）。
+菜单模式（`MenuTagMultiselect`）展开即按输入过滤并自动高亮首个可选项（`allowArbitrary` 时不自动高亮），↑↓移动高亮、Enter选定高亮项。
 `inputPosition='inline'`时输入框自动铺满所在行的剩余空间，空间不足时换行取整行宽度（对齐原版`updateInputSize`）。
 值为`(string | number)[]`，经`value`/`defaultValue`/`onChange`受控或非受控。
+非法标签（重复的非首次出现、不在合法值域内的值）的派生结果经`onInvalidTagsChange`报出，
+内容变化时才派发；注意它与组件整体的invalid标志不等价——后者还包含「输入框内有未提交文本」。
 
 | 参数                  | 说明                                                          | 类型                                    |
 | --------------------- | ------------------------------------------------------------- | --------------------------------------- |
 | value / defaultValue  | 标签值集合（当前/初始）                                       | `(string \| number)[]`                  |
 | onChange              | 标签增删回调                                                  | [`ChangeHandler<(string \| number)[]>`](#基本类型) |
+| onInvalidTagsChange   | 非法标签集变化回调（按标签顺序给出非法值，全部合法时为空数组） | `(invalidValues: (string \| number)[]) => void` |
 | inputPosition         | 输入框位置：`inline`（标签区末尾）/`outline`（标签区下方）/`none`（无输入） | `'inline' \| 'outline' \| 'none'`       |
 | allowArbitrary        | 允许添加任意值（否则仅`allowedValues`/菜单选项）              | `boolean`                               |
 | allowDuplicates       | 允许重复值                                                    | `boolean`                               |

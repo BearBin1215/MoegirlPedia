@@ -74,6 +74,9 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenInputRef = useRef<HTMLTextAreaElement>(null);
   const setTextareaRef = useMergedRefs(textareaRef, inputRefProp);
+  // 根元素引用：标签让位的内边距落侧按根元素（样式表）方向解析（见useInputProps的rootRef）
+  const internalRootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, internalRootRef);
   // 与其余输入类组件统一受控/非受控语义：非受控时由内部state承接，defaultValue缺省''
   const { value: currentValue, commit } = useControlledValue<string, ChangeEvent<HTMLTextAreaElement>>(
     { value, defaultValue: defaultValue ?? '' },
@@ -104,6 +107,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
     indicatorProps: indicatorSlotProps,
   } = useInputProps<HTMLTextAreaElement, string>({
     inputRef: textareaRef,
+    rootRef: internalRootRef,
     value: currentValue,
     validate: resolveValidate(validate),
     disabled,
@@ -142,7 +146,7 @@ export const MultilineTextInput = forwardRef<HTMLDivElement, MultilineTextInputP
       {...rest}
       className={classes}
       aria-disabled={disabled || undefined}
-      ref={ref}
+      ref={setRootRef}
     >
       <textarea
         ref={setTextareaRef}

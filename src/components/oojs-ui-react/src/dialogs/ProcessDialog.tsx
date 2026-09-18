@@ -65,7 +65,8 @@ interface ProcessDialogErrorItem extends ProcessDialogErrorProps {
 /** 标题避让判定的宽度余量（px）：原版fitLabel在相对尺寸下取`$head.width() - 20`，此处以同一余量近似 */
 const LABEL_FIT_GAP = 20;
 
-export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' | 'foot'> {
+// bodyFitFoot由本组件恒开（other动作区的foot让位），故从可传prop中剔除
+export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' | 'foot' | 'bodyFitFoot'> {
 
   /** 弹窗标题 */
   title?: ReactNode;
@@ -317,6 +318,9 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
           )}
         </div>
       }
+      // body底部让位给foot（对齐原版ProcessDialog.setDimensions对$body的bottom写入）：
+      // other动作区换行变高时body的滚动区不被遮挡
+      bodyFitFoot
       foot={
         <div className='oo-ui-processDialog-actions-other'>
           {otherActions.map(renderAction)}

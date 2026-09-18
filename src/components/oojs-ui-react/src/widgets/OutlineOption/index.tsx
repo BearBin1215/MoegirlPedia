@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
 import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
-import { optionWidgetClasses } from '../../mixins';
+import { getOptionIconClasses, optionWidgetClasses } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export interface OutlineOptionProps extends Omit<DecoratedOptionProps, 'value'>, OptionProps {
@@ -17,6 +17,7 @@ export interface OutlineOptionProps extends Omit<DecoratedOptionProps, 'value'>,
 export const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   className,
   level = 0,
+  disabled,
   selected,
   highlighted,
   pressed,
@@ -35,7 +36,10 @@ export const OutlineOption = forwardRef<HTMLDivElement, OutlineOptionProps>(({
   return (
     <DecoratedOption
       {...rest}
+      disabled={disabled}
       className={classes}
+      // 选中/按压态的图标着色（wikimediaui主题按选项类内置的变体规则，与flags无关）
+      variantClasses={getOptionIconClasses({ selected, pressed, disabled })}
       aria-selected={!!selected}
       ref={ref}
     />

@@ -28,7 +28,7 @@ import {
   getSelectableValues,
   type ChangeHandler,
 } from '../../utils';
-import { useControlledValue, useFieldLabelFocus, useMenuPopup } from '../../hooks';
+import { useControlledValue, useFieldLabelFocus, useLatestRef, useMenuPopup } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 import type { FlaggedElement, IconElement, IndicatorElement } from '../../Element';
 import type { SelectOptionProps } from '../Select';
@@ -73,6 +73,14 @@ export interface TagMultiselectProps extends
 
   /** 标签增删回调 */
   onChange?: ChangeHandler<(string | number)[]>;
+
+  /**
+   * 非法标签集变化回调（只读派生通道，不改变值）：以标签顺序给出非法标签值
+   * （重复的非首次出现、不在合法值域内的值），全部合法时为空数组。内容变化时才派发，
+   * 首个渲染不派发（对齐原版`valid`事件仅在变化时emit）。注意其与组件整体的非法标志
+   * 不等价——后者还包含「输入框内有未提交文本」这一情形（根元素的invalid标志类）
+   */
+  onInvalidTagsChange?: (invalidValues: (string | number)[]) => void;
 
   /**
    * 输入框位置
@@ -155,6 +163,7 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
   value,
   defaultValue,
   onChange,
+  onInvalidTagsChange,
   inputPosition: inputPositionProp = 'inline',
   allowArbitrary = false,
   allowDuplicates = false,
@@ -191,6 +200,10 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const focusTrapRef = useRef<HTMLSpanElement>(null);
+  // 菜单的焦点归属元素（对齐原版`MenuSelectWidget`构造期的`setFocusOwner(widget.$tabIndexed)`）：
+  // 高亮项的aria-activedescendant须落在真正持有DOM焦点的元素上（读屏只读焦点元素上的该属性），
+  // 有输入框时是输入框、无输入（inputPosition='none'）时是焦点陷阱span
+  const menuFocusOwnerRef = hasInput ? inputRef : focusTrapRef;
   const groupRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -267,6 +280,12 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
       };
     });
   }, [currentValue, allowDuplicates, allowArbitrary, allowedValueSet, optionByValue]);
+
+  /** 非法标签值（按标签顺序，`items[].valid`的派生结果）；`onInvalidTagsChange`的载荷 */
+  const invalidTagValues = useMemo(
+    () => items.filter((item) => !item.valid).map((item) => item.value),
+    [items],
+  );
 
   /** 是否未达标签数量上限 */
   const underLimit = !tagLimit || items.length < tagLimit;
@@ -384,6 +403,23 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
     }
   }, [open, setHighlightedValue]);
 
+  // 菜单开启时高亮首个可选项（对齐原版MenuSelectWidget：开启时绑定输入框编辑事件并立即按
+  // 当前输入值过滤，`highlightOnFilter` 分支此时无高亮项故取首个可选项；`highlightOnFilter`
+  // 缺省即 `!allowArbitrary`）。关闭时高亮已由上一条effect清除，故此处只在"刚打开"这一时机
+  // 介入——不随渲染或鼠标事件重设，以免与Select的悬停/移出行为相争
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    const justOpened = open && !wasOpenRef.current;
+    wasOpenRef.current = open;
+    // 已有高亮时不覆盖：本次开启是实现层（聚焦）触发的，而指定高亮优先——点击标签经
+    // onTagSelect 会先聚焦输入框（连带开启菜单）再指定高亮项，若此处改写会让随后的
+    // Enter 落到首个选项上（对齐原版 onTagSelect 末尾的 highlightItem(menuItem)）
+    if (!justOpened || !isMenu || allowArbitrary || highlightedValue !== undefined) {
+      return;
+    }
+    setHighlightedValue(menuSelectableValues[0]);
+  }, [isMenu, open, allowArbitrary, highlightedValue, menuSelectableValues, setHighlightedValue]);
+
   // 过滤时高亮首个匹配项（对齐原版highlightOnFilter：allowArbitrary时不自动高亮）
   useEffect(() => {
     if (isMenu && !allowArbitrary && inputValue) {
@@ -398,6 +434,21 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
       setOpen(false);
     }
   }, [underLimit]);
+
+  // 非法标签集变化时通知调用方（只读派生，不提交值）。上一次结果以ref承载：
+  // 首个渲染不派发，内容不变（含父级未采纳回调）时也不重复派发，
+  // 对齐原版toggleValid的`if (this.valid !== valid)`守卫
+  const onInvalidTagsChangeRef = useLatestRef(onInvalidTagsChange);
+  const prevInvalidTagsRef = useRef(invalidTagValues);
+  useEffect(() => {
+    const prev = prevInvalidTagsRef.current;
+    const changed = prev.length !== invalidTagValues.length
+      || prev.some((invalidValue, index) => invalidValue !== invalidTagValues[index]);
+    if (changed) {
+      prevInvalidTagsRef.current = invalidTagValues;
+      onInvalidTagsChangeRef.current?.(invalidTagValues);
+    }
+  }, [invalidTagValues, onInvalidTagsChangeRef]);
 
   // inline输入框宽度自适应（对齐原版updateInputSize）：标签集合、输入值与容器宽度变化时重算
   useInlineInputWidth({
@@ -774,6 +825,7 @@ export const TagMultiselect = forwardRef<HTMLDivElement, TagMultiselectProps>(({
           onHighlightedChange={setHighlightedValue}
           onChoose={handleMenuChoose}
           disabled={disabled}
+          focusOwnerRef={menuFocusOwnerRef}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveLayoutSelection } from './hooks';
+import { resolveLayoutSelection, resolvePanelAlignSide } from './hooks';
 
 /**
  * hooks.ts纯函数的契约测试（不含需要React/DOM环境的hook）。
@@ -40,5 +40,35 @@ describe('resolveLayoutSelection（布局激活值的缺失/失效回退）', ()
     expect(resolveLayoutSelection(2, options, [{ value: 1 }, { value: 2 }, { value: 3 }])).toBe(2);
     expect(resolveLayoutSelection(3, options, [{ value: 1 }, { value: 2 }, { value: 3 }])).toBe(2);
     expect(resolveLayoutSelection(undefined, options, [])).toBe(1);
+  });
+});
+
+/**
+ * resolvePanelAlignSide：锚定浮层的对齐侧降级顺序（对齐原版PopupToolGroup.setActive）：
+ * 首选侧放得下即用首选侧，否则试对侧，再试居中，都不足时取空间较大的一侧
+ */
+describe('resolvePanelAlignSide（面板对齐侧的降级顺序）', () => {
+  it('首选侧放得下时用首选侧', () => {
+    expect(resolvePanelAlignSide('start', { start: 200, end: 100, center: 300 }, 150)).toBe('start');
+    expect(resolvePanelAlignSide('end', { start: 100, end: 200, center: 300 }, 150)).toBe('end');
+  });
+
+  it('首选侧放不下时改试对侧', () => {
+    expect(resolvePanelAlignSide('start', { start: 100, end: 200, center: 300 }, 150)).toBe('end');
+    expect(resolvePanelAlignSide('end', { start: 200, end: 100, center: 300 }, 150)).toBe('start');
+  });
+
+  it('两侧都放不下但居中放得下时取居中', () => {
+    expect(resolvePanelAlignSide('start', { start: 100, end: 100, center: 150 }, 150)).toBe('center');
+    expect(resolvePanelAlignSide('end', { start: 100, end: 100, center: 150 }, 150)).toBe('center');
+  });
+
+  it('都不足时取空间较大的一侧', () => {
+    expect(resolvePanelAlignSide('start', { start: 100, end: 120, center: 100 }, 150)).toBe('end');
+    expect(resolvePanelAlignSide('start', { start: 120, end: 100, center: 100 }, 150)).toBe('start');
+  });
+
+  it('可用空间等于面板宽度时视为放得下（等价于原版的"不裁剪"判定）', () => {
+    expect(resolvePanelAlignSide('start', { start: 150, end: 0, center: 0 }, 150)).toBe('start');
   });
 });

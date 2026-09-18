@@ -135,8 +135,10 @@ export const VIEWPORT_SPACING = 5;
 export const OFFSCREEN_POSITION = -9999;
 
 /**
- * 就近可滚动容器（对齐原版`getClosestScrollableElementContainer`的简化版），无则回退根元素。
- * 浮层的裁剪/钳高与滚出判定以此为可视区，视口即根元素
+ * 就近可滚动容器（对齐原版`getClosestScrollableElementContainer`：自父链向上取第一个
+ * overflow 为 auto/scroll 的祖先），无则回退根元素。浮层的裁剪/钳高与滚出判定以此为
+ * 可视区，视口即根元素。与原版的口径差异（`overlay` 兼容位、恒查两轴、未命中回落
+ * documentElement）见docs/TODO.md「等效替代」
  */
 export function findScrollableContainer(el: HTMLElement | null): HTMLElement {
   let current = el?.parentElement ?? null;
@@ -186,18 +188,31 @@ export function getFirstFocusable(root: ParentNode | null | undefined): HTMLElem
 }
 
 /**
- * 临时移除类执行同步测量后恢复原状态（工具栏窄栏判定需以未压缩宽度为基准）。
+ * 临时改写类集合执行同步测量后恢复原状态：`remove`中的类在测量期移出、`add`中的类在测量期
+ * 加入，测量后按测量前的原样复原（原先存在与否都还原）。用于"必须以某个确定状态为测量基准"
+ * 的场景（工具栏窄栏判定以未压缩宽度为基准、MessageDialog动作区判定以横向布局为基准）。
  * 恢复置于finally：测量抛错也不残留临时状态
  */
-export function withTemporaryClass(el: HTMLElement, className: string, measure: () => void): void {
-  const hadClass = el.classList.contains(className);
-  if (hadClass) {
+export function withTemporaryClasses(
+  el: HTMLElement,
+  changes: { remove?: readonly string[]; add?: readonly string[] },
+  measure: () => void,
+): void {
+  const removed = (changes.remove ?? []).filter((className) => el.classList.contains(className));
+  const added = (changes.add ?? []).filter((className) => !el.classList.contains(className));
+  for (const className of removed) {
     el.classList.remove(className);
+  }
+  for (const className of added) {
+    el.classList.add(className);
   }
   try {
     measure();
   } finally {
-    if (hadClass) {
+    for (const className of added) {
+      el.classList.remove(className);
+    }
+    for (const className of removed) {
       el.classList.add(className);
     }
   }

@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { getWidgetClassName, resolveTabIndex, resolveTitle } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
 import { useControlledValue, useFieldInputId } from '../../hooks';
 import type { InputProps } from '../Input';
 
@@ -44,6 +45,8 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
   );
   // FieldLayout标签联动（通道A）：显式inputId优先，否则认领字段id与label的htmlFor关联
   const fieldInputId = useFieldInputId(inputId);
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
 
   const classes = clsx(
     className,
@@ -72,7 +75,7 @@ export const RadioInput = forwardRef<HTMLSpanElement, RadioInputProps>(({
         id={fieldInputId}
         // title/accessKey同落input（原版InputWidget的$titled=$accessKeyed=$input）；
         // 本组件无标签元素，不做invisibleLabel兜底
-        title={resolveTitle({ title, accessKey })}
+        title={resolveTitle({ title, accessKey, accessKeyLabel })}
         dir={dir}
         role={role}
         onChange={handleChange}

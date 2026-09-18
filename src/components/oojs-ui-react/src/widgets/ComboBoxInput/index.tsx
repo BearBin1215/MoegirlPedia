@@ -99,8 +99,9 @@ export interface ComboBoxInputProps extends
 
 /**
  * 备选项输入框，对齐原版OO.ui.ComboBoxInputWidget：可自由输入的文本框 + 下拉选项菜单，
- * 输入即展开菜单并按值精确匹配选中项，↑↓移动高亮、Enter选定高亮项并收起菜单、
- * 下拉按钮切换菜单。不像原生combobox那样强制输入内容必须是选项之一
+ * 输入或点击输入框即展开菜单（后者对齐原版onEdit的mouseup分支）并按值精确匹配选中项，
+ * ↑↓移动高亮、Enter选定高亮项并收起菜单、下拉按钮切换菜单。
+ * 不像原生combobox那样强制输入内容必须是选项之一
  */
 export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   options,
@@ -141,6 +142,9 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
   const elementRef = useRef<HTMLDivElement>(null);
   const internalInputRef = useRef<HTMLInputElement>(null);
   const setInputRef = useMergedRefs(inputRefProp, internalInputRef);
+  // 根元素引用：标签让位的内边距落侧按根元素（样式表）方向解析（见useInputProps的rootRef）
+  const internalRootRef = useRef<HTMLDivElement>(null);
+  const setRootRef = useMergedRefs(ref, internalRootRef);
   // 菜单面板经MenuSelect portal至body，点击外部关闭时需连同菜单一起排除
   const menuRef = useRef<HTMLDivElement>(null);
   // 菜单id：aria-owns/aria-controls关联portal化的菜单面板
@@ -193,6 +197,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     indicatorProps: indicatorSlotProps,
   } = useInputProps<HTMLInputElement, string>({
     inputRef: internalInputRef,
+    rootRef: internalRootRef,
     value: currentValue,
     validate: resolveValidate(validate),
     disabled,
@@ -271,6 +276,18 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
     }
   };
 
+  /**
+   * 点击输入框重新展开菜单（对齐原版onEdit的`mouseup`分支：菜单已展开、禁用或不可见时不处理）。
+   * 表现为"点击已有关键字的输入框即重开菜单"；readOnly在本工程即下拉按钮与菜单同步禁用
+   * （见props注释），故与其余展开通道一致用controlsDisabled把关
+   */
+  const handleInputMouseUp = () => {
+    if (controlsDisabled || open) {
+      return;
+    }
+    setOpen(true);
+  };
+
   /** 下拉按钮开合菜单并把焦点交还输入框（对齐原版onDropdownButtonClick） */
   const handleDropdownButtonClick = () => {
     if (controlsDisabled) {
@@ -295,12 +312,13 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
       {...rest}
       className={classes}
       aria-disabled={disabled || undefined}
-      ref={ref}
+      ref={setRootRef}
     >
       <div ref={elementRef} className='oo-ui-comboBoxInputWidget-field'>
         <input
           ref={setInputRef}
-          // 形态专属属性（combobox角色与菜单关联）与调用方的inputProps通道经useInputProps的合并规则并入
+          // 形态专属属性（combobox角色与菜单关联、按键导航与点击展开）与调用方的inputProps
+          // 通道经useInputProps的合并规则并入：同名事件处理器由该hook统一串联（内部逻辑在前）
           {...commonInputProps({
             type: 'text',
             role: 'combobox',
@@ -311,6 +329,7 @@ export const ComboBoxInput = forwardRef<HTMLDivElement, ComboBoxInputProps>(({
             // 对齐原版autocomplete:false默认（自定义建议菜单与浏览器原生补全不可叠加）
             autoComplete: 'off',
             onKeyDown: handleInputKeyDown,
+            onMouseUp: handleInputMouseUp,
           }, inputProps)}
         />
         <IconBase icon={icon} {...decorationProps} />

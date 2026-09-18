@@ -321,6 +321,9 @@ export function useLayoutSelection<T extends string | number>({
 
 /**
  * TextInput系组件：label渲染在input旁，input需按label宽度预留内边距。
+ * 内边距落侧对齐原版`positionLabel`（`after === rtl ? padding-left : padding-right`）：
+ * before落行首、after落行尾，故RTL下与LTR相反；方向由调用方按**根元素**（样式表）方向
+ * 传入（见useInputProps的useRootDirection），不是输入元素自身的`dir`（后者只影响文本方向）。
  * useLayoutEffect在paint前完成测量（无首帧闪烁）；尺寸变化（内容/字体加载等）
  * 经ResizeObserver跟踪，不依赖label引用稳定性（label为节点时每渲染新引用）
  */
@@ -328,6 +331,7 @@ export function useLabelPadding(
   labelRef: RefObject<HTMLElement | null>,
   label: unknown,
   labelPosition: 'before' | 'after',
+  rtl: boolean,
 ): CSSProperties {
   const [paddingWidth, setPaddingWidth] = useState(0);
   // label是否实际渲染内容：布尔化后入依赖（表达式直接写依赖数组无法被静态检查）
@@ -351,7 +355,8 @@ export function useLabelPadding(
   if (paddingWidth > 0) {
     // +2px为label与输入内容之间的间距余量
     const padding = `${paddingWidth + 2}px`;
-    if (labelPosition === 'before') {
+    // 行首恒为before、行尾恒为after；行首在左即非RTL（RTL下行首为右缘）
+    if ((labelPosition === 'before') !== rtl) {
       style.paddingLeft = padding;
     } else {
       style.paddingRight = padding;
@@ -1035,6 +1040,33 @@ export function useGroupKeyboardSelection<T extends string | number>({
   };
 }
 
+/** 浮层水平对齐侧（逻辑值）：start为起始边（LTR左缘/RTL右缘）、end为终止边、center为居中 */
+export type PanelAlignSide = 'start' | 'end' | 'center';
+
+/**
+ * 按两侧可用空间选择浮层对齐侧（对齐原版`PopupToolGroup.setActive`的降级顺序）：
+ * 首选侧放得下即用首选侧，否则试对侧，再试居中；都不足时取空间较大的一侧。
+ * `spaces.start`/`spaces.end`为以锚点相应缘为基准、向该侧展开可用的宽度，
+ * `spaces.center`为居中时两侧可共用的总宽度（两侧余量取小者的两倍），三者皆为px
+ */
+export function resolvePanelAlignSide(
+  preferred: Exclude<PanelAlignSide, 'center'>,
+  spaces: Record<PanelAlignSide, number>,
+  panelWidth: number,
+): PanelAlignSide {
+  if (spaces[preferred] >= panelWidth) {
+    return preferred;
+  }
+  const other = preferred === 'start' ? 'end' : 'start';
+  if (spaces[other] >= panelWidth) {
+    return other;
+  }
+  if (spaces.center >= panelWidth) {
+    return 'center';
+  }
+  return spaces.start >= spaces.end ? 'start' : 'end';
+}
+
 /** 锚定浮层布局结果（页面坐标，portal至body后使用） */
 export interface AnchoredPanelLayout {
   /** 面板左上角页面坐标 */
@@ -1054,8 +1086,9 @@ export interface AnchoredPanelLayout {
 /**
  * 锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup共用）：
  * 面板按页面坐标定位于锚点正下/正上方（页面坐标随滚动自然跟随），水平对齐锚点起始边
- * （RTL下为右缘，对齐原版horizontalPosition:'start'的语义），空间不足时将内容钳至可用
- * 高度并改为内部滚动；开启/滚动/缩放及recomputeKey变化时重算。
+ * （RTL下为右缘，对齐原版horizontalPosition:'start'的语义；`horizontalFit`开启时按左右
+ * 可用空间选侧，见该参数注释），空间不足时将内容钳至可用高度并改为内部滚动；
+ * 开启/滚动/缩放及recomputeKey变化时重算。
  * 返回布局供调用方写入style（React受控渲染或命令式均可）
  */
 export function useAnchoredPanelLayout({
@@ -1067,6 +1100,8 @@ export function useAnchoredPanelLayout({
   hideWhenOutOfView = false,
   clip = true,
   offset = 0,
+  horizontalFit = false,
+  preferredSide = 'start',
   recomputeKey,
 }: {
   open: boolean;
@@ -1086,17 +1121,30 @@ export function useAnchoredPanelLayout({
    * 计入可用空间，故贴边时钳高会相应减少
    */
   offset?: number;
+  /**
+   * 面板宽度放不下时按左右空间改选对齐侧（对齐原版`PopupToolGroup.setActive`降级顺序的
+   * 选侧部分，原版的「填充容器」未实现，见docs/TODO.md）。对齐侧在打开时定一次、关闭时
+   * 重置（滚动重算沿用，避免面板左右跳动——原版同样只在`setActive(true)`时选侧）。
+   * 缺省false：贴合锚点宽度的菜单类浮层无需选侧
+   */
+  horizontalFit?: boolean;
+  /** 首选对齐侧（仅horizontalFit时参与选侧）；对齐原版ToolGroup.align：before→start、after→end */
+  preferredSide?: Exclude<PanelAlignSide, 'center'>;
   /** 额外重算触发源（如PopupToolGroup的工具集变化导致面板高度变化） */
   recomputeKey?: unknown;
 }): AnchoredPanelLayout | null {
   const [layout, setLayout] = useState<AnchoredPanelLayout | null>(null);
   const configDir = useDir();
   const spacing = useViewportSpacing();
+  // 打开期间缓存的对齐侧：关闭时重置，使每次打开重新按空间选侧
+  const sideRef = useRef<PanelAlignSide | null>(null);
 
   useLayoutEffect(() => {
     const panel = panelRef.current;
     if (!open) {
       setLayout(null);
+      // 关闭时重置对齐侧缓存，使下次打开重新按空间选侧
+      sideRef.current = null;
       // 关闭时还原裁剪，避免下次测量取到被钳制的尺寸
       if (panel) {
         panel.style.maxHeight = '';
@@ -1166,10 +1214,42 @@ export function useAnchoredPanelLayout({
           }
         }
       }
-      // 水平对齐锚点起始边；RTL下起始边为右缘（matchAnchorWidth时面板宽度等于锚点，坐标一致）
-      const left = dir === 'rtl' && !matchAnchorWidth
-        ? rect.left + rect.width - el.offsetWidth + scrollX
-        : rect.left + scrollX;
+      // 水平对齐：缺省起始边（RTL下起始边为右缘）；horizontalFit开启时按两侧可用空间选侧。
+      // 可用空间以板宽（offsetWidth）为基准，容器边界计视口留白、扣滚动条沟槽。
+      // 面板宽度取锚点宽度（matchAnchorWidth）时两侧坐标重合，无需选侧
+      const panelWidth = el.offsetWidth;
+      const boundsNear = box.left + spacing.left;
+      const boundsFar = visibleRight - spacing.right;
+      const anchorCenterX = rect.left + rect.width / 2;
+      if (horizontalFit && !matchAnchorWidth) {
+        sideRef.current ??= resolvePanelAlignSide(
+          preferredSide,
+          {
+            // start/end为逻辑侧：LTR的start侧自锚点左缘向右展开，RTL的start侧自锚点右缘向左展开
+            start: Math.max(0, dir === 'rtl' ? rect.right - boundsNear : boundsFar - rect.left),
+            end: Math.max(0, dir === 'rtl' ? boundsFar - rect.left : rect.right - boundsNear),
+            center: 2 * Math.max(0, Math.min(anchorCenterX - boundsNear, boundsFar - anchorCenterX)),
+          },
+          panelWidth,
+        );
+      }
+      const alignSide = sideRef.current ?? 'start';
+      let left: number;
+      if (matchAnchorWidth) {
+        // 面板宽度等于锚点宽度，两侧对齐的坐标重合（RTL下亦然）
+        left = rect.left + scrollX;
+      } else {
+        switch (alignSide) {
+          case 'end':
+            left = (dir === 'rtl' ? rect.left : rect.right - panelWidth) + scrollX;
+            break;
+          case 'center':
+            left = anchorCenterX - panelWidth / 2 + scrollX;
+            break;
+          default:
+            left = (dir === 'rtl' ? rect.right - panelWidth : rect.left) + scrollX;
+        }
+      }
       return {
         top,
         left,
@@ -1188,7 +1268,7 @@ export function useAnchoredPanelLayout({
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, offset, recomputeKey, configDir, spacing]);
+  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, offset, horizontalFit, preferredSide, recomputeKey, configDir, spacing]);
 
   return layout;
 }
