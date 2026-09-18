@@ -1,7 +1,8 @@
 import { createContext, useContext } from 'react';
 
 /**
- * 按钮组禁用态下发通道（对齐原版`ButtonGroupWidget.setDisabled`对组内按钮的统一禁用）：
+ * 按钮组禁用态下发通道（原版`ButtonGroupWidget`未覆写`setDisabled`，只给组根切类、组内按钮仍enabled，
+ * 本工程按「组禁用即各项禁用」的口径把组禁用态下发到组内按钮）：
  * 组内按钮经此继承组禁用态，其自身disabled与组禁用取或。
  * 取代了早先对children做cloneElement注入的写法——cloneElement依赖`child.type === Button`
  * 严格相等，会静默漏掉ToggleButton等组合形态、包一层的Button与memo后的Button。
