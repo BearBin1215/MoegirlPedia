@@ -147,32 +147,36 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
       ref={setRef}
     >
-      <FieldLabelLinkProvider value={groupLink}>
-        {options.map((option) => {
-          const isSelected = currentValue.includes(option.value);
-          return (
-            <CheckboxMultioption
-              {...option}
-              disabled={resolveOptionDisabled(option, disabled)}
-              selected={isSelected}
-              key={option.value}
-              name={name}
-              inputRef={(node) => {
-                if (node) {
-                  inputRefs.current.set(option.value, node);
-                } else {
-                  inputRefs.current.delete(option.value);
-                }
-              }}
-              onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
-              onChange={(checkedState, event) => {
-                option.onChange?.(checkedState, event);
-                handleChange(option.value, checkedState, event);
-              }}
-            />
-          );
-        })}
-      </FieldLabelLinkProvider>
+      {/* 对齐原版MultiselectWidget的结构：选项置于$group容器内，站点按
+          .oo-ui-multiselectWidget-group 写选择器时方可命中（该容器在两个主题中均无样式规则） */}
+      <div className='oo-ui-multiselectWidget-group'>
+        <FieldLabelLinkProvider value={groupLink}>
+          {options.map((option) => {
+            const isSelected = currentValue.includes(option.value);
+            return (
+              <CheckboxMultioption
+                {...option}
+                disabled={resolveOptionDisabled(option, disabled)}
+                selected={isSelected}
+                key={option.value}
+                name={name}
+                inputRef={(node) => {
+                  if (node) {
+                    inputRefs.current.set(option.value, node);
+                  } else {
+                    inputRefs.current.delete(option.value);
+                  }
+                }}
+                onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
+                onChange={(checkedState, event) => {
+                  option.onChange?.(checkedState, event);
+                  handleChange(option.value, checkedState, event);
+                }}
+              />
+            );
+          })}
+        </FieldLabelLinkProvider>
+      </div>
     </div>
   );
 });

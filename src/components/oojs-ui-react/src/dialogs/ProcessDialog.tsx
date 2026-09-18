@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { useCleanId } from '../hooks';
 import { useIsMobile, useMessage } from '../config';
 import { pendingElementClasses, toFlagArray } from '../mixins';
+import { getElementDir } from '../utils';
 import { Button } from '../widgets/Button';
 import type { ButtonFlag } from '../Element';
 import { Label } from '../widgets/Label';
@@ -204,7 +205,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     }
   }, [primaryAction, disabledAction, executeAction]);
 
-  // 标题在两侧动作之间避让（对齐原版fitLabel：空间足够时对称留白，否则按safe左/primary右）。
+  // 标题在两侧动作之间避让（对齐原版fitLabel：空间足够时对称留白，否则safe与primary各占己侧）。
   // 测量经ResizeObserver驱动：隐藏期（open已置位但弹窗尚在动画前置态）测量全为0，
   // 元素变为可见时RO会首次回调并测得真实尺寸（等效原版isOpening时挂opened.done延迟测量）；
   // safe/primary容器可观察到按钮增减/宽度变化（mode切换、actions内容变化），标题文字变化
@@ -227,11 +228,16 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
       const labelWidth = titleRef.current?.offsetWidth ?? 0;
       let leftWidth: number;
       let rightWidth: number;
-      if (2 * biggerWidth + labelWidth < navigationWidth - LABEL_FIT_GAP) {
+      // 移动端形态不居中（对齐原版条件的!OO.ui.isMobile()）
+      if (!isMobile && 2 * biggerWidth + labelWidth < navigationWidth - LABEL_FIT_GAP) {
         leftWidth = rightWidth = biggerWidth;
-      } else {
+      } else if (getElementDir(navigation) === 'ltr') {
         leftWidth = safeWidth;
         rightWidth = primaryWidth;
+      } else {
+        // RTL下主题把actions-safe定在right:0、actions-primary定在left:0，两侧留白随之互换
+        leftWidth = primaryWidth;
+        rightWidth = safeWidth;
       }
       location.style.paddingLeft = `${leftWidth}px`;
       location.style.paddingRight = `${rightWidth}px`;
@@ -248,7 +254,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     return () => {
       observer.disconnect();
     };
-  }, [title, open]);
+  }, [title, open, isMobile]);
 
   const pending = pendingCount > 0;
   const recoverable = errors === null || errors.every((item) => item.recoverable !== false);
