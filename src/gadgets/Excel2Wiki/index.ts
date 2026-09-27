@@ -1,4 +1,5 @@
 import './index.css';
+import { tableToWikitext } from './convert';
 
 if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
   mw.loader.using('oojs-ui').done(() => {
@@ -43,26 +44,8 @@ if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {
       const parseTable = () => {
         const table = $e2wInput.get(0)!.firstElementChild;
         if (table?.tagName === 'TABLE') { // 判断粘贴的内容是否为table标签
-          const useDouble: boolean = useDoubleSelect.isSelected();
-          const wikitable: string[] = []; // 用于存放各tr内容
-          table.querySelectorAll<HTMLTableRowElement>('tr').forEach((tr) => { // 遍历所有tr
-            const tableRow: string[] = []; // 用于存放各td内容
-            tr.querySelectorAll<HTMLTableCellElement>('td, th').forEach((td, index) => {
-              // 对于每一个td，判断其是否有大于1的colspan或rowspan属性并加入
-              tableRow.push(
-
-                (index > 0 && useDouble ? ' || ' : '| ') +
-                (td.colSpan > 1 ? `colspan="${td.colSpan}" ` : '') +
-                (td.rowSpan > 1 ? `rowspan="${td.rowSpan}" ` : '') +
-                (td.colSpan + td.rowSpan > 2 ? '| ' : '') +
-                td.innerText,
-
-              );
-            });
-            wikitable.push(tableRow.join(useDouble ? '' : '<br>'));
-          });
-          // 加入换行后显示在输出栏以供复制
-          tableWikitext = `{|<br>${wikitable.join('<br>|-<br>')}<br>|}`;
+          // 转换为wikitext后显示在输出栏以供复制
+          tableWikitext = tableToWikitext(table as HTMLTableElement, useDoubleSelect.isSelected());
           $('#e2w-output').html(tableWikitext);
         } else {
           console.info('Excel2Wiki: 非table标签。');

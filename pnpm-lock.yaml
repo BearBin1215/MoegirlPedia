@@ -92,7 +92,7 @@ importers:
         version: 5.6.2
       css-loader:
         specifier: ^7.1.5
-        version: 7.1.5(@rspack/core@2.2.2)(webpack@5.110.1(postcss@8.5.28))
+        version: 7.1.5(@rspack/core@2.2.2)(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28))
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -119,7 +119,7 @@ importers:
         version: 16.5.0
       html-loader:
         specifier: ^5.1.0
-        version: 5.1.0(webpack@5.110.1(postcss@8.5.28))
+        version: 5.1.0(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28))
       mini-svg-data-uri:
         specifier: ^1.4.4
         version: 1.4.4
@@ -128,7 +128,7 @@ importers:
         version: 9.5.1
       style-loader:
         specifier: ^3.3.4
-        version: 3.3.4(webpack@5.110.1(postcss@8.5.28))
+        version: 3.3.4(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28))
       stylelint:
         specifier: ^17.15.0
         version: 17.15.0(typescript@5.9.3)
@@ -156,9 +156,12 @@ importers:
       typescript-eslint:
         specifier: ^8.69.0
         version: 8.69.0(eslint@9.39.5)(typescript@5.9.3)
+      vitest:
+        specifier: ^5.0.0
+        version: 5.0.0(@types/node@20.19.43)(vite@8.3.0(@types/node@20.19.43)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.13))
       vue-loader:
         specifier: ^17.4.2
-        version: 17.4.2(vue@3.4.27(typescript@5.9.3))(webpack@5.110.1(postcss@8.5.28))
+        version: 17.4.2(vue@3.4.27(typescript@5.9.3))(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -6898,7 +6901,7 @@ snapshots:
 
   css-functions-list@3.3.3: {}
 
-  css-loader@7.1.5(@rspack/core@2.2.2)(webpack@5.110.1(postcss@8.5.28)):
+  css-loader@7.1.5(@rspack/core@2.2.2)(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.5.28)
       postcss: 8.5.28
@@ -6910,7 +6913,7 @@ snapshots:
       semver: 7.8.5
     optionalDependencies:
       '@rspack/core': 2.2.2
-      webpack: 5.110.1(postcss@8.5.28)
+      webpack: 5.110.1(esbuild@0.28.2)(postcss@8.5.28)
 
   css-select@5.2.2:
     dependencies:
@@ -7577,11 +7580,11 @@ snapshots:
 
   hookified@2.2.0: {}
 
-  html-loader@5.1.0(webpack@5.110.1(postcss@8.5.28)):
+  html-loader@5.1.0(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28)):
     dependencies:
       html-minifier-terser: 7.2.0
       parse5: 7.3.0
-      webpack: 5.110.1(postcss@8.5.28)
+      webpack: 5.110.1(esbuild@0.28.2)(postcss@8.5.28)
 
   html-minifier-terser@7.2.0:
     dependencies:
@@ -7967,14 +7970,15 @@ snapshots:
 
   minimist@1.2.8: {}
 
-  minimizer-webpack-plugin@5.10.0(postcss@8.5.28)(webpack@5.110.1(postcss@8.5.28)):
+  minimizer-webpack-plugin@5.10.0(esbuild@0.28.2)(postcss@8.5.28)(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.51.2
-      webpack: 5.110.1(postcss@8.5.28)
+      webpack: 5.110.1(esbuild@0.28.2)(postcss@8.5.28)
     optionalDependencies:
+      esbuild: 0.28.2
       postcss: 8.5.28
 
   minipass@7.1.3: {}
@@ -8533,9 +8537,9 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  style-loader@3.3.4(webpack@5.110.1(postcss@8.5.28)):
+  style-loader@3.3.4(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28)):
     dependencies:
-      webpack: 5.110.1(postcss@8.5.28)
+      webpack: 5.110.1(esbuild@0.28.2)(postcss@8.5.28)
 
   stylelint-config-recommended@18.0.0(stylelint@17.15.0(typescript@5.9.3)):
     dependencies:
@@ -8845,12 +8849,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vue-loader@17.4.2(vue@3.4.27(typescript@5.9.3))(webpack@5.110.1(postcss@8.5.28)):
+  vue-loader@17.4.2(vue@3.4.27(typescript@5.9.3))(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28)):
     dependencies:
       chalk: 4.1.2
       hash-sum: 2.0.0
       watchpack: 2.5.2
-      webpack: 5.110.1(postcss@8.5.28)
+      webpack: 5.110.1(esbuild@0.28.2)(postcss@8.5.28)
     optionalDependencies:
       vue: 3.4.27(typescript@5.9.3)
 
@@ -8876,7 +8880,7 @@ snapshots:
 
   webpack-sources@3.5.1: {}
 
-  webpack@5.110.1(postcss@8.5.28):
+  webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28):
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
@@ -8891,7 +8895,7 @@ snapshots:
       events: 3.3.0
       graceful-fs: 4.2.11
       mime-db: 1.54.0
-      minimizer-webpack-plugin: 5.10.0(postcss@8.5.28)(webpack@5.110.1(postcss@8.5.28))
+      minimizer-webpack-plugin: 5.10.0(esbuild@0.28.2)(postcss@8.5.28)(webpack@5.110.1(esbuild@0.28.2)(postcss@8.5.28))
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3

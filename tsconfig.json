@@ -37,6 +37,7 @@
     "node_modules/@types/oojs-ui",
     "scripts/**/*",
     "rspack.config.ts",
+    "vitest.config.ts",
     "stylelint.config.ts",
   ]
 }

@@ -36,6 +36,9 @@ pnpm build [工具名...]
 # 类型检查
 pnpm typecheck
 
+# 运行单元测试
+pnpm test
+
 # 检查并修复 linter 问题
 pnpm lint:fix
 ```
