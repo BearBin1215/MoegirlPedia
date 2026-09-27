@@ -1,13 +1,13 @@
 /**
  * @description 模拟高版本MediaWiki的最近更改动态更新功能
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Button,
   CheckboxInput,
   NumberInput,
   FieldLayout,
-} from 'oojs-ui-react';
+} from 'ooui-react';
 import type { ApiQueryResponse } from '@/types/api';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
@@ -69,10 +69,10 @@ function RecentChangeList() {
   // 用于渲染最终列表的数据
   const [data, setData] = useState<ChangeslistLineProps[][]>([]);
 
-  const api = new mw.Api();
+  const api = useMemo(() => new mw.Api(), []);
 
   /** 使用API读取最近更改数据，并转化为组件所需的格式 */
-  const queryData = async () => {
+  const queryData = useCallback(async () => {
     /** 读取页面上的显示/隐藏选项 */
     const showhideEle = document
       .querySelector('.rcshowhide')!
@@ -129,10 +129,10 @@ function RecentChangeList() {
     } catch (err) {
       setErrorMessage(err as any);
     }
-  };
+  }, [api]);
 
   /** 读取标签数据 */
-  const queryTagsData = async () => {
+  const queryTagsData = useCallback(async () => {
     const res = await api.post({
       action: 'query',
       format: 'json',
@@ -149,9 +149,9 @@ function RecentChangeList() {
       setTagMeanings(meaningMap);
       return meaningMap;
     }
-  };
+  }, [api]);
 
-  const queryGroupMeanings = async () => {
+  const queryGroupMeanings = useCallback(async () => {
     const res = await api.post({
       action: 'query',
       utf8: true,
@@ -169,7 +169,7 @@ function RecentChangeList() {
       setGroupMeanings(groupMessage);
       return groupMessage;
     }
-  };
+  }, [api]);
 
   /** 将读取到的标签含义和用户组含义暂存在localStorage，减少请求 */
   const storeQueryData = (tag: any, group: any) => {
@@ -195,7 +195,7 @@ function RecentChangeList() {
     Promise.all([queryTagsData(), queryGroupMeanings()]).then(([tag, group]) => {
       storeQueryData(tag, group);
     });
-  }, []);
+  }, [queryGroupMeanings, queryTagsData]);
 
   // 运行状态变化，注册或清除定时器
   useEffect(() => {
@@ -211,7 +211,10 @@ function RecentChangeList() {
       clearInterval(taskInterval.current);
       taskInterval.current = undefined;
     }
-  }, [running]);
+  // 仅在running翻转时启停轮询：defaultActive为一次性判定，updateInterval的变更
+  // 由下方专属effect重注册定时器，均不应触发本effect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running, queryData]);
 
   useEffect(() => {
     // 用户更改自动更新间隔时，存入localStorage
@@ -224,7 +227,9 @@ function RecentChangeList() {
         queryData();
       }, Math.max((updateInterval || 0) * 1000, 5000));
     }
-  }, [updateInterval]);
+  // running仅为当次判定，其启停由上方effect负责，不应触发本effect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateInterval, queryData]);
 
   useEffect(() => {
     // 用户更新是否默认启动的设置时，将其存入localStorage

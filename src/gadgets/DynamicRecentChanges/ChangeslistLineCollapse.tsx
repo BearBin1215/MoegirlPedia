@@ -26,18 +26,11 @@ export interface ChangeslistLineCollapseProps {
 
 const wgScript = mw.config.get('wgScript');
 
-/** 合并相同页面编辑 */
-function ChangeslistLineCollapse({
+/** 折叠列表主体：多条编辑的合并展示与开合状态 */
+function CollapseBody({
   changes,
-  defaultExpanded = false,
-}: ChangeslistLineCollapseProps) {
-  // 确保只有超过2条编辑才生成折叠的列表
-  if (changes.length === 0) {
-    return null;
-  }
-  if (changes.length === 1) {
-    return <ChangeslistLine {...changes[0]} />;
-  }
+  defaultExpanded,
+}: Required<ChangeslistLineCollapseProps>) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   const [{
@@ -275,6 +268,21 @@ function ChangeslistLineCollapse({
       </tbody>
     </table>
   );
+}
+
+/** 合并相同页面编辑：无编辑不渲染，单条退化为单行，多条进入折叠列表 */
+function ChangeslistLineCollapse({
+  changes,
+  defaultExpanded = false,
+}: ChangeslistLineCollapseProps) {
+  // 确保只有超过2条编辑才生成折叠的列表
+  if (changes.length === 0) {
+    return null;
+  }
+  if (changes.length === 1) {
+    return <ChangeslistLine {...changes[0]} />;
+  }
+  return <CollapseBody changes={changes} defaultExpanded={defaultExpanded} />;
 }
 
 export default ChangeslistLineCollapse;

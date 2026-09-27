@@ -47,7 +47,6 @@ export default (
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
       '@': path.resolve(__dirname, '.', 'src'),
-      "oojs-ui-react": path.resolve(__dirname, '.', 'src/components/oojs-ui-react'),
     },
   },
   externals: {

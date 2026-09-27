@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Button, type ChangeHandler } from 'oojs-ui-react';
-import ConditionLine, { type Condition, searchCodes } from './ConditionLine';
+import { Button, type ChangeHandler } from 'ooui-react';
+import ConditionLine, { type Condition, type LineValue, searchCodes } from './ConditionLine';
 import './index.css';
 
 function AdvancedPanel() {
   const [show, setShow] = useState(false);
-  const [firstOpen, setFirstOpen] = useState(true);
+  // 面板是否尚未打开过：仅为effect的一次性判定，不参与渲染，用ref避免触发无谓更新
+  const firstOpenRef = useRef(true);
   const [conditions, setConditions] = useState<Condition[]>([{
     index: 0,
     code: 'none',
@@ -16,7 +17,7 @@ function AdvancedPanel() {
   /** 展开或隐藏面板 */
   const toggle = () => {
     setShow(!show);
-    setFirstOpen(false);
+    firstOpenRef.current = false;
   };
 
   /** 添加一行 */
@@ -32,7 +33,7 @@ function AdvancedPanel() {
   };
 
   useEffect(() => {
-    if (firstOpen) {
+    if (firstOpenRef.current) {
       return;
     }
     // 条件列表发生变化，触发输入框更新
@@ -99,7 +100,7 @@ function AdvancedPanel() {
           };
 
           /** 搜索内容发生变化回调 */
-          const handleChange: ChangeHandler = (lineValue) => {
+          const handleChange: ChangeHandler<LineValue> = (lineValue) => {
             setConditions(conditions.map((condition) => {
               if (condition.index === index) {
                 return {

@@ -51,7 +51,6 @@ pnpm lint:fix
 │   │   └── ...              # 构建产物对应 dist/gadgets/<工具名>.min.js
 │   ├── oddments/            # 零散单文件小工具
 │   ├── components/          # 跨工具共享组件（Loger、MediaWiki、ModIcon 等）
-│   │   └── oojs-ui-react/   # 独立 workspace 子包：oojs-ui 的 React 复刻组件库（含自己的 AGENTS.md）
 │   ├── types/               # 全局类型声明（MediaWiki API、模块导入等）
 │   └── utils/               # 共享工具函数（api、dom、file、string 等）
 ├── scripts/                 # 构建与部署脚本（build.ts、Synchronize.ts）
@@ -65,5 +64,5 @@ pnpm lint:fix
 - 新工具一律使用TS，不使用JS
 - 涉及萌百网络请求响应，使用`@types/api`中的类型定义响应，缺失时需要补上
 - 避免并发网络请求
-- React编写的工具优先使用`oojs-ui-react`提供的组件，除非对应需要的组件不完善或另有要求
+- React编写的工具优先使用`ooui-react`提供的组件
 - 导出的组件/hook与状态机、几何计算、时序控制、键盘交互类内部函数必须有对应的顶部jsdoc注释，纯透传的短处理器等自明函数可豁免；复杂逻辑需要有对应的行注释

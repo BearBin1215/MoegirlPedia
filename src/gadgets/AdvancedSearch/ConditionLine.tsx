@@ -5,7 +5,7 @@ import {
   TextInput,
   NumberInput,
   type ChangeHandler,
-} from 'oojs-ui-react';
+} from 'ooui-react';
 
 /** 搜索代码及其映射中文 */
 export const searchCodes = {

@@ -1,5 +1,3 @@
-packages:
-  - "src/components/oojs-ui-react"
 allowBuilds:
   esbuild: true
   vue-demi: true

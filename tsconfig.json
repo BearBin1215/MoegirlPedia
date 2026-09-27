@@ -14,9 +14,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "oojs-ui-react": [
-        "./src/components/oojs-ui-react"
       ]
     },
     "allowJs": true,

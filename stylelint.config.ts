@@ -8,7 +8,6 @@ export default {
   ignoreFiles: [
     "dist/**/*",
     "node_modules/**/*",
-    "src/components/oojs-ui-react/node_modules/**/*",
   ],
   rules: {
     "selector-id-pattern": null,

@@ -13,7 +13,7 @@ import {
   NumberInput,
   type ButtonClickEvent,
   type ChangeHandler,
-} from 'oojs-ui-react';
+} from 'ooui-react';
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
@@ -95,7 +95,7 @@ function FileInspectorForm({ username }: { username: string }) {
       })));
     }
     return userFileList;
-  }, []);
+  }, [api, username]);
 
   /** 查询文件使用情况，并筛选掉正常使用的文件 */
   const queryFileUsage = useCallback(async (fileList: BasicFileData[]) => {
@@ -166,7 +166,7 @@ function FileInspectorForm({ username }: { username: string }) {
         usage.every(({ title }) => title.match(/^User:/)) &&
         !usedNotLinkdRef.current.includes(fileName);
     });
-  }, []);
+  }, [api]);
 
   /** 执行查询 */
   const queryUserFilesUsage = useCallback(async (e: ButtonClickEvent) => {
@@ -182,7 +182,7 @@ function FileInspectorForm({ username }: { username: string }) {
       setStatus('failed');
       setFailReason(err as string);
     }
-  }, []);
+  }, [queryFileUsage, queryUserFiles]);
 
   /** 勾选框内容变动，更新已选文件 */
   const handleCheck = useCallback((e: ChangeEvent<HTMLInputElement>, fileName: string) => {
@@ -239,7 +239,7 @@ function FileInspectorForm({ username }: { username: string }) {
       }
     }
     setDeleteStatus('done');
-  }, [fileUsageData]);
+  }, [api, deleteInterval, fileUsageData]);
 
   /** 复制列表 */
   const handleCopy = useCallback((e: ButtonClickEvent) => {
