@@ -1,12 +1,19 @@
 import React, { useRef, forwardRef, type ChangeEvent, type KeyboardEvent } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultioption, type CheckboxMultioptionProps } from '../CheckboxMultioption';
-import { getWidgetClassName, mergeAriaLabelledBy, type ChangeHandler } from '../../utils';
+import {
+  getWidgetClassName,
+  mergeAriaLabelledBy,
+} from '../../mixins';
+import {
+  resolveOptionDisabled,
+  type ChangeHandler,
+} from '../../utils';
 import {
   FieldLabelLinkProvider,
   useControlledValue,
   useFieldGroupLabelLink,
-  useFieldLabelActivate,
+  useFieldLabelFocus,
 } from '../../hooks';
 import type { WidgetProps } from '../Widget';
 
@@ -50,22 +57,26 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
   const lastClickedRef = useRef<string | number | null>(null);
   // FieldLayout标签联动（通道B）：点击标签聚焦首个非禁用选项的checkbox（对齐原版
   // CheckboxMultiselectWidget覆写的simulateLabelClick→focus()→getRelativeFocusableItem(null, 1)；
-  // 该组件不是TabIndexedElement，原版focus()在禁用时也不聚焦）
-  const fieldLabelId = useFieldLabelActivate(() => {
-    if (disabled) {
-      return;
-    }
-    const firstEnabled = options.find((option) => !(option.disabled === void 0 ? disabled : option.disabled));
-    if (firstEnabled) {
-      inputRefs.current.get(firstEnabled.value)?.focus();
-    }
+  // 该组件不是TabIndexedElement，原版focus()在禁用时也不聚焦）。
+  // 落点是选项input而非根元素，故经activate覆盖默认的根元素聚焦
+  const { setRef, fieldLabelId } = useFieldLabelFocus<HTMLDivElement>({
+    ref,
+    disabled,
+    activate: () => {
+      const firstEnabled = options.find((option) => !resolveOptionDisabled(option, disabled));
+      if (firstEnabled) {
+        inputRefs.current.get(firstEnabled.value)?.focus();
+      }
+    },
   });
   // 通道A屏蔽：组内每个checkbox都会认领同一字段id（重复id且label误切首个选项），禁用之
   const groupLink = useFieldGroupLabelLink();
 
+  // 对齐原版CheckboxMultiselectWidget继承的MultiselectWidget：根类为oo-ui-multiselectWidget
+  // （非SelectWidget系）
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled }, 'select', 'checkboxMultiselect'),
+    getWidgetClassName({ disabled }, 'multiselect', 'checkboxMultiselect'),
   );
 
   const handleChange = (optionValue: string | number, checked: boolean, event?: ChangeEvent<HTMLInputElement>) => {
@@ -79,8 +90,8 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
         const nextValue = [...currentValue];
         for (let i = start; i <= end; i++) {
           const option = options[i];
-          // 区间内禁用项保持原状
-          if (option.disabled) {
+          // 区间内禁用项保持原状（经resolveOptionDisabled使未声明disabled的项随组禁用）
+          if (resolveOptionDisabled(option, disabled)) {
             continue;
           }
           const has = nextValue.includes(option.value);
@@ -102,8 +113,13 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
     commitValue(nextValue, event);
   };
 
-  // 对齐原版CheckboxMultioptionWidget.onKeyDown：↑/←上一个、↓/→下一个非禁用项（循环）
+  // 对齐原版CheckboxMultioptionWidget.onKeyDown：↑/←上一个、↓/→下一个非禁用项（循环）。
+  // 组禁用时不响应（与RadioSelect/TabSelect的useGroupKeyboardSelection一致）；
+  // 禁用判定经resolveOptionDisabled，使未声明disabled的选项随组禁用
   const handleOptionKeyDown = (event: KeyboardEvent<HTMLLabelElement>, optionValue: string | number) => {
+    if (disabled) {
+      return;
+    }
     const key = event.key;
     if (key !== 'ArrowUp' && key !== 'ArrowLeft' && key !== 'ArrowDown' && key !== 'ArrowRight') {
       return;
@@ -114,7 +130,7 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
     let nextIndex = (currentIndex + direction + len) % len;
     for (let i = 0; i < len; i++) {
       const next = options[nextIndex];
-      if (next && !next.disabled) {
+      if (next && !resolveOptionDisabled(next, disabled)) {
         inputRefs.current.get(next.value)?.focus();
         break;
       }
@@ -129,34 +145,38 @@ export const CheckboxMultiselect = forwardRef<HTMLDivElement, CheckboxMultiselec
       className={classes}
       aria-disabled={disabled || undefined}
       aria-labelledby={mergeAriaLabelledBy(fieldLabelId, ariaLabelledBy)}
-      ref={ref}
+      ref={setRef}
     >
-      <FieldLabelLinkProvider value={groupLink}>
-        {options.map((option) => {
-          const isSelected = currentValue.includes(option.value);
-          return (
-            <CheckboxMultioption
-              {...option}
-              disabled={option.disabled === void 0 ? disabled : option.disabled}
-              selected={isSelected}
-              key={option.value}
-              name={name}
-              inputRef={(node) => {
-                if (node) {
-                  inputRefs.current.set(option.value, node);
-                } else {
-                  inputRefs.current.delete(option.value);
-                }
-              }}
-              onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
-              onChange={(checkedState, event) => {
-                option.onChange?.(checkedState, event);
-                handleChange(option.value, checkedState, event);
-              }}
-            />
-          );
-        })}
-      </FieldLabelLinkProvider>
+      {/* 对齐原版MultiselectWidget的结构：选项置于$group容器内，站点按
+          .oo-ui-multiselectWidget-group 写选择器时方可命中（该容器在两个主题中均无样式规则） */}
+      <div className='oo-ui-multiselectWidget-group'>
+        <FieldLabelLinkProvider value={groupLink}>
+          {options.map((option) => {
+            const isSelected = currentValue.includes(option.value);
+            return (
+              <CheckboxMultioption
+                {...option}
+                disabled={resolveOptionDisabled(option, disabled)}
+                selected={isSelected}
+                key={option.value}
+                name={name}
+                inputRef={(node) => {
+                  if (node) {
+                    inputRefs.current.set(option.value, node);
+                  } else {
+                    inputRefs.current.delete(option.value);
+                  }
+                }}
+                onKeyDown={(event) => handleOptionKeyDown(event, option.value)}
+                onChange={(checkedState, event) => {
+                  option.onChange?.(checkedState, event);
+                  handleChange(option.value, checkedState, event);
+                }}
+              />
+            );
+          })}
+        </FieldLabelLinkProvider>
+      </div>
     </div>
   );
 });

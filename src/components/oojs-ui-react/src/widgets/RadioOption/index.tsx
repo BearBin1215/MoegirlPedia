@@ -2,7 +2,8 @@ import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { LabelBase } from '../Label/Base';
 import { RadioInput } from '../RadioInput';
-import { getWidgetClassName, type ChangeHandler } from '../../utils';
+import { getWidgetClassName, optionWidgetClasses } from '../../mixins';
+import type { ChangeHandler } from '../../utils';
 import type { OptionProps } from '../Option';
 
 // highlighted不适用：radio选项无键盘高亮态（对齐原版RadioOptionWidget.static.highlightable=false），
@@ -27,7 +28,8 @@ export const RadioOption = forwardRef<HTMLLabelElement, RadioOptionProps>(({
   const classes = clsx(
     className,
     getWidgetClassName({ disabled, label: children }, 'option', 'radioOption'),
-    selected && 'oo-ui-optionWidget-selected',
+    // 原版RadioOptionWidget.static.highlightable/pressable=false（单选选项无高亮与按压态）
+    optionWidgetClasses({ selected, highlightable: false, pressable: false }),
   );
 
   return (

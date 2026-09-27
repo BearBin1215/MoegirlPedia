@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   BarToolGroup,
+  LabelToolGroup,
   ListToolGroup,
   MenuToolGroup,
   Toolbar,
@@ -14,7 +15,7 @@ function OriginalToolbar() {
   const [log, setLog] = useState<string[]>([]);
   const { containerRef } = useOriginalWidgets((oo, container, register) => {
     const ui = oo.ui as any;
-    const createTool = (name: string, title: string, icon?: string) => {
+    const createTool = (name: string, title: string, icon?: string, narrowConfig?: Record<string, unknown>) => {
       class DemoTool extends ui.Tool {
         constructor(...args: unknown[]) {
           super(...args);
@@ -37,8 +38,30 @@ function OriginalToolbar() {
         onUpdateState() { /* 演示工具不响应应用状态 */ }
       }
       DemoTool.static = Object.create(ui.Tool.static);
-      Object.assign(DemoTool.static, { name, title, icon, group: 'demo' });
+      Object.assign(DemoTool.static, { name, title, icon, group: 'demo', narrowConfig });
       return DemoTool;
+    };
+
+    // 弹出工具（PopupTool）：onSelect/onUpdateState由基类实现——选中即开合浮层，
+    // 浮层显隐经onPopupToggle回写工具激活态
+    const createPopupTool = (name: string, title: string, icon: string) => {
+      class DemoPopupTool extends ui.PopupTool {
+        constructor(toolGroup: unknown, config: unknown) {
+          super(toolGroup, Object.assign({ popup: { padded: true, label: title, head: true } }, config));
+          this.popup.$body.append('<p>这是弹出工具的内容，与原版 OO.ui.PopupTool 对照。</p>');
+        }
+      }
+      DemoPopupTool.static = Object.create(ui.PopupTool.static);
+      Object.assign(DemoPopupTool.static, { name, title, icon, group: 'demo' });
+      return DemoPopupTool;
+    };
+    // 内嵌工具组工具（ToolGroupTool）：工具位渲染为groupConfig声明的内嵌工具组
+    // （原版经toolbar.getToolGroupFactory()创建list组），把手与面板由内嵌组提供
+    const createToolGroupTool = (name: string, title: string, icon: string, groupConfig: unknown) => {
+      class DemoToolGroupTool extends ui.ToolGroupTool {}
+      DemoToolGroupTool.static = Object.create(ui.ToolGroupTool.static);
+      Object.assign(DemoToolGroupTool.static, { name, title, icon, group: 'demo', groupConfig });
+      return DemoToolGroupTool;
     };
 
     const toolFactory = new ui.ToolFactory();
@@ -46,7 +69,8 @@ function OriginalToolbar() {
       // 图标名须为当前版本主题CSS实际存在的图标（user/comment在该版本不存在，渲染为空白）
       createTool('person', '个人', 'userAvatar'),
       createTool('help', '帮助', 'help'),
-      createTool('comment', '评论', 'speechBubbles'),
+      // narrowConfig：窄栏下换成另一套图标/标题（对应React侧同名配置）
+      createTool('comment', '评论', 'speechBubbles', { icon: 'image', title: '评论（窄）' }),
       createTool('settings', '设置', 'settings'),
       createTool('image', '图片', 'image'),
       // menu组工具无图标，与React侧menuTools一致
@@ -57,6 +81,15 @@ function OriginalToolbar() {
       // 同一工具不能同时进两个工具组，右侧组须用独立工具
       createTool('optionFour', '选项四'),
       createTool('optionFive', '选项五'),
+      // 弹出工具与内嵌工具组工具（第二组bar），及其内嵌组引用的工具
+      createPopupTool('helpPopup', '帮助', 'help'),
+      createTool('settingOne', '设置一'),
+      createTool('settingTwo', '设置二'),
+      createToolGroupTool('settingsGroup', '设置', 'settings', {
+        icon: 'settings',
+        label: '设置',
+        include: ['settingOne', 'settingTwo'],
+      }),
     ]) {
       toolFactory.register(tool);
     }
@@ -64,12 +97,28 @@ function OriginalToolbar() {
     toolGroupFactory.register(ui.BarToolGroup);
     toolGroupFactory.register(ui.ListToolGroup);
     toolGroupFactory.register(ui.MenuToolGroup);
+    // LabelToolGroup不能容纳工具（populate为空实现），仅展示标签
+    toolGroupFactory.register(ui.LabelToolGroup);
 
     // 工厂供两条工具栏共享（工具实例由各工具组自行创建），分组结构对齐React侧
     const top = new ui.Toolbar(toolFactory, toolGroupFactory);
     top.setup([
       { type: 'bar', include: ['person', 'help'] },
-      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
+      // 弹出工具与内嵌工具组工具：二者都在bar组内，工具位分别渲染为浮层把手与内嵌list组
+      { type: 'bar', include: ['helpPopup', 'settingsGroup'] },
+      // 空工具组：两侧均输出oo-ui-toolGroup-empty（主题display:none）整体隐藏
+      { type: 'bar', include: [] },
+      { type: 'label', label: '标签组', icon: 'userAvatar', indicator: 'down', title: '标签工具组' },
+      { type: 'label', label: '纯文本' },
+      // narrowConfig：窄栏下把手换图标/标签（对应React侧ListToolGroup的narrowConfig）
+      {
+        type: 'list',
+        include: ['comment', 'settings', 'image'],
+        icon: 'ellipsis',
+        indicator: 'down',
+        label: '更多',
+        narrowConfig: { icon: 'help', label: '更多（窄）' },
+      },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
       // align:'after'：工具组排到工具栏右侧的$after容器（原版insertItemElements）
       { type: 'menu', include: ['optionFour', 'optionFive'], icon: 'ellipsis', label: '右侧', align: 'after' },
@@ -79,11 +128,11 @@ function OriginalToolbar() {
     top.initialize();
     register(top);
 
-    // bottom工具栏：弹层面板向上展开、indicator随position翻转（原版由
-    // oo-ui-toolbar-position-bottom的CSS承接），对照React侧的组件缺省展示
+    // bottom工具栏：弹层面板向上展开、indicator随position翻转（两侧均不传indicator，
+    // 对照PopupToolGroup构造期的缺省逻辑：position bottom→up、其余down）
     const bottom = new ui.Toolbar(toolFactory, toolGroupFactory, { position: 'bottom' });
     bottom.setup([
-      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', indicator: 'down', label: '更多' },
+      { type: 'list', include: ['comment', 'settings', 'image'], icon: 'ellipsis', label: '更多' },
       { type: 'menu', include: ['optionOne', 'optionTwo', 'optionThree'], icon: 'ellipsis', label: '菜单' },
     ]);
     container.appendChild(unwrapJQuery(bottom.$element));
@@ -107,7 +156,15 @@ const barTools = (active: Record<string, boolean>, toggle: (name: string) => voi
   { name: 'help', title: '帮助', icon: 'help', active: !!active.help, onSelect: () => toggle('help') },
 ];
 const listTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
-  { name: 'comment', title: '评论', icon: 'speechBubbles', active: !!active.comment, onSelect: () => toggle('comment') },
+  {
+    name: 'comment',
+    title: '评论',
+    icon: 'speechBubbles',
+    // 窄栏配置：窄栏下换成另一套图标/标题（对应原版Tool.static.narrowConfig）
+    narrowConfig: { icon: 'image', title: '评论（窄）' },
+    active: !!active.comment,
+    onSelect: () => toggle('comment'),
+  },
   { name: 'settings', title: '设置', icon: 'settings', active: !!active.settings, onSelect: () => toggle('settings') },
   { name: 'image', title: '图片', icon: 'image', active: !!active.image, onSelect: () => toggle('image') },
 ];
@@ -120,6 +177,11 @@ const menuTools = (active: Record<string, boolean>, toggle: (name: string) => vo
 const rightMenuTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
   { name: 'optionFour', title: '选项四', active: !!active.optionFour, onSelect: () => toggle('optionFour') },
   { name: 'optionFive', title: '选项五', active: !!active.optionFive, onSelect: () => toggle('optionFive') },
+];
+// 内嵌工具组的工具（对齐原版ToolGroupTool的groupConfig.include）
+const settingTools = (active: Record<string, boolean>, toggle: (name: string) => void): ToolProps[] => [
+  { name: 'settingOne', title: '设置一', active: !!active.settingOne, onSelect: () => toggle('settingOne') },
+  { name: 'settingTwo', title: '设置二', active: !!active.settingTwo, onSelect: () => toggle('settingTwo') },
 ];
 
 /** 每个工具组独立的active状态：toggle切换本组激活项并记录点击的工具标题 */
@@ -140,9 +202,22 @@ function ReactBarGroup({ onLog }: { onLog: (title: string) => void }) {
   return <BarToolGroup tools={tools} />;
 }
 
-function ReactListGroup({ onLog, label, indicator }: { onLog: (title: string) => void; label: string; indicator?: 'down' }) {
+function ReactListGroup({ onLog, label, indicator, narrowConfig }: {
+  onLog: (title: string) => void;
+  label: string;
+  indicator?: 'down';
+  narrowConfig?: { icon?: string; label?: React.ReactNode };
+}) {
   const tools = useGroupTools(listTools, onLog);
-  return <ListToolGroup label={label} icon='ellipsis' indicator={indicator} tools={tools} />;
+  return (
+    <ListToolGroup
+      label={label}
+      icon='ellipsis'
+      indicator={indicator}
+      narrowConfig={narrowConfig}
+      tools={tools}
+    />
+  );
 }
 
 function ReactMenuGroup({ onLog, label, align, defs = menuTools }: {
@@ -153,6 +228,29 @@ function ReactMenuGroup({ onLog, label, align, defs = menuTools }: {
 }) {
   const tools = useGroupTools(defs, onLog);
   return <MenuToolGroup label={label} icon='ellipsis' align={align} tools={tools} />;
+}
+
+/** 弹出工具与内嵌工具组（对应原版第二组bar的PopupTool/ToolGroupTool） */
+function ReactPopupAndGroupTools({ onLog }: { onLog: (title: string) => void }) {
+  const settings = useGroupTools(settingTools, onLog);
+  const tools: ToolProps[] = [
+    {
+      name: 'helpPopup',
+      title: '帮助',
+      icon: 'help',
+      // 弹出工具：选中开合浮层，浮层显隐期间工具呈激活态（对齐原版onPopupToggle）
+      popup: {
+        content: <p>这是弹出工具的内容，与原版 OO.ui.PopupTool 对照。</p>,
+        head: true,
+        label: '帮助',
+        padded: true,
+        onOpenChange: (open) => open && onLog('弹出工具：帮助'),
+      },
+    },
+    // 内嵌工具组：工具位渲染为该工具组，把手与面板由它自行提供（工具本身不渲染链接）
+    { name: 'settingsGroup', title: '设置', group: <ListToolGroup icon='settings' label='设置' tools={settings} /> },
+  ];
+  return <BarToolGroup tools={tools} />;
 }
 
 function ReactToolbar() {
@@ -168,7 +266,19 @@ function ReactToolbar() {
           未激活本组工具时把手标签显示组标签而非激活项标题 */}
       <Toolbar>
         <ReactBarGroup onLog={handleSelect} />
-        <ReactListGroup onLog={handleSelect} label='更多' indicator='down' />
+        {/* 弹出工具（点击开合浮层）与内嵌工具组（工具位渲染为list组） */}
+        <ReactPopupAndGroupTools onLog={handleSelect} />
+        {/* 空工具组：无工具时整体隐藏（对齐原版oo-ui-toolGroup-empty） */}
+        <BarToolGroup tools={[]} />
+        {/* 标签组：不可交互、不承载工具，仅展示文本/图标/指示器 */}
+        <LabelToolGroup label='标签组' icon='userAvatar' indicator='down' title='标签工具组' />
+        <LabelToolGroup label='纯文本' />
+        <ReactListGroup
+          onLog={handleSelect}
+          label='更多'
+          indicator='down'
+          narrowConfig={{ icon: 'help', label: '更多（窄）' }}
+        />
         <ReactMenuGroup onLog={handleSelect} label='菜单' />
         {/* align='after'：排到工具栏右侧（对应原版ToolGroup的align配置） */}
         <ReactMenuGroup onLog={handleSelect} label='右侧' align='after' defs={rightMenuTools} />
@@ -192,9 +302,15 @@ function ToolbarComparePage() {
       title='Toolbar 对照'
       description={(
         <>
-          对照点：Bar组平铺按钮（标题tooltip、按压态）、List组下拉面板（选中收起、标题为标签文本）、
-          Menu组（把手标签按激活工具合成、选中不关闭时更新标签）、工具active态样式。
-          原版为ToolFactory/ToolGroupFactory注册模式，React版为声明式tools props。
+          对照点：Bar组平铺按钮（标题tooltip、按压态）、Label组（不可交互、不承载工具的纯文本/图标/
+          指示器）、List组下拉面板（选中收起、标题为标签文本）、Menu组（把手标签按激活工具合成、
+          选中不关闭时更新标签）、工具active态样式；第二组bar为PopupTool（点击工具开合浮层、
+          浮层显隐期间工具呈激活态）与ToolGroupTool（工具位渲染为内嵌list组）；第三组为空工具组
+          （无工具时两侧均整体隐藏，且判为禁用）。
+          原版为ToolFactory/ToolGroupFactory注册模式，React版为声明式tools props
+          （内嵌工具组以React元素经`tools[].group`传入，递归由组件树承担）。
+          原版PopupTool的onSelect被浮层开合占用、调用方收不到通知，故React侧的"弹出工具：帮助"
+          记录经`popup.onOpenChange`产生（见docs/TODO.md增强节），原版侧无对应记录。
         </>
       )}
     >

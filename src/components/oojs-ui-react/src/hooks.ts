@@ -9,6 +9,9 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  // 以别名导入：DOM的KeyboardEvent在下文经globalThis引用，避免被React的类型遮蔽
+  type KeyboardEvent as ReactKeyboardEvent,
+  type KeyboardEventHandler,
   type MouseEventHandler,
   type MutableRefObject,
   type Ref,
@@ -16,7 +19,14 @@ import {
 } from 'react';
 import { clamp, debounce } from 'es-toolkit';
 import { useDir, useViewportSpacing } from './config';
-import { getFirstFocusable, getElementDir, resolveElement } from './utils';
+import {
+  findRelativeSelectableItem,
+  getFirstFocusable,
+  findScrollableContainer,
+  getElementDir,
+  resolveElement,
+  type ElementOrRef,
+} from './utils';
 
 /**
  * FieldLayout与字段组件的标签联动通道（对齐原版FieldLayout按getInputId()分流的双路径）：
@@ -75,11 +85,91 @@ export function useFieldLabelActivate(activate: () => void): string | undefined 
   );
   return link?.labelId;
 }
+
+/**
+ * 稳定的多ref合并回调（回调引用跨渲染稳定）：
+ * 组件内需同时持有元素引用并向外转发ref时使用。经ref读取最新refs数组，
+ * 回调仅创建一次，避免每渲染新函数导致的detach/attach
+ */
+export function useMergedRefs<T>(...refs: (Ref<T> | undefined)[]): (node: T | null) => void {
+  const refsRef = useRef(refs);
+  refsRef.current = refs;
+  return useMemo(() => (node: T | null) => {
+    for (const ref of refsRef.current) {
+      if (!ref) {
+        continue;
+      }
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        // React 18的RefObject.current为readonly，需断言
+        (ref as MutableRefObject<T | null>).current = node;
+      }
+    }
+  }, []);
+}
+
+/**
+ * 通道B的标签点击激活（对齐原版`TabIndexedElement.simulateLabelClick`的默认实现）：
+ * 点击FieldLayout标签时聚焦组件根元素，禁用时不聚焦（原版`focus()`内含isDisabled判断）。
+ * 内部持有根元素ref并与外部转发的ref合并，返回合并后的ref回调、内部ref与标签元素id。
+ * 落点不是根元素或需附带副作用的组件传`activate`覆盖默认的聚焦：
+ * Dropdown聚焦handle、ToggleButton经内部锚点聚焦、ToggleSwitch额外翻转值、
+ * CheckboxMultiselect聚焦首个可用选项（不经根元素）
+ */
+export function useFieldLabelFocus<T extends HTMLElement>({
+  ref,
+  disabled,
+  activate,
+}: {
+  /** 外部转发的根元素ref */
+  ref?: Ref<T>;
+  /** 禁用时不激活 */
+  disabled?: boolean;
+  /** 自定义激活动作，入参为根元素；缺省聚焦根元素 */
+  activate?: (el: T | null) => void;
+}): {
+  /** 合并内部ref与外部ref后的根元素ref回调 */
+  setRef: (node: T | null) => void;
+  /** 内部持有的根元素ref，供组件自身读取（如Dropdown的浮层忽略目标） */
+  rootRef: RefObject<T | null>;
+  /** 标签元素id，供根元素挂aria-labelledby */
+  fieldLabelId: string | undefined;
+} {
+  const rootRef = useRef<T>(null);
+  const setRef = useMergedRefs(ref, rootRef);
+  // 激活回调经useFieldLabelActivate的ref读取，闭包里的disabled/activate恒为最新值
+  const fieldLabelId = useFieldLabelActivate(() => {
+    if (disabled) {
+      return;
+    }
+    if (activate) {
+      activate(rootRef.current);
+    } else {
+      rootRef.current?.focus();
+    }
+  });
+  return { setRef, rootRef, fieldLabelId };
+}
+
+/**
+ * 跟踪最新值的ref（渲染期同步），供事件监听/定时器等场景经ref读取最新props：
+ * 既避免闭包过期，又使监听等只需挂载一次的资源不必随回调身份变化反复重挂
+ */
+export function useLatestRef<T>(value: T): MutableRefObject<T> {
+  const ref = useRef(value);
+  ref.current = value;
+  return ref;
+}
+
 /**
  * 受控/非受控通用值状态（对齐React受控组件惯例，原版通过setters维护无对应物）：
  * 传入`value`即受控模式（内部state不生效）；否则维护内部state并以`defaultValue`初始化。
  * `commit`供事件回调使用：非受控时同步内部state，并始终转发给`onChange`；
- * 入参支持函数式更新（对齐setState惯例，经ref取最新已提交值）
+ * 入参支持函数式更新（对齐setState惯例，经ref取最新已提交值）。
+ * 另返回`commitIfChanged`（仅值变化时提交），供选择集类组件使用。
+ * `commit`经useCallback稳定（内部经ref读最新值与回调），依赖它的effect不会因回调
+ * 身份每渲染变化而重跑
  */
 export function useControlledValue<T, E = never>(
   { value, defaultValue }: { value?: T; defaultValue?: T },
@@ -89,34 +179,47 @@ export function useControlledValue<T, E = never>(
   const [innerValue, setInnerValue] = useState<T | undefined>(defaultValue);
   // 非受控时innerValue以defaultValue初始化，语义上始终有值；断言为T以保持调用侧类型简洁
   const currentValue = (isControlled ? value : innerValue) as T;
-  const currentValueRef = useRef(currentValue);
-  currentValueRef.current = currentValue;
-  const commit = (nextValue: T | ((prev: T) => T), event?: E) => {
+  const currentValueRef = useLatestRef(currentValue);
+  const onChangeRef = useLatestRef(onChange);
+  // 仅isControlled参与依赖：受控/非受控切换属模式变更（React不推荐），此时允许commit更新
+  const commit = useCallback((nextValue: T | ((prev: T) => T), event?: E) => {
     const resolved = typeof nextValue === 'function'
       ? (nextValue as (prev: T) => T)(currentValueRef.current)
       : nextValue;
     if (!isControlled) {
       setInnerValue(resolved);
     }
-    onChange?.(resolved, event);
-  };
-  return { value: currentValue, isControlled, commit } as const;
+    onChangeRef.current?.(resolved, event);
+  }, [isControlled, currentValueRef, onChangeRef]);
+  /**
+   * 仅当值变化时提交。选择集类组件（Select/TabSelect/ButtonSelect/Dropdown/ComboBoxInput）的
+   * 选中语义用它——对齐原版`SelectWidget.selectItem`对已选中项的提前返回（重复选中同一项不
+   * 派发事件）。输入类组件**不要**用它：其`commit`的"始终转发"语义是刻意的（见上）
+   */
+  const commitIfChanged = useCallback((nextValue: T, event?: E) => {
+    if (nextValue !== currentValueRef.current) {
+      commit(nextValue, event);
+    }
+  }, [commit, currentValueRef]);
+  return { value: currentValue, isControlled, commit, commitIfChanged } as const;
 }
 
 /**
- * 受控值非法时的回写：受控值不在可用值集合内（组件实际显示的是回退值）时，
- * 经`onChange`把生效的回退值回写给父级，使父级state与显示值收敛，避免两者漂移。
+ * 受控值非法时的回写：受控值不在可用值集合内（组件实际显示的是生效值）时，
+ * 经`onNotify`把生效值交还父级，使父级state与显示值收敛，避免两者漂移。
  * 对齐原版受控语义：`DropdownInput`/`RadioSelectInput`的`setValue`会对非法值回退到
- * 首个可选值并写回组件值，React受控模式下该写回只能经`onChange`交还父级。
- * 同一非法值只回写一次（父级未采纳时不会因外部重渲染反复触发）；无回退值可写时不动。
+ * 首个可选值并写回组件值，React受控模式下该写回只能经回调交还父级。
+ * 同一非法值只回写一次（父级未采纳时不会因外部重渲染反复触发）；无生效值可写时不动。
+ * `useLayoutSelection`的受控回写共用同一守卫
  */
-export function useControlledValueFallback<T>(
+export function useControlledValueNotify<T>(
   controlledValue: T | undefined,
   effectiveValue: T | undefined,
-  onChange?: (value: T) => void,
+  onNotify?: (value: T) => void,
 ): void {
-  // 已回写过的非法受控值：父级若忽略onChange，state不变，据此防止反复触发
+  // 已回写过的非法受控值：父级若忽略回调，state不变，据此防止反复触发
   const notifiedRef = useRef<T | undefined>(undefined);
+  const onNotifyRef = useLatestRef(onNotify);
   useEffect(() => {
     if (controlledValue === undefined || effectiveValue === undefined) {
       return;
@@ -125,8 +228,31 @@ export function useControlledValueFallback<T>(
       return;
     }
     notifiedRef.current = controlledValue;
-    onChange?.(effectiveValue);
-  }, [controlledValue, effectiveValue, onChange]);
+    onNotifyRef.current?.(effectiveValue);
+  }, [controlledValue, effectiveValue, onNotifyRef]);
+}
+
+/**
+ * 计算布局类组件的生效激活值：值在options内则原样返回；值缺失（首次无值）或失效
+ * （不在options内，如页被移除）时按邻近优先回退——据`prevOptions`中该值的位置取
+ * 原位置→前一项→首项。prevOptions须为上一轮的options（失效值可能已不在新列表中）
+ */
+export function resolveLayoutSelection<T extends string | number>(
+  value: T | undefined,
+  options: { value: T }[],
+  prevOptions: { value: T }[],
+): T | undefined {
+  if (options.length === 0) {
+    return undefined;
+  }
+  if (value === undefined) {
+    return options[0].value;
+  }
+  if (options.some((option) => option.value === value)) {
+    return value;
+  }
+  const oldIndex = prevOptions.findIndex((option) => option.value === value);
+  return (options[oldIndex] ?? options[oldIndex - 1] ?? options[0]).value;
 }
 
 /**
@@ -152,76 +278,52 @@ export function useLayoutSelection<T extends string | number>({
   effectiveValue: T | undefined;
   /** 选择激活项：非受控同步内部state，并始终转发onChange */
   select: (value: T) => void;
+  /**
+   * 仅值变化时选择激活项（对齐原版`StackLayout.setItem`/`BookletLayout.setPage`
+   * 对同值的提前返回），供用户主动切换页签的场景使用
+   */
+  selectIfChanged: (value: T) => void;
 } {
   const { value: innerValue, isControlled, commit } = useControlledValue<T>({ value, defaultValue }, onChange);
-  // 上一轮options：失效值需据其在旧列表中的位置定位相邻项
+  // 上一轮options：失效值需据其在旧列表中的位置定位相邻项。显式依赖options，
+  // 使"上一轮"语义在批处理下确定（值失效与列表变化同批发生时，本渲染仍读旧列表）
   const prevOptionsRef = useRef(options);
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
-
-  const effectiveValue = (() => {
-    if (options.length === 0) {
-      return undefined;
-    }
-    if (innerValue === undefined) {
-      return options[0].value;
-    }
-    if (options.some((option) => option.value === innerValue)) {
-      return innerValue;
-    }
-    const oldIndex = prevOptionsRef.current.findIndex((option) => option.value === innerValue);
-    return (options[oldIndex] ?? options[oldIndex - 1] ?? options[0]).value;
-  })();
+  const effectiveValue = resolveLayoutSelection(innerValue, options, prevOptionsRef.current);
 
   useEffect(() => {
     prevOptionsRef.current = options;
-  });
+  }, [options]);
 
-  // 回退值写回：非受控提交收敛内部state；受控经onChange回写父级（同一非法值仅一次）
-  const notifiedRef = useRef<T | undefined>(undefined);
+  // 受控回写（同一非法值仅一次）与非受控内部state收敛：两条路径各自独立，
+  // 受控时由父级决定是否采纳，非受控时立即提交使内部state与生效值一致
+  useControlledValueNotify(isControlled ? innerValue : undefined, effectiveValue, onChange);
   useEffect(() => {
-    if (effectiveValue === undefined || effectiveValue === innerValue) {
-      return;
-    }
-    if (isControlled) {
-      if (notifiedRef.current === innerValue) {
-        return;
-      }
-      notifiedRef.current = innerValue;
-      onChangeRef.current?.(effectiveValue);
-    } else {
+    if (!isControlled && effectiveValue !== undefined && effectiveValue !== innerValue) {
       commit(effectiveValue);
     }
-  }, [effectiveValue, innerValue, isControlled, commit]);
+  }, [isControlled, effectiveValue, innerValue, commit]);
 
-  return { effectiveValue, select: commit };
-}
-
-/**
- * 稳定的多ref合并回调（等价原utils.mergeRefs，但回调引用跨渲染稳定）：
- * 组件内需同时持有元素引用并向外转发ref时使用。经ref读取最新refs数组，
- * 回调仅创建一次，避免每渲染新函数导致的detach/attach
- */
-export function useMergedRefs<T>(...refs: (Ref<T> | undefined)[]): (node: T | null) => void {
-  const refsRef = useRef(refs);
-  refsRef.current = refs;
-  return useMemo(() => (node: T | null) => {
-    for (const ref of refsRef.current) {
-      if (!ref) {
-        continue;
-      }
-      if (typeof ref === 'function') {
-        ref(node);
-      } else {
-        // React 18的RefObject.current为readonly，需断言
-        (ref as MutableRefObject<T | null>).current = node;
-      }
+  // 布局侧的选择入口统一为一元签名：调用方可能附带事件（如StackLayout的onPageFocus携带
+  // FocusEvent），而ChangeHandler约定第二参数为change事件，故在此从运行时剥掉多余入参
+  const select = useCallback((next: T) => commit(next), [commit]);
+  /**
+   * 仅在与生效值不同时选择（对齐原版`BookletLayout.setPage`与当前页比较的提前返回）：
+   * 受控值非法时生效值已是回退值，点击该回退项不再重复派发
+   */
+  const selectIfChanged = useCallback((next: T) => {
+    if (next !== effectiveValue) {
+      commit(next);
     }
-  }, []);
+  }, [effectiveValue, commit]);
+
+  return { effectiveValue, select, selectIfChanged };
 }
 
 /**
  * TextInput系组件：label渲染在input旁，input需按label宽度预留内边距。
+ * 内边距落侧对齐原版`positionLabel`（`after === rtl ? padding-left : padding-right`）：
+ * before落行首、after落行尾，故RTL下与LTR相反；方向由调用方按**根元素**（样式表）方向
+ * 传入（见useInputProps的useRootDirection），不是输入元素自身的`dir`（后者只影响文本方向）。
  * useLayoutEffect在paint前完成测量（无首帧闪烁）；尺寸变化（内容/字体加载等）
  * 经ResizeObserver跟踪，不依赖label引用稳定性（label为节点时每渲染新引用）
  */
@@ -229,8 +331,11 @@ export function useLabelPadding(
   labelRef: RefObject<HTMLElement | null>,
   label: unknown,
   labelPosition: 'before' | 'after',
+  rtl: boolean,
 ): CSSProperties {
   const [paddingWidth, setPaddingWidth] = useState(0);
+  // label是否实际渲染内容：布尔化后入依赖（表达式直接写依赖数组无法被静态检查）
+  const hasLabelContent = !!label;
 
   useLayoutEffect(() => {
     const el = labelRef.current;
@@ -244,13 +349,14 @@ export function useLabelPadding(
     observer.observe(el);
     return () => observer.disconnect();
     // 仅在label挂载状态变化时重挂观察；labelRef稳定，label内容变化由RO捕获
-  }, [labelRef, !!label]);
+  }, [labelRef, hasLabelContent]);
 
   const style: CSSProperties = {};
   if (paddingWidth > 0) {
     // +2px为label与输入内容之间的间距余量
     const padding = `${paddingWidth + 2}px`;
-    if (labelPosition === 'before') {
+    // 行首恒为before、行尾恒为after；行首在左即非RTL（RTL下行首为右缘）
+    if ((labelPosition === 'before') !== rtl) {
       style.paddingLeft = padding;
     } else {
       style.paddingRight = padding;
@@ -267,66 +373,279 @@ export function useCleanId(): string {
   return useId().replace(/:/g, '');
 }
 
-/** 浮层关闭的忽略目标：ref或真实元素均可 */
-type DismissIgnoreTarget = RefObject<HTMLElement | null> | HTMLElement | null | undefined;
-
 /**
- * 浮层关闭：点击浮层与锚点之外（document mousedown）或按Escape时请求关闭。
+ * 浮层关闭：点击浮层与锚点之外（document mousedown，弹层类另绑click）或按Escape时请求关闭。
+ * 弹层类同绑click对齐原版`PopupWidget.bindDocumentMouseDownListener`（click为iOS Safari
+ * 所需，以先触发者为准）；滚动条目标（documentElement）不触发关闭。
  * Escape在捕获阶段处理：先于React根容器上的冒泡处理器（如Dialog的onKeyDown），
  * 处理后`stopPropagation`使嵌套浮层只关最内层（对齐原版Popup的onDocumentKeyDown），
- * 已`defaultPrevented`的Escape不重复处理。
+ * 已`defaultPrevented`的Escape不重复处理。`onEscape`在Escape触发关闭后附加执行——
+ * 捕获层吞键后组件的onKeyDown收不到该事件，原版中经输入框keydown处理的附带动作
+ * （如TagMultiselectWidget的Escape清空输入文本）须经此回调补齐。
  * 回调与忽略目标经ref读取最新，内联函数不导致监听反复重挂
  */
 export function useDismissablePopover({
   enabled,
   onClose,
   ignore,
+  onEscape,
+  dismissOnClick = false,
 }: {
   /** 是否处于需响应关闭的开启态；关闭时不挂监听，避免吞掉外层浮层的Escape */
   enabled: boolean;
   /** 请求关闭（由调用方负责把open置false） */
   onClose: () => void;
   /** 视为内部的目标：其内部点击不触发关闭（组件根、portal后的浮层等） */
-  ignore?: DismissIgnoreTarget[];
+  ignore?: ElementOrRef[];
+  /** Escape触发关闭后的附加动作（与onClose同批调用，仅Escape路径触发） */
+  onEscape?: () => void;
+  /**
+   * 是否同时监听`click`。缺省false——只监听`mousedown`，对齐原版**菜单类**浮层
+   * （`MenuSelectWidget`的autoHide只绑mousedown）；**弹层类**（本工程Popup/PopupToolGroup）
+   * 应置true：原版`PopupWidget.bindDocumentMouseDownListener`同绑mousedown与click
+   * （iOS Safari所需，以先触发者为准）；PopupToolGroup原版绑的是mouseup/keyup，
+   * 本工程统一以mousedown+click承担同样的外点关闭
+   */
+  dismissOnClick?: boolean;
 }): void {
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
-  const ignoreRef = useRef(ignore);
-  ignoreRef.current = ignore;
+  const onCloseRef = useLatestRef(onClose);
+  const ignoreRef = useLatestRef(ignore);
+  const onEscapeRef = useLatestRef(onEscape);
   useEffect(() => {
     if (!enabled) {
       return;
     }
-    const handleMouseDown = (event: globalThis.MouseEvent) => {
+    // 同一次手势里mousedown与click都会派发（dismissOnClick时）：以先触发者为准。
+    // 原版靠isVisible()短路，本hook不掌握可见态，故以mousedown重置标记、
+    // click见标记已置位则跳过，避免重复请求关闭
+    let requestedInGesture = false;
+    const handleMouseEvent = (event: globalThis.MouseEvent, isMouseDown: boolean) => {
+      // 滚动条上的按下/点击以documentElement为target，不应关闭浮层（对齐原版onDocumentMouseDown）
+      if (event.target === document.documentElement) {
+        return;
+      }
+      if (isMouseDown) {
+        requestedInGesture = false;
+      } else if (requestedInGesture) {
+        return;
+      }
       const target = event.target as Node;
       for (const item of ignoreRef.current ?? []) {
         if (resolveElement(item)?.contains(target)) {
           return;
         }
       }
+      requestedInGesture = true;
       onCloseRef.current();
     };
+    const handleMouseDown = (event: globalThis.MouseEvent) => handleMouseEvent(event, true);
+    const handleClick = (event: globalThis.MouseEvent) => handleMouseEvent(event, false);
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape' && !event.defaultPrevented) {
         onCloseRef.current();
+        onEscapeRef.current?.();
         event.preventDefault();
         event.stopPropagation();
       }
     };
     document.addEventListener('mousedown', handleMouseDown);
+    if (dismissOnClick) {
+      document.addEventListener('click', handleClick);
+    }
     document.addEventListener('keydown', handleKeyDown, true);
     return () => {
       document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [enabled]);
+  }, [enabled, dismissOnClick, onCloseRef, ignoreRef, onEscapeRef]);
+}
+
+/**
+ * 按压态管理（Button/ButtonInput/Tool组共用，对齐原版ButtonElement/ToolGroup的
+ * onDocumentMouseUp/onDocumentKeyUp范式）：鼠标左键或Enter/空格按下进入按压态，
+ * document级capture监听mouseup/keyup复位（释放可能发生在目标外）；按压流可能在上一流
+ * 结束前再次开始（鼠标→键盘混用），以集合管理document监听，卸载时兜底全量移除。
+ * 按压目标经`resolveTarget`从事件target解析（组内委托场景如Tool组经data-tool-name反查），
+ * 缺省为单元素按压；释放落在发起目标上时经`onTrigger`触发（Tool组的onSelect位，Button系
+ * 依赖原生click触发无需传）
+ */
+export function usePressedState<T = boolean, E extends HTMLElement = HTMLElement>({
+  disabled,
+  resolveTarget,
+  canPress,
+  onTrigger,
+  preventDefaultOnPress = false,
+  onMouseDown: passMouseDown,
+  onMouseUp: passMouseUp,
+  onKeyDown: passKeyDown,
+  onKeyUp: passKeyUp,
+}: {
+  /** 禁用时按下不进入按压态 */
+  disabled?: boolean;
+  /** 从事件目标解析按压目标，返回null表示不在任何可按压目标上；缺省单元素按压 */
+  resolveTarget?: (node: EventTarget | null) => T | null;
+  /** 按下准入校验（如Tool组排除disabled工具）；缺省全部可按 */
+  canPress?: (target: T) => boolean;
+  /** 释放（mouseup/keyup）落在发起目标上时触发 */
+  onTrigger?: (target: T) => void;
+  /** 按下被接受时阻止默认行为（Tool组防拖动选中文本/焦点转移；Button不阻止以保留点击聚焦） */
+  preventDefaultOnPress?: boolean;
+  /**
+   * 调用方透传的mousedown回调，**先于**按压逻辑无条件转发：按压逻辑含disabled/非左键
+   * 的提前返回，置于其后会导致这些分支下调用方收不到事件
+   */
+  onMouseDown?: MouseEventHandler<E>;
+  /** 调用方透传的mouseup回调，同为先于按压复位无条件转发 */
+  onMouseUp?: MouseEventHandler<E>;
+  /** 调用方透传的keydown回调，同为先于按压逻辑无条件转发 */
+  onKeyDown?: KeyboardEventHandler<E>;
+  /** 调用方透传的keyup回调，同为先于按压复位无条件转发 */
+  onKeyUp?: KeyboardEventHandler<E>;
+}): {
+  /** 是否处于按压中 */
+  pressed: boolean;
+  /** 按压中的目标；null为无按压（单元素按压时恒为真值） */
+  pressedTarget: T | null;
+  onMouseDown: MouseEventHandler<E>;
+  onMouseUp: MouseEventHandler<E>;
+  onKeyDown: KeyboardEventHandler<E>;
+  onKeyUp: KeyboardEventHandler<E>;
+} {
+  const [pressedTarget, setPressedTarget] = useState<T | null>(null);
+  // 活跃document监听的处理器集合（按压后组件卸载的边界场景），卸载时兜底移除；
+  // ref惰性初始化，避免每渲染新建Set即丢
+  const mouseUpHandlersRef = useRef<Set<(ev: globalThis.MouseEvent) => void> | null>(null);
+  const keyUpHandlersRef = useRef<Set<(ev: globalThis.KeyboardEvent) => void> | null>(null);
+  // 处理器闭包经ref读取最新配置：监听挂载期间props更新（disabled/onTrigger等）后仍取新值
+  const configRef = useLatestRef({ disabled, resolveTarget, canPress, onTrigger });
+  // 调用方透传的事件回调：与configRef同理经ref读取，在按压处理之后转发。
+  // 对齐原版ButtonElement mixin在同一处处理按压与用户回调，React的单handler模型需手工串联
+  const passThroughRef = useLatestRef({
+    onMouseDown: passMouseDown,
+    onMouseUp: passMouseUp,
+    onKeyDown: passKeyDown,
+    onKeyUp: passKeyUp,
+  });
+  useEffect(() => () => {
+    for (const handler of mouseUpHandlersRef.current ?? []) {
+      document.removeEventListener('mouseup', handler, true);
+    }
+    for (const handler of keyUpHandlersRef.current ?? []) {
+      document.removeEventListener('keyup', handler, true);
+    }
+    mouseUpHandlersRef.current?.clear();
+    keyUpHandlersRef.current?.clear();
+  }, []);
+
+  /** 挂载document级capture监听：释放时复位按压态并执行一次性释放逻辑（handler自移除并退出集合） */
+  const armDocumentMouseUp = (onRelease: (ev: globalThis.MouseEvent) => void) => {
+    const handler = (ev: globalThis.MouseEvent) => {
+      document.removeEventListener('mouseup', handler, true);
+      mouseUpHandlersRef.current?.delete(handler);
+      setPressedTarget(null);
+      onRelease(ev);
+    };
+    (mouseUpHandlersRef.current ??= new Set()).add(handler);
+    document.addEventListener('mouseup', handler, true);
+  };
+
+  const armDocumentKeyUp = (onRelease: (ev: globalThis.KeyboardEvent) => void) => {
+    const handler = (ev: globalThis.KeyboardEvent) => {
+      document.removeEventListener('keyup', handler, true);
+      keyUpHandlersRef.current?.delete(handler);
+      setPressedTarget(null);
+      onRelease(ev);
+    };
+    (keyUpHandlersRef.current ??= new Set()).add(handler);
+    document.addEventListener('keyup', handler, true);
+  };
+
+  /** 解析按压目标：未提供resolveTarget时为单元素按压（恒定目标）；不可按压时返回null */
+  const resolvePressTarget = (node: EventTarget | null): T | null => {
+    const { resolveTarget: resolve, canPress: canPressNow } = configRef.current;
+    const target = resolve ? resolve(node) : (true as T);
+    if (target === null || (canPressNow && !canPressNow(target))) {
+      return null;
+    }
+    return target;
+  };
+
+  const onMouseDown: MouseEventHandler<E> = (e) => {
+    passThroughRef.current.onMouseDown?.(e);
+    if (configRef.current.disabled || e.button !== 0) {
+      return;
+    }
+    const target = resolvePressTarget(e.target);
+    if (target === null) {
+      return;
+    }
+    if (preventDefaultOnPress) {
+      // 对齐原版onMouseKeyDown返回false：阻止默认（拖动选中文本/焦点转移）
+      e.preventDefault();
+    }
+    setPressedTarget(target);
+    armDocumentMouseUp((ev) => {
+      const { resolveTarget: resolve, onTrigger: trigger } = configRef.current;
+      // 释放落在发起目标上时触发（原版onDocumentMouseKeyUp的目标匹配语义）
+      if (trigger && resolve && resolve(ev.target) === target) {
+        trigger(target);
+      }
+    });
+  };
+
+  /** 鼠标在元素上释放时复位按压态（document监听兜底目标外释放） */
+  const onMouseUp: MouseEventHandler<E> = (e) => {
+    passThroughRef.current.onMouseUp?.(e);
+    if (!configRef.current.disabled) {
+      setPressedTarget(null);
+    }
+  };
+
+  const onKeyDown: KeyboardEventHandler<E> = (e) => {
+    passThroughRef.current.onKeyDown?.(e);
+    // 长按自动重复的keydown不重复进入按压流，避免keyup时N个监听齐触发onTrigger
+    if (e.repeat || configRef.current.disabled || (e.key !== 'Enter' && e.key !== ' ')) {
+      return;
+    }
+    const target = resolvePressTarget(e.target);
+    if (target === null) {
+      return;
+    }
+    if (preventDefaultOnPress) {
+      e.preventDefault();
+    }
+    setPressedTarget(target);
+    // 记录发起按键：按住Enter再敲空格会先后建立两个并发流，keyup时两个监听都会触发，
+    // 复位无碍，但onTrigger须匹配发起键防止重复触发（原版经单一pressed态天然串行化）
+    const startKey = e.key;
+    armDocumentKeyUp((ev) => {
+      const { resolveTarget: resolve, onTrigger: trigger } = configRef.current;
+      // 对齐原版onMouseKeyUp：keyup目标须仍解析到发起工具才触发
+      if (trigger && resolve && ev.key === startKey && resolve(ev.target) === target) {
+        trigger(target);
+      }
+    });
+  };
+
+  /** 元素上松开Enter/空格时复位键盘按压态 */
+  const onKeyUp: KeyboardEventHandler<E> = (e) => {
+    passThroughRef.current.onKeyUp?.(e);
+    if (!configRef.current.disabled && (e.key === 'Enter' || e.key === ' ')) {
+      setPressedTarget(null);
+    }
+  };
+
+  return { pressed: pressedTarget !== null, pressedTarget, onMouseDown, onMouseUp, onKeyDown, onKeyUp };
 }
 
 /**
  * 面板内选项DOM的双向索引：值→元素（前缀匹配/滚动读取）与元素→值（事件target定位选项）。
- * 值的ref回调按值缓存、跨渲染稳定，避免每渲染detach/attach造成索引抖动
+ * `values`为当前渲染的全部选项值：值的ref回调按值缓存、跨渲染稳定（同值复用同一回调，
+ * 避免每渲染detach/attach），值移除后其回调缓存随之淘汰（长期运行下不累积）。
+ * 调用方须传入与渲染同一份来源的选项值列表
  */
-export function useOptionRegistry<T extends string | number>() {
+export function useOptionRegistry<T extends string | number>(values: T[]) {
   const itemRefs = useRef(new Map<T, HTMLElement>());
   const itemEls = useRef(new Map<Element, T>());
   const callbacksRef = useRef(new Map<T, (el: HTMLElement | null) => void>());
@@ -351,6 +670,24 @@ export function useOptionRegistry<T extends string | number>() {
     }
     return callback;
   };
+
+  // 淘汰已移除选项的回调缓存（选项集收窄时释放；未在本轮values中的值不会再有ref回调）
+  useEffect(() => {
+    const active = new Set(values);
+    for (const value of callbacksRef.current.keys()) {
+      if (!active.has(value)) {
+        callbacksRef.current.delete(value);
+        itemRefs.current.delete(value);
+      }
+    }
+  }, [values]);
+
+  // 卸载时清空索引与回调缓存
+  useEffect(() => () => {
+    itemRefs.current.clear();
+    itemEls.current.clear();
+    callbacksRef.current.clear();
+  }, []);
 
   /** 从事件target沿祖先链定位选项值 */
   const findItemFromNode = (node: EventTarget | null): T | null => {
@@ -465,12 +802,14 @@ export function useOptionDrag<T extends string | number>({
  * 值不满足约束时在输入元素输出`aria-invalid`（根元素的invalid标志类由调用方按返回的
  * `invalid`输出），不改写值。触发时机对齐原版：值变更防抖250ms后校验（原版change事件
  * 的OO.ui.debounce）、失焦立即校验、聚焦视为有效（原版onFocus的setValidityFlag(true)）；
- * 初始值不主动校验（原版构造期无change事件，NumberInput的挂载期校验由调用方经revalidate补齐）
+ * 初始值不主动校验（原版构造期无change事件），需要构造期标记的形态（NumberInput）经
+ * validateOnMount开启挂载期即时校验
  */
 export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement, V extends string | number>({
   inputRef,
   value,
   validate,
+  validateOnMount = false,
 }: {
   /** 内部输入元素引用（checkValidity浏览器约束检查的载体） */
   inputRef: RefObject<T | null>;
@@ -478,6 +817,11 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
   value: V;
   /** 自定义合法性判定（缺省仅浏览器checkValidity）；返回Promise时按其决议结果标记，拒绝视为非法 */
   validate?: (value: V) => boolean | Promise<boolean>;
+  /**
+   * 挂载期即校验一次（跳过"首值不校验"）：对齐原版构造期即输出的非法标记
+   * （如空值 + required 在加载时即标记）。缺省 false——其余输入形态不在构造期标记
+   */
+  validateOnMount?: boolean;
 }): {
   /** 当前是否标记为非法 */
   invalid: boolean;
@@ -489,10 +833,8 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
   revalidate: () => void;
 } {
   const [invalid, setInvalid] = useState(false);
-  const validateRef = useRef(validate);
-  validateRef.current = validate;
-  const valueRef = useRef(value);
-  valueRef.current = value;
+  const validateRef = useLatestRef(validate);
+  const valueRef = useLatestRef(value);
   // 首个生效值不校验（对齐原版构造期不触发标记）；发生过变化后即使回到初始值也照常校验
   // （如表单重置回初始值需清除既有标记），保证状态不滞留
   const initialValueRef = useRef(value);
@@ -512,7 +854,7 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
       (valid) => setInvalid(!valid),
       () => setInvalid(true),
     );
-  }, [inputRef]);
+  }, [inputRef, validateRef, valueRef]);
 
   // 防抖句柄跨渲染复用：值快速连续变更时只保留最后一次校验
   const debouncedCheck = useMemo(() => debounce(check, 250), [check]);
@@ -525,6 +867,17 @@ export function useValidityFlag<T extends HTMLInputElement | HTMLTextAreaElement
     interactedRef.current = true;
     debouncedCheck();
   }, [value, debouncedCheck]);
+
+  // 挂载期即校验：以即时的 check 复现原版构造期的标记（不走防抖，挂载后立即标记）。
+  // 置于值变更effect之后——挂载时首值守卫先跳过防抖，再置interacted并即时校验，
+  // 避免挂载时额外多排一次防抖检查
+  useEffect(() => {
+    if (!validateOnMount) {
+      return;
+    }
+    interactedRef.current = true;
+    check();
+  }, [validateOnMount, check]);
 
   return {
     invalid,
@@ -544,15 +897,19 @@ export function useMenuPopup<T extends string | number>({
   onClose,
   values,
   ignore,
+  onEscape,
 }: {
   open: boolean;
   onClose: () => void;
   /** 可选项值集合（有value且未禁用） */
   values: T[];
-  ignore?: DismissIgnoreTarget[];
+  ignore?: ElementOrRef[];
+  /** Escape触发关闭后的附加动作（如TagMultiselect清空输入文本，对齐原版doInputEscape） */
+  onEscape?: () => void;
 }) {
   const [highlightedValue, setHighlightedValue] = useState<T>();
 
+  /** 相对当前高亮按delta移动高亮，端点钳制不环绕（原版static.listWrapsAround=false） */
   const moveHighlight = (delta: number) => {
     if (!values.length) {
       return;
@@ -564,9 +921,150 @@ export function useMenuPopup<T extends string | number>({
     setHighlightedValue(values[nextIndex]);
   };
 
-  useDismissablePopover({ enabled: open, onClose, ignore });
+  /**
+   * 菜单导航键处理（对齐原版MenuSelectWidget static.handleNavigationKeys=true的按键集）：
+   * ↑↓移动高亮、Home/End跳首末、PageUp/PageDown翻页（±10步长，对齐原版翻页量）；
+   * 返回是否消费了按键（空菜单或非导航键返回false），供调用方决定preventDefault
+   */
+  const handleNavigationKey = (key: string): boolean => {
+    if (!values.length) {
+      return false;
+    }
+    switch (key) {
+      case 'ArrowUp':
+        moveHighlight(-1);
+        return true;
+      case 'ArrowDown':
+        moveHighlight(1);
+        return true;
+      case 'Home':
+        setHighlightedValue(values[0]);
+        return true;
+      case 'End':
+        setHighlightedValue(values[values.length - 1]);
+        return true;
+      case 'PageUp':
+        moveHighlight(-10);
+        return true;
+      case 'PageDown':
+        moveHighlight(10);
+        return true;
+      default:
+        return false;
+    }
+  };
 
-  return { highlightedValue, setHighlightedValue, moveHighlight };
+  useDismissablePopover({ enabled: open, onClose, ignore, onEscape });
+
+  /**
+   * 菜单展开时消费导航键（对齐原版`SelectWidget.onDocumentKeyDown`由基类统一处理，
+   * `MenuSelectWidget`继承后Dropdown与ComboBoxInput均经其菜单响应）：命中导航键时
+   * 阻止默认行为，返回是否消费。与`handleNavigationKey`的区别是本函数额外包含
+   * “仅展开时生效”与preventDefault，供组件的onKeyDown直接转调
+   */
+  const consumeNavigationKey = (
+    event: Pick<ReactKeyboardEvent, 'key' | 'preventDefault'>,
+  ): boolean => {
+    if (!open || !handleNavigationKey(event.key)) {
+      return false;
+    }
+    event.preventDefault();
+    return true;
+  };
+
+  return {
+    highlightedValue,
+    setHighlightedValue,
+    handleNavigationKey,
+    consumeNavigationKey,
+  };
+}
+
+/**
+ * 直选型选项组的键盘改选（TabSelect/RadioSelect/ButtonSelect共用）。
+ * 对齐原版`SelectWidget.onDocumentKeyDown`的直接改选形态：↑↓←→在可选值间环绕移动并直接改选
+ * （选项无高亮态），无选中项时↓自首项、↑自末项起步；Enter重申当前选中项（值未变化故不提交，
+ * 无选中项不响应）；Home/End/PageUp/PageDown不消费（static.handleNavigationKeys=false）。
+ * 仅消费上述按键，其余交还原生行为
+ */
+export function useGroupKeyboardSelection<T extends string | number>({
+  disabled,
+  selectableValues,
+  value,
+  onCommit,
+}: {
+  /** 组禁用：禁用时所有按键不响应 */
+  disabled?: boolean;
+  /** 可选值序列（非禁用项，按展示顺序） */
+  selectableValues: T[];
+  /** 当前选中值 */
+  value: T | undefined;
+  /** 改选回调（仅值变化时调用：Enter重申当前项、组内仅一个可选值时方向键环绕回自身均不触发） */
+  onCommit: (value: T) => void;
+}): KeyboardEventHandler<HTMLElement> {
+  return (e) => {
+    if (disabled || !selectableValues.length) {
+      return;
+    }
+    const currentIndex = value === undefined ? -1 : selectableValues.indexOf(value);
+    let next: T | undefined;
+    let handled = false;
+    switch (e.key) {
+      case 'Enter':
+        if (currentIndex !== -1) {
+          next = selectableValues[currentIndex];
+          handled = true;
+        }
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+      case 'ArrowDown':
+      case 'ArrowRight':
+        next = findRelativeSelectableItem(
+          selectableValues,
+          value,
+          e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 1,
+        );
+        handled = true;
+        break;
+    }
+    // 目标值即当前值（Enter重申，或组内仅一个可选值时方向键环绕回自身）时不提交：
+    // 对齐原版SelectWidget.selectItem对已选中项的提前返回（不派发select事件）
+    if (next !== undefined && next !== value) {
+      onCommit(next);
+    }
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+}
+
+/** 浮层水平对齐侧（逻辑值）：start为起始边（LTR左缘/RTL右缘）、end为终止边、center为居中 */
+export type PanelAlignSide = 'start' | 'end' | 'center';
+
+/**
+ * 按两侧可用空间选择浮层对齐侧（对齐原版`PopupToolGroup.setActive`的降级顺序）：
+ * 首选侧放得下即用首选侧，否则试对侧，再试居中；都不足时取空间较大的一侧。
+ * `spaces.start`/`spaces.end`为以锚点相应缘为基准、向该侧展开可用的宽度，
+ * `spaces.center`为居中时两侧可共用的总宽度（两侧余量取小者的两倍），三者皆为px
+ */
+export function resolvePanelAlignSide(
+  preferred: Exclude<PanelAlignSide, 'center'>,
+  spaces: Record<PanelAlignSide, number>,
+  panelWidth: number,
+): PanelAlignSide {
+  if (spaces[preferred] >= panelWidth) {
+    return preferred;
+  }
+  const other = preferred === 'start' ? 'end' : 'start';
+  if (spaces[other] >= panelWidth) {
+    return other;
+  }
+  if (spaces.center >= panelWidth) {
+    return 'center';
+  }
+  return spaces.start >= spaces.end ? 'start' : 'end';
 }
 
 /** 锚定浮层布局结果（页面坐标，portal至body后使用） */
@@ -588,8 +1086,9 @@ export interface AnchoredPanelLayout {
 /**
  * 锚定浮层的定位与视口钳高（MenuSelect/PopupToolGroup共用）：
  * 面板按页面坐标定位于锚点正下/正上方（页面坐标随滚动自然跟随），水平对齐锚点起始边
- * （RTL下为右缘，对齐原版horizontalPosition:'start'的语义），空间不足时将内容钳至可用
- * 高度并改为内部滚动；开启/滚动/缩放及recomputeKey变化时重算。
+ * （RTL下为右缘，对齐原版horizontalPosition:'start'的语义；`horizontalFit`开启时按左右
+ * 可用空间选侧，见该参数注释），空间不足时将内容钳至可用高度并改为内部滚动；
+ * 开启/滚动/缩放及recomputeKey变化时重算。
  * 返回布局供调用方写入style（React受控渲染或命令式均可）
  */
 export function useAnchoredPanelLayout({
@@ -600,6 +1099,9 @@ export function useAnchoredPanelLayout({
   matchAnchorWidth = false,
   hideWhenOutOfView = false,
   clip = true,
+  offset = 0,
+  horizontalFit = false,
+  preferredSide = 'start',
   recomputeKey,
 }: {
   open: boolean;
@@ -614,17 +1116,35 @@ export function useAnchoredPanelLayout({
   hideWhenOutOfView?: boolean;
   /** 是否按视口空间钳高（关闭则只定位） */
   clip?: boolean;
+  /**
+   * 面板与锚点之间的间距（px），对齐原版`FloatableElement` config.spacing：
+   * 计入可用空间，故贴边时钳高会相应减少
+   */
+  offset?: number;
+  /**
+   * 面板宽度放不下时按左右空间改选对齐侧（对齐原版`PopupToolGroup.setActive`降级顺序的
+   * 选侧部分，原版的「填充容器」未实现，见docs/TODO.md）。对齐侧在打开时定一次、关闭时
+   * 重置（滚动重算沿用，避免面板左右跳动——原版同样只在`setActive(true)`时选侧）。
+   * 缺省false：贴合锚点宽度的菜单类浮层无需选侧
+   */
+  horizontalFit?: boolean;
+  /** 首选对齐侧（仅horizontalFit时参与选侧）；对齐原版ToolGroup.align：before→start、after→end */
+  preferredSide?: Exclude<PanelAlignSide, 'center'>;
   /** 额外重算触发源（如PopupToolGroup的工具集变化导致面板高度变化） */
   recomputeKey?: unknown;
 }): AnchoredPanelLayout | null {
   const [layout, setLayout] = useState<AnchoredPanelLayout | null>(null);
   const configDir = useDir();
   const spacing = useViewportSpacing();
+  // 打开期间缓存的对齐侧：关闭时重置，使每次打开重新按空间选侧
+  const sideRef = useRef<PanelAlignSide | null>(null);
 
   useLayoutEffect(() => {
     const panel = panelRef.current;
     if (!open) {
       setLayout(null);
+      // 关闭时重置对齐侧缓存，使下次打开重新按空间选侧
+      sideRef.current = null;
       // 关闭时还原裁剪，避免下次测量取到被钳制的尺寸
       if (panel) {
         panel.style.maxHeight = '';
@@ -632,6 +1152,10 @@ export function useAnchoredPanelLayout({
       }
       return;
     }
+    // 方向按锚点元素缓存：滚动/缩放重算不改文本方向，避免每次重算都触发样式重算
+    // （getElementDir读取computed style，在滚动高频路径上会形成同步布局开销）
+    let dirAnchorEl: HTMLElement | null = null;
+    let cachedDir: 'ltr' | 'rtl' = 'ltr';
     const compute = (): AnchoredPanelLayout | null => {
       const el = panelRef.current;
       const anchorEl = resolveElement(anchor);
@@ -639,43 +1163,93 @@ export function useAnchoredPanelLayout({
         return null;
       }
       // 面板方向：Provider.dir覆盖锚点元素的继承方向（对齐原版Element config.dir优先）
-      const dir = configDir ?? getElementDir(anchorEl);
+      let dir = configDir;
+      if (dir === undefined) {
+        if (dirAnchorEl !== anchorEl) {
+          dirAnchorEl = anchorEl;
+          cachedDir = getElementDir(anchorEl);
+        }
+        dir = cachedDir;
+      }
       // 清除上一轮钳高，测量自然尺寸（避免以钳后高度为基准逐轮收缩）
       el.style.maxHeight = '';
       el.style.overflowY = '';
       const rect = anchorEl.getBoundingClientRect();
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      // 裁剪/钳高与滚出判定以锚点就近的可滚动容器为准（对齐原版$floatableClosestScrollable），
+      // 无则回退视口；元素容器的可视边须扣除滚动条沟槽（对齐原版getDimensions.scrollbar，
+      // 视口按原版计0——window.innerWidth/Height即含沟槽的口径）
+      const scroller = findScrollableContainer(anchorEl);
+      const isViewport = scroller === document.documentElement;
+      const box = isViewport
+        ? { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight }
+        : (() => {
+          const sr = scroller.getBoundingClientRect();
+          return { top: sr.top, left: sr.left, right: sr.right, bottom: sr.bottom };
+        })();
+      const visibleRight = box.right - (isViewport ? 0 : scroller.offsetWidth - scroller.clientWidth);
+      const visibleBottom = box.bottom - (isViewport ? 0 : scroller.offsetHeight - scroller.clientHeight);
       const outOfView = hideWhenOutOfView
-        && (rect.bottom < 0 || rect.top > vh || rect.right < 0 || rect.left > vw);
+        && (rect.bottom < box.top || rect.top > visibleBottom || rect.right < box.left || rect.left > visibleRight);
       // maxHeight为content-box高度：需扣除面板上下border，否则钳高后面板边缘仍越界视口
       const naturalHeight = el.offsetHeight;
       const borderHeight = el.offsetHeight - el.clientHeight;
       let top: number;
       let maxHeight: number | undefined;
       if (position === 'above') {
-        const available = Math.max(0, rect.top - spacing.top);
-        // 钳高后底缘仍贴锚点顶缘，向上收缩
+        const available = Math.max(0, rect.top - box.top - spacing.top - offset);
+        // 钳高后底缘仍贴锚点顶缘（再让出offset），向上收缩
         const clampedHeight = Math.min(naturalHeight, available);
-        top = rect.top + scrollY - clampedHeight;
+        top = rect.top + scrollY - offset - clampedHeight;
         if (naturalHeight > available) {
           maxHeight = Math.max(0, available - borderHeight);
         }
       } else {
-        top = rect.bottom + scrollY;
+        top = rect.bottom + scrollY + offset;
         if (!outOfView && clip) {
-          const available = vh - rect.bottom - spacing.bottom;
+          const available = visibleBottom - rect.bottom - spacing.bottom - offset;
           if (naturalHeight > available) {
             maxHeight = Math.max(0, available - borderHeight);
           }
         }
       }
-      // 水平对齐锚点起始边；RTL下起始边为右缘（matchAnchorWidth时面板宽度等于锚点，坐标一致）
-      const left = dir === 'rtl' && !matchAnchorWidth
-        ? rect.left + rect.width - el.offsetWidth + scrollX
-        : rect.left + scrollX;
+      // 水平对齐：缺省起始边（RTL下起始边为右缘）；horizontalFit开启时按两侧可用空间选侧。
+      // 可用空间以板宽（offsetWidth）为基准，容器边界计视口留白、扣滚动条沟槽。
+      // 面板宽度取锚点宽度（matchAnchorWidth）时两侧坐标重合，无需选侧
+      const panelWidth = el.offsetWidth;
+      const boundsNear = box.left + spacing.left;
+      const boundsFar = visibleRight - spacing.right;
+      const anchorCenterX = rect.left + rect.width / 2;
+      if (horizontalFit && !matchAnchorWidth) {
+        sideRef.current ??= resolvePanelAlignSide(
+          preferredSide,
+          {
+            // start/end为逻辑侧：LTR的start侧自锚点左缘向右展开，RTL的start侧自锚点右缘向左展开
+            start: Math.max(0, dir === 'rtl' ? rect.right - boundsNear : boundsFar - rect.left),
+            end: Math.max(0, dir === 'rtl' ? boundsFar - rect.left : rect.right - boundsNear),
+            center: 2 * Math.max(0, Math.min(anchorCenterX - boundsNear, boundsFar - anchorCenterX)),
+          },
+          panelWidth,
+        );
+      }
+      const alignSide = sideRef.current ?? 'start';
+      let left: number;
+      if (matchAnchorWidth) {
+        // 面板宽度等于锚点宽度，两侧对齐的坐标重合（RTL下亦然）
+        left = rect.left + scrollX;
+      } else {
+        switch (alignSide) {
+          case 'end':
+            left = (dir === 'rtl' ? rect.left : rect.right - panelWidth) + scrollX;
+            break;
+          case 'center':
+            left = anchorCenterX - panelWidth / 2 + scrollX;
+            break;
+          default:
+            left = (dir === 'rtl' ? rect.right - panelWidth : rect.left) + scrollX;
+        }
+      }
       return {
         top,
         left,
@@ -694,7 +1268,7 @@ export function useAnchoredPanelLayout({
       window.removeEventListener('resize', recompute);
       document.removeEventListener('scroll', recompute, true);
     };
-  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, recomputeKey, configDir, spacing]);
+  }, [open, anchor, panelRef, position, matchAnchorWidth, hideWhenOutOfView, clip, offset, horizontalFit, preferredSide, recomputeKey, configDir, spacing]);
 
   return layout;
 }
@@ -732,10 +1306,8 @@ export function useAutoFocusPanel({
 }): void {
   const isFirstRef = useRef(true);
   // 回调经ref读取最新，避免内联函数导致effect反复触发
-  const onBeforeFocusRef = useRef(onBeforeFocus);
-  onBeforeFocusRef.current = onBeforeFocus;
-  const onAfterFocusRef = useRef(onAfterFocus);
-  onAfterFocusRef.current = onAfterFocus;
+  const onBeforeFocusRef = useLatestRef(onBeforeFocus);
+  const onAfterFocusRef = useLatestRef(onAfterFocus);
   useEffect(() => {
     if (activeValue === undefined) {
       return;
@@ -756,5 +1328,5 @@ export function useAutoFocusPanel({
     const focusable = getFirstFocusable(activePanel);
     focusable?.focus();
     onAfterFocusRef.current?.(activePanel, focusable);
-  }, [activeValue, enabled, rootRef, activeSelector, skipInitialFocus, recomputeKey]);
+  }, [activeValue, enabled, rootRef, activeSelector, skipInitialFocus, recomputeKey, onBeforeFocusRef, onAfterFocusRef]);
 }

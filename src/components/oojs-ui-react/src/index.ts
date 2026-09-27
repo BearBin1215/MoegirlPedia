@@ -11,10 +11,10 @@ export { Label, type LabelProps } from './widgets/Label';
 
 // 图标
 export { Icon, type IconProps } from './widgets/Icon';
-export { Indicator, type IndicatorProps, type Indicators } from './widgets/Indicator';
+export { Indicator, type IndicatorProps } from './widgets/Indicator';
 
 // 按钮
-export { Button, type ButtonProps } from './widgets/Button';
+export { Button, type ButtonProps, type ButtonClickEvent } from './widgets/Button';
 export { ToggleButton, type ToggleButtonProps } from './widgets/ToggleButton';
 export { ToggleSwitch, type ToggleSwitchProps } from './widgets/ToggleSwitch';
 export { ButtonGroup, type ButtonGroupProps } from './widgets/ButtonGroup';
@@ -31,8 +31,16 @@ export {
   type TextInputValidate,
 } from './widgets/TextInput';
 export { SearchInput, type SearchInputProps } from './widgets/SearchInput';
+export { SearchWidget, type SearchWidgetProps } from './widgets/SearchWidget';
+export {
+  SelectFileInputWidget,
+  type SelectFileInputWidgetProps,
+} from './widgets/SelectFileInputWidget';
 export { NumberInput, type NumberInputProps } from './widgets/NumberInput';
 export { MultilineTextInput, type MultilineTextInputProps } from './widgets/MultilineTextInput';
+
+// 随表单提交的隐藏值（原版HiddenInputWidget）
+export { HiddenInputWidget, type HiddenInputWidgetProps } from './widgets/HiddenInputWidget';
 
 // 消息提示
 export { Message, type MessageProps, type MessageType } from './widgets/Message';
@@ -62,9 +70,31 @@ export { CheckboxMultiselectInput, type CheckboxMultiselectInputProps } from './
 // 选择框。Select系可独立使用（也作为Dropdown/BookletLayout/IndexLayout的内部构建件），
 // options数组项类型随组件导出（声明式props数组的标注所需）
 export { Dropdown, type DropdownProps, type DropdownOptionProps } from './widgets/Dropdown';
+export {
+  ButtonMenuSelectWidget,
+  type ButtonMenuSelectWidgetProps,
+} from './widgets/ButtonMenuSelectWidget';
 export { Select, type SelectProps, type SelectOptionProps } from './widgets/Select';
 export { TabSelect, type TabSelectProps, type TabSelectOptionProps } from './widgets/TabSelect';
 export { OutlineSelect, type OutlineSelectProps } from './widgets/OutlineSelect';
+export {
+  ButtonSelect,
+  type ButtonSelectProps,
+  type ButtonSelectOptionProps,
+} from './widgets/ButtonSelect';
+
+// 标签多选族：TagMultiselect为基础形态，MenuTagMultiselect在其上提供候选菜单
+export {
+  TagMultiselect,
+  type TagMultiselectProps,
+  type TagInputPosition,
+  type TagOptionProps,
+} from './widgets/TagMultiselect';
+export {
+  MenuTagMultiselect,
+  type MenuTagMultiselectProps,
+  type MenuTagMultiselectOptionProps,
+} from './widgets/MenuTagMultiselect';
 
 // 布局
 export { Layout, type LayoutProps } from './layouts/Layout';
@@ -79,18 +109,26 @@ export { ActionFieldLayout, type ActionFieldLayoutProps } from './layouts/Action
 export { FormLayout, type FormLayoutProps } from './layouts/FormLayout';
 export { HorizontalLayout, type HorizontalLayoutProps } from './layouts/HorizontalLayout';
 export {
+  CopyTextLayout,
+  type CopyTextLayoutProps,
+  type CopyTextLayoutTextInputProps,
+} from './layouts/CopyTextLayout';
+export {
   IndexLayout,
   type IndexLayoutProps,
   type IndexLayoutTabProps,
 } from './layouts/IndexLayout';
+export { MenuLayout, type MenuLayoutProps } from './layouts/MenuLayout';
 
 // 工具栏
 export { Toolbar, type ToolbarProps } from './toolbars/Toolbar';
 export { BarToolGroup, type BarToolGroupProps } from './toolbars/BarToolGroup';
 export { ListToolGroup, type ListToolGroupProps } from './toolbars/ListToolGroup';
 export { MenuToolGroup, type MenuToolGroupProps } from './toolbars/MenuToolGroup';
-// tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置
-export type { ToolProps } from './toolbars/Tool';
+export { LabelToolGroup, type LabelToolGroupProps } from './toolbars/LabelToolGroup';
+// tools数组的项类型即ToolProps，随工具栏系列共同构成声明式工具配置；
+// ToolPopupProps为ToolProps.popup的类型（工具的弹出浮层，对齐原版PopupTool）
+export type { ToolProps, ToolPopupProps } from './toolbars/Tool';
 
 // 弹窗
 export { Dialog, type DialogProps } from './dialogs/Dialog';
@@ -116,11 +154,13 @@ export {
   useIsMobile,
   useDir,
   useViewportSpacing,
+  useAccessKeyLabel,
 } from './config';
 export type { OOUIConfig, ViewportSpacing, ViewportSpacingInput, Direction } from './config';
 export { msg, deferMsg, resolveMsg, registerMessages } from './i18n';
 export type { MessageKey, MessageValue } from './i18n';
 export { zhHans } from './locales/zh-hans';
 
-// 类型
-export type { AccessKeyedElement, ChangeHandler, FlaggedElement } from './utils';
+// 类型。元素mixin契约类型（含Indicators等紧邻类型）集中于Element.ts
+export type { AccessKeyedElement, FlaggedElement, Indicators } from './Element';
+export type { ChangeHandler } from './utils';

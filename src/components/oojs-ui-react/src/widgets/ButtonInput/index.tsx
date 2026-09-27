@@ -1,7 +1,4 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
   forwardRef,
   type MouseEvent,
   type MouseEventHandler,
@@ -9,14 +6,12 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
-import { IconBase } from '../Icon/Base';
-import { IndicatorBase } from '../Indicator/Base';
-import { LabelBase } from '../Label/Base';
-import { flaggedElementClasses, getWidgetClassName, toFlagArray, type AccessKeyedElement } from '../../utils';
+import { buttonElementClasses, getButtonIconClasses, getWidgetClassName, resolveTabIndex, resolveTitle, toFlagArray } from '../../mixins';
+import { useAccessKeyLabel } from '../../config';
+import { usePressedState } from '../../hooks';
+import type { AccessKeyedElement, ButtonFlag, IconElement, IndicatorElement } from '../../Element';
 import type { WidgetProps } from '../Widget';
-import type { IconElement } from '../Icon';
-import type { IndicatorElement } from '../Indicator';
-import { getButtonIconClasses, type ButtonFlag } from '../Button';
+import { ButtonSlots } from '../Button/slots';
 
 export interface ButtonInputProps extends
   Omit<WidgetProps<HTMLSpanElement>, 'children' | 'onClick' | 'onMouseDown' | 'onMouseUp' | 'onKeyDown' | 'onKeyUp'>,
@@ -38,6 +33,9 @@ export interface ButtonInputProps extends
 
   /** 是否生成边框 */
   framed?: boolean;
+
+  /** 标签可视（视觉隐藏但保留可访问名称，对齐原版LabelElement的invisibleLabel） */
+  invisibleLabel?: boolean;
 
   /** 附加给按钮的标志 */
   flags?: ButtonFlag | ButtonFlag[];
@@ -77,6 +75,7 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
   formNoValidate,
   icon,
   indicator,
+  invisibleLabel,
   name,
   type = 'button',
   useInputTag = false,
@@ -96,24 +95,23 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
    * 键盘为Enter/空格按下与抬起；鼠标为左键按下加类，mouseup可能发生在按钮外，
    * 通过document级capture监听复位（原版onDocumentMouseUp同款）
    */
-  const [pressed, setPressed] = useState(false);
-  // 未复位的document级mouseup监听（按压后组件卸载的边界场景），卸载时兜底移除
-  // （对齐Tool.tsx/Select.tsx的监听清理范式）；ref惰性初始化，避免每渲染新建Set即丢
-  const documentMouseUpHandlersRef = useRef<Set<() => void> | null>(null);
-  // 未复位的document级keyup监听（按住Enter/空格期间焦点移出后原位keyup不再触发），按住期间仅挂载一次
-  const documentKeyUpHandlerRef = useRef<(() => void) | null>(null);
-  useEffect(() => () => {
-    for (const handler of documentMouseUpHandlersRef.current ?? []) {
-      document.removeEventListener('mouseup', handler, true);
-    }
-    documentMouseUpHandlersRef.current?.clear();
-    if (documentKeyUpHandlerRef.current) {
-      document.removeEventListener('keyup', documentKeyUpHandlerRef.current, true);
-      documentKeyUpHandlerRef.current = null;
-    }
-  }, []);
+  const {
+    pressed,
+    onMouseDown: pressedMouseDown,
+    onMouseUp: pressedMouseUp,
+    onKeyDown: pressedKeyDown,
+    onKeyUp: pressedKeyUp,
+  } = usePressedState({
+    disabled,
+    onMouseDown,
+    onMouseUp,
+    onKeyDown,
+    onKeyUp,
+  });
   const flagList = toFlagArray(flags);
-  const iconClasses = getButtonIconClasses(framed, active, disabled, flagList);
+  const iconClasses = getButtonIconClasses({ framed, active, disabled, flags: flagList });
+  // title的键位后缀：快捷键文案由宿主解析（未提供时title附原键值）
+  const accessKeyLabel = useAccessKeyLabel(accessKey);
 
   const classes = clsx(
     className,
@@ -123,12 +121,9 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
       icon: useInputTag ? undefined : icon,
       indicator: useInputTag ? undefined : indicator,
       label: children,
+      invisibleLabel,
     }, 'input', 'buttonInput'),
-    'oo-ui-buttonElement',
-    framed ? 'oo-ui-buttonElement-framed' : 'oo-ui-buttonElement-frameless',
-    flaggedElementClasses(flags),
-    active && 'oo-ui-buttonElement-active',
-    pressed && !disabled && 'oo-ui-buttonElement-pressed',
+    buttonElementClasses({ framed, active, disabled, pressed, flags: flagList }),
   );
 
   const handleClick: ButtonInputProps['onClick'] = (ev) => {
@@ -137,67 +132,23 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
     }
   };
 
-  const handleMouseUp: MouseEventHandler<HTMLElement> = (ev) => {
-    if (!disabled) {
-      setPressed(false);
-    }
-    onMouseUp?.(ev);
-  };
-
-  /** 对齐原版onMouseDown/onDocumentMouseUp：左键按下进入按压态；mouseup可能发生在按钮外，用document级capture监听确保复位 */
-  const handleMouseDown: MouseEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && ev.button === 0) {
-      setPressed(true);
-      const onDocumentMouseUp = () => {
-        setPressed(false);
-        document.removeEventListener('mouseup', onDocumentMouseUp, true);
-        documentMouseUpHandlersRef.current?.delete(onDocumentMouseUp);
-      };
-      (documentMouseUpHandlersRef.current ??= new Set()).add(onDocumentMouseUp);
-      document.addEventListener('mouseup', onDocumentMouseUp, true);
-    }
-    onMouseDown?.(ev);
-  };
-
-  /** 按下Enter或空格键等同按下鼠标（原生button的click由浏览器触发，无需手动派发）。
-   * 对齐原版onKeyDown：无论按住期间焦点是否移出，keyup均经document级capture监听复位按压态 */
-  const handleKeyDown: KeyboardEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(true);
-      if (!documentKeyUpHandlerRef.current) {
-        const onDocumentKeyUp = () => {
-          setPressed(false);
-          document.removeEventListener('keyup', onDocumentKeyUp, true);
-          documentKeyUpHandlerRef.current = null;
-        };
-        documentKeyUpHandlerRef.current = onDocumentKeyUp;
-        document.addEventListener('keyup', onDocumentKeyUp, true);
-      }
-    }
-    onKeyDown?.(ev);
-  };
-
-  const handleKeyUp: KeyboardEventHandler<HTMLElement> = (ev) => {
-    if (!disabled && (ev.key === 'Enter' || ev.key === ' ')) {
-      setPressed(false);
-    }
-    onKeyUp?.(ev);
-  };
-
   const inputProps = {
     type,
     name,
     className: 'oo-ui-inputWidget-input oo-ui-buttonElement-button',
     disabled,
-    tabIndex: disabled ? -1 : (tabIndex ?? 0),
-    title,
+    tabIndex: resolveTabIndex(tabIndex, disabled),
+    'aria-disabled': disabled || undefined,
+    // title落真实button/input并做invisibleLabel兜底：原版ButtonInputWidget不混TitledElement
+    // （title本无落点），此为本工程增强（见docs/TODO.md增强节）
+    title: resolveTitle({ title, label: children, invisibleLabel, accessKey, accessKeyLabel }),
     accessKey,
     formNoValidate: formNoValidate || undefined,
     onClick: handleClick,
-    onMouseDown: handleMouseDown,
-    onMouseUp: handleMouseUp,
-    onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
+    onMouseDown: pressedMouseDown,
+    onMouseUp: pressedMouseUp,
+    onKeyDown: pressedKeyDown,
+    onKeyUp: pressedKeyUp,
   } as const;
 
   return (
@@ -215,14 +166,12 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
         />
       ) : (
         <button {...inputProps} value={value}>
-          <IconBase
+          <ButtonSlots
             icon={icon}
-            className={iconClasses}
-          />
-          <LabelBase>{children}</LabelBase>
-          <IndicatorBase
+            variantClasses={iconClasses}
+            label={children}
+            labelInvisible={invisibleLabel}
             indicator={indicator}
-            className={iconClasses}
           />
         </button>
       )}
@@ -231,4 +180,3 @@ export const ButtonInput = forwardRef<HTMLSpanElement, ButtonInputProps>(({
 });
 
 ButtonInput.displayName = 'ButtonInput';
-

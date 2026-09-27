@@ -41,7 +41,9 @@ export const Layout = forwardRef<HTMLDivElement, LayoutProps>(({
       // 保留原始值（而非归一化为布尔）传入：React需感知true↔'until-found'切换才会重写DOM属性；
       // 断言仅为绕过React 18类型定义（hidden仅声明为boolean）
       hidden={(hidden || undefined) as boolean | undefined}
-      aria-hidden={hidden ? 'true' : undefined}
+      // aria-hidden仅在完全隐藏时输出：'until-found'的语义是对查找可见，持续向辅助技术
+      // 声明不可见会与openMatchedPanels（查找命中后激活面板）的意图冲突
+      aria-hidden={hidden === true ? 'true' : undefined}
       ref={mergedRef}
     >
       {children}

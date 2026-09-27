@@ -34,14 +34,14 @@ function ReactSwitches({ addLog }: { addLog: (msg: string) => void }) {
   return (
     <div>
       {/* 名称与控件同行，与原版row()的p内嵌结构一致，保证两侧逐行对照 */}
-      <p>关（默认）<ToggleSwitch onChange={(checked) => addLog(`change 常规=${checked}`)} /></p>
-      <p>开<ToggleSwitch defaultChecked onChange={(checked) => addLog(`change 开=${checked}`)} /></p>
-      <p>
+      <div>关（默认）<ToggleSwitch onChange={(checked) => addLog(`change 常规=${checked}`)} /></div>
+      <div>开<ToggleSwitch defaultChecked onChange={(checked) => addLog(`change 开=${checked}`)} /></div>
+      <div>
         受控（当前：{controlled ? '开' : '关'}）
         <ToggleSwitch checked={controlled} onChange={setControlled} />
-      </p>
-      <p>禁用·关<ToggleSwitch disabled /></p>
-      <p>禁用·开<ToggleSwitch disabled defaultChecked /></p>
+      </div>
+      <div>禁用·关<ToggleSwitch disabled /></div>
+      <div>禁用·开<ToggleSwitch disabled defaultChecked /></div>
     </div>
   );
 }
@@ -69,14 +69,14 @@ function ReactToggleButtons({ addLog }: { addLog: (msg: string) => void }) {
 
   return (
     <div>
-      <p>关（默认）<ToggleButton onChange={(checked) => addLog(`change 常规=${checked}`)}>Toggle off</ToggleButton></p>
-      <p>开<ToggleButton defaultChecked>Toggle on</ToggleButton></p>
-      <p>
+      <div>关（默认）<ToggleButton onChange={(checked) => addLog(`change 常规=${checked}`)}>Toggle off</ToggleButton></div>
+      <div>开<ToggleButton defaultChecked>Toggle on</ToggleButton></div>
+      <div>
         受控（当前：{controlled ? '开' : '关'}）
         <ToggleButton checked={controlled} onChange={setControlled}>Controlled</ToggleButton>
-      </p>
-      <p>图标+flags<ToggleButton icon='image' flags='progressive'>Icon</ToggleButton></p>
-      <p>禁用·开<ToggleButton disabled defaultChecked>Disabled</ToggleButton></p>
+      </div>
+      <div>图标+flags<ToggleButton icon='image' flags='progressive'>Icon</ToggleButton></div>
+      <div>禁用·开<ToggleButton disabled defaultChecked>Disabled</ToggleButton></div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { DecoratedOption, type DecoratedOptionProps } from '../DecoratedOption';
+import { getOptionIconClasses, optionWidgetClasses } from '../../mixins';
 import type { OptionProps } from '../Option';
 
 export type MenuOptionProps =
@@ -19,12 +20,11 @@ export const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
   pressed,
   ...rest
 }, ref) => {
+  // 原版MenuOptionWidget沿用OptionWidget基类static（selectable/highlightable/pressable皆true）
   const classes = clsx(
     className,
     'oo-ui-menuOptionWidget',
-    pressed && 'oo-ui-optionWidget-pressed',
-    highlighted && 'oo-ui-optionWidget-highlighted',
-    selected && 'oo-ui-optionWidget-selected',
+    optionWidgetClasses({ selected, highlighted, pressed }),
   );
 
   return (
@@ -32,6 +32,8 @@ export const MenuOption = forwardRef<HTMLDivElement, MenuOptionProps>(({
       {...rest}
       disabled={disabled}
       className={classes}
+      // 选中/按压态的图标着色（wikimediaui主题按选项类内置的变体规则，与flags无关）
+      variantClasses={getOptionIconClasses({ selected, pressed, disabled })}
       aria-selected={!!selected}
       ref={ref}
     />

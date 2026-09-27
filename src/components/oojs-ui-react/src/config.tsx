@@ -42,7 +42,11 @@ export function normalizeViewportSpacing(input: ViewportSpacingInput | undefined
 /** 全局配置。对齐原版OOUI的模块级全局（OO.ui.msg.messages消息表、isMobile/getViewportSpacing/
  * getTeleportTarget等可覆写全局函数、Element的dir配置）在React语境下的对应物 */
 export interface OOUIConfig {
-  /** 消息覆盖表，覆盖英文默认（见src/i18n.ts）。声明式组件渲染时读取，切换即响应式更新 */
+  /**
+   * 消息覆盖表，覆盖英文默认（见src/i18n.ts）。声明式组件渲染时读取，切换即响应式更新。
+   * 传入内联对象字面量会使Provider value每渲染变化并导致整棵子树重渲染，
+   * 故应传入稳定引用（模块级常量，如`locales/zh-hans.ts`导出的`zhHans`）
+   */
   messages?: Partial<Record<MessageKey, MessageValue>>;
 
   /**
@@ -72,6 +76,15 @@ export interface OOUIConfig {
    * 对应原版OO.ui.getViewportSpacing（原版缺省0，供站点避开固定头栏等悬浮元素）
    */
   viewportSpacing?: ViewportSpacingInput;
+
+  /**
+   * 快捷键的显示文案解析，对应原版`jquery.accessKeyLabel`的`getAccessKeyLabel`
+   * （MediaWiki侧显示“Alt+Shift+k”一类本地化组合键）。未提供本解析器时title按原版
+   * 回落分支取原键值（`title [k]`）；提供但返回空串时按原版不加键位后缀；返回
+   * `undefined`视为解析无结果，与未配置同样回落原键值（原版此时不加后缀，此处为
+   * 有意取舍——宿主解析不出修饰键文案时显示原键值比无后缀更可用）
+   */
+  getAccessKeyLabel?: (accessKey: string) => string | undefined;
 }
 
 const OOUIConfigContext = createContext<OOUIConfig>({});
@@ -84,6 +97,7 @@ export function OOUIProvider({
   isMobile,
   dir,
   viewportSpacing,
+  getAccessKeyLabel,
 }: PropsWithChildren<OOUIConfig>) {
   const parent = useContext(OOUIConfigContext);
   // 嵌套Provider时子级同名字段覆盖父级；value经memo稳定引用避免子树无谓重渲染
@@ -93,7 +107,8 @@ export function OOUIProvider({
     isMobile: isMobile ?? parent.isMobile,
     dir: dir ?? parent.dir,
     viewportSpacing: viewportSpacing ?? parent.viewportSpacing,
-  }), [parent, messages, getPortalContainer, isMobile, dir, viewportSpacing]);
+    getAccessKeyLabel: getAccessKeyLabel ?? parent.getAccessKeyLabel,
+  }), [parent, messages, getPortalContainer, isMobile, dir, viewportSpacing, getAccessKeyLabel]);
 
   return (
     <OOUIConfigContext.Provider value={value}>
@@ -141,6 +156,20 @@ export function useIsMobile(): boolean {
 /** 读取浮层文本方向覆盖；未配置时返回undefined，由组件按锚点元素继承方向解析 */
 export function useDir(): Direction | undefined {
   return useOOUIConfig().dir;
+}
+
+/**
+ * 读取一个快捷键的显示文案（经`getAccessKeyLabel`解析）：未给出accessKey、未配置解析器或
+ * 解析器返回undefined时返回undefined（`resolveTitle`随之回落为原键值），解析器返回空串时
+ * 原样返回（按原版不加后缀）。组件须无条件调用本hook（Hook不可置于条件表达式中），
+ * accessKey为空由本hook兜住
+ */
+export function useAccessKeyLabel(accessKey?: string): string | undefined {
+  const { getAccessKeyLabel } = useOOUIConfig();
+  if (!accessKey || !getAccessKeyLabel) {
+    return undefined;
+  }
+  return getAccessKeyLabel(accessKey);
 }
 
 /** 读取归一化的视口留白（四边数值），未配置时各边取VIEWPORT_SPACING */

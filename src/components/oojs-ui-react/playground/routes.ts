@@ -27,6 +27,12 @@ export const compareRoutes: CompareRoute[] = [
     Component: lazy(() => import('./pages/button-checkbox-compare')),
   },
   {
+    path: 'button-select-compare',
+    title: 'ButtonSelect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/button-select-compare')),
+  },
+  {
     path: 'combobox-compare',
     title: 'ComboBoxInput',
     group: 'Widgets',
@@ -69,14 +75,44 @@ export const compareRoutes: CompareRoute[] = [
     Component: lazy(() => import('./pages/search-compare')),
   },
   {
+    path: 'text-input-compare',
+    title: 'TextInput',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/text-input-compare')),
+  },
+  {
+    path: 'file-input-compare',
+    title: 'SelectFileInput',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/file-input-compare')),
+  },
+  {
+    path: 'button-menu-compare',
+    title: 'ButtonMenuSelect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/button-menu-compare')),
+  },
+  {
     path: 'toggle-compare',
     title: 'ToggleSwitch / ToggleButton',
     group: 'Widgets',
     Component: lazy(() => import('./pages/toggle-compare')),
   },
+  {
+    path: 'tag-multiselect-compare',
+    title: 'TagMultiselect',
+    group: 'Widgets',
+    Component: lazy(() => import('./pages/tag-multiselect-compare')),
+  },
   // #endregion
 
   // #region Layouts
+  {
+    path: 'copytext-compare',
+    title: 'CopyTextLayout',
+    group: 'Layouts',
+    Component: lazy(() => import('./pages/copytext-compare')),
+  },
   {
     path: 'fieldset-compare',
     title: 'FieldsetLayout',

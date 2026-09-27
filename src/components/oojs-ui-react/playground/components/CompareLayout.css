@@ -9,3 +9,15 @@
   flex: 1;
   min-width: 0;
 }
+
+/* ARIA读数块：与说明文字区分；动态属性取值较长，需换行显示 */
+.aria-probe {
+  margin: 0.5em 0 0;
+  padding: 0.4em 0.6em;
+  background: #f8f9fa;
+  border: 1px solid #c8ccd1;
+  border-radius: 2px;
+  font-size: 0.85em;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

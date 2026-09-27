@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import { clamp } from 'es-toolkit';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 import type { WidgetProps } from '../Widget';
 
 export interface ProgressBarProps extends WidgetProps<HTMLDivElement> {

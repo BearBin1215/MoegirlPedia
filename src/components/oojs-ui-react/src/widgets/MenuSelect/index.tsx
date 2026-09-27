@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { Select, type SelectProps } from '../Select';
 import { useAnchoredPanelLayout, useCleanId, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
-import { resolveElement } from '../../utils';
+import { OFFSCREEN_POSITION, resolveElement } from '../../utils';
 
 export interface MenuSelectProps extends SelectProps {
   open?: boolean;
@@ -17,6 +17,12 @@ export interface MenuSelectProps extends SelectProps {
    * 指定的容器）上、无法回退到DOM父节点，故定位依赖此参数（Dropdown等调用方须显式传入）
    */
   container?: React.RefObject<HTMLElement | null> | HTMLElement | null;
+
+  /**
+   * 菜单与锚点之间的间距（px，对齐原版`FloatableElement` config.spacing）。
+   * 缺省0（贴合锚点，DropdownWidget即此）；ButtonMenuSelectWidget用4
+   */
+  spacing?: number;
 }
 
 /**
@@ -29,6 +35,10 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   className,
   open = false,
   container,
+  spacing = 0,
+  // 菜单不作Tab停靠点（对齐原版MenuSelectWidget：根无tabindex，焦点由触发控件持有、
+  // activedescendant落在触发元素上）。缺省-1，调用方需要菜单自身可聚焦时显式覆盖
+  tabIndex = -1,
   id: idProp,
   // 取值对齐原版static（见组件注释），须显式下发以覆盖Select自身的缺省false/true
   handleNavigationKeys = true,
@@ -38,7 +48,9 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
   const menuRef = useRef<HTMLDivElement | null>(null);
   const mergedRef = useMergedRefs(menuRef, ref);
   // 面板id供调用方建立aria-owns/aria-controls关联
-  const menuId = idProp ?? `oo-ui-menuSelectWidget-${useCleanId()}`;
+  // useCleanId须无条件调用：Hook不可置于`??`短路右侧，否则idProp有无切换时Hook数量变化触发卸载
+  const generatedId = useCleanId();
+  const menuId = idProp ?? `oo-ui-menuSelectWidget-${generatedId}`;
 
   const layout = useAnchoredPanelLayout({
     open,
@@ -46,6 +58,7 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
     panelRef: menuRef,
     matchAnchorWidth: true,
     hideWhenOutOfView: true,
+    offset: spacing,
   });
   // 菜单portal容器：配置的getPortalContainer以锚点元素调用，缺省document.body
   const getPortalContainer = usePortalContainer();
@@ -64,15 +77,19 @@ export const MenuSelect = forwardRef<HTMLDivElement, MenuSelectProps>(({
       {...rest}
       id={menuId}
       ref={mergedRef}
+      tabIndex={tabIndex}
       handleNavigationKeys={handleNavigationKeys}
       listWrapsAround={listWrapsAround}
+      // 焦点归属元素的管理期随菜单显隐开合（对齐原版MenuSelectWidget.toggle：
+      // 打开时指向选中/高亮项、关闭时移除aria-activedescendant）
+      focusOwnerActive={open}
       className={clsx(classes, layout?.outOfView && 'oo-ui-element-hidden')}
       // dir取锚点有效方向（RTL站点/Provider.dir配置下菜单文本方向正确）
       dir={layout?.dir}
       style={{
         position: 'absolute',
-        top: layout?.top ?? -9999,
-        left: layout?.left ?? -9999,
+        top: layout?.top ?? OFFSCREEN_POSITION,
+        left: layout?.left ?? OFFSCREEN_POSITION,
         width: layout?.width,
         maxHeight: layout?.maxHeight,
         overflowY: layout?.maxHeight !== undefined ? 'auto' : undefined,

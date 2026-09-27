@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { WidgetProps } from '../Widget';
-import type { AccessKeyedElement } from '../../utils';
+import type { AccessKeyedElement } from '../../Element';
 
 /** 选项数据（供options prop传入） */
 export interface OptionData {

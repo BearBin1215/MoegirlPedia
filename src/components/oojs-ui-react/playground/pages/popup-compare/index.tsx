@@ -28,6 +28,18 @@ function OriginalPopups() {
     );
     buttonHostRef.current?.appendChild(unwrapJQuery(button.$element));
 
+    // 无边框变体：验证弹层的-frameless-popup类（对应React侧framed={false}）
+    const framelessButton = new oo.ui.PopupButtonWidget({
+      framed: false,
+      label: '原版无边框弹层',
+      popup: { padded: true },
+    });
+    register(framelessButton);
+    framelessButton.getPopup().$body.append(
+      Object.assign(document.createElement('p'), { textContent: '无边框变体的内容。' }),
+    );
+    buttonHostRef.current?.appendChild(unwrapJQuery(framelessButton.$element));
+
     // 原版PopupWidget的$content要求jQuery对象
     const anchorButton = new oo.ui.ButtonWidget({ label: '原版上方弹出' });
     const popup = new oo.ui.PopupWidget({
@@ -201,6 +213,10 @@ function ReactPopups() {
     <div>
       <PopupButton padded head icon='help' popupContent={<p>这是React版PopupButton的内容。</p>}>
         React弹层按钮
+      </PopupButton>
+      <div style={{ height: '1em' }} />
+      <PopupButton framed={false} padded popupContent={<p>无边框变体的内容。</p>}>
+        React无边框弹层
       </PopupButton>
       <div style={{ height: '1em' }} />
       <OriginalAboveReact />

@@ -1,156 +1,152 @@
 import { describe, expect, it } from 'vitest';
 import {
-  flaggedElementClasses,
-  getWidgetClassName,
-  hasLabel,
-  iconElementClasses,
-  indicatorElementClasses,
-  labelElementClasses,
-  mergeInvalidFlag,
-  toFlagArray,
-  widgetClasses,
-  widgetNameClasses,
+  findRelativeSelectableItem,
+  getSelectableValues,
+  resolveElement,
+  resolveOptionDisabled,
+  resolveSelectableValue,
 } from './utils';
 
 /**
- * 类生成模块的契约测试：各mixin贡献器与折叠层的输出即站点上OOUI主题CSS的选择器契约，
- * 逐项对齐原版oojs-ui的类派生规则（见docs/comparison-guide.md共享抽象一节）。
- * 修改任何期望值前先核对原版对应mixin的实现。
+ * utils.ts纯函数的契约测试：相对导航（键盘导航公共口径，对齐原版SelectWidget）、
+ * 选择集的判定与派生、非法受控值回退、选项禁用的组继承（以上为Select/Dropdown/
+ * DropdownInput/ComboBoxInput/RadioSelect系/TabSelect/CheckboxMultiselect等选择族
+ * 组件共用）、浮层锚点解析。
  */
-describe('widgetClasses（Widget基类贡献）', () => {
-  it('缺省输出根类与enabled态', () => {
-    expect(widgetClasses({})).toBe('oo-ui-widget oo-ui-widget-enabled');
+describe('findRelativeSelectableItem', () => {
+  // 边界规则对齐原版SelectWidget.findRelativeSelectableItem：start不在集合内时
+  // 正向自首项、反向自末项起步；wrap时端点环绕（最多扫一整圈）；filter用于前缀跳转。
+
+  const values = ['a', 'b', 'c', 'd'];
+
+  it('空集合返回undefined', () => {
+    expect(findRelativeSelectableItem([], 'a', 1)).toBeUndefined();
   });
 
-  it('disabled=false与缺省同为enabled', () => {
-    expect(widgetClasses({ disabled: false })).toBe('oo-ui-widget oo-ui-widget-enabled');
+  it('从start不含自身正向移动一步', () => {
+    expect(findRelativeSelectableItem(values, 'a', 1)).toBe('b');
+    expect(findRelativeSelectableItem(values, 'c', 1)).toBe('d');
   });
 
-  it('disabled=true输出disabled态，与enabled互斥', () => {
-    const result = widgetClasses({ disabled: true });
-    expect(result).toBe('oo-ui-widget oo-ui-widget-disabled');
-    expect(result).not.contain('oo-ui-widget-enabled');
-  });
-});
-
-describe('iconElementClasses（IconElement mixin贡献）', () => {
-  it('icon有值输出oo-ui-iconElement', () => {
-    expect(iconElementClasses({ icon: 'help' })).toBe('oo-ui-iconElement');
+  it('反向移动一步', () => {
+    expect(findRelativeSelectableItem(values, 'd', -1)).toBe('c');
   });
 
-  it('icon缺省或空串不输出', () => {
-    expect(iconElementClasses({})).toBe('');
-    expect(iconElementClasses({ icon: '' })).toBe('');
-  });
-});
-
-describe('indicatorElementClasses（IndicatorElement mixin贡献）', () => {
-  it('indicator有值输出oo-ui-indicatorElement', () => {
-    expect(indicatorElementClasses({ indicator: 'down' })).toBe('oo-ui-indicatorElement');
+  it('端点环绕（wrap缺省为true）', () => {
+    expect(findRelativeSelectableItem(values, 'd', 1)).toBe('a');
+    expect(findRelativeSelectableItem(values, 'a', -1)).toBe('d');
   });
 
-  it('indicator缺省不输出', () => {
-    expect(indicatorElementClasses({})).toBe('');
-  });
-});
-
-describe('labelElementClasses（LabelElement mixin贡献）', () => {
-  it('有效标签输出oo-ui-labelElement', () => {
-    expect(labelElementClasses({ label: '标签' })).toBe('oo-ui-labelElement');
+  it('wrap=false时超出端点返回undefined', () => {
+    expect(findRelativeSelectableItem(values, 'd', 1, undefined, false)).toBeUndefined();
+    expect(findRelativeSelectableItem(values, 'a', -1, undefined, false)).toBeUndefined();
   });
 
-  it('数字0等有效ReactNode视为有标签', () => {
-    expect(labelElementClasses({ label: 0 })).toBe('oo-ui-labelElement');
+  it('多步offset按方向跳过对应步数', () => {
+    expect(findRelativeSelectableItem(values, 'a', 2)).toBe('c');
+    expect(findRelativeSelectableItem(values, 'b', -2)).toBe('d');
   });
 
-  it.each([undefined, null, false, ''] as const)('label=%p视为无标签', (label) => {
-    expect(labelElementClasses({ label })).toBe('');
+  it('start不在集合内时正向自首项、反向自末项起步', () => {
+    expect(findRelativeSelectableItem(values, 'z', 1)).toBe('a');
+    expect(findRelativeSelectableItem(values, 'z', -1)).toBe('d');
   });
 
-  it('invisibleLabel时视同无标签（对齐原版setInvisibleLabel的Pretend that there is no label语义）', () => {
-    expect(labelElementClasses({ label: '标签', invisibleLabel: true })).toBe('');
+  it('start为undefined时正向自首项、反向自末项起步', () => {
+    expect(findRelativeSelectableItem(values, undefined, 1)).toBe('a');
+    expect(findRelativeSelectableItem(values, undefined, -1)).toBe('d');
   });
 
-  it('invisibleLabel=false不抑制', () => {
-    expect(labelElementClasses({ label: '标签', invisibleLabel: false })).toBe('oo-ui-labelElement');
-  });
-});
-
-describe('flaggedElementClasses（FlaggedElement mixin贡献）', () => {
-  it('单个flag输出oo-ui-flaggedElement-{flag}', () => {
-    expect(flaggedElementClasses('progressive')).toBe('oo-ui-flaggedElement-progressive');
+  it('filter跳过不匹配项', () => {
+    expect(findRelativeSelectableItem(values, 'a', 1, (value) => value === 'c')).toBe('c');
+    expect(findRelativeSelectableItem(values, 'a', -1, (value) => value === 'c')).toBe('c');
   });
 
-  it('多flag按序全部输出', () => {
-    expect(flaggedElementClasses(['progressive', 'destructive']))
-      .toBe('oo-ui-flaggedElement-progressive oo-ui-flaggedElement-destructive');
+  it('filter无匹配项时环绕一整圈后返回undefined', () => {
+    expect(findRelativeSelectableItem(values, 'a', 1, () => false)).toBeUndefined();
   });
 
-  it('无flag输出空串', () => {
-    expect(flaggedElementClasses()).toBe('');
-    expect(flaggedElementClasses([])).toBe('');
+  it('数值型值同样按集合顺序导航', () => {
+    expect(findRelativeSelectableItem([10, 20, 30], 10, 1)).toBe(20);
+    expect(findRelativeSelectableItem([10, 20, 30], 30, 1)).toBe(10);
   });
 });
 
-describe('widgetNameClasses（组件名称类）', () => {
-  it('按原版继承链叠加oo-ui-{name}Widget', () => {
-    expect(widgetNameClasses('input', 'textInput', 'numberInput'))
-      .toBe('oo-ui-inputWidget oo-ui-textInputWidget oo-ui-numberInputWidget');
+describe('getSelectableValues（可选值序列）', () => {
+  /** 分组标题在选项集中即"没有value的项"（本函数只读value/disabled） */
+  const groupTitle = { label: '分组' } as { value?: string | number; disabled?: boolean };
+
+  it('跳过无value的分组标题与禁用项，保持展示顺序', () => {
+    expect(getSelectableValues([
+      { value: 'a' },
+      groupTitle,
+      { value: 'b', disabled: true },
+      { value: 'c' },
+    ])).toEqual(['a', 'c']);
   });
 
-  it('无名称输出空串', () => {
-    expect(widgetNameClasses()).toBe('');
-  });
-});
-
-describe('getWidgetClassName（折叠层）', () => {
-  it('仅基础类：oo-ui-widget + enabled态', () => {
-    expect(getWidgetClassName({})).toBe('oo-ui-widget oo-ui-widget-enabled');
+  it('无可选项时返回空数组', () => {
+    expect(getSelectableValues([groupTitle, { value: 'b', disabled: true }])).toEqual([]);
+    expect(getSelectableValues([])).toEqual([]);
   });
 
-  it('折叠各贡献器并保持稳定顺序（mixin类在前、名称类在后）', () => {
-    expect(getWidgetClassName(
-      { disabled: true, icon: 'help', indicator: 'down', label: '标签' },
-      'input',
-      'textInput',
-    )).toBe(
-      'oo-ui-widget oo-ui-widget-disabled oo-ui-iconElement oo-ui-indicatorElement oo-ui-labelElement oo-ui-inputWidget oo-ui-textInputWidget',
-    );
+  it('数值型value原样保留（不做String归一化）', () => {
+    expect(getSelectableValues([{ value: 1 }, { value: 2 }])).toEqual([1, 2]);
   });
 
-  it('invisibleLabel抑制经折叠层同样生效', () => {
-    const result = getWidgetClassName({ label: '标签', invisibleLabel: true }, 'button');
-    expect(result).not.contain('oo-ui-labelElement');
-  });
-
-  it('名称类按继承链叠加（NumberInput三层链）', () => {
-    const result = getWidgetClassName({ disabled: true }, 'input', 'textInput', 'numberInput');
-    expect(result).toContain('oo-ui-inputWidget oo-ui-textInputWidget oo-ui-numberInputWidget');
-    expect(result).toContain('oo-ui-widget-disabled');
+  it('仅undefined视为无value：0与空串都是合法可选值（按!== undefined判定，不走真值）', () => {
+    expect(getSelectableValues([{ value: 0 }, { value: '' }])).toEqual([0, '']);
   });
 });
 
-describe('基础工具（贡献器的依赖）', () => {
-  it.each([undefined, null, false, ''] as const)('hasLabel将%p视为无标签', (label) => {
-    expect(hasLabel(label)).toBe(false);
+describe('resolveSelectableValue（非法受控值回退）', () => {
+  it('值在可选值集合内则原样返回', () => {
+    expect(resolveSelectableValue('b', ['a', 'b', 'c'])).toBe('b');
   });
 
-  it.each(['x', 0, true] as const)('hasLabel将%p视为有标签', (label) => {
-    expect(hasLabel(label)).toBe(true);
+  it('值非法（不在集合内）时回退首个可选值', () => {
+    expect(resolveSelectableValue('z', ['a', 'b', 'c'])).toBe('a');
   });
 
-  it('toFlagArray归一化字符串/数组/undefined', () => {
-    expect(toFlagArray('progressive')).toEqual(['progressive']);
-    expect(toFlagArray(['progressive', 'destructive'])).toEqual(['progressive', 'destructive']);
-    expect(toFlagArray()).toEqual([]);
+  it('值缺失时取首个可选值，无可选值时为undefined', () => {
+    expect(resolveSelectableValue(undefined, ['a', 'b'])).toBe('a');
+    expect(resolveSelectableValue('a', [])).toBeUndefined();
+  });
+});
+
+describe('resolveOptionDisabled（选项禁用态的组继承）', () => {
+  it('选项自身disabled为真时禁用', () => {
+    expect(resolveOptionDisabled({ disabled: true })).toBe(true);
   });
 
-  it.each([true, false] as const)('mergeInvalidFlag校验非法时叠加invalid（输入%p）', (invalid) => {
-    expect(mergeInvalidFlag(['progressive'], invalid))
-      .toEqual(invalid ? ['progressive', 'invalid'] : ['progressive']);
+  it('组禁用时选项一律禁用（原版语义：选项无法在禁用组内单独启用）', () => {
+    expect(resolveOptionDisabled({}, true)).toBe(true);
+    expect(resolveOptionDisabled({ disabled: false }, true)).toBe(true);
   });
 
-  it('mergeInvalidFlag配置已含invalid时不重复', () => {
-    expect(mergeInvalidFlag(['invalid'], true)).toEqual(['invalid']);
+  it('两者皆否时为否（未声明disabled时透传undefined）', () => {
+    expect(resolveOptionDisabled({ disabled: false }, false)).toBe(false);
+    expect(resolveOptionDisabled({})).toBeUndefined();
+  });
+});
+
+describe('resolveElement（ref与真实元素的统一解析）', () => {
+  const element = { id: 'anchor' } as unknown as HTMLElement;
+
+  it('RefObject取其current', () => {
+    expect(resolveElement({ current: element })).toBe(element);
+  });
+
+  it('current为null时返回null（ref已挂载但尚未赋值）', () => {
+    expect(resolveElement({ current: null })).toBeNull();
+  });
+
+  it('真实元素原样返回（以current为判别特征，无需依赖instanceof HTMLElement）', () => {
+    expect(resolveElement(element)).toBe(element);
+  });
+
+  it('null/undefined返回null（浮层锚点未就绪）', () => {
+    expect(resolveElement(null)).toBeNull();
+    expect(resolveElement(undefined)).toBeNull();
   });
 });

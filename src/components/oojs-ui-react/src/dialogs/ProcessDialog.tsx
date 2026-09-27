@@ -10,8 +10,10 @@ import React, {
 import clsx from 'clsx';
 import { useCleanId } from '../hooks';
 import { useIsMobile, useMessage } from '../config';
-import { toFlagArray } from '../utils';
-import { Button, type ButtonFlag } from '../widgets/Button';
+import { pendingElementClasses, toFlagArray } from '../mixins';
+import { getElementDir } from '../utils';
+import { Button } from '../widgets/Button';
+import type { ButtonFlag } from '../Element';
 import { Label } from '../widgets/Label';
 import { Message } from '../widgets/Message';
 import { Dialog, type DialogProps } from './Dialog';
@@ -60,7 +62,11 @@ interface ProcessDialogErrorItem extends ProcessDialogErrorProps {
   id: number;
 }
 
-export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' | 'foot'> {
+/** 标题避让判定的宽度余量（px）：原版fitLabel在相对尺寸下取`$head.width() - 20`，此处以同一余量近似 */
+const LABEL_FIT_GAP = 20;
+
+// bodyFitFoot由本组件恒开（other动作区的foot让位），故从可传prop中剔除
+export interface ProcessDialogProps extends Omit<DialogProps, 'title' | 'head' | 'foot' | 'bodyFitFoot'> {
 
   /** 弹窗标题 */
   title?: ReactNode;
@@ -200,7 +206,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     }
   }, [primaryAction, disabledAction, executeAction]);
 
-  // 标题在两侧动作之间避让（对齐原版fitLabel：空间足够时对称留白，否则按safe左/primary右）。
+  // 标题在两侧动作之间避让（对齐原版fitLabel：空间足够时对称留白，否则safe与primary各占己侧）。
   // 测量经ResizeObserver驱动：隐藏期（open已置位但弹窗尚在动画前置态）测量全为0，
   // 元素变为可见时RO会首次回调并测得真实尺寸（等效原版isOpening时挂opened.done延迟测量）；
   // safe/primary容器可观察到按钮增减/宽度变化（mode切换、actions内容变化），标题文字变化
@@ -223,11 +229,16 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
       const labelWidth = titleRef.current?.offsetWidth ?? 0;
       let leftWidth: number;
       let rightWidth: number;
-      if (2 * biggerWidth + labelWidth < navigationWidth - 20) {
+      // 移动端形态不居中（对齐原版条件的!OO.ui.isMobile()）
+      if (!isMobile && 2 * biggerWidth + labelWidth < navigationWidth - LABEL_FIT_GAP) {
         leftWidth = rightWidth = biggerWidth;
-      } else {
+      } else if (getElementDir(navigation) === 'ltr') {
         leftWidth = safeWidth;
         rightWidth = primaryWidth;
+      } else {
+        // RTL下主题把actions-safe定在right:0、actions-primary定在left:0，两侧留白随之互换
+        leftWidth = primaryWidth;
+        rightWidth = safeWidth;
       }
       location.style.paddingLeft = `${leftWidth}px`;
       location.style.paddingRight = `${rightWidth}px`;
@@ -244,7 +255,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     return () => {
       observer.disconnect();
     };
-  }, [title, open]);
+  }, [title, open, isMobile]);
 
   const pending = pendingCount > 0;
   const recoverable = errors === null || errors.every((item) => item.recoverable !== false);
@@ -258,7 +269,7 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
     return (
       <Button
         key={action.action}
-        className={clsx('oo-ui-actionWidget', action.pending && 'oo-ui-pendingElement-pending')}
+        className={clsx('oo-ui-actionWidget', pendingElementClasses(action.pending))}
         framed
         flags={flags}
         icon={iconOnlyIcon}
@@ -301,12 +312,15 @@ export const ProcessDialog = forwardRef<HTMLDivElement, ProcessDialogProps>(({
           </div>
           {pending && (
             <div
-              className='oo-ui-pendingElement-pending'
+              className={pendingElementClasses(pending)}
               style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             />
           )}
         </div>
       }
+      // body底部让位给foot（对齐原版ProcessDialog.setDimensions对$body的bottom写入）：
+      // other动作区换行变高时body的滚动区不被遮挡
+      bodyFitFoot
       foot={
         <div className='oo-ui-processDialog-actions-other'>
           {otherActions.map(renderAction)}

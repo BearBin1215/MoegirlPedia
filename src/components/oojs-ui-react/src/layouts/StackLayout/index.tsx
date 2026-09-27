@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { omit } from 'es-toolkit';
 import { PanelLayout, type PanelLayoutProps } from '../PanelLayout';
 import { PageLayout, type PageLayoutProps } from '../PageLayout';
-import { type ChangeHandler } from '../../utils';
+import type { ChangeHandler } from '../../utils';
 import { useControlledValue } from '../../hooks';
 
 interface PageOptionProps extends PageLayoutProps {

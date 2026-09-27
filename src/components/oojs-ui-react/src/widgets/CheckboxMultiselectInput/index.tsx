@@ -1,7 +1,7 @@
 import React, { forwardRef, useMemo } from 'react';
 import clsx from 'clsx';
 import { CheckboxMultiselect, type CheckboxMultiselectProps } from '../CheckboxMultiselect';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName } from '../../mixins';
 
 export interface CheckboxMultiselectInputProps extends Omit<CheckboxMultiselectProps, 'className'> {
 

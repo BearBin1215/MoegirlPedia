@@ -1,5 +1,6 @@
 import type { WidgetProps } from '../Widget';
-import type { AccessKeyedElement, ChangeHandler } from '../../utils';
+import type { AccessKeyedElement } from '../../Element';
+import type { ChangeHandler } from '../../utils';
 
 /**
  * 输入类组件基础参数（对齐原版抽象基类InputWidget，仅类型，无对应渲染组件）

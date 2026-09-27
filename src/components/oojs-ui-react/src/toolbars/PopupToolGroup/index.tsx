@@ -10,9 +10,11 @@ import React, {
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { IconBase } from '../../widgets/Icon/Base';
-import { IndicatorBase, type Indicators } from '../../widgets/Indicator/Base';
+import { IndicatorBase } from '../../widgets/Indicator/Base';
+import type { Indicators } from '../../Element';
 import { LabelBase } from '../../widgets/Label/Base';
-import { getWidgetClassName } from '../../utils';
+import { getWidgetClassName, resolveTitle } from '../../mixins';
+import { OFFSCREEN_POSITION } from '../../utils';
 import { useAnchoredPanelLayout, useDismissablePopover, useMergedRefs } from '../../hooks';
 import { usePortalContainer } from '../../config';
 import { ToolbarNarrowContext, ToolbarPositionContext } from '../Toolbar';
@@ -36,6 +38,19 @@ export interface PopupToolGroupBaseProps extends ToolGroupBaseProps {
   /** 把手图标 */
   icon?: string;
 
+  /** 把手标签可视（视觉隐藏但保留可访问名称，对齐原版LabelElement的invisibleLabel） */
+  invisibleLabel?: boolean;
+
+  /**
+   * 窄栏配置（对齐原版`PopupToolGroup`的`config.narrowConfig`/`static.narrowConfig`）：
+   * 工具栏处于窄栏时以其**已定义**字段替换把手的`invisibleLabel`/`label`/`icon`，退出窄栏还原
+   */
+  narrowConfig?: {
+    invisibleLabel?: boolean;
+    label?: React.ReactNode;
+    icon?: string;
+  };
+
   /** 把手指示器（缺省随工具栏位置翻转：bottom时up、其余down） */
   indicator?: Indicators;
 
@@ -57,14 +72,17 @@ export interface PopupToolGroupBaseProps extends ToolGroupBaseProps {
 
 /**
  * 弹出工具组基类（对齐原版OO.ui.PopupToolGroup，List/Menu组的公共实现，不对外导出）：
- * 把手（图标+标签+指示器）点击开合工具面板，面板portal至body定位在把手正下方
- * （原版FloatableElement会按左右空间选择对齐侧，此处简化为左对齐，见TODO），
- * 视口下方空间不足时钳高内部滚动；点击面板与把手之外或选中工具（keepOpenToolNames除外）收起
+ * 把手（图标+标签+指示器）点击开合工具面板，面板portal至body定位在把手正下方，
+ * 宽度放不下时按左右可用空间改选对齐侧（对齐原版setActive的降级顺序，见useAnchoredPanelLayout
+ * 的horizontalFit；原版的「填充容器」未实现，见TODO），视口下方空间不足时钳高内部滚动；
+ * 点击面板与把手之外或选中工具（keepOpenToolNames除外）收起
  */
 export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseProps>(({
   tools,
   label,
   icon,
+  invisibleLabel,
+  narrowConfig,
   indicator,
   title,
   header,
@@ -72,8 +90,9 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   toolsClassName,
   className,
   disabled,
-  // align由Toolbar读取后决定挂载位置，本体不渲染，解构掉避免落成DOM属性
-  align: _align,
+  // align由Toolbar读取后决定挂载位置，本体不渲染（解构掉避免落成DOM属性）；
+  // 此处另用于面板的首选对齐侧（对齐原版PopupToolGroup.setActive的before→start、其余→end）
+  align = 'before',
   onToolSelect,
   ...rest
 }, ref) => {
@@ -89,6 +108,13 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
   const toolsRef = useRef<HTMLDivElement>(null);
   const groupDisabled = isGroupAutoDisabled(tools, disabled);
   const effectiveIndicator = indicator ?? (position === 'bottom' ? 'up' : 'down');
+  // 窄栏配置：窄栏时替换把手字段（对齐原版PopupToolGroup.onToolbarResize），退出窄栏即还原
+  const activeNarrowConfig = narrow ? narrowConfig : undefined;
+  const effectiveIcon = activeNarrowConfig?.icon !== undefined ? activeNarrowConfig.icon : icon;
+  const effectiveLabel = activeNarrowConfig?.label !== undefined ? activeNarrowConfig.label : label;
+  const effectiveInvisibleLabel = activeNarrowConfig?.invisibleLabel !== undefined
+    ? activeNarrowConfig.invisibleLabel
+    : invisibleLabel;
 
   /** 工具选中后收起面板（keepOpenToolNames除外），并转发onSelect */
   const wrappedTools = useMemo(() => tools.map((tool) => ({
@@ -101,7 +127,7 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
       }
     },
   })), [tools, onToolSelect, keepOpenToolNames]);
-  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange, findTool } = useToolGroupPressed(wrappedTools, groupDisabled);
+  const { pressedName, onMouseKeyDown, onToolKeyDown, onToolHoverChange } = useToolGroupPressed(wrappedTools, groupDisabled);
 
   // 定位与钳高（open/tools变化与滚动/缩放时重算）：bottom工具栏的面板向上展开
   // （对齐原版verticalPosition:'above'），其余向下；面板portal至body（或Provider配置的
@@ -113,6 +139,10 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     anchor: handleRef,
     panelRef: toolsRef,
     position: position === 'bottom' ? 'above' : 'below',
+    // 面板宽度放不下时按左右空间改选对齐侧（首选侧随工具组分组：align='after'的右组取终止边），
+    // 对齐原版PopupToolGroup.setActive的降级顺序
+    horizontalFit: true,
+    preferredSide: align === 'before' ? 'start' : 'end',
     // tools入依赖：ListToolGroup经More/Fewer增减工具后面板高度变化需重新钳高
     recomputeKey: tools,
   });
@@ -124,11 +154,13 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     }
   }, [groupDisabled, open]);
 
-  // 点击面板与把手之外、或按Escape时收起（Escape捕获阶段处理，嵌套于Dialog时不误关弹窗）
+  // 点击面板与把手之外、或按Escape时收起（Escape捕获阶段处理，嵌套于Dialog时不误关弹窗）。
+  // 弹层类同绑click（iOS Safari加固，对齐Popup的 dismissOnClick 通道）
   useDismissablePopover({
     enabled: open,
     onClose: () => setOpen(false),
     ignore: [rootRef, toolsRef],
+    dismissOnClick: true,
   });
 
   /** 面板内可聚焦工具链接（禁用工具链接tabIndex=-1已被排除） */
@@ -155,12 +187,20 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     }
   };
 
-  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换
+  // 对齐原版isDisabled：全部工具禁用时组自动禁用，root类与aria随之切换。
+  // 空组加oo-ui-toolGroup-empty整体隐藏（对齐原版populate末尾的toggleClass）
   const classes = clsx(
     className,
-    getWidgetClassName({ disabled: groupDisabled, icon, indicator: effectiveIndicator, label }),
+    getWidgetClassName({
+      disabled: groupDisabled,
+      icon: effectiveIcon,
+      indicator: effectiveIndicator,
+      label: effectiveLabel,
+      invisibleLabel: effectiveInvisibleLabel,
+    }),
     'oo-ui-toolGroup',
     'oo-ui-popupToolGroup',
+    tools.length === 0 && 'oo-ui-toolGroup-empty',
     open && 'oo-ui-popupToolGroup-active',
   );
 
@@ -168,17 +208,22 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
     <div
       {...rest}
       className={classes}
+      // title落在组根元素：对齐原版PopupToolGroup混入的TitledElement（$titled为$element）；
+      // 标签不可见（含窄栏替换）时以label兜底，使窄栏下仍有tooltip
+      title={resolveTitle({ title, label: effectiveLabel, invisibleLabel: effectiveInvisibleLabel })}
       aria-disabled={groupDisabled || undefined}
       ref={mergedRef}
     >
       <span
         ref={handleRef}
-        className='oo-ui-popupToolGroup-handle'
+        // 双类对齐原版构造期的$handle.addClass：主题的把手尺寸/内边距规则均挂在
+        // .oo-ui-popupToolGroup .oo-ui-toolGroup-handle后代选择器上，缺toolGroup-handle
+        // 会全部不命中（把手塌缩、内容溢出重叠）
+        className='oo-ui-toolGroup-handle oo-ui-popupToolGroup-handle'
         role='button'
         aria-expanded={open}
         aria-disabled={groupDisabled || undefined}
         tabIndex={groupDisabled ? -1 : 0}
-        title={title}
         onClick={() => {
           if (!groupDisabled) {
             setOpen((prev) => !prev);
@@ -186,8 +231,10 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
         }}
         onKeyDown={handleHandleKeyDown}
       >
-        <IconBase icon={icon} />
-        <LabelBase>{label}</LabelBase>
+        <IconBase icon={effectiveIcon} />
+        <LabelBase invisible={effectiveInvisibleLabel}>
+          {effectiveLabel}
+        </LabelBase>
         <IndicatorBase indicator={effectiveIndicator} />
       </span>
       {createPortal(
@@ -212,8 +259,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
             // 引发布局回流导致锚点位移，使定位读到过期坐标而左右错位
             style={{
               position: 'absolute',
-              top: layout?.top ?? -9999,
-              left: layout?.left ?? -9999,
+              top: layout?.top ?? OFFSCREEN_POSITION,
+              left: layout?.left ?? OFFSCREEN_POSITION,
               maxHeight: layout?.maxHeight,
               overflowY: layout?.maxHeight !== undefined ? 'auto' : undefined,
             }}
@@ -235,10 +282,8 @@ export const PopupToolGroupBase = forwardRef<HTMLDivElement, PopupToolGroupBaseP
                   }
                 }
               }
-              const tool = findTool(e.target);
-              if (tool) {
-                onToolKeyDown(e, tool);
-              }
+              // 工具链接的Enter/空格按压流（useToolGroupPressed内部解析目标，非工具位置无副作用）
+              onToolKeyDown(e);
             }}
             {...getToolHoverHandlers(onToolHoverChange)}
           >

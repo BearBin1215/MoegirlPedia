@@ -77,7 +77,7 @@ export const SearchInput = forwardRef<HTMLDivElement, SearchInputProps>(({
       indicatorOverride={showClear ? 'clear' : null}
       inputRef={setInputRef}
       value={currentValue}
-      onChange={(next, event) => commit(next, event)}
+      onChange={commit}
       disabled={disabled}
       readOnly={readOnly}
       // role/tabIndex为原版$indicator的固定属性（初始化即挂，不随指示器显隐）

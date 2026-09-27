@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useState,
+  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -30,8 +31,11 @@ export interface PromptOptions extends ConfirmAlertOptions {
   textInput?: TextInputProps;
 }
 
-// 命令式弹窗的卸载延时：Dialog关闭动画时长 + 裕量，确保动画播完再卸载
-const CLOSE_DURATION = DIALOG_ANIMATION.closeDuration + 50;
+/** 关闭动画结束后到卸载的裕量（ms）：吸收定时器与动画的调度误差，确保淡出播完 */
+const CLOSE_UNMOUNT_MARGIN = 50;
+
+/** 命令式弹窗的卸载延时：Dialog关闭动画时长 + 裕量 */
+const CLOSE_DURATION = DIALOG_ANIMATION.closeDuration + CLOSE_UNMOUNT_MARGIN;
 
 /**
  * 命令式弹窗渲染期错误边界：捕获Host子树的渲染错误并交给错误出口（清理挂载点+reject），
@@ -186,10 +190,10 @@ export function prompt(message: ReactNode, options: PromptOptions = {}): Promise
   } = options.textInput ?? {};
 
   // 输入期间累积的值与自动聚焦目标：每次prompt调用各持一份（闭包隔离）。
-  // 以裸ref对象承载而非Host内hooks，便于复用统一的挂载骨架；
+  // 以MutableRefObject承载而非Host内hooks，便于复用统一的挂载骨架；
   // initialValue即textInput.value，为更明确的初值，优先于defaultValue
-  const valueRef = { current: String(initialValue ?? defaultValue ?? '') };
-  const inputRef = { current: null as HTMLInputElement | null };
+  const valueRef: MutableRefObject<string> = { current: String(initialValue ?? defaultValue ?? '') };
+  const inputRef: MutableRefObject<HTMLInputElement | null> = { current: null };
 
   return mountDialog<string | null>(({ open, close }) => (
     <MessageDialog
