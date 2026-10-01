@@ -74,8 +74,8 @@ function FileInspectorForm({ username }: { username: string }) {
   const queryUserFiles = useCallback(async () => {
     /** 用户上传文件列表 */
     const userFileList: BasicFileData[] = [];
-    let uccontinue: string | undefined = '|';
-    while (uccontinue !== undefined) {
+    let uccontinue: string | undefined;
+    do {
       const result = await api.post({
         format: 'json',
         utf8: true,
@@ -86,14 +86,14 @@ function FileInspectorForm({ username }: { username: string }) {
         ucuser: username,
         ucshow: 'new',
         uclimit: 'max',
-        uccontinue,
+        ...(uccontinue ? { uccontinue } : {}),
       }) as ApiQueryResponse;
       uccontinue = result.continue?.uccontinue;
       userFileList.push(...result.query.usercontribs.map(({ title, timestamp }) => ({
         title,
         timestamp,
       })));
-    }
+    } while (uccontinue !== undefined);
     return userFileList;
   }, [api, username]);
 
@@ -106,15 +106,15 @@ function FileInspectorForm({ username }: { username: string }) {
     /** 筛选后的文件标题及其使用情况 */
     const filtedFileUsageData: FileData[] = [];
     for (const fileData of fileChunks) {
-      let gucontinue: string | undefined = '||';
-      while (gucontinue) {
+      let gucontinue: string | undefined;
+      do {
         const result = await api.post({
           format: 'json',
           utf8: true,
           action: 'query',
           prop: 'globalusage',
           titles: fileData.map(({ title }) => title),
-          gucontinue,
+          ...(gucontinue ? { gucontinue } : {}),
           gulimit: 'max',
         }) as ApiQueryResponse;
         gucontinue = result.continue?.gucontinue;
@@ -135,14 +135,14 @@ function FileInspectorForm({ username }: { username: string }) {
             });
           }
         }
-      }
+      } while (gucontinue);
     }
     console.log(filtedFileUsageData);
     // 全域文件使用不包括共享站使用，还需要筛选一轮本域使用
     const newChunks = chunk(filtedFileUsageData, queryLimit);
     for (const fileData of newChunks) {
-      let fucontinue: string | undefined = '';
-      while (fucontinue !== undefined) {
+      let fucontinue: string | undefined;
+      do {
         const result = await api.post({
           format: 'json',
           utf8: true,
@@ -158,7 +158,7 @@ function FileInspectorForm({ username }: { username: string }) {
             filtedFileUsageData.find(({ id }) => id === pageid)!.cmused = true;
           }
         }
-      }
+      } while (fucontinue !== undefined);
     }
     return filtedFileUsageData.filter(({ fileName, usage, cmused }) => {
       // 空数组调用every方法也返回true，无需额外判定
