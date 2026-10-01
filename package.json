@@ -44,7 +44,7 @@
     "es-toolkit": "^1.52.0",
     "jstoxml": "^5.0.2",
     "moment": "^2.30.1",
-    "ooui-react": "^1.0.1",
+    "ooui-react": "^1.0.2",
     "pinia": "2.0.16",
     "preact": "^10.29.8",
     "react": "npm:@preact/compat@^17.1.2",
