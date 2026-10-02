@@ -229,3 +229,6 @@ export interface ApiParams {
 
   [key: string]: string | string[] | boolean | number | number[] | undefined;
 }
+
+/** 分类成员类型，对应`cmtype`/`gcmtype`参数 */
+export type Cmtype = 'page' | 'subcat' | 'file';

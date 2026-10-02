@@ -8,7 +8,7 @@ import {
   NumberInput,
   FieldLayout,
 } from 'ooui-react';
-import type { ApiQueryResponse } from '@/types/api';
+import type { ApiQueryResponse } from 'types-mediawiki-response';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import ChangeslistLineContext from './ChangeslistLineContext';
@@ -90,6 +90,7 @@ function RecentChangeList() {
     try {
       const res = await api.post({
         action: 'query',
+        formatversion: '2',
         format: 'json',
         utf8: true,
         list: 'recentchanges',
@@ -114,16 +115,16 @@ function RecentChangeList() {
         ],
         rcexcludeuser: showHideConfig.hidemyself ? void 0 : mw.config.get('wgUserName')!,
       }) as ApiQueryResponse;
-      const recentChanges = res.query.recentchanges.map((recentchange) => ({
+      const recentChanges = (res.query.recentchanges ?? []).map((recentchange) => ({
         ...recentchange,
-        'new': 'new' in recentchange,
-        minor: 'minor' in recentchange,
-        bot: 'bot' in recentchange,
-        patrolled: 'patrolled' in recentchange,
-        autopatrolled: 'autopatrolled' in recentchange,
-        unpatrolled: 'unpatrolled' in recentchange,
-        redirect: 'redirect' in recentchange,
-      }));
+        'new': recentchange.new ?? false,
+        minor: recentchange.minor ?? false,
+        bot: recentchange.bot ?? false,
+        patrolled: recentchange.patrolled ?? false,
+        autopatrolled: recentchange.autopatrolled ?? false,
+        unpatrolled: recentchange.unpatrolled ?? false,
+        redirect: recentchange.redirect ?? false,
+      })) as ChangeslistLineProps[];
       setData(mergeData(recentChanges));
       setErrorMessage('');
     } catch (err) {
@@ -144,7 +145,7 @@ function RecentChangeList() {
     if (res.query?.tags) {
       const meaningMap: Record<string, string> = {};
       for (const { name, displayname } of res.query.tags) {
-        meaningMap[name] = displayname;
+        meaningMap[name] = displayname ?? name;
       }
       setTagMeanings(meaningMap);
       return meaningMap;
@@ -154,6 +155,7 @@ function RecentChangeList() {
   const queryGroupMeanings = useCallback(async () => {
     const res = await api.post({
       action: 'query',
+      formatversion: '2',
       utf8: true,
       meta: 'allmessages',
       amprefix: 'group-',
@@ -163,7 +165,7 @@ function RecentChangeList() {
       const groupMessage: Record<string, string> = {};
       for (const message of res.query.allmessages) {
         if (!/(\.js|\.css|-member)/.test(message.name)) {
-          groupMessage[message.name.replace('group-', '')] = message['*'];
+          groupMessage[message.name.replace('group-', '')] = message.content ?? '';
         }
       }
       setGroupMeanings(groupMessage);

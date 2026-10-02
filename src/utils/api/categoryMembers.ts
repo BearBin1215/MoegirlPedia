@@ -1,4 +1,5 @@
-import type { Cmtype, ApiQueryResponse } from "@/types/api";
+import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { Cmtype } from '@/types/apiParams';
 
 /** 有权限使用api的用户组 */
 const API_ALLOWED_GROUPS = ['bot', 'flood', 'patroller', 'sysop'];
@@ -133,8 +134,9 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         cmtype,
         ...(cmcontinue ? { cmcontinue } : {}),
       }) as ApiQueryResponse;
-      if (result.query.categorymembers[0]) {
-        pageList.push(...result.query.categorymembers.map(({ title }) => title));
+      const members = result.query.categorymembers ?? [];
+      if (members[0]) {
+        pageList.push(...members.map(({ title }) => title!));
       }
       cmcontinue = result.continue?.cmcontinue;
 
@@ -162,7 +164,8 @@ export const traverseCategoryMembers = async (cmtitle: string) => {
         gcmcontinue,
       }) as ApiQueryResponse;
       gcmcontinue = response.continue?.gcmcontinue;
-      for (const { ns, title } of Object.values(response.query.pages)) {
+      for (const { ns, title: pageTitle } of Object.values(response.query.pages ?? [])) {
+        const title = pageTitle!;
         if (ns === 14 && !traversedCategoryList.includes(title)) {
           traversedCategoryList.push(title); // 避免套娃
           pageList.push(...await traverseCategory(title));

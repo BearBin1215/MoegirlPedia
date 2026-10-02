@@ -156,6 +156,9 @@ importers:
       types-mediawiki:
         specifier: ^1.10.1
         version: 1.10.1(vue@3.4.27(typescript@5.9.3))
+      types-mediawiki-response:
+        specifier: ^1.0.0
+        version: 1.0.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -3680,6 +3683,10 @@ packages:
   typed-array-length@1.0.8:
     resolution: {integrity: sha512-phPGCwqr2+Qo0fwniCE8e4pKnGu/yFb5nD5Y8bf0EEeiI5GklnACYA9GFy/DrAeRrKHXvHn+1SUsOWgJp6RO+g==}
     engines: {node: '>= 0.4'}
+
+  types-mediawiki-response@1.0.0:
+    resolution: {integrity: sha512-J5bWzPqSY9zai5zdvSjbrT0+Ihjul/Wlj71X7xz6+qvTagnvblCw9fHE0oL0Q/E04f5JQgesGPpSjEJtzCxqRQ==}
+    engines: {node: '>=20'}
 
   types-mediawiki@1.10.1:
     resolution: {integrity: sha512-4TLcsy/lbfpLwwIn2l6lBxCzYYMAsJuQUmwfhkcEWA9yMzBpfcSvfcQQbiTUJPOe4UVghc2BI/3GcPkwXr412Q==}
@@ -7798,6 +7805,8 @@ snapshots:
       is-typed-array: 1.1.15
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
+
+  types-mediawiki-response@1.0.0: {}
 
   types-mediawiki@1.10.1(vue@3.4.27(typescript@5.9.3)):
     dependencies:

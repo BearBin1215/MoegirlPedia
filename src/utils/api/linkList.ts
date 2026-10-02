@@ -1,4 +1,5 @@
-import type { ApiParams, ApiQueryResponse } from "@/types/api";
+import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiParams } from '@/types/apiParams';
 /**
  * 获取链接到指定页面的列表
  * @param pagename 页面名
@@ -20,7 +21,7 @@ const linkList = async (pagename: string, lhnamespace?: number[]): Promise<strin
   }
   do {
     const res = await api.post(postBody) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages)[0].linkshere || []).map(({ title }) => title));
+    pageList.push(...(Object.values(res.query.pages ?? [])[0]?.linkshere ?? []).map(({ title }) => title!));
     lhcontinue = res.continue?.lhcontinue;
     if (lhcontinue) {
       postBody.lhcontinue = lhcontinue;

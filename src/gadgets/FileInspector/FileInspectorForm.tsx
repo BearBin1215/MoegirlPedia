@@ -8,6 +8,8 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import { chunk } from 'es-toolkit';
+import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiGlobalUsage } from 'types-mediawiki-response/ext/globalusage';
 import {
   Button,
   NumberInput,
@@ -17,7 +19,6 @@ import {
 import { copyText } from '@/utils/clipboard';
 import waitInterval from '@/utils/wait';
 import { categoryMembers } from '@/utils/api';
-import type { ApiQueryResponse, GlobalUsage } from '@/types/api';
 
 interface BasicFileData {
   title: string;
@@ -32,7 +33,7 @@ interface FileData {
   /** 上传时间 */
   uploadTime: string;
   /** 使用情况 */
-  usage: GlobalUsage[];
+  usage: ApiGlobalUsage[];
   /** 是否已选中 */
   selected: boolean;
   /** 是否已挂删 */
@@ -89,9 +90,9 @@ function FileInspectorForm({ username }: { username: string }) {
         ...(uccontinue ? { uccontinue } : {}),
       }) as ApiQueryResponse;
       uccontinue = result.continue?.uccontinue;
-      userFileList.push(...result.query.usercontribs.map(({ title, timestamp }) => ({
-        title,
-        timestamp,
+      userFileList.push(...(result.query.usercontribs ?? []).map(({ title, timestamp }) => ({
+        title: title!,
+        timestamp: timestamp!,
       })));
     } while (uccontinue !== undefined);
     return userFileList;
@@ -117,19 +118,19 @@ function FileInspectorForm({ username }: { username: string }) {
           ...(gucontinue ? { gucontinue } : {}),
           gulimit: 'max',
         }) as ApiQueryResponse;
-        gucontinue = result.continue?.gucontinue;
-        for (const { pageid, title, globalusage } of Object.values(result.query.pages)) {
+        gucontinue = result.continue?.gucontinue as string | undefined;
+        for (const { pageid, title, globalusage } of Object.values(result.query.pages ?? [])) {
           // 已有记录的增加usage，没记录的创建记录
           const target = filtedFileUsageData.find(({ id }) => id === pageid);
           if (target) {
-            target.usage.push(...globalusage);
+            target.usage.push(...globalusage ?? []);
           } else {
             filtedFileUsageData.push({
-              id: pageid,
-              fileName: title,
+              id: pageid!,
+              fileName: title!,
               uploadTime: moment(fileList.find((file) => file.title === title)!.timestamp)
                 .format('YYYY年M月D日 HH:mm:ss'),
-              usage: globalusage || [],
+              usage: globalusage ?? [],
               selected: true,
               deleted: false,
             });
@@ -153,7 +154,7 @@ function FileInspectorForm({ username }: { username: string }) {
           fulimit: 'max',
         }) as ApiQueryResponse;
         fucontinue = result.continue?.fucontinue;
-        for (const { pageid, fileusage } of Object.values(result.query.pages)) {
+        for (const { pageid, fileusage } of Object.values(result.query.pages ?? [])) {
           if (fileusage?.length) {
             filtedFileUsageData.find(({ id }) => id === pageid)!.cmused = true;
           }

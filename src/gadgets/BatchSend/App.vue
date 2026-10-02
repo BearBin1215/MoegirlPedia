@@ -82,8 +82,8 @@ User talk前缀加不加都可以，支持发送至子页面'
 // Codex组件运行时由window.Codex提供（rspack externals），IDE类型提示来自npm包
 import { CdxButton, CdxProgressBar, CdxTextArea, CdxTextInput } from '@wikimedia/codex';
 import { onMounted, ref, watch } from 'vue';
+import type { ApiEditResponse, ApiParseResponse } from 'types-mediawiki-response';
 import Loger from '@/components/Loger';
-import type { ApiEditResponse, ApiParseResponse } from '@/types/api';
 import { formatNS3 } from '@/utils/formatNS';
 import waitInterval from '@/utils/wait';
 
@@ -138,6 +138,7 @@ const doPreview = async () => {
   try {
     const { parse } = await api.post({
       action: 'parse',
+      formatversion: '2',
       uselang: mw.config.get('wgUserLanguage'),
       section: 'new',
       contentmodel: 'wikitext',
@@ -146,8 +147,8 @@ const doPreview = async () => {
       text: content.value,
       summary: summary.value,
     }) as ApiParseResponse;
-    previewHtml.value = parse.text!['*'] ?? '';
-    previewSummary.value = `（${parse.parsedsummary!['*']}）`;
+    previewHtml.value = parse.text ?? '';
+    previewSummary.value = `（${parse.parsedsummary ?? ''}）`;
   } finally {
     previewing.value = false;
   }

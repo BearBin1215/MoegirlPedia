@@ -1,6 +1,6 @@
 import { chunk } from 'es-toolkit';
+import type { ApiQueryResponse } from 'types-mediawiki-response';
 import { categoryMembers, pageSource } from '@/utils/api';
-import type { ApiQueryResponse } from '@/types/api';
 import { normalizeTitle, parseRetiredCVs } from './retiredCVs';
 
 const api = new mw.Api();
@@ -25,9 +25,9 @@ export const updateCVLastUpdateDate = async () => {
       titles: titleChunk.join('|'),
       rvprop: 'timestamp',
     }) as ApiQueryResponse;
-    lastUpdateData.push(...Object.values(revisions.query.pages).map(({ title, revisions: [{ timestamp }] }) => ({
-      title,
-      timestamp,
+    lastUpdateData.push(...Object.values(revisions.query.pages ?? []).map(({ title, revisions: revs }) => ({
+      title: title!,
+      timestamp: revs![0].timestamp!,
     })));
   }
   const listText = lastUpdateData.sort((a, b) => {

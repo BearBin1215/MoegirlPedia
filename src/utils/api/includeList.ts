@@ -1,4 +1,5 @@
-import type { ApiParams, ApiQueryResponse } from "@/types/api";
+import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiParams } from '@/types/apiParams';
 
 /**
  * 获取嵌入了指定页面的页面列表
@@ -21,7 +22,7 @@ const includeList = async (pagename: string, tinamespace?: number[]): Promise<st
   }
   do {
     const res = await api.post(postBody) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages)[0].transcludedin || []).map(({ title }) => title));
+    pageList.push(...(Object.values(res.query.pages ?? [])[0]?.transcludedin ?? []).map(({ title }) => title!));
     ticontinue = res.continue?.ticontinue;
     if (ticontinue) {
       postBody.ticontinue = ticontinue;

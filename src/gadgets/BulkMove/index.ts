@@ -1,10 +1,10 @@
 /**
  * @todo 判定移动的子页面和讨论页
  */
+import type { ApiMoveResponse } from 'types-mediawiki-response';
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import './index.css';
-import type { ApiMoveResponse } from '@/types/api';
 
 $(() => (async () => {
   if (mw.config.get('wgPageName') !== 'Special:BulkMove') {

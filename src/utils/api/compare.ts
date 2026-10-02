@@ -1,4 +1,4 @@
-import type { ApiCompareResponse } from '@/types/api';
+import type { ApiCompareResponse } from 'types-mediawiki-response';
 
 type $orString = JQuery<HTMLElement> | Element | string;
 
@@ -43,12 +43,13 @@ const compare = async (fromtext: string, totext: string, showTitle = false) => {
   const api = new mw.Api();
   const res = await api.post({
     action: 'compare',
+    formatversion: '2',
     fromtext,
     totext,
     topst: true,
     fromtitle: 'PAGENAME',
   }) as ApiCompareResponse;
-  return formatDiff(res.compare['*'], showTitle);
+  return formatDiff(res.compare.body ?? '', showTitle);
 };
 
 export default compare;

@@ -2,8 +2,8 @@
  * @description 查询文件非链入使用。
  * @todo 标记时跳出窗口可选输入用途
  */
+import type { ApiQueryResponse } from 'types-mediawiki-response';
 import { pageSource } from '@/utils/api';
-import type { ApiQueryResponse } from "@/types/api";
 
 $(() => (async () => {
   // 本来想做一个检测当前页面文件存在不存在的，但想了想没啥必要。
@@ -114,7 +114,7 @@ $(() => (async () => {
       [...encodeSearchResult.query.search!, ...decodeSearchResult.query.search!].forEach((item) => {
         // 通过搜索结果的快照，检查搜索文本内是否有此文件名，用于解决大小写敏感问题
         // 但文件名中的符号可能会影响<span class="searchmatch">的位置插到文件名中间，因此要去掉这对标签
-        const snippetTemp = item.snippet.replaceAll('_', ' ').replaceAll('<span class="searchmatch">', '').replaceAll('</span>', '');
+        const snippetTemp = item.snippet!.replaceAll('_', ' ').replaceAll('<span class="searchmatch">', '').replaceAll('</span>', '');
         console.log(snippetTemp, FILENAME);
         if (matchesFileName(snippetTemp, FILENAME)) {
           notLinkedList.push(item.title); // 合并两个搜索结果并得到页面列表

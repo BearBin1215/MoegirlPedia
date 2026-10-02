@@ -1,5 +1,6 @@
+import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse } from 'types-mediawiki-response';
 import { formatDiff, pageSource } from '@/utils/api';
-import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse, ApiParams } from '@/types/api';
+import type { ApiParams } from '@/types/apiParams';
 import './index.css';
 
 declare global {
@@ -40,9 +41,10 @@ mw.loader.using('mediawiki.api').then(() => {
   const parsePage = async (parseConfig: ApiParams) => {
     const response = await api.post({
       action: 'parse',
+      formatversion: '2',
       ...parseConfig,
     }) as ApiParseResponse;
-    return response.parse.text['*'];
+    return response.parse.text ?? '';
   };
 
   /** 生成用户链接 */
@@ -90,13 +92,14 @@ mw.loader.using('mediawiki.api').then(() => {
             rvstartid: diff,
             titles: pageName,
           }) as ApiQueryResponse;
-          const oldRevInfo = Object.values(infoResponse.query.pages)[0]?.revisions?.[1];
+          const oldRevInfo = Object.values(infoResponse.query.pages ?? [])[0]?.revisions?.[1];
           if (oldRevInfo) {
-            oldid = oldRevInfo.revid;
+            oldid = oldRevInfo.revid!;
           }
         }
         const response = await api.post({
           action: 'compare',
+          formatversion: '2',
           utf8: true,
           fromrev: oldid!,
           ...(/\d+/.test(diff) ? {
@@ -112,7 +115,7 @@ mw.loader.using('mediawiki.api').then(() => {
         } = response.compare;
         // 按照正常差异格式生成元素。目前仅通过compare api无法获取到时间戳，可能要通过revisions，但会增加额外的请求因此暂不考虑。
         const $diff = $(formatDiff(
-          response.compare['*'],
+          response.compare.body ?? '',
           true,
           [
             $('<div id="mw-diff-otitle1" />').append(
@@ -122,8 +125,8 @@ mw.loader.using('mediawiki.api').then(() => {
               ),
             ),
             $('<div id="mw-diff-otitle2" />').append(
-              $userLink(fromuser, fromuserid),
-              $userToolLinks(fromuser),
+              $userLink(fromuser!, fromuserid!),
+              $userToolLinks(fromuser!),
             ),
             $(`<div id="mw-diff-otitle3" />`).append(
               fromparsedcomment ? `<span class="comment">（${fromparsedcomment}）</span>` : '',
@@ -138,8 +141,8 @@ mw.loader.using('mediawiki.api').then(() => {
               ),
             ),
             $('<div id="mw-diff-ntitle2" />').append(
-              $userLink(touser, touserid),
-              $userToolLinks(touser),
+              $userLink(touser!, touserid!),
+              $userToolLinks(touser!),
             ),
             $(`<div id="mw-diff-ntitle3" />`).append(
               toparsedcomment ? `<span class="comment">（${toparsedcomment}）</span>` : '',

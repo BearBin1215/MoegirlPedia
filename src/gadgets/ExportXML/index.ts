@@ -3,13 +3,14 @@
  */
 
 import { toXML, type XmlElement } from 'jstoxml';
+import type { ApiRevision, ApiQueryResponse } from 'types-mediawiki-response';
 import { categoryMembers } from '@/utils/api';
 import { splitList } from '@/utils/string';
 import waitInterval from '@/utils/wait';
 import { formatNS14 } from '@/utils/formatNS';
 import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
-import type { ApiParams, Revisions, ApiQueryResponse } from '@/types/api';
+import type { ApiParams } from '@/types/apiParams';
 import generateBaseinfo from './baseinfo';
 import './index.css';
 
@@ -17,7 +18,7 @@ interface Page {
   title?: string;
   ns?: string | number;
   id?: string | number;
-  revisions: Revisions[];
+  revisions: ApiRevision[];
 }
 
 const interval = 4000;
@@ -123,6 +124,7 @@ $(() => (async () => {
     do {
       const apiParams: ApiParams = {
         action: 'query',
+        formatversion: '2',
         prop: 'revisions',
         titles: title,
         rvprop: ['content', 'ids', 'flags', 'timestamp', 'user', 'userid', 'size', 'sha1', 'contentmodel', 'comment', 'tags'],
@@ -135,7 +137,7 @@ $(() => (async () => {
       }
       const response = await api.get(apiParams) as ApiQueryResponse;
       rvcontinue = response.continue?.rvcontinue;
-      const [responsePageData] = Object.values(response.query.pages);
+      const [responsePageData] = Object.values(response.query.pages ?? []);
       pageData.id = responsePageData.pageid;
       pageData.ns = responsePageData.ns;
       pageData.title = responsePageData.title;
@@ -147,15 +149,15 @@ $(() => (async () => {
   };
 
   /** 将获取到的修订版本信息转换为XML所需格式 */
-  const formatRevision = (rev: Revisions, origin?: string | number): XmlElement => ({
+  const formatRevision = (rev: ApiRevision, origin?: string | number): XmlElement => ({
     revision: [
       { id: rev.revid },
       { parentid: rev.parentid },
       { timestamp: rev.timestamp },
       {
         _name: 'contributor',
-        _attrs: 'contributorhidden' in rev ? { deleted: 'deleted' } : {},
-        _content: 'contributorhidden' in rev ? {} : { username: rev.user, id: rev.userid },
+        _attrs: 'userhidden' in rev ? { deleted: 'deleted' } : {},
+        _content: 'userhidden' in rev ? {} : { username: rev.user, id: rev.userid },
       },
       ...('minor' in rev ? [{ minor: rev.minor }] : []),
       ...('bot' in rev ? [{ bot: rev.bot }] : []),
@@ -181,7 +183,7 @@ $(() => (async () => {
           sha1: rev.sha1,
           'xml:space': 'preserve',
         },
-        _content: rev['*']?.replace(/&/g, '&amp;'),
+        _content: rev.content?.replace(/&/g, '&amp;'),
       },
     ],
   });

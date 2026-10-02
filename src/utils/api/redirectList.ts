@@ -1,4 +1,4 @@
-import type { ApiQueryResponse } from '@/types/api';
+import type { ApiQueryResponse } from 'types-mediawiki-response';
 
 /**
  * 获取重定向列表
@@ -20,7 +20,7 @@ const redirectList = async (pagename: string): Promise<string[]> => {
       body.rdcontinue = rdcontinue;
     }
     const res = await api.post(body) as ApiQueryResponse;
-    pageList.push(...(Object.values(res.query.pages)[0].redirects || []).map(({ title }) => title));
+    pageList.push(...(Object.values(res.query.pages ?? [])[0]?.redirects ?? []).map(({ title }) => title!));
     rdcontinue = res.continue?.rdcontinue;
   }
   return pageList;
