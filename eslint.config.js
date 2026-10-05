@@ -205,6 +205,8 @@ export default tseslint.config(
       'vue/multi-word-component-names': 0,
       'vue/no-v-html': 0,
       'import/named': 0,
+      // Vue中useXxx为组合式函数命名约定，非React Hook，关闭React Hooks调用规则
+      'react-hooks/rules-of-hooks': 0,
     },
   },
   // #endregion

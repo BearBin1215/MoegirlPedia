@@ -39,7 +39,6 @@ pnpm i
   ```
   `<gadget names>`为小工具名，可输入多个，例如`pnpm build MassEdit BulkMove`会打包[src/gadgets/MassEdit](/src/gadgets/MassEdit/)和[src/gadgets/BulkMove](/src/gadgets/BulkMove/)，直接执行`pnpm build`则打包全部小工具。
   输出文件位于[dist](/dist/)目录下。
-  ~~打包完毕并提交后，Github Action会自动读取dist下发生变动的文件，并将其提交到萌百。~~目前萌百CF服务器禁用了来自GHA的请求，暂不同步，使用cdn直接加载。
 
 ## 文件结构
 
@@ -52,10 +51,6 @@ pnpm i
 │  stylelint.config.ts  # stylelint配置
 │  tsconfig.json  # typescript配置
 |
-├─.github
-│  └─workflows  # GitHub Actions配置
-│          GadgetSynchronize.yml  # 自动同步dist至萌百
-|
 ├─dist  # 打包/编译输出
 │  ├─gadgets
 │  │      BatchSend.min.js
@@ -65,7 +60,7 @@ pnpm i
 │         BatchSend.js
 │         ...
 |
-├─scripts  # CI脚本
+├─scripts  # 构建脚本
 |
 └─src  # 源代码
     ├─components  # 用到的一些组件

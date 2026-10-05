@@ -5,7 +5,7 @@ import 'react18-json-view/src/dark.css';
 
 const isMoeskin = mw.config.get('skin') === 'moeskin';
 
-const useDarkTheme = () => {
+const isDarkTheme = () => {
   if (isMoeskin) {
     return document.documentElement.getAttribute('color-mode') === 'dark';
   }
@@ -14,7 +14,7 @@ const useDarkTheme = () => {
 
 function JSONViewer({ json }: { json: object }) {
   // 是否使用暗色模式
-  const [dark, setDark] = useState(window.jsonViewerDark || useDarkTheme());
+  const [dark, setDark] = useState(window.jsonViewerDark || isDarkTheme());
 
   useEffect(() => {
     if (isMoeskin) {
@@ -22,7 +22,7 @@ function JSONViewer({ json }: { json: object }) {
       const observer = new MutationObserver((mutations) => {
         mutations
           .filter(({ attributeName }) => attributeName === 'color-mode')
-          .forEach(() => setDark(useDarkTheme()));
+          .forEach(() => setDark(isDarkTheme()));
       });
 
       observer.observe(document.documentElement, {
@@ -36,7 +36,7 @@ function JSONViewer({ json }: { json: object }) {
     const observer = new MutationObserver((mutations) => {
       mutations
         .filter(({ attributeName }) => attributeName === 'class')
-        .forEach(() => setDark(useDarkTheme()));
+        .forEach(() => setDark(isDarkTheme()));
     });
 
     observer.observe(document.documentElement, {

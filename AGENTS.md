@@ -53,10 +53,9 @@ pnpm lint:fix
 │   ├── components/          # 跨工具共享组件（Loger、MediaWiki、ModIcon 等）
 │   ├── types/               # 全局类型声明（MediaWiki API、模块导入等）
 │   └── utils/               # 共享工具函数（api、dom、file、string 等）
-├── scripts/                 # 构建与部署脚本（build.ts、Synchronize.ts）
+├── scripts/                 # 构建脚本（build.ts）
 ├── dist/                    # 构建产物（发布用，勿手改）
-├── img/                     # README 演示图
-└── .github/                 # CI 等仓库配置
+└── img/                     # README 演示图
 ```
 
 ## 代码规范
