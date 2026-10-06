@@ -1,6 +1,7 @@
 export { default as pageSource } from './pageSource';
 
 export { default as categoryMembers, traverseCategoryMembers } from './categoryMembers';
+export type { Cmtype } from './categoryMembers';
 export { default as compare } from './compare';
 export { formatDiff } from './compare';
 export { default as includeList } from './includeList';

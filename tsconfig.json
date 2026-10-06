@@ -20,7 +20,13 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [
+      "oojs",
+      "oojs-ui",
+      "jquery",
+      "node"
+    ]
   },
   "exclude": [
     "dist",

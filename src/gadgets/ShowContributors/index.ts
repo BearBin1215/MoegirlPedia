@@ -1,5 +1,5 @@
+import { defineQuery } from 'types-mediawiki-params/define';
 import type { ApiQueryResponse } from 'types-mediawiki-response';
-import type { ApiParams } from '@/types/apiParams';
 import styles from './index.inline.css';
 
 interface UserContribution {
@@ -63,21 +63,18 @@ $(() => (async () => {
       const contributors: Record<string, number[]> = {};
       let rvcontinue: string | undefined = '';
       let prevSize: number | undefined = 0; // 用于记录上次编辑的字节数
-      const config: ApiParams = {
-        action: 'query',
-        format: 'json',
-        prop: 'revisions',
-        titles: mw.config.get('wgPageName'),
-        rvprop: 'user|size',
-        rvlimit: 'max',
-        rvdir: 'newer',
-      };
       do {
-        if (rvcontinue) {
-          config.rvcontinue = rvcontinue;
-        }
         try {
-          const res = await api.get(config) as ApiQueryResponse;
+          const res = await api.get(defineQuery({
+            action: 'query',
+            format: 'json',
+            prop: 'revisions',
+            titles: mw.config.get('wgPageName'),
+            rvprop: ['user', 'size'],
+            rvlimit: 'max',
+            rvdir: 'newer',
+            ...(rvcontinue ? { rvcontinue } : {}),
+          })) as ApiQueryResponse;
           rvcontinue = res.continue?.rvcontinue;
           for (const { user, size } of Object.values(res.query.pages ?? [])[0]?.revisions ?? []) {
             contributors[user!] ||= [];

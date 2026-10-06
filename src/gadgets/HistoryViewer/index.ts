@@ -1,6 +1,7 @@
 import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse } from 'types-mediawiki-response';
+import type { ActionRequestFor } from 'types-mediawiki-params';
+import { defineAction, defineQuery } from 'types-mediawiki-params/define';
 import { formatDiff, pageSource } from '@/utils/api';
-import type { ApiParams } from '@/types/apiParams';
 import './index.css';
 
 declare global {
@@ -38,12 +39,12 @@ mw.loader.using('mediawiki.api').then(() => {
   };
 
   /** 根据输入参数解析页面HTML */
-  const parsePage = async (parseConfig: ApiParams) => {
-    const response = await api.post({
+  const parsePage = async (parseConfig: Omit<ActionRequestFor<'parse'>, 'action'>) => {
+    const response = await api.post(defineAction({
       action: 'parse',
       formatversion: '2',
       ...parseConfig,
-    }) as ApiParseResponse;
+    })) as ApiParseResponse;
     return response.parse.text ?? '';
   };
 
@@ -83,32 +84,33 @@ mw.loader.using('mediawiki.api').then(() => {
       try {
         // MW更新后不再能只用diff请求差异了，所以要根据diff的id去查询对应的oldid，然后再请求差异
         if (oldid === 'prev') {
-          const infoResponse = await api.post({
+          const infoResponse = await api.post(defineQuery({
             action: 'query',
             utf8: true,
             prop: 'revisions',
             rvprop: 'ids',
             rvlimit: 2,
-            rvstartid: diff,
+            rvstartid: Number(diff),
             titles: pageName,
-          }) as ApiQueryResponse;
+          })) as ApiQueryResponse;
           const oldRevInfo = Object.values(infoResponse.query.pages ?? [])[0]?.revisions?.[1];
           if (oldRevInfo) {
             oldid = oldRevInfo.revid!;
           }
         }
-        const response = await api.post({
+        const response = await api.post(defineAction({
           action: 'compare',
           formatversion: '2',
           utf8: true,
-          fromrev: oldid!,
-          ...(/\d+/.test(diff) ? {
-            torev: diff,
+          fromrev: Number(oldid),
+          // diff为数字串时按目标版本id请求，否则为相对版本标识（prev/next/cur）
+          ...(/^\d+$/.test(diff) ? {
+            torev: Number(diff),
           } : {
-            torelative: diff,
+            torelative: diff as 'prev' | 'next' | 'cur',
           }),
           prop: ['diff', 'user', 'parsedcomment', 'ids', 'title'],
-        }) as ApiCompareResponse;
+        })) as ApiCompareResponse;
         const {
           fromtitle, fromrevid, fromparsedcomment, fromuser, fromuserid,
           totitle, torevid, toparsedcomment, touser, touserid,
@@ -156,8 +158,8 @@ mw.loader.using('mediawiki.api').then(() => {
       if (diff !== 'prev') {
         try {
           const currentHTML = await parsePage({
-            oldid: diff,
-          } as ApiParams);
+            oldid: Number(diff),
+          });
           $('#mw-content-text').append(
             '<hr class="diff-hr" id="mw-oldid">',
             `<h2 class="diff-currentversion-title">版本${diff}</h2>`,
@@ -191,8 +193,8 @@ mw.loader.using('mediawiki.api').then(() => {
       $gadgetZone.text('加载中……');
       try {
         const currentHTML = await parsePage({
-          oldid,
-        } as ApiParams);
+          oldid: Number(oldid),
+        });
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
           $('#mw-content-text').append($currentContent);
@@ -261,7 +263,7 @@ mw.loader.using('mediawiki.api').then(() => {
         const currentHTML = await parsePage({
           text,
           title: pageName,
-        } as ApiParams);
+        });
         if (pageContentModel in acceptsLangs) {
           const $currentContent = $(currentHTML);
           $('#mw-content-text').append($currentContent);

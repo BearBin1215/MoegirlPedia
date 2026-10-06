@@ -1,7 +1,7 @@
 import { categoryMembers, linkList, includeList, redirectList } from '@/utils/api';
+import type { Cmtype } from '@/utils/api';
 import { copyText } from '@/utils/clipboard';
 import { editSection, bracketStart, bracketEnd, divider } from '@/utils/mwElements';
-import type { Cmtype } from '@/types/apiParams';
 import styles from './index.inline.css';
 
 mw.loader.using(['mediawiki.notification', 'mediawiki.api']).done(() => {

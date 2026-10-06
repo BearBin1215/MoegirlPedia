@@ -3,6 +3,7 @@
  */
 
 import { toXML, type XmlElement } from 'jstoxml';
+import { defineQuery } from 'types-mediawiki-params/define';
 import type { ApiRevision, ApiQueryResponse } from 'types-mediawiki-response';
 import { categoryMembers } from '@/utils/api';
 import { splitList } from '@/utils/string';
@@ -10,7 +11,6 @@ import waitInterval from '@/utils/wait';
 import { formatNS14 } from '@/utils/formatNS';
 import { downloadStringAsFile } from '@/utils/file';
 import Loger from "@/components/Loger";
-import type { ApiParams } from '@/types/apiParams';
 import generateBaseinfo from './baseinfo';
 import './index.css';
 
@@ -122,7 +122,10 @@ $(() => (async () => {
       revisions: [],
     };
     do {
-      const apiParams: ApiParams = {
+      if (rvcontinue) {
+        await waitInterval(interval);
+      }
+      const response = await api.get(defineQuery({
         action: 'query',
         formatversion: '2',
         prop: 'revisions',
@@ -130,12 +133,8 @@ $(() => (async () => {
         rvprop: ['content', 'ids', 'flags', 'timestamp', 'user', 'userid', 'size', 'sha1', 'contentmodel', 'comment', 'tags'],
         rvlimit: getCurrentOnly ? 1 : 'max',
         rvdir: getCurrentOnly ? 'older' : 'newer',
-      };
-      if (rvcontinue) {
-        apiParams.rvcontinue = rvcontinue;
-        await waitInterval(interval);
-      }
-      const response = await api.get(apiParams) as ApiQueryResponse;
+        ...(rvcontinue ? { rvcontinue } : {}),
+      })) as ApiQueryResponse;
       rvcontinue = response.continue?.rvcontinue;
       const [responsePageData] = Object.values(response.query.pages ?? []);
       pageData.id = responsePageData.pageid;

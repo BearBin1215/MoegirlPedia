@@ -1,5 +1,9 @@
+import { defineQuery } from 'types-mediawiki-params/define';
+import type { OneOrMore, QueryListParams } from 'types-mediawiki-params';
 import type { ApiQueryResponse } from 'types-mediawiki-response';
-import type { Cmtype } from '@/types/apiParams';
+
+/** 分类成员类型，对应categorymembers模块的cmtype/gcmtype参数 */
+export type Cmtype = NonNullable<QueryListParams['categorymembers']> extends { cmtype?: OneOrMore<infer T> } ? T : never;
 
 /** 有权限使用api的用户组 */
 const API_ALLOWED_GROUPS = ['bot', 'flood', 'patroller', 'sysop'];
@@ -123,7 +127,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
   if (mw.config.get('wgUserGroups')!.some((group) => API_ALLOWED_GROUPS.includes(group))) {
     let cmcontinue: string | undefined;
     do {
-      const result = await api.post({
+      const result = await api.post(defineQuery({
         action: 'query',
         format: 'json',
         utf8: true,
@@ -133,7 +137,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         cmprop: 'title',
         cmtype,
         ...(cmcontinue ? { cmcontinue } : {}),
-      }) as ApiQueryResponse;
+      })) as ApiQueryResponse;
       const members = result.query.categorymembers ?? [];
       if (members[0]) {
         pageList.push(...members.map(({ title }) => title!));
@@ -155,14 +159,14 @@ export const traverseCategoryMembers = async (cmtitle: string) => {
     const pageList: string[] = [];
     let gcmcontinue: string | undefined = void 0;
     do {
-      const response = await api.post({
+      const response = await api.post(defineQuery({
         action: 'query',
         generator: 'categorymembers',
         gcmtitle: category,
-        gcmtype: 'page|subcat',
+        gcmtype: ['page', 'subcat'],
         gcmlimit: 'max',
         gcmcontinue,
-      }) as ApiQueryResponse;
+      })) as ApiQueryResponse;
       gcmcontinue = response.continue?.gcmcontinue;
       for (const { ns, title: pageTitle } of Object.values(response.query.pages ?? [])) {
         const title = pageTitle!;
