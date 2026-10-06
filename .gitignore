@@ -4,8 +4,9 @@
 node_modules
 
 test
-src/gadgets/*test*
-dist/**/*test*
+# 临时测试工具（前缀匹配，避免误伤名称含test的工具）
+src/gadgets/test*/
+dist/**/test*
 dist/**/Example-*
 
 dist/dev

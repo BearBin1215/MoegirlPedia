@@ -10,6 +10,9 @@ import svgToMiniDataURI from 'mini-svg-data-uri';
 /** esm中模拟cjs的__dirname */
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/** 线上浏览器兼容目标，SWC转译与lightningcss处理共用 */
+const browserTargets = '> 0.5%, not dead';
+
 /** 生成 Rspack 构建配置。 */
 export default (
   _env: Record<string, unknown> | undefined,
@@ -18,7 +21,7 @@ export default (
 ) => defineConfig({
   mode: args.mode || 'development',
   devtool: args.mode === 'development' ? 'eval-source-map' : 'source-map',
-  lazyCompilation: true,
+  lazyCompilation: args.mode === 'development',
 
   entry: globSync(
     globString,
@@ -40,12 +43,8 @@ export default (
   },
 
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.less', '.json'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
-      react: 'preact/compat',
-      'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime',
       '@': path.resolve(__dirname, '.', 'src'),
     },
   },
@@ -74,12 +73,18 @@ export default (
           /** @type {import('@rspack/core').SwcLoaderOptions} */
           options: {
             env: {
-              targets: '> 0.5%, not dead',
+              targets: browserTargets,
             },
             jsc: {
               parser: {
                 syntax: 'typescript',
                 tsx: true,
+              },
+              transform: {
+                react: {
+                  // classic运行时：与tsconfig的jsx: react及源码中显式import React的写法保持一致
+                  runtime: 'classic',
+                },
               },
             },
           },
@@ -99,7 +104,7 @@ export default (
                 loader: 'builtin:lightningcss-loader',
                 /** @type {import('@rspack/core').LightningcssLoaderOptions} */
                 options: {
-                  targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
+                  targets: args.mode !== 'development' ? browserTargets : void 0,
                   minify: args.mode !== 'development',
                 },
               },
@@ -113,7 +118,7 @@ export default (
                 loader: 'builtin:lightningcss-loader',
                 /** @type {import('@rspack/core').LightningcssLoaderOptions} */
                 options: {
-                  targets: args.mode !== 'development' ? '> 0.5%, not dead' : void 0,
+                  targets: args.mode !== 'development' ? browserTargets : void 0,
                   minify: args.mode !== 'development',
                 },
               },

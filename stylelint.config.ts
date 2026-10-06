@@ -2,8 +2,8 @@ import type { Config } from 'stylelint';
 
 export default {
   extends: [
+    // standard本身继承recommended，无需重复声明
     "stylelint-config-standard",
-    "stylelint-config-recommended",
   ],
   ignoreFiles: [
     "dist/**/*",

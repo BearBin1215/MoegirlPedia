@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
+/// <reference types="types-mediawiki" />
+
 export { };
 
 declare global {

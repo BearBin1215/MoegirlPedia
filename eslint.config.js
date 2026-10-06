@@ -13,7 +13,6 @@ export default tseslint.config(
   globalIgnores([
     '**/node_modules/', // 依赖文件
     '**/dist/', // 输出文件
-    '**/lib/', // oojs-ui-react的输出文件等
   ]),
 
   // #region 配置导入
@@ -183,6 +182,7 @@ export default tseslint.config(
       parserOptions: {
         // 类型感知lint仅用于tsconfig包含的src文件
         project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: ['.vue'],
       },
     },
@@ -197,6 +197,7 @@ export default tseslint.config(
         // vue-eslint-parser解析模板，script部分委托给TS解析器并转发工程信息
         parser: '@typescript-eslint/parser',
         project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: ['.vue'],
       },
     },
@@ -236,6 +237,7 @@ export default tseslint.config(
       parserOptions: {
         // 类型感知lint仅用于tsconfig包含的scripts文件
         project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },

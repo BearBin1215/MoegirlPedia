@@ -8,7 +8,6 @@
     ],
     "jsx": "react",
     "module": "ESNext",
-    "rootDir": "./",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "paths": {
@@ -17,21 +16,16 @@
       ]
     },
     "allowJs": true,
-    "outDir": "dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "sourceMap": true
+    "skipLibCheck": true
   },
   "exclude": [
     "dist",
   ],
   "include": [
     "src/**/*",
-    "node_modules/moment/index.d.ts",
-    "node_modules/types-mediawiki",
-    "node_modules/@types/oojs-ui",
     "scripts/**/*",
     "rspack.config.ts",
     "vitest.config.ts",
