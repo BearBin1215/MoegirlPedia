@@ -16,6 +16,7 @@
       ]
     },
     "allowJs": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

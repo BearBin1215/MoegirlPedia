@@ -10,7 +10,7 @@
   "scripts": {
     "start": "rspack --watch --mode development",
     "build": "tsx scripts/build.ts",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc",
     "test": "vitest run",
     "lint": "eslint \"src/**/*.{js,jsx,vue,tsx,ts}\" && stylelint \"src/**/*.{css,scss}\"",
     "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,vue,tsx,ts}\" && stylelint --fix \"src/**/*.{css,scss}\"",
