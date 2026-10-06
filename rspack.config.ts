@@ -113,7 +113,12 @@ export default (
           {
             use: [
               'style-loader',
-              'css-loader',
+              {
+                loader: 'css-loader',
+                options: {
+                  sourceMap: false,
+                },
+              },
               {
                 loader: 'builtin:lightningcss-loader',
                 /** @type {import('@rspack/core').LightningcssLoaderOptions} */
