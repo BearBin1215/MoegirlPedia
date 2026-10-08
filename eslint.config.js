@@ -223,6 +223,13 @@ export default tseslint.config(
     rules: {
       'prefer-arrow-callback': 0,
       '@typescript-eslint/consistent-type-imports': 0,
+      '@typescript-eslint/no-unused-vars': 0,
+      'no-unused-vars': [2, {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^_',
+      }],
     },
   },
   // #endregion
