@@ -2,7 +2,7 @@
  * @description 复制截图按钮
  */
 
-mw.loader.using(['mediawiki.notification', 'oojs-ui']).then(() => {
+mw.loader.using(['mediawiki.notification', 'mediawiki.util', 'oojs-ui']).then(() => {
   $(mw.util.addPortletLink('p-cactions', 'javascript:void(0)', '复制截图', 'ca-pagecatch')).on('click', () => {
     mw.notify('正在复制……');
     $('#mw-notification-area').appendTo('body'); // 使提醒在窗口上层

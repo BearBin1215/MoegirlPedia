@@ -243,9 +243,14 @@ export default tseslint.config(
       },
       parserOptions: {
         // 类型感知lint仅用于tsconfig包含的scripts文件
-        project: './tsconfig.json',
+        project: './scripts/tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+    rules: {
+      // 依赖包经exports子路径导出类型（如vue/compiler-sfc），import插件无法静态解析具名导出
+      'import/named': 0,
+      'import/namespace': 0,
     },
   },
   // #endregion

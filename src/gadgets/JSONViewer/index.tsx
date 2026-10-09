@@ -17,6 +17,7 @@ $(() => (async () => {
   if (mw.config.get('wgAction') !== 'view') {
     return;
   }
+  await mw.loader.using('mediawiki.api');
   const jsonElement = document.getElementsByClassName('mw-json')[0] as HTMLDivElement;
   /** 渲染容器 */
   const container = document.createElement('div');

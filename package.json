@@ -10,10 +10,11 @@
   "scripts": {
     "start": "rspack --watch --mode development",
     "build": "tsx scripts/build.ts",
-    "typecheck": "vue-tsc",
+    "typecheck": "vue-tsc -p tsconfig.json && tsc -p scripts/tsconfig.json",
     "test": "vitest run",
-    "lint": "eslint \"src/**/*.{js,jsx,vue,tsx,ts}\" && stylelint \"src/**/*.{css,scss}\"",
-    "lint:fix": "eslint --quiet --fix \"src/**/*.{js,jsx,vue,tsx,ts}\" && stylelint --fix \"src/**/*.{css,scss}\"",
+    "check:deps": "tsx scripts/check-deps.ts",
+    "lint": "pnpm check:deps && eslint \"src/**/*.{js,jsx,vue,tsx,ts}\" \"scripts/**/*.ts\" && stylelint \"src/**/*.{css,scss}\"",
+    "lint:fix": "pnpm check:deps && eslint --quiet --fix \"src/**/*.{js,jsx,vue,tsx,ts}\" \"scripts/**/*.ts\" && stylelint --fix \"src/**/*.{css,scss}\"",
     "start:ooui": "cd ../ooui-react && pnpm dev"
   },
   "repository": {

@@ -19,7 +19,7 @@ $(() => (async () => {
   let stopped = false;
 
   /** 定时器id */
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
 
   const loger = new Loger([
     {

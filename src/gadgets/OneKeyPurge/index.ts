@@ -14,6 +14,7 @@ $(() => (async () => {
     'mediawiki.api',
     'mediawiki.user',
     'mediawiki.notification',
+    'mediawiki.util',
     'oojs-ui',
   ]);
   const api = new mw.Api();

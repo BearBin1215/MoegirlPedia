@@ -2,19 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
+      "ESNext"
     ],
-    "jsx": "react",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
     "allowJs": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -22,15 +14,13 @@
     "strict": true,
     "skipLibCheck": true,
     "types": [
-      "oojs",
-      "oojs-ui",
-      "jquery"
+      "node"
     ]
   },
-  "exclude": [
-    "dist"
-  ],
   "include": [
-    "src/**/*"
+    "**/*.ts",
+    "../rspack.config.ts",
+    "../vitest.config.ts",
+    "../stylelint.config.ts"
   ]
 }

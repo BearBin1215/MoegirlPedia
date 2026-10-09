@@ -61,7 +61,7 @@ function RecentChangeList() {
   // 显示报错信息，比如吃waf了
   const [errorMessage, setErrorMessage] = useState('');
   // 记录定时器id，用于停止
-  const taskInterval = useRef<NodeJS.Timeout>();
+  const taskInterval = useRef<ReturnType<typeof setInterval>>();
   // 标签含义映射，用于渲染标签
   const [tagMeanings, setTagMeanings] = useState<Record<string, string>>({});
   // 用户组及其含义映射
