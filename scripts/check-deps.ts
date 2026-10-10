@@ -38,8 +38,23 @@ const SRC = path.join(ROOT, 'src');
 
 /* ═══════════════ 依赖映射表（核心配置） ═══════════════ */
 
-/** mw.* 下始终可用的子对象（mediawiki.base 随 ResourceLoader 启动加载，无需声明） */
+/** mw.* 下始终可用的子对象（mediawiki.base 随 startup 加载，见 mw-ref StartUpModule.php:306） */
 const MW_ALWAYS = new Set(['config', 'loader', 'log', 'hook', 'msg', 'message', 'track', 'now', 'notify']);
+
+/**
+ * 每页默认加载闭包内的 RL 模块，无需 mw.loader.using。依据 mw-ref 1.43.9 源码：
+ * Skin::getDefaultModules() 的 core 组含 mediawiki.page.ready（Skin.php:472），其依赖链
+ * （user/api → Title/cookie/user.options/String）覆盖下列模块。Moegirl 升级 MW 大版本时需复核。
+ */
+const ALWAYS_MODULES = new Set([
+  'mediawiki.util',
+  'mediawiki.api',
+  'mediawiki.user',
+  'user.options',
+  'mediawiki.cookie',
+  'mediawiki.Title',
+  'mediawiki.String',
+]);
 
 /** mw.<前缀> → RL 模块。匹配时优先取更长前缀（user.options 优先于 user）。 */
 const MW_PREFIXES: Record<string, string> = {
@@ -48,6 +63,8 @@ const MW_PREFIXES: Record<string, string> = {
   util: 'mediawiki.util',
   notification: 'mediawiki.notification',
   Title: 'mediawiki.Title',
+  String: 'mediawiki.String',
+  // 1.43 起弃用，官方建议改用原生 URL
   Uri: 'mediawiki.Uri',
   cookie: 'mediawiki.cookie',
   storage: 'mediawiki.storage',
@@ -78,10 +95,16 @@ const EXTERNAL_IMPORTS: Record<string, string> = {
 };
 
 /**
- * 覆盖关系：声明 key 模块即视为同时满足 value 列表（含传递闭包）。
- * 依据 RL 模块自身的 dependencies 与站内 definition.yaml，避免过度误报。
+ * 覆盖关系：声明 key 模块即视为同时满足 value 列表（含传递闭包），
+ * 依据 mw-ref 1.43 Resources.php 各模块的 dependencies 与站内 definition.yaml。
  */
 const COVERS: Record<string, string[]> = {
+  'mediawiki.api': ['mediawiki.Title', 'mediawiki.util', 'user.options'],
+  'mediawiki.user': ['mediawiki.api', 'mediawiki.cookie', 'user.options'],
+  'mediawiki.Title': ['mediawiki.String', 'mediawiki.util'],
+  'mediawiki.storage': ['mediawiki.util'],
+  'mediawiki.Uri': ['mediawiki.util'],
+  'mediawiki.notification': ['mediawiki.util', 'mediawiki.visibleTimeout'],
   'oojs-ui': ['oojs', 'oojs-ui-core', 'oojs-ui-widgets', 'oojs-ui-windows'],
   'ext.gadget.site-lib': ['mediawiki.util', 'ext.gadget.libCachedCode'],
   'ext.gadget.libCachedCode': ['ext.gadget.LocalObjectStorage'],
@@ -562,6 +585,8 @@ function buildReport(name: string, entryAbs: string): GadgetReport {
   const missing: GadgetReport['missing'] = [];
   const exempted: string[] = [];
   for (const [mod, usages] of acc.required) {
+    // 每页默认加载闭包内的模块无需声明
+    if (ALWAYS_MODULES.has(mod)) {continue;}
     if (disabledAll || disables.has(mod)) {
       exempted.push(mod);
       continue;
