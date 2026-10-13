@@ -1,4 +1,4 @@
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponse, QueryPage } from 'types-mediawiki-response';
 
 /**
  * 获取页面源代码
@@ -16,13 +16,14 @@ const pageSource = async (title: string, params?: Record<string, any>): Promise<
     rvslots: 'main',
     ...params,
   }) as ApiQueryResponse;
-  const [pageData] = Object.values(res.query.pages ?? []);
-  if (pageData && 'revisions' in pageData) {
-    return pageData.revisions?.[0]?.slots?.main?.content;
+  const [pageData] = (res.query.pages ?? []) as QueryPage<'revisions'>[];
+  if (!pageData) {
+    return;
   }
-  if (pageData && 'missing' in pageData) {
+  if (pageData.missing) {
     throw ('missingtitle');
   }
+  return pageData.revisions?.[0]?.slots?.main?.content;
 };
 
 export default pageSource;
