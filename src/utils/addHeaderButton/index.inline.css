@@ -4,15 +4,31 @@
 
     .bearbintool-headerbutton {
         border-radius: 0;
-        background-color: #fff;
+        background-color: var(--bb-background-base);
+        color: var(--bb-color-base);
         padding: 4px 8px;
         font-size: 16px;
         cursor: pointer;
-        border: 1px solid #aaa;
+        border: 1px solid var(--bb-border-base);
         transition: background-color 0.2s ease-out;
 
         &:hover {
-            background-color: #eee;
+            background-color: var(--bb-background-hover);
         }
+
+        &:active {
+            background-color: var(--bb-background-active);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--bb-color-progressive);
+            outline-offset: 2px;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bearbintool-headerbutton {
+        transition: none;
     }
 }

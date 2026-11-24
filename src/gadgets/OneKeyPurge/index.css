@@ -10,7 +10,7 @@
 
     .okp-header {
         display: flex;
-        border-bottom: 1px solid #bbb;
+        border-bottom: 1px solid var(--bb-border-subtle);
 
         .okp-header-text {
             flex: 1 0;
@@ -22,7 +22,7 @@
     }
 
     .okp-footer {
-        border-top: 1px solid #bbb;
+        border-top: 1px solid var(--bb-border-subtle);
     }
 
     .okp-note {

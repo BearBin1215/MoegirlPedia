@@ -2,7 +2,8 @@ table.wikitable {
     position: relative;
 
     .export-table-button {
-        display: none;
+        display: flex;
+        opacity: 0;
         justify-content: center;
         align-items: center;
         position: absolute;
@@ -10,13 +11,24 @@ table.wikitable {
         top: 3px;
         width: 16px;
         height: 16px;
-        border: 1px solid #bbb;
+        padding: 0;
+        border: 1px solid var(--bb-border-subtle);
         border-radius: 2px;
-        background-color: #eee;
+        background-color: var(--bb-background-neutral);
+        color: var(--bb-color-base);
         cursor: pointer;
 
         &:hover {
-            box-shadow: 0 0 3px rgb(127 127 127 / 40%);
+            background-color: var(--bb-background-hover);
+        }
+
+        &:active {
+            background-color: var(--bb-background-active);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--bb-color-progressive);
+            outline-offset: 2px;
         }
 
         > svg {
@@ -24,16 +36,24 @@ table.wikitable {
             height: 14px;
         }
 
-        /** 正在加载SheetJS，同时阻止重复点击 */
-        &.export-table-button-loading {
+        &:disabled {
             opacity: .5;
             cursor: progress;
         }
     }
 
-    &:hover {
-        .export-table-button {
-            display: flex;
+    &:hover,
+    &:focus-within {
+        .export-table-button:not(:disabled) {
+            opacity: 1;
         }
+    }
+}
+
+@media (pointer: coarse) {
+    table.wikitable .export-table-button {
+        opacity: 1;
+        width: 44px;
+        height: 44px;
     }
 }

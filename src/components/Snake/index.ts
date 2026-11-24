@@ -2,6 +2,7 @@
  * @author BearBin, 鬼影233
  */
 import createElement from '@/utils/dom';
+import '@/styles/theme';
 import './index.css';
 
 export interface SnakeProps {

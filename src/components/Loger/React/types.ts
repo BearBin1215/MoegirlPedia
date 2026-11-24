@@ -87,26 +87,26 @@ export interface LogerRef {
 }
 
 /** 未在 types 中登记的日志所使用的兜底颜色，与原生版 Loger 保持一致 */
-export const UNKNOWN_TYPE_COLOR = '#222';
+export const UNKNOWN_TYPE_COLOR = 'var(--bb-color-base)';
 
 /** 未传 types 时使用的默认日志类型 */
 export const DEFAULT_LOGER_TYPES: LogerType[] = [
   {
     name: 'success',
     icon: '✓',
-    color: '#333',
+    color: 'var(--bb-color-base)',
     text: '完成',
   },
   {
     name: 'warn',
     icon: '!',
-    color: '#f28500',
+    color: 'var(--bb-color-warning)',
     text: '警告',
   },
   {
     name: 'error',
     icon: '✕',
-    color: '#eb3941',
+    color: 'var(--bb-color-error)',
     text: '出错',
   },
 ];

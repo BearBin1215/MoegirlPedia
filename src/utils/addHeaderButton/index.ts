@@ -1,4 +1,5 @@
 import styles from './index.inline.css';
+import '@/styles/theme';
 
 /** 在页面标题尾部增加按钮 */
 const addHeaderButton = ({

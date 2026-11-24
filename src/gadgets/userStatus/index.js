@@ -1,18 +1,19 @@
 // Edit from [[User:AnnAngela/js/userStatus.js]]
+import '@/styles/theme';
 
 $(() => (async () => {
   await mw.loader.using(['ext.gadget.LocalObjectStorage']);
   const localObjectStorage = new LocalObjectStorage('UserStatus');
   try {
     const builtinStatus = {
-      online: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/9/94/Symbol_support_vote.svg"> <b style="color:green;">在线</b>',
-      busy: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/c/c5/Symbol_support2_vote.svg"> <b style="color:blue;">忙碌</b>',
-      offline: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/7/7f/Symbol_oppose_vote.svg"> <b style="color:red;">离线</b>',
-      away: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/6/6c/Time2wait.svg"> <b style="color:grey;">已离开</b>',
-      sleeping: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/5/54/Symbol_wait.svg"> <b style="color:purple;">在睡觉</b>',
-      wikibreak: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/6/61/Symbol_abstain_vote.svg"> <b style="color:brown;">正在放萌百假期</b>',
-      holiday: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/3/30/Symbol_deferred.svg"> <b style="color:#7B68EE;">处于假期中</b>',
-      _unknown: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/8/89/Symbol_neutral_vote.svg"> <i style="color:gray;">状态不详</i>',
+      online: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/9/94/Symbol_support_vote.svg"> <b style="color:var(--bb-color-success);">在线</b>',
+      busy: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/c/c5/Symbol_support2_vote.svg"> <b style="color:var(--bb-color-progressive);">忙碌</b>',
+      offline: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/7/7f/Symbol_oppose_vote.svg"> <b style="color:var(--bb-color-error);">离线</b>',
+      away: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/6/6c/Time2wait.svg"> <b style="color:var(--bb-color-subtle);">已离开</b>',
+      sleeping: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/5/54/Symbol_wait.svg"> <b style="color:var(--bb-color-purple);">在睡觉</b>',
+      wikibreak: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/6/61/Symbol_abstain_vote.svg"> <b style="color:var(--bb-color-brown);">正在放萌百假期</b>',
+      holiday: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/3/30/Symbol_deferred.svg"> <b style="color:var(--bb-color-purple);">处于假期中</b>',
+      _unknown: '<img class="pt-userstatus-img" src="https://img.moegirl.org.cn/common/8/89/Symbol_neutral_vote.svg"> <i style="color:var(--bb-color-subtle);">状态不详</i>',
     };
     const originalBuiltinStatusIndex = Object.keys(builtinStatus);
     mw.loader.addStyleTag('.skin-vector #pt-userstatus { margin-top: 0.75em !important; margin-bottom: 0px !important; } .pt-userstatus-img { width: 25px; } .skin-vector .pt-userstatus-img {  margin-top: -0.25em; } .skin-moeskin #pt-userpage-link { display: flex; align-items: center; gap: .1em; @media (max-width: 768px) { #pt-userstatus { display: none; } }');

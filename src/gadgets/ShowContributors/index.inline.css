@@ -7,10 +7,11 @@
 #show-contributor-header {
     position: sticky;
     top: 0;
-    background: #fff;
+    background: var(--bb-background-base);
+    color: var(--bb-color-base);
     padding: 0.3em;
     text-align: center;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid var(--bb-border-base);
     font-weight: 600;
 }
 
@@ -26,7 +27,7 @@
     border-radius: 50%;
 
     &:hover {
-        background-color: #eee;
+        background-color: var(--bb-background-hover);
     }
 }
 

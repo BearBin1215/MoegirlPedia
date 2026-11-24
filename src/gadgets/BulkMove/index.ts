@@ -31,7 +31,13 @@ $(() => (async () => {
   // 表格内的tbody
   const $tableBody: JQuery<HTMLTableSectionElement> = $('<tbody>');
   // 新增行按钮
-  const $addRowButton: JQuery<HTMLTableCellElement> = $('<th><div class="oo-ui-icon-add" id="bm-add-row" title="新增一行"></div></th>');
+  const addRowButton = new OO.ui.ButtonWidget({
+    id: 'bm-add-row',
+    icon: 'add',
+    label: '新增一行',
+    invisibleLabel: true,
+    framed: false,
+  });
   // 移动选项
   const moveTalkWidget = new OO.ui.CheckboxInputWidget({
     id: 'bm-movetalk-box',
@@ -91,7 +97,13 @@ $(() => (async () => {
       $tableBody.append($('<tr>')
         .append($(`<td><input type="text" data-row-no="${rowCount}" data-col-no="1" name="${rowCount}-1"></td>`))
         .append($(`<td><input type="text" data-row-no="${rowCount}" data-col-no="2" name="${rowCount}-2"></td>`))
-        .append($('<td><div class="remove-row oo-ui-icon-subtract" title="删除此行"></div></td>')));
+        .append($('<td>').append(new OO.ui.ButtonWidget({
+          icon: 'subtract',
+          label: '删除此行',
+          invisibleLabel: true,
+          framed: false,
+          classes: ['remove-row'],
+        }).$element)));
     }
   };
 
@@ -103,7 +115,7 @@ $(() => (async () => {
           '<th></th>',
           '<th>源页面</th>',
           '<th>目标页面</th>',
-          $addRowButton,
+          $('<th>').append(addRowButton.$element),
         ),
       ),
       $tableBody,
@@ -141,7 +153,7 @@ $(() => (async () => {
   });
 
   // 点击按钮打开弹窗提示添加行
-  $addRowButton.on('click', async () => {
+  addRowButton.on('click', async () => {
     const addRowBox = new OO.ui.TextInputWidget({
       type: 'number',
       value: 1 as unknown as string,

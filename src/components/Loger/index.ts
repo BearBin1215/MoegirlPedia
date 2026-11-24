@@ -1,4 +1,5 @@
 import createElement from '@/utils/dom';
+import '@/styles/theme';
 import './index.css';
 
 /**
@@ -64,17 +65,17 @@ export default class Loger {
   private _logTypes: LogTypes = {
     success: {
       icon: '✓',
-      color: '#333',
+      color: 'var(--bb-color-base)',
       text: '完成',
     },
     warn: {
       icon: '!',
-      color: '#f28500',
+      color: 'var(--bb-color-warning)',
       text: '警告',
     },
     error: {
       icon: '✕',
-      color: '#eb3941',
+      color: 'var(--bb-color-error)',
       text: '出错',
     },
   };
@@ -129,7 +130,7 @@ export default class Loger {
     this.headline = createElement(`<${headlineTagName} class="loger-headline"></${headlineTagName}>`);
 
     // 清空按钮
-    const clearButton = createElement('<a class="loger-clear">[清空]</a>') as HTMLAnchorElement;
+    const clearButton = createElement('<button type="button" class="loger-clear">[清空]</button>');
     clearButton.addEventListener('click', this.clear.bind(this));
 
     // 日志筛选区
@@ -137,7 +138,7 @@ export default class Loger {
 
     // 筛选按钮
     for (const [type, { icon, color, text }] of Object.entries(this._logTypes)) {
-      const button = createElement(`<div class="loger-filter-selected loger-${type}" style="color:${color}"></div>`);
+      const button = createElement(`<button type="button" class="loger-filter-selected loger-${type}" style="color:${color}" aria-pressed="true"></button>`);
 
       const iconElement = createElement('<span class="loger-filter-icon"></span>');
       iconElement.append(icon);
@@ -163,6 +164,7 @@ export default class Loger {
           });
           this._logTypes[type].show = true;
         }
+        button.setAttribute('aria-pressed', String(this._logTypes[type].show));
       });
 
       this.filterButtons[type] = {
@@ -191,7 +193,7 @@ export default class Loger {
     const record = document.createElement('li');
     record.classList.add('loger-record', `loger-${type}`);
     record.innerHTML = `${time} - ${text}`;
-    record.style.color = this._logTypes[type]?.color || '#222';
+    record.style.color = this._logTypes[type]?.color || 'var(--bb-color-base)';
 
     // 根据选择状态决定是否显示
     if (this._logTypes[type]?.show === false) {

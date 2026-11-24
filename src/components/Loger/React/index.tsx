@@ -11,6 +11,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import clsx from 'clsx';
+import '@/styles/theme';
 import LogLine from './LogLine';
 import LogerFilter from './LogerFilter';
 import useLogerDetails from './useLogerDetails';
@@ -23,6 +24,7 @@ import {
   type LogerType,
 } from './types';
 import './index.css';
+import '../index.css';
 
 /** 距底部小于该值（px）即视为“已贴底”，此时新日志才会自动跟随滚动 */
 const STICK_TO_BOTTOM_THRESHOLD = 24;
@@ -212,20 +214,13 @@ const Loger = forwardRef<LogerRef, LogerProps>(({
         {title}
         {showClear
           ? (
-            <a
+            <button
+              type='button'
               className='loger-clear'
-              role='button'
-              tabIndex={0}
               onClick={handleClear}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  handleClear();
-                }
-              }}
             >
               [清空]
-            </a>
+            </button>
           )
           : null}
       </Headline>

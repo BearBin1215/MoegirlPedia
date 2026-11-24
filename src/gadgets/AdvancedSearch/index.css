@@ -4,8 +4,9 @@
     clear: both;
     margin-top: 0.4em;
     padding: 0.5em 0.75em;
-    border: 1px solid #c8ccd1;
-    background-color: #f8f9fa;
+    border: 1px solid var(--bb-border-subtle);
+    background-color: var(--bb-background-subtle);
+    color: var(--bb-color-base);
 
     &.panel-hide {
         display: none;

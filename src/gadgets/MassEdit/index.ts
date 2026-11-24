@@ -25,25 +25,25 @@ $(() => (async () => {
     {
       name: 'success',
       icon: '✓',
-      color: '#333',
+      color: 'var(--bb-color-base)',
       text: '已完成',
     },
     {
       name: 'nochange',
       icon: '○',
-      color: '#888',
+      color: 'var(--bb-color-subtle)',
       text: '无变化',
     },
     {
       name: 'warn',
       icon: '!',
-      color: '#f28500',
+      color: 'var(--bb-color-warning)',
       text: '警告',
     },
     {
       name: 'error',
       icon: '✕',
-      color: '#eb3941',
+      color: 'var(--bb-color-error)',
       text: '出错',
     },
   ], 'massedit-log', 'h5');

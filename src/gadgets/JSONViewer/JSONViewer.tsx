@@ -1,51 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useSyncExternalStore } from 'react';
 import ReactJson from 'react18-json-view';
+import { isDarkTheme, subscribeTheme } from '@/utils/theme';
 import 'react18-json-view/src/style.css';
 import 'react18-json-view/src/dark.css';
 
-const isMoeskin = mw.config.get('skin') === 'moeskin';
-
-const isDarkTheme = () => {
-  if (isMoeskin) {
-    return document.documentElement.getAttribute('color-mode') === 'dark';
-  }
-  return document.documentElement.classList.contains('skin-theme-clientpref-night');
-};
-
+/** 展示 JSON 内容，并实时跟随页面主题；显式设为 true 时始终使用暗色。 */
 function JSONViewer({ json }: { json: object }) {
-  // 是否使用暗色模式
-  const [dark, setDark] = useState(window.jsonViewerDark || isDarkTheme());
-
-  useEffect(() => {
-    if (isMoeskin) {
-      /** 监视moeskin控制暗色模式的html属性产生变化 */
-      const observer = new MutationObserver((mutations) => {
-        mutations
-          .filter(({ attributeName }) => attributeName === 'color-mode')
-          .forEach(() => setDark(isDarkTheme()));
-      });
-
-      observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['color-mode'],
-      });
-
-      return () => observer.disconnect();
-    }
-    /** 监视vector-2022控制暗色模式的html类产生变化 */
-    const observer = new MutationObserver((mutations) => {
-      mutations
-        .filter(({ attributeName }) => attributeName === 'class')
-        .forEach(() => setDark(isDarkTheme()));
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const skinDark = useSyncExternalStore(subscribeTheme, isDarkTheme);
+  const dark = window.jsonViewerDark === true || skinDark;
 
   return (
     <ReactJson

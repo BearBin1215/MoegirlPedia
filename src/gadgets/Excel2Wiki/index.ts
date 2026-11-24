@@ -1,4 +1,5 @@
 import './index.css';
+import '@/styles/theme';
 import { tableToWikitext } from './convert';
 
 if (['edit', 'submit'].includes(mw.config.get('wgAction'))) {

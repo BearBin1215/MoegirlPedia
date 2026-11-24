@@ -1,3 +1,5 @@
+import '@/styles/theme';
+
 interface HTMLElementWithAllStyles extends HTMLElement {
   allStyles?: string;
 }
@@ -18,11 +20,11 @@ $(() => (async () => {
     if (document.getElementsByClassName('lyric-style-toggle-on')[0]) {
       $('.Lyrics-original').each(function (this: HTMLElementWithAllStyles) {
         this.allStyles = $(this).attr('style');
-        $(this).attr('style', 'color:#000');
+        $(this).attr('style', 'color:var(--bb-color-base)');
       });
       $('.Lyrics-translated').each(function (this: HTMLElementWithAllStyles) {
         this.allStyles = $(this).attr('style');
-        $(this).attr('style', 'color:#656565');
+        $(this).attr('style', 'color:var(--bb-color-subtle)');
       });
       $('.Lyrics, .Lyrics span:not(.mw-collapsible), .poem, .poem span').each(function (this: HTMLElementWithAllStyles) {
         this.allStyles = $(this).attr('style');

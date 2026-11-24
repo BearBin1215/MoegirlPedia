@@ -37,6 +37,8 @@
 
     #diff-result {
         padding: 0.2em;
+        background: var(--bb-background-base);
+        color: var(--bb-color-base);
     }
 
     #result-action {

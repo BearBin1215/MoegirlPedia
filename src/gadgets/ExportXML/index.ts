@@ -37,13 +37,13 @@ $(() => (async () => {
     {
       name: 'success',
       icon: '✓',
-      color: '#333',
+      color: 'var(--bb-color-base)',
       text: '成功',
     },
     {
       name: 'error',
       icon: '✕',
-      color: '#eb3941',
+      color: 'var(--bb-color-error)',
       text: '出错',
     },
   ], 'exportxml-log');

@@ -1,5 +1,11 @@
 .bearbintools-loger {
     .loger-clear {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--bb-color-progressive);
+        cursor: pointer;
+        font: inherit;
         margin-left: 0.3em;
         font-size: 0.9em;
         font-weight: normal;
@@ -8,22 +14,36 @@
     .loger-body {
         display: flow-root;
         padding: 0.3em;
-        border: 1px solid #ccc;
-        background: rgb(255 255 255 / 70%);
+        border: 1px solid var(--bb-border-subtle);
+        background: var(--bb-background-base);
+        color: var(--bb-color-base);
     }
 
     .loger-filter {
         float: right;
         padding: 0.4em;
 
-        >div {
+        > button {
+            display: block;
+            border: 1px solid transparent;
+            background: transparent;
+            font: inherit;
             border-radius: 0.3em;
             margin-bottom: 0.2em;
-            padding-right: 0.2em;
+            padding: 0 0.2em 0 0;
+            text-align: left;
             cursor: pointer;
 
             &.loger-filter-selected {
-                background-color: rgb(127 127 127 / 7%);
+                background-color: var(--bb-background-neutral);
+            }
+
+            &:hover {
+                background-color: var(--bb-background-hover);
+            }
+
+            &:active {
+                background-color: var(--bb-background-active);
             }
         }
 
@@ -46,5 +66,10 @@
             color: inherit;
             text-decoration: underline dotted;
         }
+    }
+
+    button:focus-visible {
+        outline: 2px solid var(--bb-color-progressive);
+        outline-offset: 2px;
     }
 }

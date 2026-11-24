@@ -260,8 +260,9 @@ const onSubmit = async () => {
 
 .preview-zone {
   padding: 1em;
-  border: 1px solid #ccc;
-  background: rgb(255 255 255 / 70%);
+  border: 1px solid var(--bb-border-subtle);
+  background: var(--bb-background-base);
+  color: var(--bb-color-base);
 }
 
 .preview-zone :deep(.mw-editsection) {

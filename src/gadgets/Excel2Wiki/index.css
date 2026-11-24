@@ -7,9 +7,10 @@
     max-height: 50em;
     padding: 0.8em;
     z-index: 200;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 6px #ccc;
-    background: rgb(255 255 255 / 87%);
+    border: 1px solid var(--bb-border-subtle);
+    box-shadow: var(--bb-shadow);
+    background: var(--bb-background-base);
+    color: var(--bb-color-base);
 
     #e2w-close {
         position: absolute;
@@ -22,6 +23,7 @@
         font-weight: bold;
         border: 0;
         background: 0;
+        color: inherit;
         cursor: pointer;
     }
 
@@ -32,7 +34,7 @@
 
         #e2w-input,
         #e2w-output {
-            border: 1px solid #aaa;
+            border: 1px solid var(--bb-border-base);
             flex: 1 0;
             padding: 0.2em;
             min-height: 5em;
@@ -46,7 +48,7 @@
             }
 
             td {
-                border: 1px solid #bbb;
+                border: 1px solid var(--bb-border-subtle);
                 text-align: left;
             }
         }

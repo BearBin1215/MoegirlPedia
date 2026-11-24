@@ -19,38 +19,28 @@ export interface LogerFilterProps {
 /**
  * 日志类型筛选栏
  *
- * 渲染为 div 列表以与原生版保持完全一致的结构与样式；通过 `role`、`tabIndex`
- * 与 `onKeyDown` 补回键盘可访问性，原生版本身不支持。
+ * 与原生版共用按钮结构与样式。
  */
 const LogerFilter = memo(({ types, counts, hiddenTypes, onToggle }: LogerFilterProps) => {
-  const handleKeyDown = (event: React.KeyboardEvent, name: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onToggle(name);
-    }
-  };
-
   return (
     <nav className='loger-filter'>
       {types.map(({ name, icon, color, text }) => {
         const shown = !hiddenTypes.includes(name);
         return (
-          <div
+          <button
             key={name}
+            type='button'
             className={clsx({ 'loger-filter-selected': shown })}
             style={{ color }}
-            role='button'
-            tabIndex={0}
             aria-pressed={shown}
             onClick={() => onToggle(name)}
-            onKeyDown={(event) => handleKeyDown(event, name)}
           >
             {icon !== undefined
               ? <span className='loger-filter-icon'>{icon}</span>
               : null}
             <span className='loger-filter-count'>{counts[name] ?? 0}</span>
             {` ${text}`}
-          </div>
+          </button>
         );
       })}
     </nav>

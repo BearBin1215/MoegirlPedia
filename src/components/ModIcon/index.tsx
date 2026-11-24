@@ -1,4 +1,5 @@
 import React from 'react';
+import '@/styles/theme';
 import Approved from './Approved.svg';
 import Rejected from './Rejected.svg';
 import Pending from './Pending.svg';
@@ -9,6 +10,7 @@ interface ModIconProps {
   status: ModerationStatus;
 }
 
+/** 显示审核状态图标，颜色随页面主题变化。 */
 function ModIcon({ status }: ModIconProps) {
   switch (status) {
     case 1:

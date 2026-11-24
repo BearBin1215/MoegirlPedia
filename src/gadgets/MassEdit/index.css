@@ -130,7 +130,7 @@
         }
 
         code {
-            border: 1px solid #ddd;
+            border: 1px solid var(--bb-border-subtle);
             padding: 1px 3px;
             user-select: all;
             cursor: text;

@@ -1,4 +1,5 @@
 import domtoimage from 'dom-to-image';
+import '@/styles/theme';
 import { pageSource, compare } from '@/utils/api';
 import './index.css';
 
@@ -131,7 +132,8 @@ $(() => (async () => {
 
   // 保存图片
   const saveImage = () => {
-    domtoimage.toJpeg($result.get(0)!, { bgcolor: '#fff' }).then((dataUrl) => {
+    const result = $result.get(0)!;
+    domtoimage.toJpeg(result, { bgcolor: getComputedStyle(result).backgroundColor }).then((dataUrl) => {
       const link = document.createElement('a');
       link.download = 'image.jpg';
       link.href = dataUrl;
@@ -141,7 +143,8 @@ $(() => (async () => {
 
   // 复制图片至剪贴板
   const copyImage = () => {
-    domtoimage.toBlob($result.get(0)!, { bgcolor: '#fff' }).then((blob) => {
+    const result = $result.get(0)!;
+    domtoimage.toBlob(result, { bgcolor: getComputedStyle(result).backgroundColor }).then((blob) => {
       navigator.clipboard.write([new ClipboardItem({ 'image/png': blob! })]).then(() => {
         mw.notify('复制成功');
       }, (error) => {

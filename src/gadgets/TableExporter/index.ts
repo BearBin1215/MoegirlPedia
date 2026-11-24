@@ -1,4 +1,5 @@
 import './index.css';
+import '@/styles/theme';
 import exportIcon from './exportIcon.inline.svg';
 
 /**
@@ -7,21 +8,20 @@ import exportIcon from './exportIcon.inline.svg';
  */
 const SHEETJS_URL = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs';
 
-/** 加载中样式类，同时用于阻止重复点击 */
-const LOADING_CLASS = 'export-table-button-loading';
-
 document.querySelectorAll<HTMLTableElement>('table.wikitable').forEach((table) => {
-  const exportButton = document.createElement('div');
+  const exportButton = document.createElement('button');
+  exportButton.type = 'button';
+  exportButton.setAttribute('aria-label', '导出表格');
   exportButton.innerHTML = exportIcon;
   exportButton.classList.add('export-table-button');
   exportButton.title = '导出表格';
 
-  /** 导出表格，避免将约1MB的SheetJS打包进产物 */
+  /** 按需加载 SheetJS 并导出当前表格。 */
   const exportTable = async () => {
-    if (exportButton.classList.contains(LOADING_CLASS)) {
+    if (exportButton.disabled) {
       return;
     }
-    exportButton.classList.add(LOADING_CLASS);
+    exportButton.disabled = true;
     try {
       // webpackIgnore跳过打包，保留浏览器原生的动态import
       const { utils, writeFile } = await import(/* webpackIgnore: true */ SHEETJS_URL);
@@ -30,7 +30,7 @@ document.querySelectorAll<HTMLTableElement>('table.wikitable').forEach((table) =
       await mw.loader.using('mediawiki.notification');
       mw.notify(`导出失败：${err}`, { type: 'error' });
     } finally {
-      exportButton.classList.remove(LOADING_CLASS);
+      exportButton.disabled = false;
     }
   };
 

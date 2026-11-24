@@ -1,6 +1,7 @@
 import { defineQuery } from 'types-mediawiki-params/define';
 import type { ApiQueryResponse } from 'types-mediawiki-response';
 import styles from './index.inline.css';
+import '@/styles/theme';
 
 interface UserContribution {
   user: string;

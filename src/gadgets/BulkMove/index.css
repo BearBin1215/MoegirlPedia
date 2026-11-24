@@ -47,15 +47,15 @@
 
             td {
                 padding: 0;
-                border: 1px solid #aaa;
-                background-color: rgb(255 255 255 / 70%);
+                border: 1px solid var(--bb-border-base);
+                background-color: var(--bb-background-base);
             }
 
             th,
             td {
                 &:last-child {
                     border: none;
-                    width: 20px;
+                    width: 32px;
                     background-position: center;
                     background-color: transparent;
                 }
@@ -71,24 +71,30 @@
         border: none;
         border-radius: 0;
         background: transparent;
+        color: var(--bb-color-base) !important; /* 覆盖萌皮对普通输入框的固定颜色。 */
 
         &:focus {
-            outline: none;
-            background-color: rgb(127 127 127 / 2%);
+            outline: 2px solid var(--bb-color-progressive);
+            outline-offset: -2px;
+            background-color: var(--bb-background-subtle);
         }
     }
 
     #bm-add-row,
     .remove-row {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        border-radius: 50%;
-        transition: 0.2s ease background-color;
+        margin: 0;
 
-        &:hover {
-            background-color: rgb(127 127 127 / 20%);
+        > .oo-ui-buttonElement-button {
+            min-width: 32px;
+            min-height: 32px;
         }
+    }
+}
+
+@media (pointer: coarse) {
+    #bm-page-list-table :is(#bm-add-row, .remove-row) > .oo-ui-buttonElement-button {
+        min-width: 44px;
+        min-height: 44px;
     }
 }
 

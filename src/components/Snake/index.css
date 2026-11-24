@@ -22,23 +22,23 @@
 
         &[data-scale-state="ready"],
         &[data-scale-state="ongoing"] {
-            background-color: #eaecf0;
-            border-color: #a2a9b1;
+            background-color: var(--bb-background-neutral);
+            border-color: var(--bb-border-base);
         }
 
         &[data-scale-state="success"] {
-            background-color: #d5fdf4;
-            border-color: #16876e;
+            background-color: var(--bb-background-success);
+            border-color: var(--bb-border-success);
         }
 
         &[data-scale-state="warn"] {
-            background-color: #fee7e6;
-            border-color: #d33;
+            background-color: var(--bb-background-error);
+            border-color: var(--bb-border-error);
         }
 
         &[data-scale-state="fail"] {
-            background-color: #fef6e7;
-            border-color: #edab00;
+            background-color: var(--bb-background-warning);
+            border-color: var(--bb-border-warning);
         }
     }
 }

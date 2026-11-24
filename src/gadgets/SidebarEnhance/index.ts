@@ -1,4 +1,5 @@
 import { throttle } from 'es-toolkit';
+import '@/styles/theme';
 import styles from './index.inline.css';
 import folderSvg from './folderIcon.inline.svg';
 
