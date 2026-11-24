@@ -4,6 +4,7 @@
 import type { ApiMoveResponse } from 'types-mediawiki-response';
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
+import addIcon from './addIcon.inline.svg';
 import './index.css';
 
 $(() => (async () => {
@@ -38,6 +39,8 @@ $(() => (async () => {
     invisibleLabel: true,
     framed: false,
   });
+  // 新增行图标使用当前主题色，避免站点的黑色背景图在深色模式下不可见。
+  addRowButton.$icon.html(addIcon);
   // 移动选项
   const moveTalkWidget = new OO.ui.CheckboxInputWidget({
     id: 'bm-movetalk-box',

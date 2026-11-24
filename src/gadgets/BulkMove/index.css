@@ -89,6 +89,15 @@
             min-height: 32px;
         }
     }
+
+    #bm-add-row .oo-ui-icon-add {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: none;
+        color: var(--bb-color-base);
+        filter: none; /* 图形已使用主题色，无需站点对 OOUI 图标的反色处理。 */
+    }
 }
 
 @media (pointer: coarse) {
