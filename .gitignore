@@ -20,3 +20,4 @@ yarn-error.log*
 .opencode
 .kilo
 .codex-review
+.playwright-cli

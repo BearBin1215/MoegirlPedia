@@ -8,7 +8,7 @@ import {
   NumberInput,
   FieldLayout,
 } from 'ooui-react';
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponseWithResult } from 'types-mediawiki-response';
 import type { ChangeslistLineProps } from './ChangeslistLine';
 import ChangeslistLineCollapse from './ChangeslistLineCollapse';
 import ChangeslistLineContext from './ChangeslistLineContext';
@@ -114,7 +114,7 @@ function RecentChangeList() {
           'loginfo',
         ],
         rcexcludeuser: showHideConfig.hidemyself ? void 0 : mw.config.get('wgUserName')!,
-      }) as ApiQueryResponse;
+      }) as ApiQueryResponseWithResult;
       const recentChanges = (res.query.recentchanges ?? []).map((recentchange) => ({
         ...recentchange,
         'new': recentchange.new ?? false,
@@ -141,7 +141,7 @@ function RecentChangeList() {
       list: 'tags',
       tgprop: ['name', 'displayname'],
       tglimit: 500,
-    }) as ApiQueryResponse;
+    }) as ApiQueryResponseWithResult;
     if (res.query?.tags) {
       const meaningMap: Record<string, string> = {};
       for (const { name, displayname } of res.query.tags) {
@@ -160,7 +160,7 @@ function RecentChangeList() {
       meta: 'allmessages',
       amprefix: 'group-',
       amincludelocal: true,
-    }) as ApiQueryResponse;
+    }) as ApiQueryResponseWithResult;
     if (res.query?.allmessages) {
       const groupMessage: Record<string, string> = {};
       for (const message of res.query.allmessages) {

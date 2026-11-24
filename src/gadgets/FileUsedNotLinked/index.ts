@@ -2,7 +2,7 @@
  * @description 查询文件非链入使用。
  * @todo 标记时跳出窗口可选输入用途
  */
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponseWithResult } from 'types-mediawiki-response';
 import { pageSource } from '@/utils/api';
 
 $(() => (async () => {
@@ -79,7 +79,7 @@ $(() => (async () => {
         srwhat: 'text',
         srprop: 'snippet',
         srsearch,
-      }) as ApiQueryResponse;
+      }) as ApiQueryResponseWithResult;
     };
 
     /** 在字符串中匹配文件名，文件首字母大小写不敏感 */

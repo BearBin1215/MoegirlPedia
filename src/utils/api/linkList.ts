@@ -1,5 +1,5 @@
 import { defineQuery } from 'types-mediawiki-params/define';
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponseWithResult } from 'types-mediawiki-response';
 
 /**
  * 获取链接到指定页面的列表
@@ -19,7 +19,7 @@ const linkList = async (pagename: string, lhnamespace?: number[]): Promise<strin
       lhlimit: 'max',
       ...(lhnamespace ? { lhnamespace } : {}),
       ...(lhcontinue ? { lhcontinue } : {}),
-    })) as ApiQueryResponse;
+    })) as ApiQueryResponseWithResult;
     pageList.push(...(Object.values(res.query.pages ?? [])[0]?.linkshere ?? []).map(({ title }) => title!));
     lhcontinue = res.continue?.lhcontinue;
   } while (lhcontinue);

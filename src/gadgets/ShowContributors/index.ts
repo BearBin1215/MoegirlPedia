@@ -1,5 +1,5 @@
 import { defineQuery } from 'types-mediawiki-params/define';
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponseWithResult } from 'types-mediawiki-response';
 import styles from './index.inline.css';
 import '@/styles/theme';
 
@@ -75,7 +75,7 @@ $(() => (async () => {
             rvlimit: 'max',
             rvdir: 'newer',
             ...(rvcontinue ? { rvcontinue } : {}),
-          })) as ApiQueryResponse;
+          })) as ApiQueryResponseWithResult;
           rvcontinue = res.continue?.rvcontinue;
           for (const { user, size } of Object.values(res.query.pages ?? [])[0]?.revisions ?? []) {
             contributors[user!] ||= [];

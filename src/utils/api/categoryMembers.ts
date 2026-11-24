@@ -1,6 +1,6 @@
 import { defineQuery } from 'types-mediawiki-params/define';
 import type { OneOrMore, QueryListParams } from 'types-mediawiki-params';
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponse, ApiQueryResponseWithResult } from 'types-mediawiki-response';
 
 /** 分类成员类型，对应categorymembers模块的cmtype/gcmtype参数 */
 export type Cmtype = NonNullable<QueryListParams['categorymembers']> extends { cmtype?: OneOrMore<infer T> } ? T : never;
@@ -137,7 +137,7 @@ const getCategoryMembers = async (cmtitle: string, cmtype: Cmtype[] = ['page', '
         cmprop: 'title',
         cmtype,
         ...(cmcontinue ? { cmcontinue } : {}),
-      })) as ApiQueryResponse;
+      })) as ApiQueryResponseWithResult;
       const members = result.query.categorymembers ?? [];
       if (members[0]) {
         pageList.push(...members.map(({ title }) => title!));
@@ -168,7 +168,7 @@ export const traverseCategoryMembers = async (cmtitle: string) => {
         gcmcontinue,
       })) as ApiQueryResponse;
       gcmcontinue = response.continue?.gcmcontinue;
-      for (const { ns, title: pageTitle } of Object.values(response.query.pages ?? [])) {
+      for (const { ns, title: pageTitle } of Object.values(response.query?.pages ?? [])) {
         const title = pageTitle!;
         if (ns === 14 && !traversedCategoryList.includes(title)) {
           traversedCategoryList.push(title); // 避免套娃

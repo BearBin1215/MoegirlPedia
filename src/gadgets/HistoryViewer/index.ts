@@ -1,4 +1,4 @@
-import type { ApiParseResponse, ApiQueryResponse, ApiCompareResponse } from 'types-mediawiki-response';
+import type { ApiParseResponse, ApiQueryResponseWithResult, ApiCompareResponse } from 'types-mediawiki-response';
 import type { ActionRequestFor } from 'types-mediawiki-params';
 import { defineAction, defineQuery } from 'types-mediawiki-params/define';
 import { formatDiff, pageSource } from '@/utils/api';
@@ -92,7 +92,7 @@ mw.loader.using('mediawiki.api').then(() => {
             rvlimit: 2,
             rvstartid: Number(diff),
             titles: pageName,
-          })) as ApiQueryResponse;
+          })) as ApiQueryResponseWithResult;
           const oldRevInfo = Object.values(infoResponse.query.pages ?? [])[0]?.revisions?.[1];
           if (oldRevInfo) {
             oldid = oldRevInfo.revid!;

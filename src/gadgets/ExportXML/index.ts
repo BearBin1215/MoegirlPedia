@@ -4,7 +4,7 @@
 
 import { toXML, type XmlElement } from 'jstoxml';
 import { defineQuery } from 'types-mediawiki-params/define';
-import type { ApiRevision, ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiRevision, ApiQueryResponseWithResult } from 'types-mediawiki-response';
 import { categoryMembers } from '@/utils/api';
 import { splitList } from '@/utils/string';
 import waitInterval from '@/utils/wait';
@@ -134,7 +134,7 @@ $(() => (async () => {
         rvlimit: getCurrentOnly ? 1 : 'max',
         rvdir: getCurrentOnly ? 'older' : 'newer',
         ...(rvcontinue ? { rvcontinue } : {}),
-      })) as ApiQueryResponse;
+      })) as ApiQueryResponseWithResult;
       rvcontinue = response.continue?.rvcontinue;
       const [responsePageData] = Object.values(response.query.pages ?? []);
       pageData.id = responsePageData.pageid;

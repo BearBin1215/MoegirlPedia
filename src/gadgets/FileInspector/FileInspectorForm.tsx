@@ -8,7 +8,7 @@ import React, {
   type ChangeEvent,
 } from 'react';
 import { chunk } from 'es-toolkit';
-import type { ApiQueryResponse } from 'types-mediawiki-response';
+import type { ApiQueryResponseWithResult } from 'types-mediawiki-response';
 import type { ApiGlobalUsage } from 'types-mediawiki-response/ext/globalusage';
 import {
   Button,
@@ -88,7 +88,7 @@ function FileInspectorForm({ username }: { username: string }) {
         ucshow: 'new',
         uclimit: 'max',
         ...(uccontinue ? { uccontinue } : {}),
-      }) as ApiQueryResponse;
+      }) as ApiQueryResponseWithResult;
       uccontinue = result.continue?.uccontinue;
       userFileList.push(...(result.query.usercontribs ?? []).map(({ title, timestamp }) => ({
         title: title!,
@@ -117,7 +117,7 @@ function FileInspectorForm({ username }: { username: string }) {
           titles: fileData.map(({ title }) => title),
           ...(gucontinue ? { gucontinue } : {}),
           gulimit: 'max',
-        }) as ApiQueryResponse;
+        }) as ApiQueryResponseWithResult;
         gucontinue = result.continue?.gucontinue as string | undefined;
         for (const { pageid, title, globalusage } of Object.values(result.query.pages ?? [])) {
           // 已有记录的增加usage，没记录的创建记录
@@ -152,7 +152,7 @@ function FileInspectorForm({ username }: { username: string }) {
           titles: fileData.map(({ fileName }) => fileName),
           ...(fucontinue ? { fucontinue } : {}),
           fulimit: 'max',
-        }) as ApiQueryResponse;
+        }) as ApiQueryResponseWithResult;
         fucontinue = result.continue?.fucontinue;
         for (const { pageid, fileusage } of Object.values(result.query.pages ?? [])) {
           if (fileusage?.length) {

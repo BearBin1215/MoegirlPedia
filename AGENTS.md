@@ -61,8 +61,8 @@ pnpm lint:fix
 ## 代码规范
 
 - 新工具一律使用TS，不使用JS
-- 涉及萌百网络请求响应，使用`types-mediawiki-response`中的类型定义响应（面向`formatversion=2`）；请求参数用`types-mediawiki-params`的`defineQuery`/`defineAction`构造，包未覆盖的模块参数通过声明合并扩展补上
+- 涉及萌百网络请求响应，使用 [types-mediawiki-response](https://types-mediawiki-response.pages.dev/zh/llms.txt) 中的类型定义响应（面向`formatversion=2`）；请求参数用`types-mediawiki-params`提供的`defineQuery`/`defineAction`/`defineActionWithToken`构造，包未覆盖的模块参数通过声明合并扩展补上
 - 避免并发网络请求
-- React编写的工具优先使用`ooui-react`提供的组件
+- React编写的工具优先使用 [ooui-react](https://bearbin1215.github.io/ooui-react/llms.txt) 提供的组件
 - 导出的组件/hook与状态机、几何计算、时序控制、键盘交互类内部函数必须有对应的顶部jsdoc注释，纯透传的短处理器等自明函数可豁免；复杂逻辑需要有对应的行注释
 - 自定义界面的颜色统一使用公共主题层的 `--bb-*` 变量，新增配色集中维护，并为站点颜色 token 保留浅色、深色兜底。站点自带控件沿用站点样式，缺少深色支持时不额外覆盖。
