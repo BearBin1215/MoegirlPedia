@@ -90,7 +90,8 @@
         }
     }
 
-    #bm-add-row .oo-ui-icon-add {
+    #bm-add-row .oo-ui-icon-add,
+    .remove-row .oo-ui-icon-subtract {
         display: flex;
         align-items: center;
         justify-content: center;

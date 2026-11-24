@@ -5,6 +5,7 @@ import type { ApiMoveResponse } from 'types-mediawiki-response';
 import Loger from '@/components/Loger';
 import waitInterval from '@/utils/wait';
 import addIcon from './addIcon.inline.svg';
+import subtractIcon from './subtractIcon.inline.svg';
 import './index.css';
 
 $(() => (async () => {
@@ -97,16 +98,19 @@ $(() => (async () => {
   const addRow = (count = 1) => {
     for (let i = 0; i < count; i++) {
       rowCount++;
+      const removeRowButton = new OO.ui.ButtonWidget({
+        icon: 'subtract',
+        label: '删除此行',
+        invisibleLabel: true,
+        framed: false,
+        classes: ['remove-row'],
+      });
+      // 删除行图标同样使用当前主题色，避免站点背景图在深色模式下不可见。
+      removeRowButton.$icon.html(subtractIcon);
       $tableBody.append($('<tr>')
         .append($(`<td><input type="text" data-row-no="${rowCount}" data-col-no="1" name="${rowCount}-1"></td>`))
         .append($(`<td><input type="text" data-row-no="${rowCount}" data-col-no="2" name="${rowCount}-2"></td>`))
-        .append($('<td>').append(new OO.ui.ButtonWidget({
-          icon: 'subtract',
-          label: '删除此行',
-          invisibleLabel: true,
-          framed: false,
-          classes: ['remove-row'],
-        }).$element)));
+        .append($('<td>').append(removeRowButton.$element)));
     }
   };
 
